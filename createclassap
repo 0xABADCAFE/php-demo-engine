@@ -1,0 +1,112 @@
+#!/usr/bin/php
+<?php
+
+/**
+ *                   ______                            __
+ *           __     /\\\\\\\\_                        /\\\
+ *          /\\\  /\\\//////\\\_                      \/\\\
+ *        /\\\//  \///     \//\\\    ________       ___\/\\\         _______
+ *      /\\\//               /\\\   /\\\\\\\\\_    /\\\\\\\\\       /\\\\\\\\_
+ *    /\\\//_              /\\\\/   /\\\/////\\\   /\\\////\\\     /\\\/////\\\
+ *    \////\\\ __          /\\\/    \/\\\   \/\\\  \/\\\  \/\\\    /\\\\\\\\\\\
+ *        \////\\\ __      \///_     \/\\\___\/\\\  \/\\\__\/\\\   \//\\\//////_
+ *            \////\\\       /\\\     \/\\\\\\\\\\   \//\\\\\\\\\    \//\\\\\\\\\
+ *                \///       \///      \/\\\//////     \/////////      \/////////
+ *                                      \/\\\
+ *                                       \///
+ *
+ *                             P(?:ointless|ortable|HP) Demo Engine/
+ */
+
+declare(strict_types = 1);
+
+/**
+ * ClassMapBuilder
+ *
+ * Crawls the given directory and builds a simple classmap
+ */
+class ClassMapBuilder {
+
+    const EXCLUDE_PATTERNS = [
+        '.'  => 1,
+        '..' => 1
+    ];
+
+    const EXCLUDE_DIRS = [
+
+    ];
+
+    /** @var string[] $aFiles */
+    private array $aFiles = [];
+
+    /** @var string[] $aClassMap */
+    private array $aClassMap = [];
+
+    /**
+     * Main entry point
+     *
+     * @param string $sSourceDir
+     */
+    public function execute(string $sSourceDir, string $sNameSpace) {
+        $this->aFiles = [];
+        $this->traverse($sSourceDir);
+        $this->aClassMap = [];
+        foreach ($this->aFiles as $sSourcePath) {
+            $this->processFile($sSourcePath);
+        }
+        $sCode = "<?php\n\nnamespace " . $sNameSpace . ";\n\nconst CLASS_MAP = " .
+            str_replace(['array (', ')'], ['[', ']'], var_export($this->aClassMap, true)) .
+            ";";
+        file_put_contents('src/classmap.php', $sCode);
+    }
+
+    /**
+     * Recurse over the directory structure
+     *
+     * @param string $sDirectory
+     */
+    private function traverse(string $sDirectory) {
+        $oCurrentDir = dir($sDirectory);
+        $sDirectory  = rtrim($sDirectory, '/');
+        $aSubdirs    = [];
+
+        while (false !== ($sItem = $oCurrentDir->read())) {
+            if (isset(self::EXCLUDE_PATTERNS[$sItem])) {
+                continue;
+            }
+            $sPath = $sDirectory . '/' . $sItem;
+            if (isset(self::EXCLUDE_DIRS[$sPath]) || is_link($sPath)) {
+                continue;
+            }
+            if (is_dir($sPath)) {
+                $aSubdirs[] = $sPath;
+            } else {
+                if ('.php' === substr($sPath, -4, 4)) {
+                    $this->aFiles[] = $sPath;
+                }
+            }
+        }
+        foreach ($aSubdirs as $sSubdir) {
+            $this->traverse($sSubdir);
+        }
+    }
+
+    /**
+     * Extract namespace, interface, class and trait definitions from a source file
+     *
+     * @param string $sFile
+     */
+    private function processFile(string $sFile) {
+        $sContent = file_get_contents($sFile);
+        preg_match('/^namespace\s+([a-z0-9_\\\]+)/im', $sContent, $aMatches);
+        $sNamespace = $aMatches[1] . '\\';
+        preg_match_all('/^(class|interface|trait|abstract\s+class|final\s+class)\s+([a-z0-9_]+)/im', $sContent, $aMatches);
+        $aMatches = $aMatches[2];
+        $sFile    = substr($sFile, 3);
+        foreach ($aMatches as $sName) {
+            $this->aClassMap[$sNamespace . $sName] = $sFile;
+        }
+    }
+}
+
+(new ClassMapBuilder)->execute('src/', 'ABadCafe\PDE');

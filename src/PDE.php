@@ -1,0 +1,38 @@
+<?php
+/**
+ *                   ______                            __
+ *           __     /\\\\\\\\_                        /\\\
+ *          /\\\  /\\\//////\\\_                      \/\\\
+ *        /\\\//  \///     \//\\\    ________       ___\/\\\         _______
+ *      /\\\//               /\\\   /\\\\\\\\\_    /\\\\\\\\\       /\\\\\\\\_
+ *    /\\\//_              /\\\\/   /\\\/////\\\   /\\\////\\\     /\\\/////\\\
+ *    \////\\\ __          /\\\/    \/\\\   \/\\\  \/\\\  \/\\\    /\\\\\\\\\\\
+ *        \////\\\ __      \///_     \/\\\___\/\\\  \/\\\__\/\\\   \//\\\//////_
+ *            \////\\\       /\\\     \/\\\\\\\\\\   \//\\\\\\\\\    \//\\\\\\\\\
+ *                \///       \///      \/\\\//////     \/////////      \/////////
+ *                                      \/\\\
+ *                                       \///
+ *
+ *                             P(?:ointless|ortable|HP) Demo Engine/
+ */
+
+declare(strict_types=1);
+
+namespace ABadCafe\PDE;
+
+/**
+ * If you aren't using 7.4, no dice.
+ */
+if (PHP_VERSION_ID < 70400) {
+    throw new \RuntimeException("Requires at least PHP 7.4");
+}
+
+/**
+ * Basic classmap autoloader
+ */
+require_once 'classmap.php';
+spl_autoload_register(function(string $str_class) {
+    if (isset(CLASS_MAP[$str_class])) {
+        require_once __DIR__ . CLASS_MAP[$str_class];
+    }
+});

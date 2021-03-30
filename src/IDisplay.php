@@ -80,7 +80,7 @@ interface IDisplay {
     public function redraw() : self;
 
     /**
-     * Get the Pixel Array, aka nOOb mode, lol
+     * Get the Pixel Array, aka nOOb mode, lol.
      *
      * @return SPLFixedArray
      */
@@ -96,4 +96,8 @@ interface IDisplay {
      */
     public function &getRaw() : string;
 
+    /**
+     * @return int
+     */
+    public function getMaxRawLuma() : int;
 }

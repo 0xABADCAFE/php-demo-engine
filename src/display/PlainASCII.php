@@ -29,8 +29,8 @@ class PlainASCII implements PDE\IDisplay {
 
     const INIT  = "\x1b[2J";
     const RESET = "\x1b[2H";
-
-    const LUMA  = ' .,-~:;=!|+*%#$@';
+    const LUMA  = ' .,-~:;=!*+|%$#@';
+    const MAXRL = 15;
 
     private int           $iWidth, $iHeight;
     private string        $sRawBuffer, $sNewRawBuffer;
@@ -79,7 +79,6 @@ class PlainASCII implements PDE\IDisplay {
     public function clear() : self {
         $this->oPixels    = clone $this->oNewPixels;
         $this->sRawBuffer = $this->sNewRawBuffer;
-        echo self::INIT;
         return $this;
     }
 
@@ -87,16 +86,13 @@ class PlainASCII implements PDE\IDisplay {
      * @inheritDoc
      */
     public function refresh() : self {
-        $iRawPos = 0;
-//         foreach ($this->oPixels as $iBufferPos => $iValue) {
-//             $this->sRawBuffer[$iRawPos] = self::LUMA[($iValue >> 4) & 15];
-//             if ($iBufferPos && ($iBufferPos % $this->iWidth)) {
-//                 $iRawPos++;
-//             } else {
-//                 $iRawPos += 2;
-//             }
-//
-//         }
+        $i = 0;
+        foreach ($this->oPixels as $j => $iValue) {
+            if ($j && 0 == ($j % $this->iWidth)) {
+                $i++;
+            }
+            $this->sRawBuffer[$i++] = self::LUMA[($iValue >> 4) & 15];
+        }
         return $this->redraw();
     }
 
@@ -115,6 +111,10 @@ class PlainASCII implements PDE\IDisplay {
         return $this->oPixels;
     }
 
+    public function getRawLuma() : string {
+        return self::LUMA;
+    }
+
     /**
      * @inheritDoc
      */
@@ -122,4 +122,7 @@ class PlainASCII implements PDE\IDisplay {
         return $this->sRawBuffer;
     }
 
+    public function getMaxRawLuma() : int {
+        return self::MAXRL;
+    }
 }

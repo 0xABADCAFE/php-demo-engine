@@ -20,6 +20,8 @@ declare(strict_types=1);
 
 namespace ABadCafe\PDE;
 
+use \SPLFixedArray;
+
 /**
  * IDisplay
  */
@@ -30,12 +32,68 @@ interface IDisplay {
         I_MIN_HEIGHT = 20
     ;
 
+    /**
+     * Constructor. We expect to be told the basics like width and height
+     */
     public function __construct(int $iWidth, int $iHeight);
 
-    public function getWidth()  : int;
+    /**
+     * Get the pixel width
+     *
+     * @return int
+     */
+    public function getWidth() : int;
+
+    /**
+     * Get the span width. This may be the same as the pixel width, or larger.
+     *
+     * @return int
+     */
+    public function getSpanWidth() : int;
+
+    /**
+     * Get the pixel height
+     *
+     * @return int
+     */
     public function getHeight() : int;
-    public function clear()     : self;
-    public function refresh()   : self;
-    public function getBuffer();
+
+    /**
+     * Clear
+     *
+     * @return IDisplay
+     */
+    public function clear() : self;
+
+    /**
+     * Use refresh after updating the PixelArray.
+     *
+     * @return IDisplay
+     */
+    public function refresh() : self;
+
+    /**
+     * Use redraw to just repaint whatever is in the raw buffer.
+     *
+     * @return IDisplay
+     */
+    public function redraw() : self;
+
+    /**
+     * Get the Pixel Array, aka nOOb mode, lol
+     *
+     * @return SPLFixedArray
+     */
+    public function getPixels() : SPLFixedArray;
+
+    /**
+     * Get the raw display buffer, aka 1337 mode, lol
+     *
+     * Modifications made here can be rendered by a call to redraw().
+     * Calling refresh() is likely to destroy.
+     *
+     * @return string&
+     */
+    public function &getRaw() : string;
 
 }

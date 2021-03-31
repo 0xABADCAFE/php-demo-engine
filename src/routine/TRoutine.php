@@ -13,7 +13,7 @@
  *                                      \/\\\
  *                                       \///
  *
- *                             P(?:ointless|ortable|HP) Demo Engine/
+ *                         /P(?:ointless|ortable|HP) Demo Engine/
  */
 
 declare(strict_types=1);

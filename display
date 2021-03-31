@@ -24,9 +24,8 @@ namespace ABadCafe\PDE;
 
 require_once 'src/PDE.php';
 
-
-$oDisplay = new Display\PlainASCII(120, 40);
-$oRoutine = new Routine\Toroid($oDisplay, []);
+$oDisplay = Display\Factory::get()->create('PlainASCII', 120, 40);
+$oRoutine = Routine\Factory::get()->create('Toroid', $oDisplay, []);
 
 $iFrameNumber = 0;
 $fStartTime   = microtime(true);

@@ -24,14 +24,15 @@ namespace ABadCafe\PDE;
 
 require_once 'src/PDE.php';
 
+
 $oDisplay = new Display\PlainASCII(120, 40);
-$oRoutine = new Routine\Toroid();
+$oRoutine = new Routine\Toroid($oDisplay, []);
 
 $iFrameNumber = 0;
 $fStartTime   = microtime(true);
 while (true) {
     $oDisplay->clear();
-    $oRoutine->render($oDisplay, $iFrameNumber++, microtime(true) - $fStartTime);
+    $oRoutine->render($iFrameNumber++, microtime(true) - $fStartTime);
     $oDisplay->redraw();
     usleep(10000);
 }

@@ -28,23 +28,17 @@ namespace ABadCafe\PDE;
 interface IRoutine {
 
     /**
-     * Get the priority of the routine. Routines with higher priority will draw over
-     * those of lower priority. This is intended to allow multiple effects to be on
-     * the display at one time.
+     * Expected constructor profile
      *
-     * @return int
+     * @param IDisplay $oDisplay
+     * @param array    $aParameters
      */
-    public function getPriotity() : int;
+    public function __construct(IDisplay $oDisplay, array $aParameters = []);
 
     /**
-     * Render a frame to the given display
-     *
-     * @param  IDisplay $oDisplay
-     * @param  int      $iFrameNumber
-     * @param  float    $fTimeIndex
-     * @return self     fluent
+     * Set a new display.
      */
-    public function render(IDisplay $oDisplay, int $iFrameNumber, float $fTimeIndex) : self;
+    public function setDisplay(IDisplay $oDisplay) : self;
 
     /**
      * Accepts a key/value set of parameters to change. This can be a sequence event in
@@ -55,8 +49,18 @@ interface IRoutine {
      *     The type of a parameter will be force cast (where appropriate)
      *     Out of range values will be clamped..
      *
-     * @param  array $aParams [key => value]
+     * @param  array $aParameters [key => value]
      * @return self  fluent
      */
-    public function setParameters(array $aParams) : self;
+    public function setParameters(array $aParameters) : self;
+
+    /**
+     * Render a frame to the given display
+     *
+     * @param  IDisplay $oDisplay
+     * @param  int      $iFrameNumber
+     * @param  float    $fTimeIndex
+     * @return self     fluent
+     */
+    public function render(int $iFrameNumber, float $fTimeIndex) : self;
 }

@@ -25,71 +25,86 @@ use ABadCafe\PDE;
 /**
  * Toroid
  *
- * Mmmm doughnuts/
+ * Mmmm doughnuts.
  *
- * @todo - switch out constants to a parameter list that can be changed.
  */
 class Toroid implements PDE\IRoutine {
 
+    use TRoutine;
+
     const
-        AXIS_1_STEP    = 0.04,
-        AXIS_2_STEP    = 0.02,
-        POLOIDAL_STEP  = 0.05,
-        TOROIDAL_STEP  = 0.01,
-        RENDER_X_SCALE = 50.0,
-        RENDER_Y_SCALE = 25.0,
         TWICE_PI       = 2 * M_PI,
         EIGHTH_PI      = 0.125 * M_PI,
         LUMINANCE_FAC  = 0.666
     ;
 
-    private float
-        $fAxis2Rotation = 0.0,
-        $fAxis1Rotation = 0.0
-    ;
+    const DEFAULT_PARAMETERS = [
+        'fAxis1Rotation' => 0.0,
+        'fAxis2Rotation' => 0.0,
+        'fAxis1Step'     => 0.04,
+        'fAxis2Step'     => 0.02,
+        'fPoloidStep'    => 0.05,
+        'fToroidStep'    => 0.01,
+        'fRenderXScale'  => 50.0,
+        'fRenderYScale'  => 25.0,
+        'fLumaFactor'    => 0.666
+    ];
 
+
+    /**
+     * Runtime properties extracted from the IDisplay instance.
+     */
+    private int    $iCentreX, $iCentreY, $iSpan, $iArea, $iMaxLuma;
+    private string $sLumaLUT;
 
     /**
      * @inheritDoc
      */
-    public function getPriotity() : int {
-        return 0;
+    public function setDisplay(PDE\IDisplay $oDisplay) : self {
+        $this->oDisplay = $oDisplay;
+        // Dimension related
+        $this->iCenterX = $oDisplay->getWidth() >> 1;
+        $this->iCenterY = $oDisplay->getHeight() >> 1;
+        $this->iSpan    = $oDisplay->getSpanWidth();
+        $this->iArea    = $oDisplay->getWidth() * $oDisplay->getHeight();
+
+        // Brightness releated
+        $this->iMaxLuma = $oDisplay->getMaxRawLuma();
+        $this->sLumaLUT = $oDisplay->getRawLuma();
+        return $this;
     }
 
     /**
      * @inheritDoc
      */
-    public function render(PDE\IDisplay $oDisplay, int $iFrameNumber, float $fTimeIndex) : self {
-        $iCenterX      = $oDisplay->getWidth() >> 1;
-        $iCenterY      = $oDisplay->getHeight() >> 1;
-        $fSinAxis1Rot  = sin($this->fAxis1Rotation);
-        $fCosAxis1Rot  = cos($this->fAxis1Rotation);
-        $fCosAxis2Rot  = cos($this->fAxis2Rotation);
-        $fSinAxis2Rot  = sin($this->fAxis2Rotation);
-        $aDepthBuffer  = array_fill(0, $oDisplay->getWidth()*$oDisplay->getHeight(), 0.0);
-        $sDrawBuffer   = &$oDisplay->getRaw();
+    public function render(int $iFrameNumber, float $fTimeIndex) : self {
+        $fSinAxis1Rot  = sin($this->oParameters->fAxis1Rotation);
+        $fCosAxis1Rot  = cos($this->oParameters->fAxis1Rotation);
+        $fCosAxis2Rot  = cos($this->oParameters->fAxis2Rotation);
+        $fSinAxis2Rot  = sin($this->oParameters->fAxis2Rotation);
+        $aDepthBuffer  = array_fill(0, $this->iArea, 0.0);
+        $sDrawBuffer   = &$this->oDisplay->getRaw();
 
         // This is to do the dissolve into rings effect
-        $fToroidalStep = self::EIGHTH_PI * (1.0 - cos($fTimeIndex)) + self::TOROIDAL_STEP;
+        $fToroidStep = self::EIGHTH_PI * (1.0 - cos($fTimeIndex)) + $this->oParameters->fToroidStep;
+        $fLuma = $this->oParameters->fLumaFactor * $this->iMaxLuma;
 
-        $iSpan = $oDisplay->getSpanWidth();
-
-        // Get the raw luminance properties
-        $sLuma = $oDisplay->getRawLuma();
-        $fLuma = self::LUMINANCE_FAC * $oDisplay->getMaxRawLuma();
-
-        for ($fPoloid = 0.0; $fPoloid < self::TWICE_PI; $fPoloid += self::POLOIDAL_STEP) {
+        for ($fPoloid = 0.0; $fPoloid < self::TWICE_PI; $fPoloid += $this->oParameters->fPoloidStep) {
             $fCosPoloid = cos($fPoloid);
             $fSinPoloid = sin($fPoloid);
-            for ($fToroid = 0.0; $fToroid < self::TWICE_PI; $fToroid += $fToroidalStep) {
+            for ($fToroid = 0.0; $fToroid < self::TWICE_PI; $fToroid += $fToroidStep) {
                 $fSinToroid = sin($fToroid);
                 $fCosToroid = cos($fToroid);
                 $fTemp1     = $fCosPoloid + 2.0;
                 $fDepth     = 1.0 / ($fSinToroid * $fTemp1 * $fSinAxis1Rot + $fSinPoloid * $fCosAxis1Rot + 5.0);
                 $fTemp2     = $fSinToroid * $fTemp1 * $fCosAxis1Rot - $fSinPoloid * $fSinAxis1Rot;
-                $iXPos      = $iCenterX + (int)(self::RENDER_X_SCALE * $fDepth * ($fCosToroid * $fTemp1 * $fCosAxis2Rot - $fTemp2 * $fSinAxis2Rot));
-                $iYPos      = $iCenterY + (int)(self::RENDER_Y_SCALE * $fDepth * ($fCosToroid * $fTemp1 * $fSinAxis2Rot + $fTemp2 * $fCosAxis2Rot));
-                $iBufferPos = $iXPos + $iSpan * $iYPos;
+                $iXPos      = $this->iCenterX + (int)(
+                    $this->oParameters->fRenderXScale * $fDepth * ($fCosToroid * $fTemp1 * $fCosAxis2Rot - $fTemp2 * $fSinAxis2Rot)
+                );
+                $iYPos      = $this->iCenterY + (int)(
+                    $this->oParameters->fRenderYScale * $fDepth * ($fCosToroid * $fTemp1 * $fSinAxis2Rot + $fTemp2 * $fCosAxis2Rot)
+                );
+                $iBufferPos = $iXPos + $this->iSpan * $iYPos;
 
                 // If the depth test passes, calculate the luminance of this pixel
                 if (
@@ -105,19 +120,12 @@ class Toroid implements PDE\IRoutine {
                             0
                         )
                     );
-                    $sDrawBuffer[$iBufferPos] = $sLuma[$iLuminance];
+                    $sDrawBuffer[$iBufferPos] = $this->sLumaLUT[$iLuminance];
                 }
             }
         }
-        $this->fAxis1Rotation += self::AXIS_1_STEP;
-        $this->fAxis2Rotation += self::AXIS_2_STEP;
-        return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setParameters(array $aParams) : self {
+        $this->oParameters->fAxis1Rotation += $this->oParameters->fAxis1Step;
+        $this->oParameters->fAxis2Rotation += $this->oParameters->fAxis2Step;
         return $this;
     }
 }

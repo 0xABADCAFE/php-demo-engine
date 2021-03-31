@@ -34,8 +34,7 @@ class Toroid implements PDE\IRoutine {
 
     const
         TWICE_PI       = 2 * M_PI,
-        EIGHTH_PI      = 0.125 * M_PI,
-        LUMINANCE_FAC  = 0.666
+        EIGHTH_PI      = 0.125 * M_PI
     ;
 
     const DEFAULT_PARAMETERS = [

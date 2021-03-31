@@ -48,7 +48,7 @@ class PlainASCII implements PDE\IDisplay {
         $this->oPixels       = clone // drop through
         $this->oNewPixels    = SPLFixedArray::fromArray(array_fill(0, $iWidth * $iHeight, 0));
         $this->sRawBuffer    = // drop through
-        $this->sNewRawBuffer = str_repeat(str_repeat('_', $iWidth) . "\n", $iHeight);
+        $this->sNewRawBuffer = str_repeat(str_repeat(' ', $iWidth) . "\n", $iHeight);
         $this->clear();
     }
 

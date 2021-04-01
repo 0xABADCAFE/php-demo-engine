@@ -33,6 +33,7 @@ class SimpleLine implements PDE\IRoutine {
 
     const DEFAULT_PARAMETERS = [
         'iSpacing' => 3,
+        'iRate'    => 4,
         'sFill'    => '_'
     ];
 
@@ -57,7 +58,7 @@ class SimpleLine implements PDE\IRoutine {
         $sDrawBuffer = &$this->oDisplay->getRaw();
         $sDrawBuffer = '';
         $iLineCount = $this->oDisplay->getHeight();
-        $iFrameNumber >>= 4;
+        $iFrameNumber >>= $this->oParameters->iRate;
         while ($iLineCount--) {
             if (0 == ($iFrameNumber++ % $this->oParameters->iSpacing)) {
                 $sDrawBuffer .= $this->sFilled;
@@ -65,7 +66,6 @@ class SimpleLine implements PDE\IRoutine {
                 $sDrawBuffer .= $this->sBlank;
             }
         }
-
         return $this;
     }
 }

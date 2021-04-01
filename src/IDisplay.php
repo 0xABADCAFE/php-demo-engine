@@ -38,6 +38,13 @@ interface IDisplay {
     public function __construct(int $iWidth, int $iHeight);
 
     /**
+     * Reset the display. This may involce issuing various escape sequences to resize the terminal and clear it.
+     *
+     * @return IDisplay - fluent
+     */
+    public function reset() : self;
+
+    /**
      * Get the pixel width
      *
      * @return int

@@ -28,16 +28,17 @@ $oDisplay = Display\Factory::get()->create('PlainASCII', 120, 40);
 $oRoutine1 = Routine\Factory::get()->create('SimpleLine', $oDisplay, []);
 $oRoutine2 = Routine\Factory::get()->create('Toroid', $oDisplay, []);
 
+$oRateLimiter = new System\RateLimiter(30);
 
 $iFrameNumber = 0;
-$fStartTime   = microtime(true);
-while (true) {
-    $fTimeIndex = microtime(true) - $fStartTime;
+$fTimeIndex   = 0.0;
+while ($fTimeIndex < 5.0) {
     $oDisplay->clear();
     $oRoutine1->render($iFrameNumber, $fTimeIndex);
     $oRoutine2->render($iFrameNumber, $fTimeIndex);
     $oDisplay->redraw();
-    usleep(10000);
+    $fTimeIndex = $oRateLimiter->limit();
     ++$iFrameNumber;
-
 }
+
+echo "Frames:", $iFrameNumber, "\nLimiter skipped ", $oRateLimiter->getNumFramesSkipped(), "\n";

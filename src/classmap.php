@@ -11,4 +11,5 @@ const CLASS_MAP = [
   'ABadCafe\\PDE\\Routine\\Toroid' => '/routine/Toroid.php',
   'ABadCafe\\PDE\\Routine\\TRoutine' => '/routine/TRoutine.php',
   'ABadCafe\\PDE\\Routine\\Factory' => '/routine/Factory.php',
+  'ABadCafe\\PDE\\System\\RateLimiter' => '/system/RateLimiter.php',
 ];

@@ -49,7 +49,14 @@ class PlainASCII implements PDE\IDisplay {
         $this->oNewPixels    = SPLFixedArray::fromArray(array_fill(0, $iWidth * $iHeight, 0));
         $this->sRawBuffer    = // drop through
         $this->sNewRawBuffer = str_repeat(str_repeat(' ', $iWidth) . "\n", $iHeight);
+        $this->reset();
+    }
+
+    public function reset() : self {
+        printf("\e[8;%d;%dt", $this->iHeight + 2, $this->iWidth + 1);
         $this->clear();
+        echo self::INIT;
+        return $this;
     }
 
     /**

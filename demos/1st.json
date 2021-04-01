@@ -1,0 +1,49 @@
+{
+    "system": {
+        "fps_limit": 20
+    },
+    "display": {
+        "type": "PlainASCII",
+        "width": 140,
+        "height" :40
+    },
+    "routines": {
+        "lines": {
+            "type":" SimpleLines",
+            "priority": 0,
+            "parameters": {
+                "iSpacing": 3,
+                "iRate": 4,
+                "sFill": "_",
+            }
+        },
+        "dougnut": {
+            "type": "Toroid",
+            "priority": 1,
+            "parameters": {
+                "fLumaFactor": 0.0
+            }
+        }
+    },
+    "timeline": [
+        {
+            "time": 0.0,
+            "enable": "lines",
+        },
+        {
+            "time": 2.0,
+            "enable": "doughnut"
+        },
+        {
+            "time": 2.5,
+            "update": "doughnut",
+            "parameters": {
+                "fLumaFactor": 0.666
+            }
+        }
+        {
+            "time": 10.0,
+            "end"
+        }
+    ]
+}

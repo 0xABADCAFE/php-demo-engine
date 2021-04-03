@@ -24,21 +24,22 @@ namespace ABadCafe\PDE;
 
 require_once 'src/PDE.php';
 
-$oDisplay = Display\Factory::get()->create('PlainASCII', 120, 40);
-$oRoutine1 = Routine\Factory::get()->create('SimpleLine', $oDisplay, []);
-$oRoutine2 = Routine\Factory::get()->create('Toroid', $oDisplay, []);
-
+$oDisplay     = Display\Factory::get()->create('PlainASCII', 120, 40);
 $oRateLimiter = new System\RateLimiter\Simple(30);
+$oContext     = new System\Context($oDisplay, $oRateLimiter);
 
-$iFrameNumber = 0;
-$fTimeIndex   = 0.0;
-while ($fTimeIndex < 20.0) {
-    $oDisplay->clear();
-    $oRoutine1->render($iFrameNumber, $fTimeIndex);
-    $oRoutine2->render($iFrameNumber, $fTimeIndex);
-    $oDisplay->redraw();
-    $fTimeIndex = $oRateLimiter->limit();
-    $iFrameNumber++;
-    printf("t:%0.4fs f:%d %0.1f fps", $fTimeIndex, $iFrameNumber, $iFrameNumber/$fTimeIndex);
-}
-echo "\n";
+$oContext->registerRoutine(
+    Routine\Factory::get()->create('SimpleLine', $oDisplay, []),
+    'lines',
+    0,
+    true
+);
+
+$oContext->registerRoutine(
+    Routine\Factory::get()->create('Toroid', $oDisplay, []),
+    'doughnut',
+    20,
+    true
+);
+
+$oContext->runUntil(20.0);

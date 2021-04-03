@@ -12,6 +12,7 @@ const CLASS_MAP = [
   'ABadCafe\\PDE\\Routine\\TRoutine' => '/routine/TRoutine.php',
   'ABadCafe\\PDE\\Routine\\Factory' => '/routine/Factory.php',
   'ABadCafe\\PDE\\System\\IRateLimiter' => '/system/IRateLimiter.php',
+  'ABadCafe\\PDE\\System\\Context' => '/system/Context.php',
   'ABadCafe\\PDE\\System\\RateLimiter\\Adaptive' => '/system/rate_limiter/Adaptive.php',
   'ABadCafe\\PDE\\System\\RateLimiter\\Simple' => '/system/rate_limiter/Simple.php',
 ];

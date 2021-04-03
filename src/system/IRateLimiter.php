@@ -1,6 +1,4 @@
-#!/usr/bin/php
 <?php
-
 /**
  *                   ______                            __
  *           __     /\\\\\\\\_                        /\\\
@@ -15,30 +13,37 @@
  *                                      \/\\\
  *                                       \///
  *
- *                             P(?:ointless|ortable|HP) Demo Engine/
+ *                         /P(?:ointless|ortable|HP) Demo Engine/
  */
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
-namespace ABadCafe\PDE;
+namespace ABadCafe\PDE\System;
 
-require_once 'src/PDE.php';
+/**
+ * IRateLimiter
+ *
+ * Basic interface ror rate limiters. Rate limiters are intended to cap the maximum FPS so that we can
+ * better calculate which frame number a given time index value.
+ */
+interface IRateLimiter {
 
-$oDisplay = Display\Factory::get()->create('PlainASCII', 120, 40);
-$oRoutine1 = Routine\Factory::get()->create('SimpleLine', $oDisplay, []);
-$oRoutine2 = Routine\Factory::get()->create('Toroid', $oDisplay, []);
+    const
+        MIN_FPS_LIMIT = 5,
+        MAX_FPS_LIMIT = 120
+    ;
 
-$oRateLimiter = new System\RateLimiter\Simple(30);
+    public function __construct(int $iMaxFramesPerSecond);
 
-$iFrameNumber = 0;
-$fTimeIndex   = 0.0;
-while ($fTimeIndex < 20.0) {
-    $oDisplay->clear();
-    $oRoutine1->render($iFrameNumber, $fTimeIndex);
-    $oRoutine2->render($iFrameNumber, $fTimeIndex);
-    $oDisplay->redraw();
-    $fTimeIndex = $oRateLimiter->limit();
-    $iFrameNumber++;
-    printf("t:%0.4fs f:%d %0.1f fps", $fTimeIndex, $iFrameNumber, $iFrameNumber/$fTimeIndex);
+    /**
+     * @return int
+     */
+    public function getMaxFramesPerSecond() : int;
+
+    /**
+     * Inject a delay. We start off injecting the initial target value.
+     *
+     * @return float - time since created (in seconds)
+     */
+    public function limit() : float;
 }
-echo "\n";

@@ -18,31 +18,25 @@
 
 declare(strict_types=1);
 
-namespace ABadCafe\PDE\System;
+namespace ABadCafe\PDE\System\RateLimiter;
+use ABadCafe\PDE\System;
 
 /**
- * RateLimiter
+ * Simple rate limiter.
  */
-class RateLimiter {
+class Simple implements System\IRateLimiter {
 
-    const
-        MIN_FPS_LIMIT = 5,
-        MAX_FPS_LIMIT = 120
-    ;
+    private int $iMaxFramesPerSecond, $iFrameNumber = 0;
 
-    private int $iMaxFramesPerSecond, $iNumFramesSkipped;
-
-    private float $fMinPeriod, $fFirst, $fPrevious;
+    private float $fFirst, $fInverseRate;
 
     public function __construct(int $iMaxFramesPerSecond) {
         if ($iMaxFramesPerSecond < self::MIN_FPS_LIMIT || $iMaxFramesPerSecond > self::MAX_FPS_LIMIT) {
             throw new \RangeException();
         }
-        $this->iNumFramesSkipped   = 0;
         $this->iMaxFramesPerSecond = $iMaxFramesPerSecond;
-        $this->fMinPeriod          = 1.0 / $iMaxFramesPerSecond;
-        $this->fFirst              = // fall through
-        $this->fPrevious           = microtime(true);
+        $this->fInverseRate        = 1.0 / (float)$iMaxFramesPerSecond;
+        $this->fFirst              = microtime(true);
     }
 
     /**
@@ -53,30 +47,16 @@ class RateLimiter {
     }
 
     /**
-     * @return int
-     */
-    public function getNumFramesSkipped() : int {
-        return $this->iNumFramesSkipped;
-    }
-
-    /**
-     * Inject a delay that hopefully matches the desired cap.
+     * Inject a delay.
      *
      * @return float - time since created (in seconds)
      */
     public function limit() : float {
-        $fCurrent        = microtime(true);
-        $fElapsed        = $fCurrent - $this->fPrevious;
-        $this->fPrevious = $fCurrent;
-        if ($fElapsed < $this->fMinPeriod) {
-            $iDelayTime = (int)(1e6 * ($this->fMinPeriod - $fElapsed));
-            if ($iDelayTime > 100) {
-                usleep($iDelayTime - 50);
-            }
-        } else {
-            ++$this->iNumFramesSkipped;
-        }
-        return $fCurrent - $this->fFirst;
+        ++$this->iFrameNumber;
+        $fWakeAt = $this->fFirst + ($this->iFrameNumber * $this->fInverseRate);
+        time_sleep_until($fWakeAt);
+        return microtime(true) - $this->fFirst;
     }
+
 }
 

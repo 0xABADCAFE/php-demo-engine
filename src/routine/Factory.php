@@ -30,6 +30,7 @@ use ABadCafe\PDE;
 class Factory {
 
     const TYPES = [
+        'NoOp'       => NoOp::class,
         'SimpleLine' => SimpleLine::class,
         'Toroid'     => Toroid::class
     ];

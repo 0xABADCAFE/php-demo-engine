@@ -54,7 +54,7 @@ class Simple implements System\IRateLimiter {
     public function limit() : float {
         ++$this->iFrameNumber;
         $fWakeAt = $this->fFirst + ($this->iFrameNumber * $this->fInverseRate);
-        time_sleep_until($fWakeAt);
+        @time_sleep_until($fWakeAt);
         return microtime(true) - $this->fFirst;
     }
 

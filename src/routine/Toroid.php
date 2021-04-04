@@ -44,8 +44,8 @@ class Toroid implements PDE\IRoutine {
         'fAxis2Step'     => 0.02,
         'fPoloidStep'    => 0.05,
         'fToroidStep'    => 0.01,
-        'fRenderXScale'  => 50.0,
-        'fRenderYScale'  => 25.0,
+        'fRenderXScale'  => 64.0,
+        'fRenderYScale'  => 32.0,
         'fLumaFactor'    => 0.666
     ];
 

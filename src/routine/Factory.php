@@ -66,7 +66,7 @@ class Factory {
      */
     public function create(string $sKind, PDE\IDisplay $oDisplay, array $aParameters = []) : PDE\IRoutine {
         if (!isset(self::TYPES[$sKind])) {
-            throw new \OutOfBoundsException($sKind . ' is not a known IDisplay type)');
+            throw new \OutOfBoundsException($sKind . ' is not a known IRoutine type)');
         }
         return new (self::TYPES[$sKind])($oDisplay, $aParameters);
     }

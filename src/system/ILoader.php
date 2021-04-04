@@ -1,6 +1,4 @@
-#!/usr/bin/php
 <?php
-
 /**
  *                   ______                            __
  *           __     /\\\\\\\\_                        /\\\
@@ -15,17 +13,37 @@
  *                                      \/\\\
  *                                       \///
  *
- *                             P(?:ointless|ortable|HP) Demo Engine/
+ *                         /P(?:ointless|ortable|HP) Demo Engine/
  */
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
-namespace ABadCafe\PDE;
+namespace ABadCafe\PDE\System;
 
-require_once 'src/PDE.php';
+/**
+ * ILoader
+ *
+ * Interface for demo file loaders.
+ */
+interface ILoader {
 
-// Try to get the name of the file to run or fall back onto tne builtin
-$sDemoFile = $_SERVER['argv'][1] ?? 'demos/1st.json';
+    /**
+     * Expect to load from a file specified as a string.
+     */
+    public function __construct(string $sFilePath);
 
-// Load and run it
-(new System\Context(new System\Loader\JSON($sDemoFile)))->run();
+    /**
+     * @return Definition\Display
+     */
+    public function getDisplayDefinition() : Definition\Display;
+
+    /**
+     * @return Definition\Routine[] - keyed by identifier
+     */
+    public function getRoutines() : array;
+
+    /**
+     * @return Definition\Event[]
+     */
+    public function getTimeline() : array;
+}

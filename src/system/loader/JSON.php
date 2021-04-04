@@ -18,60 +18,81 @@
 
 declare(strict_types=1);
 
-namespace ABadCafe\PDE\Loader;
-
-use ABadCafe\PDE;
+namespace ABadCafe\PDE\System\Loader;
+use ABadCafe\PDE\System;
+use ABadCafe\PDE\System\Definition;
 
 /**
- * JSON
+ * JSON implementation for ILoader
  */
+class JSON implements System\ILoader {
 
-class JSON {
-
-    public Definition\Display $oDisplay;
+    private Definition\Display $oDisplay;
 
     /**
      * @var Definition\Routine[] $aRoutines
      */
-    public array $aRoutines;
+    private array $aRoutines;
 
     /**
      * @var Definition\Event[] $aTimeline
      */
-    public array $aTimeline;
+    private array $aTimeline;
 
-
+    /**
+     * @inheritDoc
+     */
     public function __construct(string $sFilePath) {
         if (!file_exists($sFilePath) || !is_readable($sFilePath)) {
             throw new \Exception('Unable to open ' . $sFilePath . ' for reading');
         }
-        $oJSON = json_decode(file_get_contents($sFilePath));
-        if (!$oJSON) {
+        $oDocument = json_decode(file_get_contents($sFilePath));
+        if (!$oDocument) {
             throw new \Exception('Unable to parse ' . $sFilePath . ', invalid JSON?');
         }
 
-        if (!isset($oJSON->display) || !is_object($oJSON->display)) {
+        if (!isset($oDocument->display) || !is_object($oDocument->display)) {
             throw new \Exception('Missing or invalid display section');
         }
 
-        $this->oDisplay = new Definition\Display($oJSON->display);
+        $this->oDisplay = new Definition\Display($oDocument->display);
 
-        if (!isset($oJSON->routines) || !is_object($oJSON->routines)) {
+        if (!isset($oDocument->routines) || !is_object($oDocument->routines)) {
             throw new \Exception('Missing or invalid routines section');
         }
 
-        foreach ($oJSON->routines as $sName => $oJSON) {
-            $this->aRoutnines[$sName] = new Definition\Routine($oJSON);
+        foreach ($oDocument->routines as $sName => $oJSON) {
+            $this->aRoutines[$sName] = new Definition\Routine($oJSON);
         }
 
-        if (!isset($oJSON->timeline) || !is_array($oJSON->timeline)) {
+        if (!isset($oDocument->timeline) || !is_array($oDocument->timeline)) {
             throw new \Exception('Missing or invalid timeline section');
         }
 
-        foreach ($oJSON->timeline as $oJSON) {
+        foreach ($oDocument->timeline as $oJSON) {
             $this->aTimeline[] = new Definition\Event($oJSON);
         }
     }
 
+    /**
+     * @inheritDoc
+     */
+    public function getDisplayDefinition() : Definition\Display {
+        return $this->oDisplay;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getRoutines() : array {
+        return $this->aRoutines;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getTimeline() : array {
+        return $this->aTimeline;
+    }
 }
 

@@ -42,6 +42,8 @@ trait TRoutine {
      */
     private PDE\IDisplay $oDisplay;
 
+    private bool $bEnabled = false;
+
     /**
      * Basic constructor
      *
@@ -69,4 +71,21 @@ trait TRoutine {
         }
         return $this;
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function enable(int $iFrameNumber, float $fTimeIndex) : self {
+        $this->bEnabled = true;
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function disable(int $iFrameNumber, float $fTimeIndex) : self {
+        $this->bEnabled = false;
+        return $this;
+    }
+
 }

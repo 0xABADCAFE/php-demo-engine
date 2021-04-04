@@ -18,10 +18,12 @@
 
 declare(strict_types=1);
 
-namespace ABadCafe\PDE\System\Loader\Defintion;
+namespace ABadCafe\PDE\System\Definition;
 
 /**
  * Event
+ *
+ * Definition structure for a timeline event.
  */
 class Event {
 
@@ -47,20 +49,34 @@ class Event {
 
     public float  $fAtTimeIndex;
     public int    $iAction;
-    public string $sTarget = '';
+    public string $sTarget = '_';
     public array  $aParameters = [];
 
     /**
      * Constructor
      */
-    public function __construct(object $oJSON) {
-        if (!isset($oJSON->at) || !isset($oJSON->do) || !isset(self::DO_ACTIONS[(string)$oJSON->do])) {
+    public function __construct(object $oRaw) {
+        if (
+            !isset($oRaw->at) ||
+            !isset($oRaw->do) ||
+            !isset(self::DO_ACTIONS[(string)$oRaw->do])
+        ) {
             throw new \Exception("Missing expected/valid 'at' or 'do' directive");
         }
-        $this->fAtTimeIndex = (float)$oJSON->at;
-        $this->iAction      = self::DO_ACTIONS[(string)$oJSON->do];
-        if (isset($oJSON->aParameters)) {
-            $this->aParameters = (array)$oJSON->aParameters;
+        // When?
+        $this->fAtTimeIndex = (float)$oRaw->at;
+
+        // What?
+        $this->iAction      = self::DO_ACTIONS[(string)$oRaw->do];
+
+        // Whom?
+        if (isset($oRaw->on)) {
+            $this->sTarget = (string)$oRaw->on;
+        }
+
+        // With what?
+        if (isset($oRaw->aParameters)) {
+            $this->aParameters = (array)$oRaw->aParameters;
         }
     }
 

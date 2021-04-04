@@ -55,15 +55,17 @@ class SimpleLine implements PDE\IRoutine {
      * @inheritDoc
      */
     public function render(int $iFrameNumber, float $fTimeIndex) : self {
-        $sDrawBuffer = &$this->oDisplay->getRaw();
-        $sDrawBuffer = '';
-        $iLineCount = $this->oDisplay->getHeight();
-        $iFrameNumber >>= $this->oParameters->iRate;
-        while ($iLineCount--) {
-            if (0 == ($iFrameNumber++ % $this->oParameters->iSpacing)) {
-                $sDrawBuffer .= $this->sFilled;
-            } else {
-                $sDrawBuffer .= $this->sBlank;
+        if ($this->bEnabled) {
+            $sDrawBuffer = &$this->oDisplay->getRaw();
+            $sDrawBuffer = '';
+            $iLineCount = $this->oDisplay->getHeight();
+            $iFrameNumber >>= $this->oParameters->iRate;
+            while ($iLineCount--) {
+                if (0 == ($iFrameNumber++ % $this->oParameters->iSpacing)) {
+                    $sDrawBuffer .= $this->sFilled;
+                } else {
+                    $sDrawBuffer .= $this->sBlank;
+                }
             }
         }
         return $this;

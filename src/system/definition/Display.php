@@ -18,10 +18,12 @@
 
 declare(strict_types=1);
 
-namespace ABadCafe\PDE\System\Loader\Defintion;
+namespace ABadCafe\PDE\System\Definition;
 
 /**
  * Display
+ *
+ * Definition structure for a Display
  */
 class Display {
 
@@ -39,9 +41,10 @@ class Display {
 
     /**
      * Constructor
+     *
+     * @param object $oRaw
      */
-    public function __construct(object $oJSON) {
-        $this->mapFromJSON($oJSON);
+    public function __construct(object $oRaw) {
+        $this->mapFromRaw($oRaw);
     }
-
 }

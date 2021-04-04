@@ -57,10 +57,30 @@ interface IRoutine {
     /**
      * Render a frame to the given display
      *
-     * @param  IDisplay $oDisplay
-     * @param  int      $iFrameNumber
-     * @param  float    $fTimeIndex
-     * @return self     fluent
+     * @param  int   $iFrameNumber
+     * @param  float $fTimeIndex
+     * @return self  fluent
      */
     public function render(int $iFrameNumber, float $fTimeIndex) : self;
+
+    /**
+     * Enable the routine. This will be called during the event processing stage before
+     * clearing the display and then rendering the next frame. Routines can hook into
+     * this in order to do things like reset internal state, capture the last frame etc.
+     *
+     * @param  int   $iFrameNumber
+     * @param  float $fTimeIndex
+     * @return self  fluent
+     */
+    public function enable(int $iFrameNumber, float $fTimeIndex) : self;
+
+    /**
+     * Disable the routine. This will be called during the event processing stage before
+     * clearing the display and then rendering the next frame.
+     *
+     * @param  int   $iFrameNumber
+     * @param  float $fTimeIndex
+     * @return self  fluent
+     */
+    public function disable(int $iFrameNumber, float $fTimeIndex) : self;
 }

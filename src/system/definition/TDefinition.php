@@ -18,30 +18,30 @@
 
 declare(strict_types=1);
 
-namespace ABadCafe\PDE\System\Loader\Defintion;
+namespace ABadCafe\PDE\System\Definition;
 
 /**
- * Routine
+ * TDefinition
+ *
+ * Common trait for mapping raw object data to Definition classes. Class is expected to provide a DEFAULTS array
+ * constant that defines the keys and their default values.
  */
-class Routine {
-
-    use TDefinition;
-
-    const DEFAULTS = [
-        'sType'       => 'NoOp',
-        'iPriority'   => -1,
-        'aParameters' =>  []
-    ];
-
-    public string $sType;
-    public int    $iPriority;
-    public array  $aParameters;
+trait TDefinition {
 
     /**
-     * Constructor
+     * Maps a raw object to entity field structure.
+     *
+     * @param object $oRaw
      */
-    public function __construct(object $oJSON) {
-        $this->mapFromJSON($oJSON);
+    protected function mapFromRaw(object $oRaw) {
+        foreach ($oRaw as $sField => $mValue) {
+            if (isset(self::DEFAULTS[$sField])) {
+                settype($mValue, gettype(self::DEFAULTS[$sField]));
+                $this->{$sField} = $mValue;
+            } else {
+                $this->{$sField} = self::DEFAULTS[$sField];
+            }
+        }
     }
-
 }
+

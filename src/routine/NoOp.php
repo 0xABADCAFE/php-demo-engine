@@ -36,6 +36,8 @@ class NoOp implements PDE\IRoutine {
      */
     public function setDisplay(PDE\IDisplay $oDisplay) : self {
         $this->oDisplay = $oDisplay;
+        $this->fXScale = 255.0 / $this->oDisplay->getWidth();
+        $this->fYScale = 255.0 / $this->oDisplay->getHeight();
         return $this;
     }
 
@@ -43,6 +45,23 @@ class NoOp implements PDE\IRoutine {
      * @inheritDoc
      */
     public function render(int $iFrameNumber, float $fTimeIndex) : self {
+        $iWidth  = $this->oDisplay->getWidth();
+        $iHeight = $this->oDisplay->getHeight();
+        $oPixels = $this->oDisplay->getPixels();
+
+        $fTScale1 = $this->fYScale * 0.5*(1.0 - cos($fTimeIndex));
+        $fTScale2 = $this->fXScale * 0.5*(1.0 - cos($fTimeIndex * 2.0));
+        $fTScale3 = $this->fXScale * 0.5*(1.0 - cos($fTimeIndex * 3.0));
+
+        $i = 0;
+        for ($y = 0; $y < $iHeight; $y++) {
+            for ($x = 0; $x < $iWidth; $x++) {
+                $iRGB = (($y * $fTScale1) & 0xFF) << 8;
+                $iRGB |= (($x * $fTScale2) & 0xFF) << 16;
+                $iRGB |= (($iWidth - $x) * $fTScale3) & 0xFF;
+                $oPixels[$i++] = $iRGB;
+            }
+        }
         return $this;
     }
 }

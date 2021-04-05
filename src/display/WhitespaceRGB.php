@@ -120,7 +120,7 @@ class WhitespaceRGB implements PDE\IDisplay {
             }
         }
         $this->sRawBuffer .= "\n";
-        echo self::$this->sRawBuffer;
+        echo $this->sRawBuffer;
         return $this;
     }
 

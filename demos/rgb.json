@@ -13,7 +13,11 @@
             }
         }
     },
-    "timeline": [
+    "timeline": [{
+            "at": 0.0,
+            "on": "nop",
+            "do": "enable"
+        },
         {
             "at": 10.0,
             "do": "end"

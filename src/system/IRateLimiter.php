@@ -33,6 +33,11 @@ interface IRateLimiter {
         MAX_FPS_LIMIT = 120
     ;
 
+    /**
+     * Constructor
+     *
+     * @param int $iMaxFramesPerSecond
+     */
     public function __construct(int $iMaxFramesPerSecond);
 
     /**

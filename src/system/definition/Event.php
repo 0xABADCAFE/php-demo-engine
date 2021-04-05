@@ -54,6 +54,8 @@ class Event {
 
     /**
      * Constructor
+     *
+     * @param object $oRaw
      */
     public function __construct(object $oRaw) {
         if (
@@ -79,5 +81,4 @@ class Event {
             $this->aParameters = (array)$oRaw->aParameters;
         }
     }
-
 }

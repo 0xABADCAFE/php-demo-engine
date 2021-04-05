@@ -41,6 +41,8 @@ class Routine {
 
     /**
      * Constructor
+     *
+     * @param object $oRaw
      */
     public function __construct(object $oRaw) {
         $this->mapFromRaw($oRaw);

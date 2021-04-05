@@ -62,6 +62,23 @@ class Context {
     }
 
     /**
+     * Run the thing.
+     */
+    public function run() {
+        $iFrameNumber   = 0;
+        $fTimeIndex     = 0.0;
+        while ($this->handleEvents($iFrameNumber, $fTimeIndex)) {
+            $this->oDisplay->clear();
+            $this->runRoutines($iFrameNumber, $fTimeIndex);
+            $this->oDisplay->redraw();
+            $fTimeIndex = $this->oRateLimiter->limit();
+            $iFrameNumber++;
+            printf("t:%0.4fs f:%d %0.1f fps", $fTimeIndex, $iFrameNumber, $iFrameNumber/$fTimeIndex);
+        }
+        echo "\n";
+    }
+
+    /**
      * Initialie the display properties
      *
      * @param Definition\Display $oDisplayDefinition
@@ -114,20 +131,6 @@ class Context {
         }
     }
 
-    public function run() {
-        $iFrameNumber   = 0;
-        $fTimeIndex     = 0.0;
-        while ($this->handleEvents($iFrameNumber, $fTimeIndex)) {
-            $this->oDisplay->clear();
-            $this->runRoutines($iFrameNumber, $fTimeIndex);
-            $this->oDisplay->redraw();
-            $fTimeIndex = $this->oRateLimiter->limit();
-            $iFrameNumber++;
-            printf("t:%0.4fs f:%d %0.1f fps", $fTimeIndex, $iFrameNumber, $iFrameNumber/$fTimeIndex);
-        }
-        echo "\n";
-    }
-
     /**
      * Deal with any events on the frame index
      *
@@ -170,6 +173,4 @@ class Context {
             $this->aRoutineInstances[$sIdentity]->render($iFrameNumber, $fTimeIndex);
         }
     }
-
-
 }

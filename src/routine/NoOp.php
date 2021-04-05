@@ -31,7 +31,6 @@ class NoOp implements PDE\IRoutine {
 
     const DEFAULT_PARAMETERS = [];
 
-
     /**
      * @inheritDoc
      */

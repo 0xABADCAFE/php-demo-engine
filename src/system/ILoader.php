@@ -29,6 +29,8 @@ interface ILoader {
 
     /**
      * Expect to load from a file specified as a string.
+     *
+     * @param string $sFilePath
      */
     public function __construct(string $sFilePath);
 

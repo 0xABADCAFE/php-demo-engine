@@ -33,14 +33,17 @@ interface IDisplay {
     ;
 
     /**
-     * Constructor. We expect to be told the basics like width and height
+     * Constructor. We expect to be told the basic dimensions.
+     *
+     * @param int $iWidth
+     * @param int $iHeight
      */
     public function __construct(int $iWidth, int $iHeight);
 
     /**
      * Reset the display. This may involce issuing various escape sequences to resize the terminal and clear it.
      *
-     * @return IDisplay - fluent
+     * @return self - fluent
      */
     public function reset() : self;
 
@@ -68,21 +71,21 @@ interface IDisplay {
     /**
      * Clear
      *
-     * @return IDisplay
+     * @return self
      */
     public function clear() : self;
 
     /**
      * Use refresh after updating the PixelArray.
      *
-     * @return IDisplay
+     * @return self
      */
     public function refresh() : self;
 
     /**
      * Use redraw to just repaint whatever is in the raw buffer.
      *
-     * @return IDisplay
+     * @return self
      */
     public function redraw() : self;
 

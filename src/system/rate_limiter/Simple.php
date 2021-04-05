@@ -30,6 +30,9 @@ class Simple implements System\IRateLimiter {
 
     private float $fFirst, $fInverseRate;
 
+    /**
+     * @inheritDoc
+     */
     public function __construct(int $iMaxFramesPerSecond) {
         if ($iMaxFramesPerSecond < self::MIN_FPS_LIMIT || $iMaxFramesPerSecond > self::MAX_FPS_LIMIT) {
             throw new \RangeException();
@@ -40,16 +43,14 @@ class Simple implements System\IRateLimiter {
     }
 
     /**
-     * @return int
+     * @inheritDoc
      */
     public function getMaxFramesPerSecond() : int {
         return $this->iMaxFramesPerSecond;
     }
 
     /**
-     * Inject a delay.
-     *
-     * @return float - time since created (in seconds)
+     * @inheritDoc
      */
     public function limit() : float {
         ++$this->iFrameNumber;

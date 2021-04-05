@@ -37,6 +37,9 @@ interface IRoutine {
 
     /**
      * Set a new display.
+     *
+     * @param  IDisplay $oDisplay
+     * @return self     fluent
      */
     public function setDisplay(IDisplay $oDisplay) : self;
 

@@ -34,6 +34,9 @@ class Adaptive implements System\IRateLimiter {
 
     private float $fFirst, $fTargetDelay, $fAdjustedDelay;
 
+    /**
+     * @inheritDoc
+     */
     public function __construct(int $iMaxFramesPerSecond) {
         if ($iMaxFramesPerSecond < self::MIN_FPS_LIMIT || $iMaxFramesPerSecond > self::MAX_FPS_LIMIT) {
             throw new \RangeException();
@@ -46,16 +49,14 @@ class Adaptive implements System\IRateLimiter {
     }
 
     /**
-     * @return int
+     * @inheritDoc
      */
     public function getMaxFramesPerSecond() : int {
         return $this->iMaxFramesPerSecond;
     }
 
     /**
-     * Inject a delay. We start off injecting the initial target value.
-     *
-     * @return float - time since created (in seconds)
+     * @inheritDoc
      */
     public function limit() : float {
         ++$this->iFrameNumber;
@@ -68,6 +69,5 @@ class Adaptive implements System\IRateLimiter {
         $this->fAdjustedDelay = $this->fTargetDelay * pow($fAdjustment, 5);
         return $fTimeIndex;
     }
-
 }
 

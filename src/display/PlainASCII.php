@@ -52,6 +52,9 @@ class PlainASCII implements PDE\IDisplay {
         $this->reset();
     }
 
+    /**
+     * @inheritDoc
+     */
     public function reset() : self {
         printf("\e[8;%d;%dt", $this->iHeight + 2, $this->iWidth + 1);
         $this->clear();
@@ -129,6 +132,9 @@ class PlainASCII implements PDE\IDisplay {
         return $this->sRawBuffer;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getMaxRawLuma() : int {
         return self::MAXRL;
     }

@@ -74,6 +74,7 @@ trait TRoutine {
 
     /**
      * @inheritDoc
+     * @implements IRoutine::enable()
      */
     public function enable(int $iFrameNumber, float $fTimeIndex) : self {
         $this->bEnabled = true;
@@ -82,6 +83,7 @@ trait TRoutine {
 
     /**
      * @inheritDoc
+     * @implements IRoutine::disable()
      */
     public function disable(int $iFrameNumber, float $fTimeIndex) : self {
         $this->bEnabled = false;

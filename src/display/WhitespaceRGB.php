@@ -23,14 +23,12 @@ use ABadCafe\PDE;
 use \SPLFixedArray;
 
 /**
- * PlainASCII
+ * WhitespaceRGB
  */
-class PlainASCII implements PDE\IDisplay, IRawAccess {
+class WhitespaceRGB implements PDE\IDisplay {
 
     const INIT  = "\x1b[2J";
     const RESET = "\x1b[2H";
-    const LUMA  = ' .,-~:;=!*+|%$#@';
-    const MAXRL = 15;
 
     private int           $iWidth, $iHeight;
     private string        $sRawBuffer, $sNewRawBuffer;
@@ -96,13 +94,6 @@ class PlainASCII implements PDE\IDisplay, IRawAccess {
      * @inheritDoc
      */
     public function refresh() : self {
-        $i = 0;
-        foreach ($this->oPixels as $j => $iValue) {
-            if ($j && 0 == ($j % $this->iWidth)) {
-                $i++;
-            }
-            $this->sRawBuffer[$i++] = self::LUMA[($iValue >> 4) & 15];
-        }
         return $this->redraw();
     }
 
@@ -110,7 +101,26 @@ class PlainASCII implements PDE\IDisplay, IRawAccess {
      * @inheritDoc
      */
     public function redraw() : self {
-        echo self::RESET, $this->sRawBuffer;
+        $this->sRawBuffer = self::RESET;
+        $iLastRGB = 0;
+        foreach ($this->oPixels as $j => $iRGB) {
+            if ($j && 0 == ($j % $this->iWidth)) {
+                $this->sRawBuffer .= "\n";
+            }
+            if ($iRGB !== $iLastRGB) {
+                $this->sRawBuffer .= sprintf(
+                    "\x1b[48;2;%d;%d;%dm ",
+                    ($iRGB >> 16) & 0xFF, // Red
+                    ($iRGB >> 8) & 0xFF, // Green
+                    ($iRGB & 0xFF)        // Blue
+                );
+                $iLastRGB = $iRGB;
+            } else {
+                $this->sRawBuffer .= ' ';
+            }
+        }
+        $this->sRawBuffer .= "\n";
+        echo self::$this->sRawBuffer;
         return $this;
     }
 
@@ -119,23 +129,5 @@ class PlainASCII implements PDE\IDisplay, IRawAccess {
      */
     public function getPixels() : SPLFixedArray {
         return $this->oPixels;
-    }
-
-    public function getRawLuma() : string {
-        return self::LUMA;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function &getRaw() : string {
-        return $this->sRawBuffer;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getMaxRawLuma() : int {
-        return self::MAXRL;
     }
 }

@@ -1,0 +1,22 @@
+{
+    "display": {
+        "sType": "WhitespaceRGB",
+        "iWidth": 160,
+        "iHeight": 50,
+        "iMaxFPS": 30
+    },
+    "routines": {
+        "nop": {
+            "sType": "NoOp",
+            "iPriority": 0,
+            "aParameters": {
+            }
+        }
+    },
+    "timeline": [
+        {
+            "at": 10.0,
+            "do": "end"
+        }
+    ]
+}

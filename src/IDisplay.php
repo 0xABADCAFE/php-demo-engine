@@ -96,18 +96,4 @@ interface IDisplay {
      */
     public function getPixels() : SPLFixedArray;
 
-    /**
-     * Get the raw display buffer, aka 1337 mode, lol
-     *
-     * Modifications made here can be rendered by a call to redraw().
-     * Calling refresh() is likely to destroy.
-     *
-     * @return string&
-     */
-    public function &getRaw() : string;
-
-    /**
-     * @return int
-     */
-    public function getMaxRawLuma() : int;
 }

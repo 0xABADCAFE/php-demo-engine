@@ -27,8 +27,6 @@ use \SPLFixedArray;
  */
 class PlainASCII implements PDE\IDisplay, IRawAccess {
 
-    const INIT  = "\x1b[2J";
-    const RESET = "\x1b[2H";
     const LUMA  = ' .,-~:;=!*+|%$#@';
     const MAXRL = 15;
 
@@ -56,9 +54,9 @@ class PlainASCII implements PDE\IDisplay, IRawAccess {
      * @inheritDoc
      */
     public function reset() : self {
-        printf("\e[8;%d;%dt", $this->iHeight + 2, $this->iWidth + 1);
+        printf(IANSIControl::TERM_SIZE_TPL, $this->iHeight + 2, $this->iWidth + 1);
         $this->clear();
-        echo self::INIT;
+        echo IANSIControl::TERM_CLEAR;
         return $this;
     }
 
@@ -110,7 +108,7 @@ class PlainASCII implements PDE\IDisplay, IRawAccess {
      * @inheritDoc
      */
     public function redraw() : self {
-        echo self::RESET, $this->sRawBuffer;
+        echo IANSIControl::CRSR_TOP_LEFT, $this->sRawBuffer;
         return $this;
     }
 

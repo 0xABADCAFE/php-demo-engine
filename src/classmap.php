@@ -5,6 +5,7 @@ namespace ABadCafe\PDE;
 const CLASS_MAP = [
   'ABadCafe\\PDE\\IDisplay' => '/IDisplay.php',
   'ABadCafe\\PDE\\IRoutine' => '/IRoutine.php',
+  'ABadCafe\\PDE\\Display\\IANSIControl' => '/display/IANSIControl.php',
   'ABadCafe\\PDE\\Display\\PlainASCII' => '/display/PlainASCII.php',
   'ABadCafe\\PDE\\Display\\Factory' => '/display/Factory.php',
   'ABadCafe\\PDE\\Display\\WhitespaceRGB' => '/display/WhitespaceRGB.php',

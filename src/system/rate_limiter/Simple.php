@@ -28,7 +28,7 @@ class Simple implements System\IRateLimiter {
 
     private int $iMaxFramesPerSecond, $iFrameNumber = 0;
 
-    private float $fFirst, $fInverseRate;
+    private float $fFirst, $fFrameDuration, $fTotalSlept = 0.0;
 
     /**
      * @inheritDoc
@@ -38,8 +38,21 @@ class Simple implements System\IRateLimiter {
             throw new \RangeException();
         }
         $this->iMaxFramesPerSecond = $iMaxFramesPerSecond;
-        $this->fInverseRate        = 1.0 / (float)$iMaxFramesPerSecond;
+        $this->fFrameDuration      = 1.0 / (float)$iMaxFramesPerSecond;
         $this->fFirst              = microtime(true);
+    }
+
+    public function __destruct() {
+        $fAverageSleepPerFrame = $this->fTotalSlept / (float)$this->iFrameNumber;
+
+        printf(
+            "\nPerf: %d frames @ %d fps, %.2f ms/frame, %.2f ms asleep. Free: %.02f%%\n",
+            $this->iFrameNumber,
+            $this->iMaxFramesPerSecond,
+            1000.0 * $this->fFrameDuration,
+            1000.0 * $fAverageSleepPerFrame,
+            100.0 * $fAverageSleepPerFrame / $this->fFrameDuration
+        );
     }
 
     /**
@@ -54,9 +67,12 @@ class Simple implements System\IRateLimiter {
      */
     public function limit() : float {
         ++$this->iFrameNumber;
-        $fWakeAt = $this->fFirst + ($this->iFrameNumber * $this->fInverseRate);
+        $fWakeAt = $this->fFirst + ($this->iFrameNumber * $this->fFrameDuration);
+        $fSleepBegins = microtime(true);
         @time_sleep_until($fWakeAt);
-        return microtime(true) - $this->fFirst;
+        $fSleepEnds = microtime(true);
+        $this->fTotalSlept += $fSleepEnds - $fSleepBegins;
+        return $fSleepEnds - $this->fFirst;
     }
 
 }

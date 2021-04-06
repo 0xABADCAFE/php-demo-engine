@@ -27,12 +27,17 @@ use \SPLFixedArray;
  */
 class WhitespaceRGB implements PDE\IDisplay {
 
-    const INIT  = "\x1b[2J";
-    const RESET = "\x1b[2H";
+    const
+        INIT  = "\x1b[2J",
+        RESET = "\x1b[2H",
+        C_OFF = "\x1b[?25l",
+        C_ON  = "\x1b[?25h"
+    ;
 
     private int           $iWidth, $iHeight;
-    private string        $sRawBuffer, $sNewRawBuffer;
     private SPLFixedArray $oPixels, $oNewPixels;
+
+    private array $aLineBreaks = [];
 
     /**
      * @inheritDoc
@@ -45,18 +50,24 @@ class WhitespaceRGB implements PDE\IDisplay {
         $this->iHeight       = $iHeight;
         $this->oPixels       = clone // drop through
         $this->oNewPixels    = SPLFixedArray::fromArray(array_fill(0, $iWidth * $iHeight, 0));
-        $this->sRawBuffer    = // drop through
-        $this->sNewRawBuffer = str_repeat(str_repeat(' ', $iWidth) . "\n", $iHeight);
+
+        $aLineBreaks   = range(0, $iWidth * $iHeight, $iWidth);
+        unset($aLineBreaks[0]);
+        $this->aLineBreaks = array_fill_keys($aLineBreaks, "\n");
         $this->reset();
+    }
+
+    public function __destruct() {
+        echo IANSIControl::CRSR_ON, "\n";
     }
 
     /**
      * @inheritDoc
      */
     public function reset() : self {
-        printf("\e[8;%d;%dt", $this->iHeight + 2, $this->iWidth + 1);
+        printf(IANSIControl::TERM_SIZE_TPL, $this->iHeight + 2, $this->iWidth + 1);
         $this->clear();
-        echo self::INIT;
+        echo IANSIControl::TERM_CLEAR . IANSIControl::CRSR_OFF;
         return $this;
     }
 
@@ -86,7 +97,6 @@ class WhitespaceRGB implements PDE\IDisplay {
      */
     public function clear() : self {
         $this->oPixels    = clone $this->oNewPixels;
-        $this->sRawBuffer = $this->sNewRawBuffer;
         return $this;
     }
 
@@ -101,26 +111,24 @@ class WhitespaceRGB implements PDE\IDisplay {
      * @inheritDoc
      */
     public function redraw() : self {
-        $this->sRawBuffer = self::RESET;
-        $iLastRGB = 0;
+        $sRawBuffer = IANSIControl::CRSR_TOP_LEFT;
+        $iLastRGB  = 0;
+        $sTemplate = IANSIControl::ATTR_BG_RGB_TPL . ' ';
         foreach ($this->oPixels as $j => $iRGB) {
-            if ($j && 0 == ($j % $this->iWidth)) {
-                $this->sRawBuffer .= "\n";
-            }
+            $sRawBuffer .= $this->aLineBreaks[$j] ?? '';
             if ($iRGB !== $iLastRGB) {
-                $this->sRawBuffer .= sprintf(
-                    "\x1b[48;2;%d;%d;%dm ",
+                $sRawBuffer .= sprintf(
+                    $sTemplate,
                     ($iRGB >> 16) & 0xFF, // Red
-                    ($iRGB >> 8) & 0xFF, // Green
+                    ($iRGB >> 8) & 0xFF,  // Green
                     ($iRGB & 0xFF)        // Blue
                 );
                 $iLastRGB = $iRGB;
             } else {
-                $this->sRawBuffer .= ' ';
+                $sRawBuffer .= ' ';
             }
         }
-        $this->sRawBuffer .= "\n";
-        echo $this->sRawBuffer;
+        echo $sRawBuffer . IANSIControl::ATTR_RESET . "\n";
         return $this;
     }
 

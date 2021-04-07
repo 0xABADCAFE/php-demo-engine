@@ -32,7 +32,8 @@ class Factory {
     const TYPES = [
         'NoOp'       => NoOp::class,
         'SimpleLine' => SimpleLine::class,
-        'Toroid'     => Toroid::class
+        'Toroid'     => Toroid::class,
+        'RGBPulse'   => RGBPulse::class
     ];
 
     private static ?self $oInstance = null;

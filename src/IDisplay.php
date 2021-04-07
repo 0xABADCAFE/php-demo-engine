@@ -20,8 +20,6 @@ declare(strict_types=1);
 
 namespace ABadCafe\PDE;
 
-use \SPLFixedArray;
-
 /**
  * IDisplay
  */
@@ -76,24 +74,10 @@ interface IDisplay {
     public function clear() : self;
 
     /**
-     * Use refresh after updating the PixelArray.
-     *
-     * @return self
-     */
-    public function refresh() : self;
-
-    /**
      * Use redraw to just repaint whatever is in the raw buffer.
      *
      * @return self
      */
     public function redraw() : self;
-
-    /**
-     * Get the Pixel Array, aka nOOb mode, lol.
-     *
-     * @return SPLFixedArray
-     */
-    public function getPixels() : SPLFixedArray;
 
 }

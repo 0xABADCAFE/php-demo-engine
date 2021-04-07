@@ -23,21 +23,17 @@ use ABadCafe\PDE;
 use \SPLFixedArray;
 
 /**
- * WhitespaceRGB
+ * BasicRGB
  */
-class WhitespaceRGB implements PDE\IDisplay {
-
-    const
-        INIT  = "\x1b[2J",
-        RESET = "\x1b[2H",
-        C_OFF = "\x1b[?25l",
-        C_ON  = "\x1b[?25h"
-    ;
+class BasicRGB implements PDE\IDisplay, IPixelled {
 
     private int           $iWidth, $iHeight;
     private SPLFixedArray $oPixels, $oNewPixels;
 
     private array $aLineBreaks = [];
+
+    private int   $iTotalRedrawCount = 0;
+    private float $fTotalRedrawTime  = 0.0;
 
     /**
      * @inheritDoc
@@ -59,6 +55,11 @@ class WhitespaceRGB implements PDE\IDisplay {
 
     public function __destruct() {
         echo IANSIControl::CRSR_ON, "\n";
+        printf(
+            "Total Redraw Time: %.3f seconds, %.2f ms/redraw\n",
+            $this->fTotalRedrawTime,
+            1000.0 * $this->fTotalRedrawTime / $this->iTotalRedrawCount
+        );
     }
 
     /**
@@ -111,6 +112,7 @@ class WhitespaceRGB implements PDE\IDisplay {
      * @inheritDoc
      */
     public function redraw() : self {
+        $fMark = microtime(true);
         $sRawBuffer = IANSIControl::CRSR_TOP_LEFT;
         $iLastRGB  = 0;
         $sTemplate = IANSIControl::ATTR_BG_RGB_TPL . ' ';
@@ -129,13 +131,22 @@ class WhitespaceRGB implements PDE\IDisplay {
             }
         }
         echo $sRawBuffer . IANSIControl::ATTR_RESET . "\n";
+        $this->fTotalRedrawTime += microtime(true) - $fMark;
+        ++$this->iTotalRedrawCount;
         return $this;
     }
 
     /**
      * @inheritDoc
      */
-    public function getPixels() : SPLFixedArray {
+    public function getPixelFormat() : int {
+        return self::PIX_FORMAT_XRGB;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getPixelBuffer() : SPLFixedArray {
         return $this->oPixels;
     }
 }

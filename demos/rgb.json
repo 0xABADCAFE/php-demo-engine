@@ -1,13 +1,13 @@
 {
     "display": {
-        "sType": "WhitespaceRGB",
+        "sType": "AsyncRGB",
         "iWidth": 160,
         "iHeight": 50,
         "iMaxFPS": 30
     },
     "routines": {
-        "nop": {
-            "sType": "NoOp",
+        "pulse": {
+            "sType": "RGBPulse",
             "iPriority": 0,
             "aParameters": {
             }
@@ -15,7 +15,7 @@
     },
     "timeline": [{
             "at": 0.0,
-            "on": "nop",
+            "on": "pulse",
             "do": "enable"
         },
         {

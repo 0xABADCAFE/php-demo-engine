@@ -18,31 +18,33 @@
 
 declare(strict_types=1);
 
-namespace ABadCafe\PDE\Routine;
-
-use ABadCafe\PDE;
+namespace ABadCafe\PDE\Display;
+use \SPLFixedArray;
 
 /**
- * Does Nothing
+ * IPixelled
+ *
+ * Interface for displays that model some sort of basic pixelling. This will typically involve a lot of
+ * cheating around with ANSI escape sequences to simulate a (very blocky) bitmap.
  */
-class NoOp implements PDE\IRoutine {
+interface IPixelled {
 
-    use TRoutine;
-
-    const DEFAULT_PARAMETERS = [];
-
-    /**
-     * @inheritDoc
-     */
-    public function setDisplay(PDE\IDisplay $oDisplay) : self {
-        $this->oDisplay = $oDisplay;
-        return $this;
-    }
+    const
+        PIX_FORMAT_XRGB = 1
+    ;
 
     /**
-     * @inheritDoc
+     * Query the format of the pixel. Returns an integer matching one of the PIX_FORMAT_ constants.
+     *
+     * @return int
      */
-    public function render(int $iFrameNumber, float $fTimeIndex) : self {
-        return $this;
-    }
+    public function getPixelFormat() : int;
+
+    /**
+     * Returns a fixed length array of integer values that represent the pixels. The size of the array
+     * is the product of the display's width and height.
+     *
+     * @return SPLFixedArray
+     */
+    public function getPixelBuffer() : SPLFixedArray;
 }

@@ -73,7 +73,6 @@ class Context {
             $this->oDisplay->redraw();
             $fTimeIndex = $this->oRateLimiter->limit();
             $iFrameNumber++;
-            printf("t:%0.4fs f:%d %0.1f fps", $fTimeIndex, $iFrameNumber, $iFrameNumber/$fTimeIndex);
         }
         echo "\n";
     }

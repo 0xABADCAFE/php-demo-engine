@@ -20,19 +20,16 @@ declare(strict_types=1);
 
 namespace ABadCafe\PDE\Display;
 use ABadCafe\PDE;
-use \SPLFixedArray;
 
 /**
  * PlainASCII
+ *
+ * Absolutely basic string buffer for ASCII art only.
  */
-class PlainASCII implements PDE\IDisplay, IRawAccess {
+class PlainASCII implements PDE\IDisplay, IASCIIArt {
 
-    const LUMA  = ' .,-~:;=!*+|%$#@';
-    const MAXRL = 15;
-
-    private int           $iWidth, $iHeight;
-    private string        $sRawBuffer, $sNewRawBuffer;
-    private SPLFixedArray $oPixels, $oNewPixels;
+    private int     $iWidth, $iHeight, $iMaxLuma = self::DEF_MAX_LUMA;
+    private string  $sRawBuffer, $sNewRawBuffer, $sLumaChars = self::DEF_LUMA_CHAR;
 
     /**
      * @inheritDoc
@@ -43,8 +40,6 @@ class PlainASCII implements PDE\IDisplay, IRawAccess {
         }
         $this->iWidth        = $iWidth;
         $this->iHeight       = $iHeight;
-        $this->oPixels       = clone // drop through
-        $this->oNewPixels    = SPLFixedArray::fromArray(array_fill(0, $iWidth * $iHeight, 0));
         $this->sRawBuffer    = // drop through
         $this->sNewRawBuffer = str_repeat(str_repeat(' ', $iWidth) . "\n", $iHeight);
         $this->reset();
@@ -85,7 +80,6 @@ class PlainASCII implements PDE\IDisplay, IRawAccess {
      * @inheritDoc
      */
     public function clear() : self {
-        $this->oPixels    = clone $this->oNewPixels;
         $this->sRawBuffer = $this->sNewRawBuffer;
         return $this;
     }
@@ -93,47 +87,40 @@ class PlainASCII implements PDE\IDisplay, IRawAccess {
     /**
      * @inheritDoc
      */
-    public function refresh() : self {
-        $i = 0;
-        foreach ($this->oPixels as $j => $iValue) {
-            if ($j && 0 == ($j % $this->iWidth)) {
-                $i++;
-            }
-            $this->sRawBuffer[$i++] = self::LUMA[($iValue >> 4) & 15];
-        }
-        return $this->redraw();
-    }
-
-    /**
-     * @inheritDoc
-     */
     public function redraw() : self {
-        echo IANSIControl::CRSR_TOP_LEFT, $this->sRawBuffer;
+        echo IANSIControl::CRSR_TOP_LEFT, $this->sRawBuffer, "\n";
         return $this;
     }
 
     /**
      * @inheritDoc
      */
-    public function getPixels() : SPLFixedArray {
-        return $this->oPixels;
-    }
-
-    public function getRawLuma() : string {
-        return self::LUMA;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function &getRaw() : string {
+    public function &getCharacterBuffer() : string {
         return $this->sRawBuffer;
     }
 
+    public function getLuminanceCharacters() : string {
+        return $this->sLumaChars;
+    }
+
     /**
      * @inheritDoc
      */
-    public function getMaxRawLuma() : int {
-        return self::MAXRL;
+    public function getMaxLuminance() : int {
+        return $this->iMaxLuma;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setLuminanceCharacters(string $sLumaChars) : self {
+        $iLength = strlen($sLumaChars);
+
+        if ($iLength < 2) {
+            throw new \LengthException();
+        }
+        $this->sLumaChars = $sLumaChars;
+        $this->iMaxLuma   = $iLength - 1;
+        return $this;
     }
 }

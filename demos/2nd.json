@@ -1,0 +1,88 @@
+{
+    "display": {
+        "sType": "AsyncRGB",
+        "iWidth": 160,
+        "iHeight": 50,
+        "iMaxFPS": 30
+    },
+    "routines": {
+        "lines": {
+            "sType": "SimpleLine",
+            "iPriority": 1,
+            "aParameters": {
+                "iSpacing": 1,
+                "iRate": 16,
+                "sFill": "_"
+            }
+        },
+        "doughnut": {
+            "sType": "Toroid",
+            "iPriority": 2,
+            "aParameters": {
+                "fMinLuma": 0.0,
+                "fLumaFactor": 0.0
+            }
+        },
+        "pulse": {
+            "sType": "RGBPulse",
+            "iPriority": 0,
+            "aParameters": {
+            }
+        }
+    },
+    "timeline": [{
+            "at": 0.0,
+            "on": "lines",
+            "do": "enable"
+        },
+        {
+            "at": 1.0,
+            "on": "lines",
+            "do": "update",
+            "aParameters": {
+                "iSpacing": 2
+            }
+        },
+        {
+            "at": 2.0,
+            "on": "lines",
+            "do": "update",
+            "aParameters": {
+                "iSpacing": 3
+            }
+        },
+        {
+            "at": 2.0,
+            "on": "doughnut",
+            "do": "enable"
+        },
+        {
+            "at": 3.0,
+            "on": "lines",
+            "do": "update",
+            "aParameters": {
+                "iRate": 2
+            }
+        },
+        {
+            "at": 4.0,
+            "on": "doughnut",
+            "do": "update",
+            "aParameters": {
+                "fMinLuma": 1.0,
+                "fLumaFactor": 0.666
+            }
+        },
+
+        {
+            "at": 5.0,
+            "on": "pulse",
+            "do": "enable"
+        },
+
+        {
+            "at": 10.0,
+            "do": "end"
+        }
+    ]
+}

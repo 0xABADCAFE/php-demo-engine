@@ -71,8 +71,8 @@ class Toroid implements PDE\IRoutine {
         $this->iArea    = $oDisplay->getWidth() * $oDisplay->getHeight();
 
         // Brightness releated
-        $this->iMaxLuma = $oDisplay->getMaxRawLuma();
-        $this->sLumaLUT = $oDisplay->getRawLuma();
+        $this->iMaxLuma = $oDisplay->getMaxLuminance();
+        $this->sLumaLUT = $oDisplay->getLuminanceCharacters();
         return $this;
     }
 
@@ -80,13 +80,13 @@ class Toroid implements PDE\IRoutine {
      * @inheritDoc
      */
     public function render(int $iFrameNumber, float $fTimeIndex) : self {
-        if ($this->bEnabled) {
+        if ($this->bEnabled && $this->oDisplay instanceof PDE\Display\IASCIIArt) {
             $fSinAxis1Rot  = sin($this->oParameters->fAxis1Rotation);
             $fCosAxis1Rot  = cos($this->oParameters->fAxis1Rotation);
             $fCosAxis2Rot  = cos($this->oParameters->fAxis2Rotation);
             $fSinAxis2Rot  = sin($this->oParameters->fAxis2Rotation);
             $aDepthBuffer  = array_fill(0, $this->iArea, 0.0);
-            $sDrawBuffer   = &$this->oDisplay->getRaw();
+            $sDrawBuffer   = &$this->oDisplay->getCharacterBuffer();
 
             // This is to do the dissolve into rings effect
             $fToroidStep = self::EIGHTH_PI * (1.0 - cos($fTimeIndex)) + $this->oParameters->fToroidStep;

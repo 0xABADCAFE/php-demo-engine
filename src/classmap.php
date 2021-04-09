@@ -12,6 +12,7 @@ const CLASS_MAP = [
   'ABadCafe\\PDE\\Display\\Factory' => '/display/Factory.php',
   'ABadCafe\\PDE\\Display\\BasicRGB' => '/display/BasicRGB.php',
   'ABadCafe\\PDE\\Display\\AsyncRGB' => '/display/AsyncRGB.php',
+  'ABadCafe\\PDE\\Display\\ICustomChars' => '/display/ICustomChars.php',
   'ABadCafe\\PDE\\Routine\\NoOp' => '/routine/NoOp.php',
   'ABadCafe\\PDE\\Routine\\SimpleLine' => '/routine/SimpleLine.php',
   'ABadCafe\\PDE\\Routine\\RGBPulse' => '/routine/RGBPulse.php',

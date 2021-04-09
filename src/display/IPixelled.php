@@ -30,11 +30,39 @@ use \SPLFixedArray;
 interface IPixelled {
 
     const
-        PIX_FORMAT_XRGB = 1
+        /**
+         * LUT : Background character cell only
+         */
+        PIX_LUT = 0,
+
+        /**
+         * ASCII + Forground LUT + Background Black
+         */
+        PIX_ASCII_LUT = 1,
+
+        /**
+         * ASCII + Forground LUT + Background LUT
+         */
+        PIX_ASCII_LUT2 = 2,
+
+        /**
+         * RGB : Background character cell only
+         */
+        PIX_RGB = 3,
+
+        /**
+         * ASCII + Forground RGB + Background Black
+         */
+        PIX_ASCII_RGB = 4,
+
+        /**
+         * ASCII + Forground RGB + Background RGB
+         */
+        PIX_ASCII_RGB2 = 5
     ;
 
     /**
-     * Query the format of the pixel. Returns an integer matching one of the PIX_FORMAT_ constants.
+     * Query the format of the pixel. Returns an integer matching one of the PIX_ constants.
      *
      * @return int
      */

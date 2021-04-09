@@ -146,7 +146,7 @@ class AsyncRGB implements PDE\IDisplay, IPixelled, IASCIIArt {
      * @inheritDoc
      */
     public function getPixelFormat() : int {
-        return self::PIX_FORMAT_XRGB;
+        return self::PIX_ASCII_RGB2;
     }
 
     /**
@@ -216,21 +216,24 @@ class AsyncRGB implements PDE\IDisplay, IPixelled, IASCIIArt {
             $fMark      = microtime(true);
             $aPixels    = unpack('V*', $sInput);
             $sRawBuffer = IANSIControl::CRSR_TOP_LEFT;
-            $iLastCRGB  = 0;
+            $iLastRGB   = 0;
             $i          = 0;
             foreach ($aPixels as $iCRGB) {
                 $sRawBuffer .= $this->aLineBreaks[$i++] ?? '';
-                //if ($iCRGB !== $iLastCRGB) {
+                $iRGB        = $iCRGB & 0xFFFFFF;
+                $iCharCode   = $iCRGB >> 24;
+                $sChar       = ICustomChars::MAP[$iCharCode] ?? chr($iCharCode);
+                if ($iRGB !== $iLastRGB) {
                     $sRawBuffer .= sprintf(
                         $sTemplate,
-                        ($iCRGB >> 16) & 0xFF, // Red
-                        ($iCRGB >> 8) & 0xFF,  // Green
-                        ($iCRGB & 0xFF)        // Blue
-                    ) . chr($iCRGB >> 24);
-                //    $iLastCRGB = $iCRGB;
-                //} else {
-                //    $sRawBuffer .= chr($iLastCRGB >> 24);
-                //}
+                        ($iRGB >> 16) & 0xFF, // Red
+                        ($iRGB >> 8) & 0xFF,  // Green
+                        ($iRGB & 0xFF)        // Blue
+                    ) . $sChar;
+                    $iLastRGB = $iRGB;
+                } else {
+                    $sRawBuffer .= $sChar;
+                }
             }
             echo $sRawBuffer . IANSIControl::ATTR_RESET . "\n";
             flush();

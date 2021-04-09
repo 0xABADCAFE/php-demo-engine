@@ -20,7 +20,8 @@
             "iPriority": 2,
             "aParameters": {
                 "fMinLuma": 0.0,
-                "fLumaFactor": 0.0
+                "fLumaFactor": 0.0,
+                "iDrawMode":2
             }
         },
         "pulse": {
@@ -52,7 +53,7 @@
             }
         },
         {
-            "at": 2.0,
+            "at": 2.5,
             "on": "doughnut",
             "do": "enable"
         },
@@ -61,7 +62,8 @@
             "on": "lines",
             "do": "update",
             "aParameters": {
-                "iRate": 2
+                "iRate": 2,
+                "sFill": "________-__--"
             }
         },
         {
@@ -70,18 +72,85 @@
             "do": "update",
             "aParameters": {
                 "fMinLuma": 1.0,
-                "fLumaFactor": 0.666
+                "fLumaFactor": 0.7
             }
         },
-
+        {
+            "at": 4.5,
+            "on": "lines",
+            "do": "update",
+            "aParameters": {
+                "sFill": "___-_____   ___#__%81"
+            }
+        },
         {
             "at": 5.0,
             "on": "pulse",
             "do": "enable"
         },
+        {
+            "at": 7.0,
+            "on": "lines",
+            "do": "update",
+            "aParameters": {
+                "sFill": "~"
+            }
+        },
 
         {
-            "at": 10.0,
+            "at": 12.0,
+            "on": "doughnut",
+            "do": "update",
+            "aParameters": {
+                "iDrawMode": 16
+            }
+        },
+
+        {
+            "at": 14.75,
+            "on": "doughnut",
+            "do": "update",
+            "aParameters": {
+                "iDrawMode": 32,
+                "fLumaFactor": 0.8
+            }
+        },
+
+
+        {
+            "at": 18.5,
+            "on": "doughnut",
+            "do": "update",
+            "aParameters": {
+                "iDrawMode": 1,
+                "fLumaFactor": 0.8
+            }
+        },
+
+        {
+            "at": 18.5,
+            "on": "pulse",
+            "do": "disable"
+        },
+
+        {
+            "at": 18.5,
+            "on": "lines",
+            "do": "update",
+            "aParameters": {
+                "sFill": "~~~ #____   __##__%81  ."
+            }
+        },
+
+        {
+            "at": 20.0,
+            "on": "lines",
+            "do": "disable"
+        },
+
+
+        {
+            "at": 22.0,
             "do": "end"
         }
     ]

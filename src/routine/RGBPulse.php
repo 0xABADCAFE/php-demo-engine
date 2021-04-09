@@ -68,4 +68,11 @@ class RGBPulse implements PDE\IRoutine {
         }
         return $this;
     }
+
+    /**
+     * @inheritDoc
+     */
+    protected function parameterChange() {
+
+    }
 }

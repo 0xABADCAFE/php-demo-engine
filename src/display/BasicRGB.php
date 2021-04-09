@@ -140,7 +140,7 @@ class BasicRGB implements PDE\IDisplay, IPixelled {
      * @inheritDoc
      */
     public function getPixelFormat() : int {
-        return self::PIX_FORMAT_XRGB;
+        return self::PIX_RGB;
     }
 
     /**

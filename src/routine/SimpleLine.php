@@ -37,17 +37,11 @@ class SimpleLine implements PDE\IRoutine {
         'sFill'    => '_'
     ];
 
-    private string $sBlank  = '';
-    private string $sFilled = '';
-
     /**
      * @inheritDoc
      */
     public function setDisplay(PDE\IDisplay $oDisplay) : self {
         $this->oDisplay = $oDisplay;
-        $iWidth = $oDisplay->getWidth();
-        $this->sBlank  = str_repeat(' ', $iWidth) . "\n";
-        $this->sFilled = str_repeat($this->oParameters->sFill, $iWidth) . "\n";
         return $this;
     }
 
@@ -58,16 +52,31 @@ class SimpleLine implements PDE\IRoutine {
         if ($this->bEnabled && $this->oDisplay instanceof PDE\Display\IASCIIArt) {
             $sDrawBuffer = &$this->oDisplay->getCharacterBuffer();
             $sDrawBuffer = '';
+
+            $iWidth = $this->oDisplay->getWidth();
+            $sBlank  = str_repeat(' ', $iWidth) . "\n";
+
+            $sFill   = urldecode($this->oParameters->sFill);
+
+            $sFilled = str_repeat($sFill[$iFrameNumber % strlen($sFill)], $iWidth) . "\n";
+
             $iLineCount = $this->oDisplay->getHeight();
             $iFrameNumber >>= $this->oParameters->iRate;
             while ($iLineCount--) {
                 if (0 == ($iFrameNumber++ % $this->oParameters->iSpacing)) {
-                    $sDrawBuffer .= $this->sFilled;
+                    $sDrawBuffer .= $sFilled;
                 } else {
-                    $sDrawBuffer .= $this->sBlank;
+                    $sDrawBuffer .= $sBlank;
                 }
             }
         }
         return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function parameterChange() {
+
     }
 }

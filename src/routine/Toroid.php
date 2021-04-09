@@ -21,6 +21,7 @@ declare(strict_types=1);
 namespace ABadCafe\PDE\Routine;
 
 use ABadCafe\PDE;
+use \SPLFixedArray;
 
 /**
  * Toroid
@@ -37,6 +38,27 @@ class Toroid implements PDE\IRoutine {
         EIGHTH_PI      = 0.125 * M_PI
     ;
 
+    const
+        DRAW_ASCII_GREY         = 1,
+        DRAW_ASCII_GREY_DARK_BG = 2,
+        DRAW_ASCII_RGB          = 4,
+        DRAW_ASCII_RGB_DARK_BG  = 8,
+        DRAW_BLOCK_GREY         = 16,
+        DRAW_BLOCK_RGB          = 32,
+
+        MASK_NEEDS_ASCII_BUFFER = 15,
+        MASK_NEEDS_PIX_BUFFER   = 62
+    ;
+
+    const PLOT_FUNCTIONS = [
+        self::DRAW_ASCII_GREY         => 'plotASCIIGrey',
+        self::DRAW_ASCII_GREY_DARK_BG => 'plotASCIIGreyDarkenBG',
+        self::DRAW_ASCII_RGB          => 'plotASCIIRGB',
+        self::DRAW_ASCII_RGB_DARK_BG  => 'plotASCIIRGBDarkenBG',
+        self::DRAW_BLOCK_GREY         => 'plotBlockGrey',
+        self::DRAW_BLOCK_RGB          => 'plotBlockRGB'
+    ];
+
     const DEFAULT_PARAMETERS = [
         'fAxis1Rotation' => 0.0,
         'fAxis2Rotation' => 0.0,
@@ -47,32 +69,64 @@ class Toroid implements PDE\IRoutine {
         'fRenderXScale'  => 64.0,
         'fRenderYScale'  => 32.0,
         'fMinLuma'       => 0.0,
-        'fLumaFactor'    => 0.666
+        'fLumaFactor'    => 0.666,
+        'iDrawMode'      => self::DRAW_ASCII_GREY
     ];
 
 
     /**
      * Runtime properties extracted from the IDisplay instance.
      */
-    private int    $iCentreX, $iCentreY, $iSpan, $iMaxX, $iMaxY, $iArea, $iMaxLuma;
-    private string $sLumaLUT;
+    private int $iCentreX, $iCentreY, $iSpan, $iMaxX, $iMaxY, $iArea, $iDrawMask;
+
+
+    /**
+     * ASCII specific mode rendering facts
+     */
+    private int    $iCharMaxLuma;
+    private string $sCharDrawBuffer, $sLumaCharLUT;
+
+    private ?SPLFixedArray $oPixelBuffer = null;
+
+    /**
+     * Pixel specific mode rendering facts
+     */
+    private array $aPalette = [
+        0, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0x3333AA, 0x6666BB, 0x9999CC, 0xCCCCDD, 0xEEEEEE, 0xFFFFFF
+    ];
+    private int $iMaxPallete = 15;
 
     /**
      * @inheritDoc
      */
     public function setDisplay(PDE\IDisplay $oDisplay) : self {
-        $this->oDisplay = $oDisplay;
+        $this->oDisplay  = $oDisplay;
         // Dimension related
-        $this->iCenterX = $oDisplay->getWidth() >> 1;
-        $this->iCenterY = $oDisplay->getHeight() >> 1;
-        $this->iMaxX    = $oDisplay->getWidth()-1;
-        $this->iMaxY    = $oDisplay->getHeight()-1;
-        $this->iSpan    = $oDisplay->getSpanWidth();
-        $this->iArea    = $oDisplay->getWidth() * $oDisplay->getHeight();
+        $this->iCenterX  = $oDisplay->getWidth() >> 1;
+        $this->iCenterY  = $oDisplay->getHeight() >> 1;
+        $this->iMaxX     = $oDisplay->getWidth()-1;
+        $this->iMaxY     = $oDisplay->getHeight()-1;
+        $this->iSpan     = $oDisplay->getSpanWidth();
+        $this->iArea     = $oDisplay->getWidth() * $oDisplay->getHeight();
+        $this->iDrawMask = 0;
 
-        // Brightness releated
-        $this->iMaxLuma = $oDisplay->getMaxLuminance();
-        $this->sLumaLUT = $oDisplay->getLuminanceCharacters();
+        // Start with the most basic
+        if ($oDisplay instanceof PDE\Display\IASCIIArt) {
+            $this->iDrawMask    = self::DRAW_ASCII_GREY;
+            $this->iCharMaxLuma = $this->oDisplay->getMaxLuminance();
+            $this->sLumaCharLUT = $this->oDisplay->getLuminanceCharacters();
+        }
+
+        // Pixel type behaviour?
+        if ($oDisplay instanceof PDE\Display\IPixelled) {
+            $this->iDrawMask |= self::DRAW_BLOCK_GREY | self::DRAW_BLOCK_RGB;
+
+            // Both available?
+            if ($this->iDrawMask & self::DRAW_ASCII_GREY) {
+                $this->iDrawMask |= self::DRAW_ASCII_GREY_DARK_BG | self::DRAW_ASCII_RGB | self::DRAW_ASCII_RGB_DARK_BG;
+            }
+        }
+
         return $this;
     }
 
@@ -80,18 +134,28 @@ class Toroid implements PDE\IRoutine {
      * @inheritDoc
      */
     public function render(int $iFrameNumber, float $fTimeIndex) : self {
-        if ($this->bEnabled && $this->oDisplay instanceof PDE\Display\IASCIIArt) {
-            $fSinAxis1Rot  = sin($this->oParameters->fAxis1Rotation);
+        $iDrawMode = $this->iDrawMask & $this->oParameters->iDrawMode;
+
+        if ($this->bEnabled && $iDrawMode) {
+
+            if ($iDrawMode & self::MASK_NEEDS_PIX_BUFFER) {
+                $this->oPixelBuffer = $this->oDisplay->getPixelBuffer();
+            }
+            if ($iDrawMode & self::MASK_NEEDS_ASCII_BUFFER) {
+                $this->sCharDrawBuffer = &$this->oDisplay->getCharacterBuffer();
+            }
+            $cPlotPixel = [$this, self::PLOT_FUNCTIONS[$iDrawMode]];
+
             $fCosAxis1Rot  = cos($this->oParameters->fAxis1Rotation);
+            $fSinAxis1Rot  = sin($this->oParameters->fAxis1Rotation);
             $fCosAxis2Rot  = cos($this->oParameters->fAxis2Rotation);
             $fSinAxis2Rot  = sin($this->oParameters->fAxis2Rotation);
             $aDepthBuffer  = array_fill(0, $this->iArea, 0.0);
-            $sDrawBuffer   = &$this->oDisplay->getCharacterBuffer();
 
             // This is to do the dissolve into rings effect
             $fToroidStep = self::EIGHTH_PI * (1.0 - cos($fTimeIndex)) + $this->oParameters->fToroidStep;
-            $fLuma = $this->oParameters->fLumaFactor * $this->iMaxLuma;
 
+            $iWidth = $this->iMaxX + 1;
             for ($fPoloid = 0.0; $fPoloid < self::TWICE_PI; $fPoloid += $this->oParameters->fPoloidStep) {
                 $fCosPoloid = cos($fPoloid);
                 $fSinPoloid = sin($fPoloid);
@@ -101,8 +165,12 @@ class Toroid implements PDE\IRoutine {
                     $fTemp1     = $fCosPoloid + 2.0;
                     $fDepth     = 1.0 / ($fSinToroid * $fTemp1 * $fSinAxis1Rot + $fSinPoloid * $fCosAxis1Rot + 5.0);
                     $fTemp2     = $fSinToroid * $fTemp1 * $fCosAxis1Rot - $fSinPoloid * $fSinAxis1Rot;
-                    $iXPos      = $this->iCenterX + (int)(
-                        $this->oParameters->fRenderXScale * $fDepth * ($fCosToroid * $fTemp1 * $fCosAxis2Rot - $fTemp2 * $fSinAxis2Rot)
+
+                    // Screen coordinate calculation
+                    $iXPos = $this->iCenterX + (int)(
+                        $this->oParameters->fRenderXScale * $fDepth * (
+                            $fCosToroid * $fTemp1 * $fCosAxis2Rot - $fTemp2 * $fSinAxis2Rot
+                        )
                     );
 
                     // Clip X
@@ -111,7 +179,9 @@ class Toroid implements PDE\IRoutine {
                     }
 
                     $iYPos = $this->iCenterY + (int)(
-                        $this->oParameters->fRenderYScale * $fDepth * ($fCosToroid * $fTemp1 * $fSinAxis2Rot + $fTemp2 * $fCosAxis2Rot)
+                        $this->oParameters->fRenderYScale * $fDepth * (
+                            $fCosToroid * $fTemp1 * $fSinAxis2Rot + $fTemp2 * $fCosAxis2Rot
+                        )
                     );
 
                     // Clip Y
@@ -119,24 +189,20 @@ class Toroid implements PDE\IRoutine {
                         continue;
                     }
 
-                    $iBufferPos = $iXPos + $this->iSpan * $iYPos;
+                    $iBufferPos = $iXPos + $iWidth * $iYPos;
 
                     // If the depth test passes, calculate the luminance of this pixel
                     if (
                         $fDepth > $aDepthBuffer[$iBufferPos]
                     ) {
                         $aDepthBuffer[$iBufferPos] = $fDepth;
-                        $iLuminance = (int)(
-                            $this->oParameters->fMinLuma +
-                            $fLuma * max(
-                                ($fSinPoloid * $fSinAxis1Rot - $fSinToroid * $fCosPoloid * $fCosAxis1Rot) * $fCosAxis2Rot -
-                                $fSinToroid * $fCosPoloid * $fSinAxis1Rot -
-                                $fSinPoloid * $fCosAxis1Rot -
-                                $fCosToroid * $fCosPoloid * $fSinAxis2Rot,
-                                0
-                            )
-                        );
-                        $sDrawBuffer[$iBufferPos] = $this->sLumaLUT[$iLuminance];
+                        $cPlotPixel($iBufferPos, $iXPos, $iYPos, $this->oParameters->fLumaFactor * max(
+                            ($fSinPoloid * $fSinAxis1Rot - $fSinToroid * $fCosPoloid * $fCosAxis1Rot) * $fCosAxis2Rot -
+                            $fSinToroid * $fCosPoloid * $fSinAxis1Rot -
+                            $fSinPoloid * $fCosAxis1Rot -
+                            $fCosToroid * $fCosPoloid * $fSinAxis2Rot,
+                            0
+                        ));
                     }
                 }
             }
@@ -144,5 +210,51 @@ class Toroid implements PDE\IRoutine {
             $this->oParameters->fAxis2Rotation += $this->oParameters->fAxis2Step;
         }
         return $this;
+    }
+
+    private function plotASCIIGrey(int $iBufferPos, int $iXPos, int $iYPos, float $fLuma) {
+        $iLuminance = (int)(
+            $this->oParameters->fMinLuma +
+            $this->oParameters->fLumaFactor * $fLuma * $this->iCharMaxLuma
+        );
+        $this->sCharDrawBuffer[$iXPos + $this->iSpan * $iYPos] = $this->sLumaCharLUT[$iLuminance];
+    }
+
+    private function plotASCIIGreyDarkenBG(int $iBufferPos, int $iXPos, int $iYPos, float $fLuma) {
+        $this->plotASCIIGrey($iBufferPos, $iXPos, $iYPos, $fLuma);
+        $iHalfRGB  = ($this->oPixelBuffer[$iBufferPos] >> 1) & 0x007F7F7F;
+        $iQtrRGB   = ($iHalfRGB >> 1) & 0x007F7F7F;
+        $this->oPixelBuffer[$iBufferPos] = $iHalfRGB + $iQtrRGB;
+    }
+
+    private function plotASCIIRGB(int $iBufferPos, int $iXPos, int $iYPos, float $fLuma) {
+
+    }
+
+    private function plotASCIIRGBDarkenBG(int $iBufferPos, int $iXPos, int $iYPos, float $fLuma) {
+
+    }
+
+    private function plotBlockGrey(int $iBufferPos, $iXPos, int $iYPos, float $fLuma) {
+        $iLuminance = (int)(
+            $this->oParameters->fMinLuma +
+            $this->oParameters->fLumaFactor * $fLuma * 255
+        );
+        $this->oPixelBuffer[$iBufferPos] = $iLuminance << 16 | $iLuminance << 8 | $iLuminance;
+    }
+
+    private function plotBlockRGB(int $iBufferPos, int $iXPos, int $iYPos, float $fLuma) {
+        $iPaletteIndex = (int)(
+            $this->oParameters->fMinLuma +
+            $this->oParameters->fLumaFactor * $fLuma * $this->iMaxPallete
+        );
+        $this->oPixelBuffer[$iBufferPos] = $this->aPalette[$iPaletteIndex];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function parameterChange() {
+
     }
 }

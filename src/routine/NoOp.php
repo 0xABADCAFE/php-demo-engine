@@ -45,4 +45,11 @@ class NoOp implements PDE\IRoutine {
     public function render(int $iFrameNumber, float $fTimeIndex) : self {
         return $this;
     }
+
+    /**
+     * @inheritDoc
+     */
+    protected function parameterChange() {
+
+    }
 }

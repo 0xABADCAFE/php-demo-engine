@@ -63,11 +63,18 @@ trait TRoutine {
      * value is first type cooerced then assigned.
      */
     public function setParameters(array $aParameters) : self {
+        $bChanged = false;
         foreach ($aParameters as $sParameterName => $mParameterValue) {
             if (isset(self::DEFAULT_PARAMETERS[$sParameterName])) {
                 settype($mParameterValue, gettype(self::DEFAULT_PARAMETERS[$sParameterName]));
-                $this->oParameters->{$sParameterName} = $mParameterValue;
+                if ($mParameterValue != $this->oParameters->{$sParameterName}) {
+                    $this->oParameters->{$sParameterName} = $mParameterValue;
+                    $bChanged = true;
+                }
             }
+        }
+        if ($bChanged) {
+            $this->parameterChange();
         }
         return $this;
     }
@@ -90,4 +97,8 @@ trait TRoutine {
         return $this;
     }
 
+    /**
+     * Hook function called if any of the parameters have changed during a call to SetParameters
+     */
+    protected abstract function parameterChange();
 }

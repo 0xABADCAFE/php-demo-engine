@@ -31,6 +31,8 @@ class PlainASCII implements PDE\IDisplay, IASCIIArt {
     private int     $iWidth, $iHeight, $iMaxLuma = self::DEF_MAX_LUMA;
     private string  $sRawBuffer, $sNewRawBuffer, $sLumaChars = self::DEF_LUMA_CHAR;
 
+    private static array $aBlockMapSearch = [], $aBlockMapReplace = [];
+
     /**
      * @inheritDoc
      */
@@ -42,7 +44,18 @@ class PlainASCII implements PDE\IDisplay, IASCIIArt {
         $this->iHeight       = $iHeight;
         $this->sRawBuffer    = // drop through
         $this->sNewRawBuffer = str_repeat(str_repeat(' ', $iWidth) . "\n", $iHeight);
+
+        if (empty(self::$aBlockMapSearch)) {
+            self::$aBlockMapSearch  = array_map('chr', array_keys(ICustomChars::MAP));
+            self::$aBlockMapReplace = array_values(ICustomChars::MAP);
+
+        }
+
         $this->reset();
+    }
+
+    public function __destruct() {
+        echo IANSIControl::CRSR_ON, "\n";
     }
 
     /**
@@ -51,7 +64,7 @@ class PlainASCII implements PDE\IDisplay, IASCIIArt {
     public function reset() : self {
         printf(IANSIControl::TERM_SIZE_TPL, $this->iHeight + 2, $this->iWidth + 1);
         $this->clear();
-        echo IANSIControl::TERM_CLEAR;
+        echo IANSIControl::TERM_CLEAR . IANSIControl::CRSR_OFF;
         return $this;
     }
 
@@ -88,7 +101,12 @@ class PlainASCII implements PDE\IDisplay, IASCIIArt {
      * @inheritDoc
      */
     public function redraw() : self {
-        echo IANSIControl::CRSR_TOP_LEFT, $this->sRawBuffer, "\n";
+        echo IANSIControl::CRSR_TOP_LEFT .
+            str_replace(
+                self::$aBlockMapSearch,
+                self::$aBlockMapReplace,
+                $this->sRawBuffer
+            );
         return $this;
     }
 
@@ -99,6 +117,9 @@ class PlainASCII implements PDE\IDisplay, IASCIIArt {
         return $this->sRawBuffer;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getLuminanceCharacters() : string {
         return $this->sLumaChars;
     }

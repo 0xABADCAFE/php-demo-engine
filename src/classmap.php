@@ -19,6 +19,7 @@ const CLASS_MAP = [
   'ABadCafe\\PDE\\Routine\\Toroid' => '/routine/Toroid.php',
   'ABadCafe\\PDE\\Routine\\TRoutine' => '/routine/TRoutine.php',
   'ABadCafe\\PDE\\Routine\\Factory' => '/routine/Factory.php',
+  'ABadCafe\\PDE\\Routine\\StaticNoise' => '/routine/StaticNoise.php',
   'ABadCafe\\PDE\\System\\ILoader' => '/system/ILoader.php',
   'ABadCafe\\PDE\\System\\IRateLimiter' => '/system/IRateLimiter.php',
   'ABadCafe\\PDE\\System\\Context' => '/system/Context.php',

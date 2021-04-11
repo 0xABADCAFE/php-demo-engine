@@ -1,0 +1,251 @@
+{
+    "display": {
+        "sType": "AsyncRGB",
+        "iWidth": 160,
+        "iHeight": 50,
+        "iMaxFPS": 30
+    },
+    "routines": {
+        "lines": {
+            "sType": "SimpleLine",
+            "iPriority": 1,
+            "aParameters": {
+                "iSpacing": 1,
+                "iRate": 16,
+                "sFill": "_"
+            }
+        },
+        "doughnut": {
+            "sType": "Toroid",
+            "iPriority": 2,
+            "aParameters": {
+                "fMinLuma": 0.0,
+                "fLumaFactor": 0.0,
+                "iDrawMode":2
+            }
+        },
+        "pulse": {
+            "sType": "RGBPulse",
+            "iPriority": 0,
+            "aParameters": {
+            }
+        },
+        "trails": {
+            "sType": "RGBPersistence",
+            "iPriority": 10,
+            "aParameters": {
+                "iStrength":1
+            }
+        },
+        "static": {
+            "sType": "StaticNoise",
+            "iPriority": 8,
+            "aParameters": {
+            }
+        }
+    },
+    "timeline": [{
+            "at": 0.0,
+            "on": "lines",
+            "do": "enable"
+        },
+        {
+            "at": 1.0,
+            "on": "lines",
+            "do": "update",
+            "aParameters": {
+                "iSpacing": 2
+            }
+        },
+        {
+            "at": 2.0,
+            "on": "lines",
+            "do": "update",
+            "aParameters": {
+                "iSpacing": 3
+            }
+        },
+        {
+            "at": 2.5,
+            "on": "doughnut",
+            "do": "enable"
+        },
+        {
+            "at": 3.0,
+            "on": "lines",
+            "do": "update",
+            "aParameters": {
+                "iRate": 2,
+                "sFill": "________-__--"
+            }
+        },
+        {
+            "at": 4.0,
+            "on": "doughnut",
+            "do": "update",
+            "aParameters": {
+                "fMinLuma": 1.0,
+                "fLumaFactor": 0.7
+            }
+        },
+        {
+            "at": 4.5,
+            "on": "lines",
+            "do": "update",
+            "aParameters": {
+                "sFill": "___-_____   ___#__%81"
+            }
+        },
+        {
+            "at": 5.0,
+            "on": "pulse",
+            "do": "enable"
+        },
+        {
+            "at": 7.0,
+            "on": "lines",
+            "do": "update",
+            "aParameters": {
+                "sFill": "~"
+            }
+        },
+
+        {
+            "at": 12.0,
+            "on": "doughnut",
+            "do": "update",
+            "aParameters": {
+                "iDrawMode": 16
+            }
+        },
+
+        {
+            "at": 14.75,
+            "on": "doughnut",
+            "do": "update",
+            "aParameters": {
+                "iDrawMode": 32,
+                "fLumaFactor": 0.8
+            }
+        },
+
+
+        {
+            "at": 18.5,
+            "on": "doughnut",
+            "do": "update",
+            "aParameters": {
+                "iDrawMode": 1,
+                "fLumaFactor": 0.8
+            }
+        },
+
+        {
+            "at": 18.5,
+            "on": "pulse",
+            "do": "disable"
+        },
+
+        {
+            "at": 18.5,
+            "on": "lines",
+            "do": "update",
+            "aParameters": {
+                "sFill": "~~~ #____   __##__%81  ."
+            }
+        },
+
+        {
+            "at": 20.0,
+            "on": "lines",
+            "do": "disable"
+        },
+
+        {
+            "at": 20.5,
+            "on": "static",
+            "do": "enable"
+        },
+
+        {
+            "at": 20.75,
+            "on": "static",
+            "do": "disable"
+        },
+        {
+            "at": 20.75,
+            "on": "pulse",
+            "do": "enable"
+        },
+        {
+            "at": 20.75,
+            "on": "doughnut",
+            "do": "update",
+            "aParameters": {
+                "iDrawMode": 32,
+                "fLumaFactor": 0.8
+            }
+        },
+        {
+            "at": 20.75,
+            "on": "trails",
+            "do": "enable"
+        },
+
+        {
+            "at": 25.0,
+            "on": "trails",
+            "do": "update",
+            "aParameters": {
+                "iStrenght": 2
+            }
+        },
+
+        {
+            "at": 25.0,
+            "on": "lines",
+            "do": "update",
+            "aParameters": {
+                "sFill": "~~~ #____   __##__%81  ."
+            }
+        },
+
+        {
+            "at": 25.0,
+            "on": "lines",
+            "do": "enable"
+        },
+
+        {
+            "at": 27.0,
+            "on": "lines",
+            "do": "disable"
+        },
+
+        {
+            "at": 29.75,
+            "on": "pulse",
+            "do": "disable"
+        },
+        {
+            "at": 29.75,
+            "on": "doughnut",
+            "do": "disable"
+        },
+
+        {
+            "at": 29.75,
+            "on": "static",
+            "do": "enable"
+        },
+        {
+            "at": 29.95,
+            "on": "static",
+            "do": "disable"
+        },
+        {
+            "at": 30.0,
+            "do": "end"
+        }
+    ]
+}

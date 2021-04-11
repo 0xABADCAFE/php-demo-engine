@@ -29,11 +29,9 @@ use \SPLFixedArray;
  */
 class BasicRGB extends Base implements IPixelled {
 
-    use TPixelled;
+    use TPixelled, TInstrumented;
 
     private array $aLineBreaks = [];
-    private int   $iTotalRedrawCount = 0;
-    private float $fTotalRedrawTime  = 0.0;
 
     /**
      * @inheritDoc
@@ -41,7 +39,6 @@ class BasicRGB extends Base implements IPixelled {
     public function __construct(int $iWidth, int $iHeight) {
         parent::__construct($iWidth, $iHeight);
         $this->initPixelBuffer($iWidth, $iHeight, self::PIX_RGB);
-
         $aLineBreaks   = range(0, $iWidth * $iHeight, $iWidth);
         unset($aLineBreaks[0]);
         $this->aLineBreaks = array_fill_keys($aLineBreaks, "\n");
@@ -50,11 +47,7 @@ class BasicRGB extends Base implements IPixelled {
 
     public function __destruct() {
         echo IANSIControl::CRSR_ON, "\n";
-        printf(
-            "Total Redraw Time: %.3f seconds, %.2f ms/redraw\n",
-            $this->fTotalRedrawTime,
-            1000.0 * $this->fTotalRedrawTime / $this->iTotalRedrawCount
-        );
+        $this->reportRedraw();
     }
 
     /**
@@ -69,7 +62,7 @@ class BasicRGB extends Base implements IPixelled {
      * @inheritDoc
      */
     public function redraw() : self {
-        $fMark = microtime(true);
+        $this->beginRedraw();
         $sRawBuffer = IANSIControl::CRSR_TOP_LEFT;
         $iLastRGB  = 0;
         $sTemplate = IANSIControl::ATTR_BG_RGB_TPL . ' ';
@@ -87,9 +80,8 @@ class BasicRGB extends Base implements IPixelled {
                 $sRawBuffer .= ' ';
             }
         }
-        echo $sRawBuffer . IANSIControl::ATTR_RESET . "\n";
-        $this->fTotalRedrawTime += microtime(true) - $fMark;
-        ++$this->iTotalRedrawCount;
+        echo $sRawBuffer . IANSIControl::ATTR_RESET;
+        $this->endRedraw();
         return $this;
     }
 }

@@ -30,11 +30,9 @@ use \SPLFixedArray;
  */
 class AsyncRGB extends Base implements IPixelled, IASCIIArt {
 
-    use TASCIIArt, TPixelled;
+    use TASCIIArt, TPixelled, TInstrumented;
 
     private array $aLineBreaks = [];
-    private int   $iTotalRedrawCount = 0;
-    private float $fTotalRedrawTime  = 0.0;
     private array $aSocketPair = [];
 
     /**
@@ -60,12 +58,7 @@ class AsyncRGB extends Base implements IPixelled, IASCIIArt {
     public function __destruct() {
         socket_close($this->aSocketPair[1]);
         echo IANSIControl::CRSR_ON, "\n";
-        printf(
-            "Parent total redraw time: %.3f seconds, %d calls, %.2f ms/redraw\n",
-            $this->fTotalRedrawTime,
-            $this->iTotalRedrawCount,
-            1000.0 * $this->fTotalRedrawTime / $this->iTotalRedrawCount
-        );
+        $this->reportRedraw();
     }
 
     /**
@@ -81,7 +74,7 @@ class AsyncRGB extends Base implements IPixelled, IASCIIArt {
      * @inheritDoc
      */
     public function redraw() : self {
-        $fMark = microtime(true);
+        $this->beginRedraw();
         $j = 0;
         foreach ($this->oPixels as $i => $iRGB) {
             $j += (int)isset($this->aLineBreaks[$i]);
@@ -89,8 +82,7 @@ class AsyncRGB extends Base implements IPixelled, IASCIIArt {
         }
         $sData = pack('V*', ...$this->oPixels);
         socket_write($this->aSocketPair[1], $sData, strlen($sData));
-        $this->fTotalRedrawTime += microtime(true) - $fMark;
-        ++$this->iTotalRedrawCount;
+        $this->endRedraw();
         return $this;
     }
 
@@ -124,7 +116,7 @@ class AsyncRGB extends Base implements IPixelled, IASCIIArt {
         $iExpectSize = $this->iWidth * $this->iHeight * 4;
         $sTemplate   = IANSIControl::ATTR_BG_RGB_TPL;
         while (($sInput = socket_read($this->aSocketPair[0], $iExpectSize, PHP_BINARY_READ))) {
-            $fMark      = microtime(true);
+            $this->beginRedraw();
             $aPixels    = unpack('V*', $sInput);
             $sRawBuffer = IANSIControl::CRSR_TOP_LEFT;
             $iLastRGB   = 0;
@@ -146,18 +138,11 @@ class AsyncRGB extends Base implements IPixelled, IASCIIArt {
                     $sRawBuffer .= $sChar;
                 }
             }
-            echo $sRawBuffer . IANSIControl::ATTR_RESET . "\n";
-            flush();
-            $this->fTotalRedrawTime += microtime(true) - $fMark;
-            ++$this->iTotalRedrawCount;
+            echo $sRawBuffer . IANSIControl::ATTR_RESET;
+            $this->endRedraw();
         }
         socket_close($this->aSocketPair[0]);
-        printf(
-            "Child total redraw time: %.3f seconds, %d calls, %.2f ms/redraw\n",
-            $this->fTotalRedrawTime,
-            $this->iTotalRedrawCount,
-            1000.0 * $this->fTotalRedrawTime / $this->iTotalRedrawCount
-        );
+        $this->reportRedraw("Subprocess");
         exit();
     }
 }

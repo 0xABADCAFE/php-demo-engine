@@ -15,6 +15,7 @@ const CLASS_MAP = [
   'ABadCafe\\PDE\\Display\\IASCIIArt' => '/display/common/IASCIIArt.php',
   'ABadCafe\\PDE\\Display\\TASCIIArt' => '/display/common/TASCIIArt.php',
   'ABadCafe\\PDE\\Display\\Base' => '/display/common/Base.php',
+  'ABadCafe\\PDE\\Display\\TInstrumented' => '/display/common/TInstrumented.php',
   'ABadCafe\\PDE\\Display\\ICustomChars' => '/display/common/ICustomChars.php',
   'ABadCafe\\PDE\\Routine\\NoOp' => '/routine/NoOp.php',
   'ABadCafe\\PDE\\Routine\\SimpleLine' => '/routine/SimpleLine.php',

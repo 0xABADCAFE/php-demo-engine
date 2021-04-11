@@ -28,7 +28,7 @@ use ABadCafe\PDE;
  */
 class PlainASCII extends Base implements IASCIIArt {
 
-    use TASCIIArt;
+    use TASCIIArt, TInstrumented;
 
     /**
      * @var string[] $aBlockMapSearch, $aBlockMapReplace
@@ -50,6 +50,11 @@ class PlainASCII extends Base implements IASCIIArt {
         $this->reset();
     }
 
+    public function __destruct() {
+        echo IANSIControl::CRSR_ON, "\n";
+        $this->reportRedraw();
+    }
+
     /**
      * @inheritDoc
      */
@@ -62,12 +67,14 @@ class PlainASCII extends Base implements IASCIIArt {
      * @inheritDoc
      */
     public function redraw() : self {
+        $this->beginRedraw();
         echo IANSIControl::CRSR_TOP_LEFT .
             str_replace(
                 self::$aBlockMapSearch,
                 self::$aBlockMapReplace,
                 $this->sRawBuffer
             );
+        $this->endRedraw();
         return $this;
     }
 }

@@ -24,10 +24,12 @@ use \SPLFixedArray;
 
 /**
  * BasicRGB
+ *
+ * Supports a character cell resolution RGB. Renders synchronously
  */
 class BasicRGB extends Base implements IPixelled {
 
-    private SPLFixedArray $oPixels, $oNewPixels;
+    use TPixelled;
 
     private array $aLineBreaks = [];
     private int   $iTotalRedrawCount = 0;
@@ -38,8 +40,7 @@ class BasicRGB extends Base implements IPixelled {
      */
     public function __construct(int $iWidth, int $iHeight) {
         parent::__construct($iWidth, $iHeight);
-        $this->oPixels       = clone // drop through
-        $this->oNewPixels    = SPLFixedArray::fromArray(array_fill(0, $iWidth * $iHeight, 0));
+        $this->initPixelBuffer($iWidth, $iHeight, self::PIX_RGB);
 
         $aLineBreaks   = range(0, $iWidth * $iHeight, $iWidth);
         unset($aLineBreaks[0]);
@@ -60,7 +61,7 @@ class BasicRGB extends Base implements IPixelled {
      * @inheritDoc
      */
     public function clear() : self {
-        $this->oPixels = clone $this->oNewPixels;
+        $this->resetPixelBuffer();
         return $this;
     }
 
@@ -90,19 +91,5 @@ class BasicRGB extends Base implements IPixelled {
         $this->fTotalRedrawTime += microtime(true) - $fMark;
         ++$this->iTotalRedrawCount;
         return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getPixelFormat() : int {
-        return self::PIX_RGB;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getPixelBuffer() : SPLFixedArray {
-        return $this->oPixels;
     }
 }

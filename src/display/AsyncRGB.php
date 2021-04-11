@@ -30,13 +30,12 @@ use \SPLFixedArray;
  */
 class AsyncRGB extends Base implements IPixelled, IASCIIArt {
 
-    use TASCIIArt;
+    use TASCIIArt, TPixelled;
 
-    private SPLFixedArray $oPixels, $oNewPixels;
-    private array         $aLineBreaks = [];
-    private int           $iTotalRedrawCount = 0;
-    private float         $fTotalRedrawTime  = 0.0;
-    private array         $aSocketPair = [];
+    private array $aLineBreaks = [];
+    private int   $iTotalRedrawCount = 0;
+    private float $fTotalRedrawTime  = 0.0;
+    private array $aSocketPair = [];
 
     /**
      * @inheritDoc
@@ -51,8 +50,7 @@ class AsyncRGB extends Base implements IPixelled, IASCIIArt {
         // Initialise the subprocess now as it only needs access to the properties evaluated to now.
         $this->initAsyncProcess();
         $this->initASCIIBuffer($iWidth, $iHeight);
-        $this->oPixels       = clone // drop through
-        $this->oNewPixels    = SPLFixedArray::fromArray(array_fill(0, $iWidth * $iHeight, 0));
+        $this->initPixelBuffer($iWidth, $iHeight, self::PIX_ASCII_RGB2);
         $this->reset();
     }
 
@@ -75,7 +73,7 @@ class AsyncRGB extends Base implements IPixelled, IASCIIArt {
      */
     public function clear() : self {
         $this->resetASCIIBuffer();
-        $this->oPixels = clone $this->oNewPixels;
+        $this->resetPixelBuffer();
         return $this;
     }
 
@@ -94,20 +92,6 @@ class AsyncRGB extends Base implements IPixelled, IASCIIArt {
         $this->fTotalRedrawTime += microtime(true) - $fMark;
         ++$this->iTotalRedrawCount;
         return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getPixelBuffer() : SPLFixedArray {
-        return $this->oPixels;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getPixelFormat() : int {
-        return self::PIX_ASCII_RGB2;
     }
 
     /**

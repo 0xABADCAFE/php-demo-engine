@@ -1,6 +1,6 @@
 {
     "display": {
-        "sType": "BasicRGB",
+        "sType": "AsyncRGB",
         "iWidth": 160,
         "iHeight": 50,
         "iMaxFPS": 30

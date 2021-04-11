@@ -28,11 +28,11 @@ use \SPLFixedArray;
  * Variation on BasicRGB that does the pixel to ANSI encoding and output on a subprocess. This frees up the main process
  * significantly on multicore systems. As an added bonus, it also implements IASCIIArt to allow overdraw.
  */
-class AsyncRGB implements PDE\IDisplay, IPixelled, IASCIIArt {
+class AsyncRGB extends Base implements IPixelled, IASCIIArt {
 
-    private int           $iWidth, $iHeight, $iMaxLuma = self::DEF_MAX_LUMA;
+    use TASCIIArt;
+
     private SPLFixedArray $oPixels, $oNewPixels;
-    private string        $sRawBuffer, $sNewRawBuffer, $sLumaChars = self::DEF_LUMA_CHAR;
     private array         $aLineBreaks = [];
     private int           $iTotalRedrawCount = 0;
     private float         $fTotalRedrawTime  = 0.0;
@@ -42,12 +42,7 @@ class AsyncRGB implements PDE\IDisplay, IPixelled, IASCIIArt {
      * @inheritDoc
      */
     public function __construct(int $iWidth, int $iHeight) {
-        if ($iWidth < self::I_MIN_WIDTH || $iHeight < self::I_MIN_HEIGHT) {
-            throw new \RangeException('Invalid dimensions');
-        }
-
-        $this->iWidth        = $iWidth;
-        $this->iHeight       = $iHeight;
+        parent::__construct($iWidth, $iHeight);
 
         $aLineBreaks   = range(0, $iWidth * $iHeight, $iWidth);
         unset($aLineBreaks[0]);
@@ -55,10 +50,7 @@ class AsyncRGB implements PDE\IDisplay, IPixelled, IASCIIArt {
 
         // Initialise the subprocess now as it only needs access to the properties evaluated to now.
         $this->initAsyncProcess();
-
-        $this->sRawBuffer    = // drop through
-        $this->sNewRawBuffer = str_repeat(str_repeat(' ', $iWidth) . "\n", $iHeight);
-
+        $this->initASCIIBuffer($iWidth, $iHeight);
         $this->oPixels       = clone // drop through
         $this->oNewPixels    = SPLFixedArray::fromArray(array_fill(0, $iWidth * $iHeight, 0));
         $this->reset();
@@ -81,40 +73,9 @@ class AsyncRGB implements PDE\IDisplay, IPixelled, IASCIIArt {
     /**
      * @inheritDoc
      */
-    public function reset() : self {
-        printf(IANSIControl::TERM_SIZE_TPL, $this->iHeight + 2, $this->iWidth + 1);
-        $this->clear();
-        echo IANSIControl::TERM_CLEAR . IANSIControl::CRSR_OFF;
-        return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getWidth() : int {
-        return $this->iWidth;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getSpanWidth() : int {
-        return $this->iWidth + 1; // 1 for the newline
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getHeight() : int {
-        return $this->iHeight;
-    }
-
-    /**
-     * @inheritDoc
-     */
     public function clear() : self {
-        $this->sRawBuffer = $this->sNewRawBuffer;
-        $this->oPixels    = clone $this->oNewPixels;
+        $this->resetASCIIBuffer();
+        $this->oPixels = clone $this->oNewPixels;
         return $this;
     }
 
@@ -147,40 +108,6 @@ class AsyncRGB implements PDE\IDisplay, IPixelled, IASCIIArt {
      */
     public function getPixelFormat() : int {
         return self::PIX_ASCII_RGB2;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function &getCharacterBuffer() : string {
-        return $this->sRawBuffer;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getLuminanceCharacters() : string {
-        return $this->sLumaChars;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getMaxLuminance() : int {
-        return $this->iMaxLuma;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setLuminanceCharacters(string $sLumaChars) : self {
-        $iLength = strlen($sLumaChars);
-        if ($iLength < 2) {
-            throw new \LengthException();
-        }
-        $this->sLumaChars = $sLumaChars;
-        $this->iMaxLuma   = $iLength - 1;
-        return $this;
     }
 
     /**

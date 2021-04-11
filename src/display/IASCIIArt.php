@@ -33,6 +33,15 @@ interface IASCIIArt {
     ;
 
     /**
+     * Returns the span width of the text display which will typically be the display width plus however many bytes
+     * are needed for the newline (one or two potentially). You must use this value when calculating offsets into
+     * the character buffer and not getWidth()!
+     *
+     * @return int
+     */
+    public function getCharacterWidth() : int;
+
+    /**
      * Get the raw display buffer, aka 1337 mode, lol. String is returned by refrence so that modifying it has the
      * desired effect.
      *

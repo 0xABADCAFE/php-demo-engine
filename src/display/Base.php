@@ -22,52 +22,54 @@ namespace ABadCafe\PDE\Display;
 use ABadCafe\PDE;
 
 /**
- * PlainASCII
+ * Base
  *
- * Absolutely basic string buffer for ASCII art only.
+ * Common base class for displays
  */
-class PlainASCII extends Base implements IASCIIArt {
+abstract class Base implements PDE\IDisplay {
 
-    use TASCIIArt;
-
-    /**
-     * @var string[] $aBlockMapSearch, $aBlockMapReplace
-     *
-     * These arrays are used to convert any ICustomChars characters just before display.
-     */
-    private static array $aBlockMapSearch = [], $aBlockMapReplace = [];
+    protected int $iWidth, $iHeight;
 
     /**
      * @inheritDoc
      */
     public function __construct(int $iWidth, int $iHeight) {
-        parent::__construct($iWidth, $iHeight);
-        $this->initASCIIBuffer($iWidth, $iHeight);
-        if (empty(self::$aBlockMapSearch)) {
-            self::$aBlockMapSearch  = array_map('chr', array_keys(ICustomChars::MAP));
-            self::$aBlockMapReplace = array_values(ICustomChars::MAP);
+        if ($iWidth < self::I_MIN_WIDTH || $iHeight < self::I_MIN_HEIGHT) {
+            throw new \RangeException('Invalid dimensions');
         }
-        $this->reset();
+        $this->iWidth  = $iWidth;
+        $this->iHeight = $iHeight;
+    }
+
+    /**
+     * Make sure we restore the cursor
+     */
+    public function __destruct() {
+        echo IANSIControl::CRSR_ON, "\n";
     }
 
     /**
      * @inheritDoc
      */
-    public function clear() : self {
-        $this->resetASCIIBuffer();
+    public function reset() : self {
+        printf(IANSIControl::TERM_SIZE_TPL, $this->iHeight + 2, $this->iWidth + 1);
+        $this->clear();
+        echo IANSIControl::TERM_CLEAR . IANSIControl::CRSR_OFF;
         return $this;
     }
 
     /**
      * @inheritDoc
      */
-    public function redraw() : self {
-        echo IANSIControl::CRSR_TOP_LEFT .
-            str_replace(
-                self::$aBlockMapSearch,
-                self::$aBlockMapReplace,
-                $this->sRawBuffer
-            );
-        return $this;
+    public function getWidth() : int {
+        return $this->iWidth;
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function getHeight() : int {
+        return $this->iHeight;
+    }
+
 }

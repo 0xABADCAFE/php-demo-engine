@@ -25,13 +25,11 @@ use \SPLFixedArray;
 /**
  * BasicRGB
  */
-class BasicRGB implements PDE\IDisplay, IPixelled {
+class BasicRGB extends Base implements IPixelled {
 
-    private int           $iWidth, $iHeight;
     private SPLFixedArray $oPixels, $oNewPixels;
 
     private array $aLineBreaks = [];
-
     private int   $iTotalRedrawCount = 0;
     private float $fTotalRedrawTime  = 0.0;
 
@@ -39,11 +37,7 @@ class BasicRGB implements PDE\IDisplay, IPixelled {
      * @inheritDoc
      */
     public function __construct(int $iWidth, int $iHeight) {
-        if ($iWidth < self::I_MIN_WIDTH || $iHeight < self::I_MIN_HEIGHT) {
-            throw new \RangeException('Invalid dimensions');
-        }
-        $this->iWidth        = $iWidth;
-        $this->iHeight       = $iHeight;
+        parent::__construct($iWidth, $iHeight);
         $this->oPixels       = clone // drop through
         $this->oNewPixels    = SPLFixedArray::fromArray(array_fill(0, $iWidth * $iHeight, 0));
 
@@ -65,47 +59,9 @@ class BasicRGB implements PDE\IDisplay, IPixelled {
     /**
      * @inheritDoc
      */
-    public function reset() : self {
-        printf(IANSIControl::TERM_SIZE_TPL, $this->iHeight + 2, $this->iWidth + 1);
-        $this->clear();
-        echo IANSIControl::TERM_CLEAR . IANSIControl::CRSR_OFF;
-        return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getWidth() : int {
-        return $this->iWidth;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getSpanWidth() : int {
-        return $this->iWidth + 1; // 1 for the newline
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getHeight() : int {
-        return $this->iHeight;
-    }
-
-    /**
-     * @inheritDoc
-     */
     public function clear() : self {
-        $this->oPixels    = clone $this->oNewPixels;
+        $this->oPixels = clone $this->oNewPixels;
         return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function refresh() : self {
-        return $this->redraw();
     }
 
     /**

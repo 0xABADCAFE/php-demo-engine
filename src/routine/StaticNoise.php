@@ -42,7 +42,7 @@ class StaticNoise implements PDE\IRoutine {
     const NOISE_CHARS = "\x96\x97\x98\x99\x9A\x9B\x9C\x9D\x9E\x9F";
     const MAX_CHAR    = 9;
 
-    private int $iWidth, $iSpan, $iHeight;
+    private int $iWidth, $iHeight;
 
     /**
      * @inheritDoc
@@ -50,7 +50,6 @@ class StaticNoise implements PDE\IRoutine {
     public function setDisplay(PDE\IDisplay $oDisplay) : self {
         $this->oDisplay = $oDisplay;
         $this->iWidth   = $oDisplay->getWidth();
-        $this->iSpan    = $oDisplay->getSpanWidth();
         $this->iHeight  = $oDisplay->getHeight();
         return $this;
     }
@@ -61,11 +60,12 @@ class StaticNoise implements PDE\IRoutine {
     public function render(int $iFrameNumber, float $fTimeIndex) : self {
         if ($this->bEnabled && $this->oDisplay instanceof PDE\Display\IASCIIArt) {
             $sCharBuffer = &$this->oDisplay->getCharacterBuffer();
+            $iSpan       = $this->oDisplay->getCharacterWidth();\s
             $iMaxY       = $this->iHeight - $this->oParameters->iBorderV;
             $iMaxX       = $this->iWidth  - $this->oParameters->iBorderH;
             for ($iYPos = $this->oParameters->iBorderV; $iYPos < $iMaxY; ++$iYPos) {
                 for ($iXPos = $this->oParameters->iBorderH; $iXPos < $iMaxX; ++$iXPos) {
-                    $iBufferPos = $iXPos + $this->iSpan * $iYPos;
+                    $iBufferPos = $iXPos + $iSpan * $iYPos;
                     $sCharBuffer[$iBufferPos] = self::NOISE_CHARS[mt_rand(0, self::MAX_CHAR)];
                 }
             }

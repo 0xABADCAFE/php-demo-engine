@@ -106,7 +106,6 @@ class Toroid implements PDE\IRoutine {
         $this->iCenterY  = $oDisplay->getHeight() >> 1;
         $this->iMaxX     = $oDisplay->getWidth()-1;
         $this->iMaxY     = $oDisplay->getHeight()-1;
-        $this->iSpan     = $oDisplay->getSpanWidth();
         $this->iArea     = $oDisplay->getWidth() * $oDisplay->getHeight();
         $this->iDrawMask = 0;
 
@@ -115,6 +114,7 @@ class Toroid implements PDE\IRoutine {
             $this->iDrawMask    = self::DRAW_ASCII_GREY;
             $this->iCharMaxLuma = $this->oDisplay->getMaxLuminance();
             $this->sLumaCharLUT = $this->oDisplay->getLuminanceCharacters();
+            $this->iSpan        = $oDisplay->getCharacterWidth();
         }
 
         // Pixel type behaviour?

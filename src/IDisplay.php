@@ -53,13 +53,6 @@ interface IDisplay {
     public function getWidth() : int;
 
     /**
-     * Get the span width. This may be the same as the pixel width, or larger.
-     *
-     * @return int
-     */
-    public function getSpanWidth() : int;
-
-    /**
      * Get the pixel height
      *
      * @return int

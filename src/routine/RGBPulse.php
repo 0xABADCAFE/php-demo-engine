@@ -37,9 +37,10 @@ class RGBPulse implements PDE\IRoutine {
      * @inheritDoc
      */
     public function setDisplay(PDE\IDisplay $oDisplay) : self {
-        $this->oDisplay = $oDisplay;
-        $this->fXScale = 255.0 / $this->oDisplay->getWidth();
-        $this->fYScale = 255.0 / $this->oDisplay->getHeight();
+        $this->bCanRender = ($oDisplay instanceof PDE\Display\IPixelled);
+        $this->oDisplay   = $oDisplay;
+        $this->fXScale    = 255.0 / $this->oDisplay->getWidth();
+        $this->fYScale    = 255.0 / $this->oDisplay->getHeight();
         return $this;
     }
 
@@ -47,7 +48,7 @@ class RGBPulse implements PDE\IRoutine {
      * @inheritDoc
      */
     public function render(int $iFrameNumber, float $fTimeIndex) : self {
-        if ($this->bEnabled && $this->oDisplay instanceof PDE\Display\IPixelled) {
+        if ($this->bCanRender && $this->bEnabled) {
             $iWidth  = $this->oDisplay->getWidth();
             $iHeight = $this->oDisplay->getHeight();
             $oPixels = $this->oDisplay->getPixelBuffer();

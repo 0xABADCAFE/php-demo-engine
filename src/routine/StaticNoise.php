@@ -48,9 +48,10 @@ class StaticNoise implements PDE\IRoutine {
      * @inheritDoc
      */
     public function setDisplay(PDE\IDisplay $oDisplay) : self {
-        $this->oDisplay = $oDisplay;
-        $this->iWidth   = $oDisplay->getWidth();
-        $this->iHeight  = $oDisplay->getHeight();
+        $this->bCanRender = ($oDisplay instanceof PDE\Display\IASCIIArt);
+        $this->oDisplay   = $oDisplay;
+        $this->iWidth     = $oDisplay->getWidth();
+        $this->iHeight    = $oDisplay->getHeight();
         return $this;
     }
 
@@ -58,7 +59,7 @@ class StaticNoise implements PDE\IRoutine {
      * @inheritDoc
      */
     public function render(int $iFrameNumber, float $fTimeIndex) : self {
-        if ($this->bEnabled && $this->oDisplay instanceof PDE\Display\IASCIIArt) {
+        if ($this->bCanRender && $this->bEnabled) {
             $sCharBuffer = &$this->oDisplay->getCharacterBuffer();
             $iSpan       = $this->oDisplay->getCharacterWidth();
             $iMaxY       = $this->iHeight - $this->oParameters->iBorderV;

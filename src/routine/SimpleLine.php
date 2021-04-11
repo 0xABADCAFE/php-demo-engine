@@ -41,7 +41,8 @@ class SimpleLine implements PDE\IRoutine {
      * @inheritDoc
      */
     public function setDisplay(PDE\IDisplay $oDisplay) : self {
-        $this->oDisplay = $oDisplay;
+        $this->bCanRender = ($oDisplay instanceof PDE\Display\IASCIIArt);
+        $this->oDisplay   = $oDisplay;
         return $this;
     }
 
@@ -49,7 +50,7 @@ class SimpleLine implements PDE\IRoutine {
      * @inheritDoc
      */
     public function render(int $iFrameNumber, float $fTimeIndex) : self {
-        if ($this->bEnabled && $this->oDisplay instanceof PDE\Display\IASCIIArt) {
+        if ($this->bCanRender && $this->bEnabled) {
             $sDrawBuffer = &$this->oDisplay->getCharacterBuffer();
             $sDrawBuffer = '';
 

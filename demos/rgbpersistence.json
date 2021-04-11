@@ -1,0 +1,69 @@
+{
+    "display": {
+        "sType": "AsyncRGB",
+        "iWidth": 160,
+        "iHeight": 50,
+        "iMaxFPS": 30
+    },
+    "routines": {
+        "pulse": {
+            "sType": "RGBPulse",
+            "iPriority": 0,
+            "aParameters": {
+            }
+        },
+        "doughnut": {
+            "sType": "Toroid",
+            "iPriority": 1,
+            "aParameters": {
+                "fMinLuma": 0.0,
+                "fLumaFactor": 0.85,
+                "iDrawMode":32
+            }
+        },
+        "trails": {
+            "sType": "RGBPersistence",
+            "iPriority": 2,
+            "aParameters": {
+                "iStrength":0
+            }
+        }
+    },
+    "timeline": [
+        {
+            "at": 0.0,
+            "on": "pulse",
+            "do": "enable"
+        },
+        {
+            "at": 0.0,
+            "on": "doughnut",
+            "do": "enable"
+        },
+        {
+            "at": 3.0,
+            "on": "trails",
+            "do": "enable"
+        },
+        {
+            "at": 6.0,
+            "on": "trails",
+            "do": "update",
+            "aParameters": {
+                "iStrength": 1
+            }
+        },
+        {
+            "at": 9.0,
+            "on": "trails",
+            "do": "update",
+            "aParameters": {
+                "iStrength": 2
+            }
+        },
+        {
+            "at": 15.0,
+            "do": "end"
+        }
+    ]
+}

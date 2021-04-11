@@ -30,11 +30,12 @@ use ABadCafe\PDE;
 class Factory {
 
     const TYPES = [
-        'NoOp'        => NoOp::class,
-        'SimpleLine'  => SimpleLine::class,
-        'StaticNoise' => StaticNoise::class,
-        'Toroid'      => Toroid::class,
-        'RGBPulse'    => RGBPulse::class
+        'NoOp'           => NoOp::class,
+        'SimpleLine'     => SimpleLine::class,
+        'StaticNoise'    => StaticNoise::class,
+        'Toroid'         => Toroid::class,
+        'RGBPulse'       => RGBPulse::class,
+        'RGBPersistence' => RGBPersistence::class,
     ];
 
     private static ?self $oInstance = null;

@@ -42,7 +42,7 @@ trait TRoutine {
      */
     private PDE\IDisplay $oDisplay;
 
-    private bool $bEnabled = false;
+    private bool $bEnabled = false, $bCanRender = false;
 
     /**
      * Basic constructor

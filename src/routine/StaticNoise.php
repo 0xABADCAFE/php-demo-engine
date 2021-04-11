@@ -60,7 +60,7 @@ class StaticNoise implements PDE\IRoutine {
     public function render(int $iFrameNumber, float $fTimeIndex) : self {
         if ($this->bEnabled && $this->oDisplay instanceof PDE\Display\IASCIIArt) {
             $sCharBuffer = &$this->oDisplay->getCharacterBuffer();
-            $iSpan       = $this->oDisplay->getCharacterWidth();\s
+            $iSpan       = $this->oDisplay->getCharacterWidth();
             $iMaxY       = $this->iHeight - $this->oParameters->iBorderV;
             $iMaxX       = $this->iWidth  - $this->oParameters->iBorderH;
             for ($iYPos = $this->oParameters->iBorderV; $iYPos < $iMaxY; ++$iYPos) {

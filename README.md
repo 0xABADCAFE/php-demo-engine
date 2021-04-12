@@ -37,7 +37,7 @@ Execute `./display <path to json file>`
 ```shell
 $ docker build -t php-demo-engine .
 
-$ docker run php-demo-engine
+$ docker run php-demo-engine php display
 ```
 
 ## Structure

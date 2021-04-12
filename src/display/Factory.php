@@ -30,9 +30,10 @@ use ABadCafe\PDE;
 class Factory {
 
     const TYPES = [
-        'PlainASCII' => PlainASCII::class,
-        'BasicRGB'   => BasicRGB::class,
-        'AsyncRGB'   => AsyncRGB::class,
+        'PlainASCII'        => PlainASCII::class,
+        'BasicRGB'          => BasicRGB::class,
+        'AsyncRGB'          => AsyncRGB::class,
+        'DoubleVerticalRGB' => DoubleVerticalRGB::class,
     ];
 
     private static ?self $oInstance = null;

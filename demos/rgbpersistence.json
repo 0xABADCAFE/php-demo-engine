@@ -1,8 +1,8 @@
 {
     "display": {
-        "sType": "AsyncRGB",
+        "sType": "DoubleVerticalRGB",
         "iWidth": 160,
-        "iHeight": 50,
+        "iHeight": 100,
         "iMaxFPS": 30
     },
     "routines": {
@@ -18,7 +18,8 @@
             "aParameters": {
                 "fMinLuma": 0.0,
                 "fLumaFactor": 0.85,
-                "iDrawMode":32
+                "iDrawMode":32,
+                "fRenderYScale": 60.0
             }
         },
         "trails": {

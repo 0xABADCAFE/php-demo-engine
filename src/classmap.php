@@ -6,6 +6,7 @@ const CLASS_MAP = [
   'ABadCafe\\PDE\\IDisplay' => '/IDisplay.php',
   'ABadCafe\\PDE\\IRoutine' => '/IRoutine.php',
   'ABadCafe\\PDE\\Display\\PlainASCII' => '/display/PlainASCII.php',
+  'ABadCafe\\PDE\\Display\\DoubleVerticalRGB' => '/display/DoubleVerticalRGB.php',
   'ABadCafe\\PDE\\Display\\Factory' => '/display/Factory.php',
   'ABadCafe\\PDE\\Display\\BasicRGB' => '/display/BasicRGB.php',
   'ABadCafe\\PDE\\Display\\AsyncRGB' => '/display/AsyncRGB.php',

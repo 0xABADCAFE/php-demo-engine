@@ -22,15 +22,23 @@ A bit of fun. A very simple ASCII Display with some routines.
 
 ## Requirements
 
-* PHP 7.4 or higher.
+* PHP 8.0 or higher.
 * A sense of humour.
 * A disregard for best practise and standards.
 
 ## Usage
 
+### Natively
 Execute `./display <path to json file>`
 
 * If no path is given, the inbuilt demo file is executed.
+
+### Via Docker
+```shell
+$ docker build -t php-demo-engine .
+
+$ docker run php-demo-engine php display
+```
 
 ## Structure
 

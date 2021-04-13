@@ -69,6 +69,8 @@ class Factory {
         if (!isset(self::TYPES[$sKind])) {
             throw new \OutOfBoundsException($sKind . ' is not a known IDisplay type)');
         }
-        return new (self::TYPES[$sKind])($iWidth, $iHeight);
+        // Issue #8 - Can't dereference array and call in single step until PHP8
+        $sClassName = self::TYPES[$sKind];
+        return new $sClassName($iWidth, $iHeight);
     }
 }

@@ -71,7 +71,9 @@ class Factory {
         if (!isset(self::TYPES[$sKind])) {
             throw new \OutOfBoundsException($sKind . ' is not a known IRoutine type)');
         }
-        return new (self::TYPES[$sKind])($oDisplay, $aParameters);
+        // Issue #8 - Can't dereference array and call in single step until PHP8
+        $sClassName = self::TYPES[$sKind];
+        return new $sClassName($oDisplay, $aParameters);
     }
 }
 

@@ -51,7 +51,7 @@ class DoubleVerticalRGB extends Base implements IPixelled  {
      * Destructor. Ensured our end of the socket pair is closed.
      */
     public function __destruct() {
-        socket_close($this->aSocketPair[1]);
+        $this->closeSocket(1);
         echo IANSIControl::CRSR_ON, "\n";
         $this->reportRedraw();
     }
@@ -95,14 +95,14 @@ class DoubleVerticalRGB extends Base implements IPixelled  {
         }
         $iProcessID = pcntl_fork();
         if (-1 == $iProcessID) {
-            socket_close($this->aSocketPair[0]);
-            socket_close($this->aSocketPair[1]);
+            $this->closeSocket(0);
+            $this->closeSocket(1);
             throw new \Exception("Couldn't create sub process");
         }
         if (0 == $iProcessID) {
             $this->runSubprocess();
         } else {
-            socket_close($this->aSocketPair[0]);
+            $this->closeSocket(0);
         }
     }
 
@@ -111,7 +111,7 @@ class DoubleVerticalRGB extends Base implements IPixelled  {
      * it decodes and prints it.
      */
     private function runSubprocess() {
-        socket_close($this->aSocketPair[1]);
+        $this->closeSocket(1);
         $sInput  = '';
         $iExpectSize = $this->iWidth * $this->iHeight * 4;
         $sTemplate   = IANSIControl::ATTR_BG_RGB_TPL;
@@ -159,10 +159,22 @@ class DoubleVerticalRGB extends Base implements IPixelled  {
             ob_end_flush();
             $this->endRedraw();
         }
-        socket_close($this->aSocketPair[0]);
+        $this->closeSocket(0);
         echo "\n";
         $this->reportRedraw("Subprocess");
         echo "\nShort reads: " . $iShortReads . "\n";
         exit();
+    }
+
+    /**
+     * Safely close and dispose of an enumerated socket.
+     *
+     * @param int $i - which enumerated socket to close
+     */
+    private function closeSocket(int $i) {
+        if (isset($this->aSocketPair[$i])) {
+            socket_close($this->aSocketPair[$i]);
+            unset($this->aSocketPair[$i]);
+        }
     }
 }

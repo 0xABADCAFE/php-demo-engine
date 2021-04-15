@@ -56,7 +56,7 @@ class AsyncRGB extends Base implements IPixelled, IASCIIArt {
      * Destructor. Ensured our end of the socket pair is closed.
      */
     public function __destruct() {
-        socket_close($this->aSocketPair[1]);
+        $this->closeSocket(1);
         echo IANSIControl::CRSR_ON, "\n";
         $this->reportRedraw();
     }
@@ -95,14 +95,14 @@ class AsyncRGB extends Base implements IPixelled, IASCIIArt {
         }
         $iProcessID = pcntl_fork();
         if (-1 == $iProcessID) {
-            socket_close($this->aSocketPair[0]);
-            socket_close($this->aSocketPair[1]);
+            $this->closeSocket(0);
+            $this->closeSocket(1);
             throw new \Exception("Couldn't create sub process");
         }
         if (0 == $iProcessID) {
             $this->runSubprocess();
         } else {
-            socket_close($this->aSocketPair[0]);
+            $this->closeSocket(0);
         }
     }
 
@@ -111,7 +111,7 @@ class AsyncRGB extends Base implements IPixelled, IASCIIArt {
      * it decodes and prints it.
      */
     private function runSubprocess() {
-        socket_close($this->aSocketPair[1]);
+        $this->closeSocket(1);
         $sInput  = '';
         $iExpectSize = $this->iWidth * $this->iHeight * 4;
         $sTemplate   = IANSIControl::ATTR_BG_RGB_TPL;
@@ -141,8 +141,20 @@ class AsyncRGB extends Base implements IPixelled, IASCIIArt {
             echo $sRawBuffer . IANSIControl::ATTR_RESET;
             $this->endRedraw();
         }
-        socket_close($this->aSocketPair[0]);
+        $this->closeSocket(0);
         $this->reportRedraw("Subprocess");
         exit();
+    }
+
+    /**
+     * Safely close and dispose of an enumerated socket.
+     *
+     * @param int $i - which enumerated socket to close
+     */
+    private function closeSocket(int $i) {
+        if (isset($this->aSocketPair[$i])) {
+            socket_close($this->aSocketPair[$i]);
+            unset($this->aSocketPair[$i]);
+        }
     }
 }

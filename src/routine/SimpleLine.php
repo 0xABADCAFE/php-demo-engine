@@ -27,9 +27,7 @@ use ABadCafe\PDE;
  *
  * Lame test effect.
  */
-class SimpleLine implements PDE\IRoutine {
-
-    use TRoutine;
+class SimpleLine extends Base {
 
     const DEFAULT_PARAMETERS = [
         'iSpacing' => 3,

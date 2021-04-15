@@ -25,9 +25,7 @@ use ABadCafe\PDE;
 /**
  * Does Nothing
  */
-class NoOp implements PDE\IRoutine {
-
-    use TRoutine;
+class NoOp extends Base {
 
     const DEFAULT_PARAMETERS = [];
 

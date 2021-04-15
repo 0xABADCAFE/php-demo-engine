@@ -26,9 +26,7 @@ use \SPLFixedArray;
 /**
  * RGBPersistence
  */
-class RGBPersistence implements PDE\IRoutine {
-
-    use TRoutine;
+class RGBPersistence extends Base {
 
     const DEFAULT_PARAMETERS = [
         'iStrength' => 0

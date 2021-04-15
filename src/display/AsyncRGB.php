@@ -30,10 +30,9 @@ use \SPLFixedArray;
  */
 class AsyncRGB extends Base implements IPixelled, IASCIIArt {
 
-    use TASCIIArt, TPixelled, TInstrumented;
+    use TASCIIArt, TPixelled, TInstrumented, TAsynchronous;
 
     private array $aLineBreaks = [];
-    private array $aSocketPair = [];
 
     /**
      * @inheritDoc
@@ -80,42 +79,20 @@ class AsyncRGB extends Base implements IPixelled, IASCIIArt {
             $j += (int)isset($this->aLineBreaks[$i]);
             $this->oPixels[$i] = ord($this->sRawBuffer[$j++]) << 24 | $iRGB;
         }
-        $sData = pack('V*', ...$this->oPixels);
-        socket_write($this->aSocketPair[1], $sData, strlen($sData));
+        $this->sendPixels($this->oPixels);
         $this->endRedraw();
         return $this;
-    }
-
-    /**
-     * Initialise the asynchronous process and a socket pair for IPC.
-     */
-    private function initAsyncProcess() {
-        if (!socket_create_pair(AF_UNIX, SOCK_STREAM, 0, $this->aSocketPair)) {
-            throw new \Exception("Could not create socket pair");
-        }
-        $iProcessID = pcntl_fork();
-        if (-1 == $iProcessID) {
-            $this->closeSocket(0);
-            $this->closeSocket(1);
-            throw new \Exception("Couldn't create sub process");
-        }
-        if (0 == $iProcessID) {
-            $this->runSubprocess();
-        } else {
-            $this->closeSocket(0);
-        }
     }
 
     /**
      * Main subprocess loop. This sits and waits for data from the socket. When the data arrives
      * it decodes and prints it.
      */
-    private function runSubprocess() {
-        $this->closeSocket(1);
+    private function subprocessRenderLoop() {
         $sInput  = '';
         $iExpectSize = $this->iWidth * $this->iHeight * 4;
         $sTemplate   = IANSIControl::ATTR_BG_RGB_TPL;
-        while (($sInput = socket_read($this->aSocketPair[0], $iExpectSize, PHP_BINARY_READ))) {
+        while (($sInput = $this->receivePixelData($iExpectSize))) {
             $this->beginRedraw();
             $aPixels    = unpack('V*', $sInput);
             $sRawBuffer = IANSIControl::CRSR_TOP_LEFT;
@@ -141,20 +118,7 @@ class AsyncRGB extends Base implements IPixelled, IASCIIArt {
             echo $sRawBuffer . IANSIControl::ATTR_RESET;
             $this->endRedraw();
         }
-        $this->closeSocket(0);
         $this->reportRedraw("Subprocess");
-        exit();
     }
 
-    /**
-     * Safely close and dispose of an enumerated socket.
-     *
-     * @param int $i - which enumerated socket to close
-     */
-    private function closeSocket(int $i) {
-        if (isset($this->aSocketPair[$i])) {
-            socket_close($this->aSocketPair[$i]);
-            unset($this->aSocketPair[$i]);
-        }
-    }
 }

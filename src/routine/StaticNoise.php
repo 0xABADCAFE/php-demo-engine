@@ -27,9 +27,7 @@ use ABadCafe\PDE;
  *
  * Simple text mode white noise
  */
-class StaticNoise implements PDE\IRoutine {
-
-    use TRoutine;
+class StaticNoise extends Base {
 
     const DEFAULT_PARAMETERS = [
         'iBorderH' => 0,

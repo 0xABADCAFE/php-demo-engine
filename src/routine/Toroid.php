@@ -29,9 +29,7 @@ use \SPLFixedArray;
  * Mmmm doughnuts.
  *
  */
-class Toroid implements PDE\IRoutine {
-
-    use TRoutine;
+class Toroid extends Base {
 
     const
         TWICE_PI       = 2 * M_PI,

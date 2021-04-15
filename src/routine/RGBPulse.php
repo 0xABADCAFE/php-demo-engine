@@ -27,9 +27,7 @@ use ABadCafe\PDE;
  *
  * TODO controls and optimise
  */
-class RGBPulse implements PDE\IRoutine {
-
-    use TRoutine;
+class RGBPulse extends Base {
 
     const DEFAULT_PARAMETERS = [];
 

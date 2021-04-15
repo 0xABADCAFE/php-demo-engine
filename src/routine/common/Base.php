@@ -23,26 +23,23 @@ namespace ABadCafe\PDE\Routine;
 use ABadCafe\PDE;
 
 /**
- * TRoutine
+ * Base
  *
- * Mixin trait to provide default expected constructor and parameter manipulation. The composing class is expected to
- * implement a constant array DEFAULT_PARAMETERS that forms a key/value set of the controllable parameter names and
- * their default value (and expected type).
- *
+ * Common base class for routines
  */
-trait TRoutine {
+abstract class Base implements PDE\IRoutine {
 
     /**
      * @var object $oParameters - basic key value structure
      */
-    private object $oParameters;
+    protected object $oParameters;
 
     /**
      * @var PDE\IDisplay $oDisplay
      */
-    private PDE\IDisplay $oDisplay;
+    protected PDE\IDisplay $oDisplay;
 
-    private bool $bEnabled = false, $bCanRender = false;
+    protected bool $bEnabled = false, $bCanRender = false;
 
     /**
      * Basic constructor
@@ -50,7 +47,7 @@ trait TRoutine {
      * @implements IRoutine::__construct()
      */
     public function __construct(PDE\IDisplay $oDisplay, array $aParameters = []) {
-        $this->oParameters = (object)self::DEFAULT_PARAMETERS;
+        $this->oParameters = (object)static::DEFAULT_PARAMETERS;
         $this->setDisplay($oDisplay);
         $this->setParameters($aParameters);
     }
@@ -65,8 +62,8 @@ trait TRoutine {
     public function setParameters(array $aParameters) : self {
         $bChanged = false;
         foreach ($aParameters as $sParameterName => $mParameterValue) {
-            if (isset(self::DEFAULT_PARAMETERS[$sParameterName])) {
-                settype($mParameterValue, gettype(self::DEFAULT_PARAMETERS[$sParameterName]));
+            if (isset(static::DEFAULT_PARAMETERS[$sParameterName])) {
+                settype($mParameterValue, gettype(static::DEFAULT_PARAMETERS[$sParameterName]));
                 if ($mParameterValue != $this->oParameters->{$sParameterName}) {
                     $this->oParameters->{$sParameterName} = $mParameterValue;
                     $bChanged = true;

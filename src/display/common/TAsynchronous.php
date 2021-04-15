@@ -39,7 +39,7 @@ trait TAsynchronous {
      *
      * @param SPLFixedArray $oPixels
      */
-    private function writePixels(SPLFixedArray $oPixels) {
+    private function sendPixels(SPLFixedArray $oPixels) {
         $sData = pack('V*', ...$oPixels);
         socket_write($this->aSocketPair[1], $sData, strlen($sData));
     }
@@ -79,6 +79,14 @@ trait TAsynchronous {
         $this->closeSocket(0);
         $this->reportRedraw("Subprocess");
         exit();
+    }
+
+    /**
+     * @param int $iExpectSize
+     * return string
+     */
+    private function receivePixelData(int $iExpectSize) {
+        return socket_read($this->aSocketPair[0], $iExpectSize, PHP_BINARY_READ);
     }
 
     /**

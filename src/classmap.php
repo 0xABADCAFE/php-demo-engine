@@ -27,6 +27,7 @@ const CLASS_MAP = [
   'ABadCafe\\PDE\\Routine\\RGBPersistence' => '/routine/RGBPersistence.php',
   'ABadCafe\\PDE\\Routine\\StaticNoise' => '/routine/StaticNoise.php',
   'ABadCafe\\PDE\\Routine\\TRoutine' => '/routine/common/TRoutine.php',
+  'ABadCafe\\PDE\\Routine\\Base' => '/routine/common/Base.php',
   'ABadCafe\\PDE\\System\\ILoader' => '/system/ILoader.php',
   'ABadCafe\\PDE\\System\\IRateLimiter' => '/system/IRateLimiter.php',
   'ABadCafe\\PDE\\System\\Context' => '/system/Context.php',

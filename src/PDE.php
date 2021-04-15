@@ -21,10 +21,10 @@ declare(strict_types=1);
 namespace ABadCafe\PDE;
 
 /**
- * If you aren't using 7.4, no dice.
+ * If you aren't using 7.4.15 no dice. Lower versions have buggy covariance.
  */
-if (PHP_VERSION_ID < 70400) {
-    throw new \RuntimeException("Requires at least PHP 7.4");
+if (PHP_VERSION_ID < 70415) {
+    throw new \RuntimeException("Requires at least PHP 7.4.15");
 }
 
 /**

@@ -47,7 +47,7 @@ abstract class Base implements PDE\IRoutine {
      * @implements IRoutine::__construct()
      */
     public function __construct(PDE\IDisplay $oDisplay, array $aParameters = []) {
-        $this->oParameters = (object)static::DEFAULT_PARAMETERS;
+        $this->oParameters = (object)$this->mergeDefaultParameters();
         $this->setDisplay($oDisplay);
         $this->setParameters($aParameters);
     }
@@ -60,9 +60,10 @@ abstract class Base implements PDE\IRoutine {
      * value is first type cooerced then assigned.
      */
     public function setParameters(array $aParameters) : self {
-        $bChanged = false;
+        $bChanged  = false;
+        $aDefaults = $this->mergeDefaultParameters();
         foreach ($aParameters as $sParameterName => $mParameterValue) {
-            if (isset(static::DEFAULT_PARAMETERS[$sParameterName])) {
+            if (isset($aDefaults[$sParameterName])) {
                 settype($mParameterValue, gettype(static::DEFAULT_PARAMETERS[$sParameterName]));
                 if ($mParameterValue != $this->oParameters->{$sParameterName}) {
                     $this->oParameters->{$sParameterName} = $mParameterValue;
@@ -98,4 +99,11 @@ abstract class Base implements PDE\IRoutine {
      * Hook function called if any of the parameters have changed during a call to SetParameters
      */
     protected abstract function parameterChange();
+
+    /**
+     * @return mixed[] - associative key/value pair of the default parameters
+     */
+    private function mergeDefaultParameters() : array {
+        return array_merge(self::COMMON_PARAMETERS, static::DEFAULT_PARAMETERS);
+    }
 }

@@ -27,6 +27,10 @@ namespace ABadCafe\PDE;
  */
 interface IRoutine {
 
+    const COMMON_PARAMETERS = [
+        'fDuration' => 0.0,
+    ];
+
     /**
      * Expected constructor profile
      *

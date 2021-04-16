@@ -48,7 +48,7 @@ class SimpleLine extends Base {
      * @inheritDoc
      */
     public function render(int $iFrameNumber, float $fTimeIndex) : self {
-        if ($this->bCanRender && $this->bEnabled) {
+        if ($this->canRender($iFrameNumber, $fTimeIndex)) {
             $sDrawBuffer = &$this->oDisplay->getCharacterBuffer();
             $sDrawBuffer = '';
 

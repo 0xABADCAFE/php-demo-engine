@@ -41,13 +41,15 @@ abstract class Base implements PDE\IRoutine {
 
     protected bool $bEnabled = false, $bCanRender = false;
 
+    protected float $fUntil = 0.0;
+
     /**
      * Basic constructor
      *
      * @implements IRoutine::__construct()
      */
     public function __construct(PDE\IDisplay $oDisplay, array $aParameters = []) {
-        $this->oParameters = (object)static::DEFAULT_PARAMETERS;
+        $this->oParameters = (object)$this->mergeDefaultParameters();
         $this->setDisplay($oDisplay);
         $this->setParameters($aParameters);
     }
@@ -60,10 +62,11 @@ abstract class Base implements PDE\IRoutine {
      * value is first type cooerced then assigned.
      */
     public function setParameters(array $aParameters) : self {
-        $bChanged = false;
+        $bChanged  = false;
+        $aDefaults = $this->mergeDefaultParameters();
         foreach ($aParameters as $sParameterName => $mParameterValue) {
-            if (isset(static::DEFAULT_PARAMETERS[$sParameterName])) {
-                settype($mParameterValue, gettype(static::DEFAULT_PARAMETERS[$sParameterName]));
+            if (isset($aDefaults[$sParameterName])) {
+                settype($mParameterValue, gettype($aDefaults[$sParameterName]));
                 if ($mParameterValue != $this->oParameters->{$sParameterName}) {
                     $this->oParameters->{$sParameterName} = $mParameterValue;
                     $bChanged = true;
@@ -81,7 +84,11 @@ abstract class Base implements PDE\IRoutine {
      * @implements IRoutine::enable()
      */
     public function enable(int $iFrameNumber, float $fTimeIndex) : self {
-        $this->bEnabled = true;
+        // Enable the routine if it can be rendered.
+        if ( ($this->bEnabled = $this->bCanRender) ) {
+            $this->fUntil = $this->oParameters->fDuration > 0.0 ?
+                $fTimeIndex + $this->oParameters->fDuration : 0.0;
+        }
         return $this;
     }
 
@@ -95,7 +102,30 @@ abstract class Base implements PDE\IRoutine {
     }
 
     /**
+     * Returns true if the effect can render right now, taking into account expected duration, etc.
+     *
+     * @param  int   $iFrameNumber
+     * @param  float $fTimeIndex
+     * @return bool
+     */
+    protected function canRender(int $iFrameNumber, float $fTimeIndex) : bool {
+        $this->bEnabled = $this->bEnabled && (
+            $this->fUntil > 0.0 ?
+                ($this->fUntil > $fTimeIndex) :
+                true
+            );
+        return $this->bEnabled;
+    }
+
+    /**
      * Hook function called if any of the parameters have changed during a call to SetParameters
      */
     protected abstract function parameterChange();
+
+    /**
+     * @return mixed[] - associative key/value pair of the default parameters
+     */
+    private function mergeDefaultParameters() : array {
+        return array_merge(self::COMMON_PARAMETERS, static::DEFAULT_PARAMETERS);
+    }
 }

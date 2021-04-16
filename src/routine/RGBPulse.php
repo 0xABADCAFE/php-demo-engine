@@ -46,7 +46,7 @@ class RGBPulse extends Base {
      * @inheritDoc
      */
     public function render(int $iFrameNumber, float $fTimeIndex) : self {
-        if ($this->bCanRender && $this->bEnabled) {
+        if ($this->canRender($iFrameNumber, $fTimeIndex)) {
             $iWidth  = $this->oDisplay->getWidth();
             $iHeight = $this->oDisplay->getHeight();
             $oPixels = $this->oDisplay->getPixelBuffer();

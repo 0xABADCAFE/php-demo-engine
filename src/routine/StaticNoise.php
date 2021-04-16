@@ -57,7 +57,7 @@ class StaticNoise extends Base {
      * @inheritDoc
      */
     public function render(int $iFrameNumber, float $fTimeIndex) : self {
-        if ($this->bCanRender && $this->bEnabled) {
+        if ($this->canRender($iFrameNumber, $fTimeIndex)) {
             $sCharBuffer = &$this->oDisplay->getCharacterBuffer();
             $iSpan       = $this->oDisplay->getCharacterWidth();
             $iMaxY       = $this->iHeight - $this->oParameters->iBorderV;

@@ -41,6 +41,8 @@ abstract class Base implements PDE\IRoutine {
 
     protected bool $bEnabled = false, $bCanRender = false;
 
+    protected float $fUntil = 0.0;
+
     /**
      * Basic constructor
      *
@@ -64,7 +66,7 @@ abstract class Base implements PDE\IRoutine {
         $aDefaults = $this->mergeDefaultParameters();
         foreach ($aParameters as $sParameterName => $mParameterValue) {
             if (isset($aDefaults[$sParameterName])) {
-                settype($mParameterValue, gettype(static::DEFAULT_PARAMETERS[$sParameterName]));
+                settype($mParameterValue, gettype($aDefaults[$sParameterName]));
                 if ($mParameterValue != $this->oParameters->{$sParameterName}) {
                     $this->oParameters->{$sParameterName} = $mParameterValue;
                     $bChanged = true;
@@ -82,7 +84,11 @@ abstract class Base implements PDE\IRoutine {
      * @implements IRoutine::enable()
      */
     public function enable(int $iFrameNumber, float $fTimeIndex) : self {
-        $this->bEnabled = true;
+        // Enable the routine if it can be rendered.
+        if ( ($this->bEnabled = $this->bCanRender) ) {
+            $this->fUntil = $this->oParameters->fDuration > 0.0 ?
+                $fTimeIndex + $this->oParameters->fDuration : 0.0;
+        }
         return $this;
     }
 
@@ -93,6 +99,22 @@ abstract class Base implements PDE\IRoutine {
     public function disable(int $iFrameNumber, float $fTimeIndex) : self {
         $this->bEnabled = false;
         return $this;
+    }
+
+    /**
+     * Returns true if the effect can render right now, taking into account expected duration, etc.
+     *
+     * @param  int   $iFrameNumber
+     * @param  float $fTimeIndex
+     * @return bool
+     */
+    protected function canRender(int $iFrameNumber, float $fTimeIndex) : bool {
+        $this->bEnabled = $this->bEnabled && (
+            $this->fUntil > 0.0 ?
+                ($this->fUntil > $fTimeIndex) :
+                true
+            );
+        return $this->bEnabled;
     }
 
     /**

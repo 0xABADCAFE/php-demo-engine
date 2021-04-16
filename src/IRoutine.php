@@ -27,8 +27,11 @@ namespace ABadCafe\PDE;
  */
 interface IRoutine {
 
+    /**
+     * Common parameters. These can be redefined by implementing classes.
+     */
     const COMMON_PARAMETERS = [
-        'fDuration' => 0.0,
+        'fDuration' => 0.0, // How long the routine should run for after being enabled
     ];
 
     /**

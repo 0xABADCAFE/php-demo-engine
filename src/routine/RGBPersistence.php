@@ -48,7 +48,7 @@ class RGBPersistence extends Base {
      * @inheritDoc
      */
     public function render(int $iFrameNumber, float $fTimeIndex) : self {
-        if ($this->bCanRender && $this->bEnabled) {
+        if ($this->canRender($iFrameNumber, $fTimeIndex)) {
             $oPixels = $this->oDisplay->getPixelBuffer();
             $oLast   = $this->oLastBuffer;
 

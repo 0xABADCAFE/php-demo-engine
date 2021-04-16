@@ -36,6 +36,20 @@ class RGBPersistence extends Base {
 
     /**
      * @inheritDoc
+     *
+     * Overridden from base class to capture the current buffer contents
+     * of the display for the blend buffer.
+     */
+    public function enable(int $iFrameNumber, float $fTimeIndex) : self {
+        parent::enable($iFrameNumber, $fTimeIndex);
+        if ($this->bEnabled) {
+            $this->oLastBuffer = clone $this->oDisplay->getPixelBuffer();
+        }
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
      */
     public function setDisplay(PDE\IDisplay $oDisplay) : self {
         $this->bCanRender = ($oDisplay instanceof PDE\Display\IPixelled);
@@ -81,9 +95,6 @@ class RGBPersistence extends Base {
                     }
                     break;
             }
-        } else if (false == $this->bEnabled) {
-            // Copy the frame anyway so that when when we turn it on, our last buffer isn't blank
-            $this->oLastBuffer = clone $this->oDisplay->getPixelBuffer();
         }
         return $this;
     }

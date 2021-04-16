@@ -118,7 +118,6 @@ class AsyncRGB extends Base implements IPixelled, IASCIIArt {
             echo $sRawBuffer . IANSIControl::ATTR_RESET;
             $this->endRedraw();
         }
-        $this->reportRedraw("Subprocess");
     }
 
 }

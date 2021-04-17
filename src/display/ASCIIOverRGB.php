@@ -23,12 +23,12 @@ use ABadCafe\PDE;
 use \SPLFixedArray;
 
 /**
- * AsyncRGB
+ * ASCIIOverRGB
  *
  * Variation on BasicRGB that does the pixel to ANSI encoding and output on a subprocess. This frees up the main process
  * significantly on multicore systems. As an added bonus, it also implements IASCIIArt to allow overdraw.
  */
-class AsyncRGB extends Base implements IPixelled, IASCIIArt {
+class ASCIIOverRGB extends Base implements IPixelled, IASCIIArt {
 
     use TASCIIArt, TPixelled, TInstrumented, TAsynchronous;
 

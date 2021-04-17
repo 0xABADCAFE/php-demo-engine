@@ -1,7 +1,7 @@
 {
     "displays": {
         "default": {
-            "sType": "AsyncRGB",
+            "sType": "ASCIIOverRGB",
             "iWidth": 160,
             "iHeight": 50,
             "iMaxFPS": 30

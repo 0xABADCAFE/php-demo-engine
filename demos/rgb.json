@@ -1,9 +1,17 @@
 {
-    "display": {
-        "sType": "BasicRGB",
-        "iWidth": 160,
-        "iHeight": 50,
-        "iMaxFPS": 30
+    "displays": {
+        "default": {
+            "sType": "BasicRGB",
+            "iWidth": 160,
+            "iHeight": 50,
+            "iMaxFPS": 30
+        },
+        "high": {
+            "sType": "DoubleVerticalRGB",
+            "iWidth": 160,
+            "iHeight": 100,
+            "iMaxFPS": 30
+        }
     },
     "routines": {
         "pulse": {
@@ -13,9 +21,15 @@
             }
         }
     },
-    "timeline": [{
+    "events": [
+        {
             "at": 0.0,
-            "on": "pulse",
+            "on": "routine/pulse",
+            "do": "enable"
+        },
+        {
+            "at": 5.0,
+            "on": "display/high",
             "do": "enable"
         },
         {

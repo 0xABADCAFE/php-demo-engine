@@ -27,7 +27,10 @@ use ABadCafe\PDE\System\Definition;
  */
 class JSON implements System\ILoader {
 
-    private Definition\Display $oDisplay;
+    /**
+     * @var Definition\Display[] $aDisplays
+     */
+    private array $aDisplays;
 
     /**
      * @var Definition\Routine[] $aRoutines
@@ -35,9 +38,9 @@ class JSON implements System\ILoader {
     private array $aRoutines;
 
     /**
-     * @var Definition\Event[] $aTimeline
+     * @var Definition\Event[] $aEvents
      */
-    private array $aTimeline;
+    private array $aEvents;
 
     /**
      * @inheritDoc
@@ -51,13 +54,23 @@ class JSON implements System\ILoader {
             throw new \Exception('Unable to parse ' . $sFilePath . ', invalid JSON?');
         }
 
-        if (!isset($oDocument->display) || !is_object($oDocument->display)) {
+        if (
+            !isset($oDocument->displays) ||
+            !is_object($oDocument->displays) ||
+            empty($oDocument->displays)
+        ) {
             throw new \Exception('Missing or invalid display section');
         }
 
-        $this->oDisplay = new Definition\Display($oDocument->display);
+        foreach ($oDocument->displays as $sName => $oJSON) {
+            $this->aDisplays[$sName] = new Definition\Display($oJSON);
+        }
 
-        if (!isset($oDocument->routines) || !is_object($oDocument->routines)) {
+        if (
+            !isset($oDocument->routines) ||
+            !is_object($oDocument->routines) ||
+            empty($oDocument->routines)
+        ) {
             throw new \Exception('Missing or invalid routines section');
         }
 
@@ -65,20 +78,20 @@ class JSON implements System\ILoader {
             $this->aRoutines[$sName] = new Definition\Routine($oJSON);
         }
 
-        if (!isset($oDocument->timeline) || !is_array($oDocument->timeline)) {
+        if (!isset($oDocument->events) || !is_array($oDocument->events)) {
             throw new \Exception('Missing or invalid timeline section');
         }
 
-        foreach ($oDocument->timeline as $oJSON) {
-            $this->aTimeline[] = new Definition\Event($oJSON);
+        foreach ($oDocument->events as $oJSON) {
+            $this->aEvents[] = new Definition\Event($oJSON);
         }
     }
 
     /**
      * @inheritDoc
      */
-    public function getDisplayDefinition() : Definition\Display {
-        return $this->oDisplay;
+    public function getDisplays() : array {
+        return $this->aDisplays;
     }
 
     /**
@@ -91,8 +104,8 @@ class JSON implements System\ILoader {
     /**
      * @inheritDoc
      */
-    public function getTimeline() : array {
-        return $this->aTimeline;
+    public function getEvents() : array {
+        return $this->aEvents;
     }
 }
 

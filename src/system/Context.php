@@ -31,9 +31,23 @@ use ABadCafe\PDE;
  */
 class Context {
 
+    const
+        NS_DISPLAY = 'display/',
+        NS_ROUTINE = 'routine/',
+        DEFAULT_DISPLAY = self::NS_DISPLAY . 'default'
+    ;
+
+    /**
+     * The active display
+     */
     private PDE\IDisplay $oDisplay;
 
     private IRateLimiter $oRateLimiter;
+
+    /**
+     * @var PDE\IDisplay[] $aRoutineInstances
+     */
+    private array $aDisplayInstances = [];
 
     /**
      * @var PDE\IRoutine[] $aRoutineInstances
@@ -56,9 +70,9 @@ class Context {
      * @param ILoader $oLoader
      */
     public function __construct(ILoader $oLoader) {
-        $this->initialiseDisplay($oLoader->getDisplayDefinition());
+        $this->initialiseDisplays($oLoader->getDisplays());
         $this->initialiseRoutines($oLoader->getRoutines());
-        $this->initialiseTimeline($oLoader->getTimeline());
+        $this->initialiseTimeline($oLoader->getEvents());
     }
 
     /**
@@ -80,14 +94,24 @@ class Context {
     /**
      * Initialie the display properties
      *
-     * @param Definition\Display $oDisplayDefinition
+     * @param Definition\Display[] $aDisplays
      */
-    private function initialiseDisplay(Definition\Display $oDisplayDefinition) {
-        $this->oDisplay     = PDE\Display\Factory::get()->create(
-            $oDisplayDefinition->sType,
-            $oDisplayDefinition->iWidth,
-            $oDisplayDefinition->iHeight
-        );
+    private function initialiseDisplays(array $aDisplayDefinitions) {
+        $oDisplayFactory = PDE\Display\Factory::get();
+        foreach ($aDisplayDefinitions as $sIdentity => $oDisplayDefinition) {
+            $sIdentity = self::NS_DISPLAY . $sIdentity;
+            if (isset($this->aDisplayInstances[$sIdentity])) {
+                throw new \Exception('Duplicate display identity ' . $sIdentity);
+            }
+            $this->aDisplayInstances[$sIdentity] = $oDisplayFactory->create(
+                $oDisplayDefinition->sType,
+                $oDisplayDefinition->iWidth,
+                $oDisplayDefinition->iHeight
+            );
+        }
+
+        $this->oDisplay     = $this->aDisplayInstances[self::DEFAULT_DISPLAY] ?? reset($this->aDisplayInstances);
+        $oDisplayDefinition = $aDisplayDefinitions[self::DEFAULT_DISPLAY]     ?? reset($aDisplayDefinitions);
         $this->oRateLimiter = new RateLimiter\Simple($oDisplayDefinition->iMaxFPS);
     }
 
@@ -99,7 +123,7 @@ class Context {
     private function initialiseRoutines(array $aRoutineDefinitions) {
         $oRoutineFactory = PDE\Routine\Factory::get();
         foreach ($aRoutineDefinitions as $sIdentity => $oRoutineDefinition) {
-
+            $sIdentity = self::NS_ROUTINE . $sIdentity;
             if (isset($this->aRoutineInstances[$sIdentity])) {
                 throw new \Exception('Duplicate routine identity ' . $sIdentity);
             }
@@ -133,34 +157,68 @@ class Context {
     /**
      * Deal with any events on the frame index
      *
-     * @param int $iFrameNumber
+     * @param int   $iFrameNumber
+     * @param float $fTimeIndex
      */
     private function handleEvents(int $iFrameNumber, float $fTimeIndex) {
         if (!empty($this->aEventsByFrameIndex[$iFrameNumber])) {
             foreach ($this->aEventsByFrameIndex[$iFrameNumber] as $oEvent) {
                 if (Definition\Event::END == $oEvent->iAction) {
                     return false;
+                } else if (isset($this->aDisplayInstances[$oEvent->sTarget])) {
+                    $this->handleDisplayEvent($oEvent, $iFrameNumber, $fTimeIndex);
                 } else if (isset($this->aRoutineInstances[$oEvent->sTarget])) {
-                    $oRoutine = $this->aRoutineInstances[$oEvent->sTarget];
-                    switch ($oEvent->iAction) {
-                        case Definition\Event::ENABLE:
-                            $oRoutine->enable($iFrameNumber, $fTimeIndex);
-                            break;
-                        case Definition\Event::DISABLE:
-                            $oRoutine->disable($iFrameNumber, $fTimeIndex);
-                            break;
-                        case Definition\Event::UPDATE:
-                            $oRoutine->setParameters($oEvent->aParameters);
-                            break;
-                        default:
-                            break;
-                    }
+                    $this->handleRoutineEvent($oEvent, $iFrameNumber, $fTimeIndex);
                 }
             }
         }
         return true;
     }
 
+    /**
+     * Handle a display event
+     *
+     * @param Definition\Event $oEvent
+     * @param int              $iFrameNumber
+     * @param float            $fTimeIndex
+     */
+    private function handleDisplayEvent(Definition\Event $oEvent, int $iFrameNumber, float $fTimeIndex) {
+        $oDisplay = $this->aDisplayInstances[$oEvent->sTarget];
+        switch ($oEvent->iAction) {
+            case Definition\Event::ENABLE:
+                $this->oDisplay = $oDisplay;
+                foreach ($this->aRoutineInstances as $oRoutine) {
+                    $oRoutine->setDisplay($this->oDisplay);
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     * Handle a routine event
+     *
+     * @param Definition\Event $oEvent
+     * @param int              $iFrameNumber
+     * @param float            $fTimeIndex
+     */
+    private function handleRoutineEvent(Definition\Event $oEvent, int $iFrameNumber, float $fTimeIndex) {
+        $oRoutine = $this->aRoutineInstances[$oEvent->sTarget];
+        switch ($oEvent->iAction) {
+            case Definition\Event::ENABLE:
+                $oRoutine->enable($iFrameNumber, $fTimeIndex);
+                break;
+            case Definition\Event::DISABLE:
+                $oRoutine->disable($iFrameNumber, $fTimeIndex);
+                break;
+            case Definition\Event::UPDATE:
+                $oRoutine->setParameters($oEvent->aParameters);
+                break;
+            default:
+                break;
+        }
+    }
     /**
      * Run the set of currently active routines, in priority order.
      *
@@ -172,4 +230,5 @@ class Context {
             $this->aRoutineInstances[$sIdentity]->render($iFrameNumber, $fTimeIndex);
         }
     }
+
 }

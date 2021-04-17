@@ -32,7 +32,7 @@ class Factory {
     const TYPES = [
         'PlainASCII'        => PlainASCII::class,
         'BasicRGB'          => BasicRGB::class,
-        'AsyncRGB'          => AsyncRGB::class,
+        'ASCIIOverRGB'      => ASCIIOverRGB::class,
         'DoubleVerticalRGB' => DoubleVerticalRGB::class,
     ];
 

@@ -27,11 +27,18 @@ use ABadCafe\PDE;
  *
  * TODO controls and optimise
  */
-class RGBImage extends Base {
+class RGBImage extends Base implements IResourceLoader {
+
+    use TResourceLoader;
 
     const DEFAULT_PARAMETERS = [
         'sPath' => 'required'
     ];
+
+    public function preload() : self {
+        $this->loadPNM($this->oParameters->sPath);
+        return $this;
+    }
 
     /**
      * @inheritDoc
@@ -55,22 +62,19 @@ class RGBImage extends Base {
      * @inheritDoc
      */
     protected function parameterChange() {
-        $this->loadPNM($this->oParameters->sPath);
     }
 
     /**
      * Load a PNM image
      */
     protected function loadPNM(string $sPath) {
-        if (file_exists($sPath) && is_readable($sPath)) {
-            $sRaw = file_get_contents($sPath);
-            if (preg_match('/^(\d+)\s+(\d+)$/m', $sRaw, $aMatches)) {
-                $iWidth  = (int)$aMatches[1];
-                $iHeight = (int)$aMatches[2];
-                $sData   = substr($sRaw, ($iWidth * $iHeight * -3));
-                printf("%d x %d, %d\n", $iWidth, $iHeight, strlen($sData));
-                exit();
-            }
+        $sRaw = $this->loadFile($sPath);
+        if (preg_match('/^(\d+)\s+(\d+)$/m', $sRaw, $aMatches)) {
+            $iWidth  = (int)$aMatches[1];
+            $iHeight = (int)$aMatches[2];
+            $sData   = substr($sRaw, ($iWidth * $iHeight * -3));
+            printf("%d x %d, %d\n", $iWidth, $iHeight, strlen($sData));
+            exit();
         }
     }
 

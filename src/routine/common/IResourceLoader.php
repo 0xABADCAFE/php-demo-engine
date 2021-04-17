@@ -18,45 +18,29 @@
 
 declare(strict_types=1);
 
-namespace ABadCafe\PDE\System;
+namespace ABadCafe\PDE\Routine;
+
+use ABadCafe\PDE;
 
 /**
- * ILoader
+ * IResourceLoader
  *
- * Interface for demo file loaders.
+ * Tag interface for routines that need to be able to load additional data
  */
-interface ILoader {
+interface IResourceLoader {
 
     /**
-     * Expect to load from a file specified as a string.
+     * Set the base path
      *
-     * @param string $sFilePath
+     * @param  string $sBasePath
+     * @return self
      */
-    public function __construct(string $sFilePath);
+    public function setBasePath(string $sBasePath) : self;
 
     /**
-     * Obtain the base path, i.e. the directory in which the demo file is located.
+     * Preload any resources
      *
-     * @return string
+     * @return self
      */
-    public function getBasePath() : string;
-
-    /**
-     * Return an associative array of the Display definitions in file.
-     *
-     * @return Definition\Display[] - keyed by identifer
-     */
-    public function getDisplays() : array;
-
-    /**
-    * Return an associative array of the Routine definitions in the file.
-     *
-     * @return Definition\Routine[] - keyed by identifier
-     */
-    public function getRoutines() : array;
-
-    /**
-     * @return Definition\Event[]
-     */
-    public function getEvents() : array;
+    public function preload() : self;
 }

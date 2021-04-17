@@ -1,9 +1,11 @@
 {
-    "display": {
-        "sType": "DoubleVerticalRGB",
-        "iWidth": 160,
-        "iHeight": 100,
-        "iMaxFPS": 30
+    "displays": {
+        "default": {
+            "sType": "DoubleVerticalRGB",
+            "iWidth": 160,
+            "iHeight": 100,
+            "iMaxFPS": 30
+        }
     },
     "routines": {
         "pulse": {
@@ -30,7 +32,7 @@
             }
         }
     },
-    "timeline": [
+    "events": [
         {
             "at": 0.0,
             "on": "pulse",

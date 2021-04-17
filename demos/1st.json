@@ -1,9 +1,11 @@
 {
-    "display": {
-        "sType": "PlainASCII",
-        "iWidth": 160,
-        "iHeight": 50,
-        "iMaxFPS": 30
+    "displays": {
+        "default": {
+            "sType": "PlainASCII",
+            "iWidth": 160,
+            "iHeight": 50,
+            "iMaxFPS": 30
+        }
     },
     "routines": {
         "lines": {
@@ -24,7 +26,8 @@
             }
         }
     },
-    "timeline": [{
+    "events": [
+        {
             "at": 0.0,
             "on": "lines",
             "do": "enable"

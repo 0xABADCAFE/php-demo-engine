@@ -1,9 +1,11 @@
 {
-    "display": {
-        "sType": "AsyncRGB",
-        "iWidth": 160,
-        "iHeight": 50,
-        "iMaxFPS": 20
+    "displays": {
+        "default": {
+            "sType": "AsyncRGB",
+            "iWidth": 160,
+            "iHeight": 50,
+            "iMaxFPS": 20
+        }
     },
     "routines": {
         "static": {
@@ -13,7 +15,8 @@
             }
         }
     },
-    "timeline": [{
+    "events": [
+        {
             "at": 0.0,
             "on": "static",
             "do": "enable"

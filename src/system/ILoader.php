@@ -35,11 +35,15 @@ interface ILoader {
     public function __construct(string $sFilePath);
 
     /**
-     * @return Definition\Display
+     * Return an associative array of the Display definitions in file.
+     *
+     * @return Definition\Display[] - keyed by identifer
      */
-    public function getDisplayDefinition() : Definition\Display;
+    public function getDisplays() : array;
 
     /**
+    * Return an associative array of the Routine definitions in the file.
+     *
      * @return Definition\Routine[] - keyed by identifier
      */
     public function getRoutines() : array;
@@ -47,5 +51,5 @@ interface ILoader {
     /**
      * @return Definition\Event[]
      */
-    public function getTimeline() : array;
+    public function getEvents() : array;
 }

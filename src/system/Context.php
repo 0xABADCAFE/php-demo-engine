@@ -56,9 +56,9 @@ class Context {
      * @param ILoader $oLoader
      */
     public function __construct(ILoader $oLoader) {
-        $this->initialiseDisplay($oLoader->getDisplayDefinition());
+        $this->initialiseDisplays($oLoader->getDisplays());
         $this->initialiseRoutines($oLoader->getRoutines());
-        $this->initialiseTimeline($oLoader->getTimeline());
+        $this->initialiseTimeline($oLoader->getEvents());
     }
 
     /**
@@ -80,9 +80,10 @@ class Context {
     /**
      * Initialie the display properties
      *
-     * @param Definition\Display $oDisplayDefinition
+     * @param Definition\Display[] $aDisplays
      */
-    private function initialiseDisplay(Definition\Display $oDisplayDefinition) {
+    private function initialiseDisplays(array $sDisplayDefinitions) {
+        $oDisplayDefinition = reset($sDisplayDefinitions);
         $this->oDisplay     = PDE\Display\Factory::get()->create(
             $oDisplayDefinition->sType,
             $oDisplayDefinition->iWidth,

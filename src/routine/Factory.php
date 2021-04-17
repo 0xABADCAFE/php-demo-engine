@@ -36,6 +36,7 @@ class Factory {
         'Toroid'         => Toroid::class,
         'RGBPulse'       => RGBPulse::class,
         'RGBPersistence' => RGBPersistence::class,
+        'RGBImage'       => RGBImage::class,
     ];
 
     private static ?self $oInstance = null;

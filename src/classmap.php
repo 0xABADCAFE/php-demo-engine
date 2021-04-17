@@ -23,6 +23,7 @@ const CLASS_MAP = [
   'ABadCafe\\PDE\\Routine\\SimpleLine' => '/routine/SimpleLine.php',
   'ABadCafe\\PDE\\Routine\\RGBPulse' => '/routine/RGBPulse.php',
   'ABadCafe\\PDE\\Routine\\Toroid' => '/routine/Toroid.php',
+  'ABadCafe\\PDE\\Routine\\RGBImage' => '/routine/RGBImage.php',
   'ABadCafe\\PDE\\Routine\\Factory' => '/routine/Factory.php',
   'ABadCafe\\PDE\\Routine\\RGBPersistence' => '/routine/RGBPersistence.php',
   'ABadCafe\\PDE\\Routine\\StaticNoise' => '/routine/StaticNoise.php',

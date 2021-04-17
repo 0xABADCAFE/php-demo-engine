@@ -54,7 +54,11 @@ class JSON implements System\ILoader {
             throw new \Exception('Unable to parse ' . $sFilePath . ', invalid JSON?');
         }
 
-        if (!isset($oDocument->displays) || !is_object($oDocument->displays)) {
+        if (
+            !isset($oDocument->displays) ||
+            !is_object($oDocument->displays) ||
+            empty($oDocument->displays)
+        ) {
             throw new \Exception('Missing or invalid display section');
         }
 
@@ -62,7 +66,11 @@ class JSON implements System\ILoader {
             $this->aDisplays[$sName] = new Definition\Display($oJSON);
         }
 
-        if (!isset($oDocument->routines) || !is_object($oDocument->routines)) {
+        if (
+            !isset($oDocument->routines) ||
+            !is_object($oDocument->routines) ||
+            empty($oDocument->routines)
+        ) {
             throw new \Exception('Missing or invalid routines section');
         }
 

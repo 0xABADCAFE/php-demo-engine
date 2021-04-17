@@ -5,6 +5,12 @@
             "iWidth": 160,
             "iHeight": 50,
             "iMaxFPS": 20
+        },
+        "async": {
+            "sType": "AsyncRGB",
+            "iWidth": 160,
+            "iHeight": 50,
+            "iMaxFPS": 20
         }
     },
     "routines": {
@@ -28,6 +34,11 @@
             "aParameters": {
                 "iBorderV": 4
             }
+        },
+        {
+            "at": 3.0,
+            "on": "async",
+            "do": "enable"
         },
         {
             "at": 4.0,

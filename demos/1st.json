@@ -29,12 +29,12 @@
     "events": [
         {
             "at": 0.0,
-            "on": "lines",
+            "on": "routine/lines",
             "do": "enable"
         },
         {
             "at": 1.0,
-            "on": "lines",
+            "on": "routine/lines",
             "do": "update",
             "aParameters": {
                 "iSpacing": 2
@@ -42,7 +42,7 @@
         },
         {
             "at": 2.0,
-            "on": "lines",
+            "on": "routine/lines",
             "do": "update",
             "aParameters": {
                 "iSpacing": 3
@@ -50,12 +50,12 @@
         },
         {
             "at": 2.0,
-            "on": "doughnut",
+            "on": "routine/doughnut",
             "do": "enable"
         },
         {
             "at": 3.0,
-            "on": "lines",
+            "on": "routine/lines",
             "do": "update",
             "aParameters": {
                 "iRate": 2
@@ -63,7 +63,7 @@
         },
         {
             "at": 4.0,
-            "on": "doughnut",
+            "on": "routine/doughnut",
             "do": "update",
             "aParameters": {
                 "fMinLuma": 1.0,

@@ -24,12 +24,12 @@
     "events": [
         {
             "at": 0.0,
-            "on": "static",
+            "on": "routine/static",
             "do": "enable"
         },
         {
             "at": 2.0,
-            "on": "static",
+            "on": "routine/static",
             "do": "update",
             "aParameters": {
                 "iBorderV": 4
@@ -37,12 +37,12 @@
         },
         {
             "at": 3.0,
-            "on": "async",
+            "on": "display/async",
             "do": "enable"
         },
         {
             "at": 4.0,
-            "on": "static",
+            "on": "routine/static",
             "do": "update",
             "aParameters": {
                 "iBorderH": 8

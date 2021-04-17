@@ -36,12 +36,12 @@
     "events": [
         {
             "at": 0.0,
-            "on": "lines",
+            "on": "routine/lines",
             "do": "enable"
         },
         {
             "at": 1.0,
-            "on": "lines",
+            "on": "routine/lines",
             "do": "update",
             "aParameters": {
                 "iSpacing": 2
@@ -49,7 +49,7 @@
         },
         {
             "at": 2.0,
-            "on": "lines",
+            "on": "routine/lines",
             "do": "update",
             "aParameters": {
                 "iSpacing": 3
@@ -57,12 +57,12 @@
         },
         {
             "at": 2.5,
-            "on": "doughnut",
+            "on": "routine/doughnut",
             "do": "enable"
         },
         {
             "at": 3.0,
-            "on": "lines",
+            "on": "routine/lines",
             "do": "update",
             "aParameters": {
                 "iRate": 2,
@@ -71,7 +71,7 @@
         },
         {
             "at": 4.0,
-            "on": "doughnut",
+            "on": "routine/doughnut",
             "do": "update",
             "aParameters": {
                 "fMinLuma": 1.0,
@@ -80,7 +80,7 @@
         },
         {
             "at": 4.5,
-            "on": "lines",
+            "on": "routine/lines",
             "do": "update",
             "aParameters": {
                 "sFill": "___-_____   ___#__%81"
@@ -88,12 +88,12 @@
         },
         {
             "at": 5.0,
-            "on": "pulse",
+            "on": "routine/pulse",
             "do": "enable"
         },
         {
             "at": 7.0,
-            "on": "lines",
+            "on": "routine/lines",
             "do": "update",
             "aParameters": {
                 "sFill": "~"
@@ -102,7 +102,7 @@
 
         {
             "at": 12.0,
-            "on": "doughnut",
+            "on": "routine/doughnut",
             "do": "update",
             "aParameters": {
                 "iDrawMode": 16
@@ -111,7 +111,7 @@
 
         {
             "at": 14.75,
-            "on": "doughnut",
+            "on": "routine/doughnut",
             "do": "update",
             "aParameters": {
                 "iDrawMode": 32,
@@ -122,7 +122,7 @@
 
         {
             "at": 18.5,
-            "on": "doughnut",
+            "on": "routine/doughnut",
             "do": "update",
             "aParameters": {
                 "iDrawMode": 1,
@@ -132,13 +132,13 @@
 
         {
             "at": 18.5,
-            "on": "pulse",
+            "on": "routine/pulse",
             "do": "disable"
         },
 
         {
             "at": 18.5,
-            "on": "lines",
+            "on": "routine/lines",
             "do": "update",
             "aParameters": {
                 "sFill": "~~~ #____   __##__%81  ."
@@ -147,7 +147,7 @@
 
         {
             "at": 20.0,
-            "on": "lines",
+            "on": "routine/lines",
             "do": "disable"
         },
 

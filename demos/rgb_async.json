@@ -18,7 +18,7 @@
     "events": [
         {
             "at": 0.0,
-            "on": "pulse",
+            "on": "routine/pulse",
             "do": "enable"
         },
         {

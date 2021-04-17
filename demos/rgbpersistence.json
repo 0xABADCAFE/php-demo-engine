@@ -35,22 +35,22 @@
     "events": [
         {
             "at": 0.0,
-            "on": "pulse",
+            "on": "routine/pulse",
             "do": "enable"
         },
         {
             "at": 0.0,
-            "on": "doughnut",
+            "on": "routine/doughnut",
             "do": "enable"
         },
         {
             "at": 3.0,
-            "on": "trails",
+            "on": "routine/trails",
             "do": "enable"
         },
         {
             "at": 6.0,
-            "on": "trails",
+            "on": "routine/trails",
             "do": "update",
             "aParameters": {
                 "iStrength": 1
@@ -58,7 +58,7 @@
         },
         {
             "at": 9.0,
-            "on": "trails",
+            "on": "routine/trails",
             "do": "update",
             "aParameters": {
                 "iStrength": 2

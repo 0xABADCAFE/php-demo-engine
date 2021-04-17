@@ -31,6 +31,15 @@ use ABadCafe\PDE;
  */
 class Context {
 
+    const
+        NS_DISPLAY = 'display/',
+        NS_ROUTINE = 'routine/',
+        DEFAULT_DISPLAY = self::NS_DISPLAY . 'default'
+    ;
+
+    /**
+     * The active display
+     */
     private PDE\IDisplay $oDisplay;
 
     private IRateLimiter $oRateLimiter;
@@ -88,11 +97,9 @@ class Context {
      * @param Definition\Display[] $aDisplays
      */
     private function initialiseDisplays(array $aDisplayDefinitions) {
-        if (empty($aDisplayDefinitions)) {
-
-        }
         $oDisplayFactory = PDE\Display\Factory::get();
         foreach ($aDisplayDefinitions as $sIdentity => $oDisplayDefinition) {
+            $sIdentity = self::NS_DISPLAY . $sIdentity;
             if (isset($this->aDisplayInstances[$sIdentity])) {
                 throw new \Exception('Duplicate display identity ' . $sIdentity);
             }
@@ -103,8 +110,8 @@ class Context {
             );
         }
 
-        $this->oDisplay     = $this->aDisplayInstances['default'] ?? reset($this->aDisplayInstances);
-        $oDisplayDefinition = $aDisplayDefinitions['default'] ?? reset($aDisplayDefinitions);
+        $this->oDisplay     = $this->aDisplayInstances[self::DEFAULT_DISPLAY] ?? reset($this->aDisplayInstances);
+        $oDisplayDefinition = $aDisplayDefinitions[self::DEFAULT_DISPLAY]     ?? reset($aDisplayDefinitions);
         $this->oRateLimiter = new RateLimiter\Simple($oDisplayDefinition->iMaxFPS);
     }
 
@@ -116,7 +123,7 @@ class Context {
     private function initialiseRoutines(array $aRoutineDefinitions) {
         $oRoutineFactory = PDE\Routine\Factory::get();
         foreach ($aRoutineDefinitions as $sIdentity => $oRoutineDefinition) {
-
+            $sIdentity = self::NS_ROUTINE . $sIdentity;
             if (isset($this->aRoutineInstances[$sIdentity])) {
                 throw new \Exception('Duplicate routine identity ' . $sIdentity);
             }

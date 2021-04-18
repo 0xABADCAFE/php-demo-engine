@@ -92,6 +92,33 @@ class DoubleVerticalRGB extends Base implements IPixelled  {
         $iExpectSize = $this->iWidth * $this->iHeight * 4;
         $sTemplate   = IANSIControl::ATTR_BG_RGB_TPL;
         $iShortReads = 0;
+
+        $aTemplates = [
+            // Everything changed
+            0 => IANSIControl::ATTR_FG_RGB_TPL . IANSIControl::ATTR_BG_RGB_TPL . ICustomChars::MAP[0x80],
+
+            // Foreground and Background are equal but changed
+            1 => IANSIControl::ATTR_BG_RGB_TPL . ' ',
+
+            // Foreground and Background unequal, foreground unchanged
+            2 => IANSIControl::ATTR_BG_RGB_TPL . ICustomChars::MAP[0x80],
+
+            // Foreground and Background equal, foreground unchanged
+            3 => IANSIControl::ATTR_BG_RGB_TPL . ' ',
+
+            // Foreground and Background unequal, background unchanged
+            4 => IANSIControl::ATTR_FG_RGB_TPL . ICustomChars::MAP[0x80],
+
+            // Foreground and Backgrounc equal, foreground unchanged
+            5 => IANSIControl::ATTR_BG_RGB_TPL . ' ',
+
+            // Foreground and Background unequal, unchanged
+            6 => ICustomChars::MAP[0x80],
+
+            // Foreground and background unequal, unchanged
+            7 => ' '
+        ];
+
         while (($sInput = $this->receivePixelData($iExpectSize))) {
 
             $iGotSize = strlen($sInput);
@@ -108,23 +135,56 @@ class DoubleVerticalRGB extends Base implements IPixelled  {
             $iEvenOffset = 0;
             $iOddOffset  = $this->iWidth;
 
-            // Todo optimise for cases where either value is unchanged
-            $sTemplate   = IANSIControl::ATTR_FG_RGB_TPL . IANSIControl::ATTR_BG_RGB_TPL . ICustomChars::MAP[0x80];
+            $iLastBackRGB = 0;
+            $iLastForeRGB = 0;
 
             for ($iRow = 0; $iRow < $this->iHeight; $iRow += 2) {
                 $i = $this->iWidth;
                 while ($i--) {
-                    $iForeRGB = $aPixels[$iEvenOffset++];
-                    $iBackRGB = $aPixels[$iOddOffset++];
-                    $sRawBuffer .= sprintf(
-                        $sTemplate,
-                        $iForeRGB >> 16,
-                        ($iForeRGB >> 8) & 0xFF,
-                        ($iForeRGB & 0xFF),
-                        $iBackRGB >> 16,
-                        ($iBackRGB >> 8) & 0xFF,
-                        ($iBackRGB & 0xFF)
-                    );
+                    $iForeRGB  = $aPixels[$iEvenOffset++];
+                    $iBackRGB  = $aPixels[$iOddOffset++];
+                    $iCase     = (int)($iForeRGB == $iBackRGB) | (int)($iForeRGB == $iLastForeRGB) << 1 | (int)($iBackRGB == $iLastBackRGB) << 2;
+                    $sTemplate = $aTemplates[$iCase];
+                    switch ($iCase) {
+                        case 1:
+                        //case 2: //TODO - why does this glitch?
+                        case 3:
+                        case 5:
+                            $sRawBuffer .= sprintf(
+                                $sTemplate,
+                                $iBackRGB >> 16,
+                                ($iBackRGB >> 8) & 0xFF,
+                                ($iBackRGB & 0xFF)
+                            );
+                            break;
+                        case 4:
+                            $sRawBuffer .= sprintf(
+                                $sTemplate,
+                                $iForeRGB >> 16,
+                                ($iForeRGB >> 8) & 0xFF,
+                                ($iForeRGB & 0xFF)
+                            );
+                            break;
+                        case 6:
+                        case 7:
+                            $sRawBuffer .= $sTemplate;
+                            break;
+                        case 0:
+                        default:
+                            $sRawBuffer .= sprintf(
+                                $aTemplates[0],
+                                $iForeRGB >> 16,
+                                ($iForeRGB >> 8) & 0xFF,
+                                ($iForeRGB & 0xFF),
+                                $iBackRGB >> 16,
+                                ($iBackRGB >> 8) & 0xFF,
+                                ($iBackRGB & 0xFF)
+                            );
+
+                    }
+                    $iLastForeRGB = $iForeRGB;
+                    $iLastBackRGB = $iBackRGB;
+
                 }
                 $iEvenOffset += $this->iWidth;
                 $iOddOffset  += $this->iWidth;

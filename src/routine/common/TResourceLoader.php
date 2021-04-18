@@ -18,45 +18,34 @@
 
 declare(strict_types=1);
 
-namespace ABadCafe\PDE\System;
+namespace ABadCafe\PDE\Routine;
+
+use ABadCafe\PDE;
 
 /**
- * ILoader
+ * TResourceLoader
  *
- * Interface for demo file loaders.
+ * Common implementation for IResourceLoader
  */
-interface ILoader {
+trait TResourceLoader {
+
+    public function setBasePath(string $sBasePath) : self {
+        $this->sBasePath = $sBasePath;
+        return $this;
+    }
 
     /**
-     * Expect to load from a file specified as a string.
+     * Load a file.
      *
-     * @param string $sFilePath
-     */
-    public function __construct(string $sFilePath);
-
-    /**
-     * Obtain the base path, i.e. the directory in which the demo file is located.
-     *
+     * @param  string $sRelativePath
      * @return string
+     * @throws \Exception
      */
-    public function getBasePath() : string;
-
-    /**
-     * Return an associative array of the Display definitions in file.
-     *
-     * @return Definition\Display[] - keyed by identifer
-     */
-    public function getDisplays() : array;
-
-    /**
-    * Return an associative array of the Routine definitions in the file.
-     *
-     * @return Definition\Routine[] - keyed by identifier
-     */
-    public function getRoutines() : array;
-
-    /**
-     * @return Definition\Event[]
-     */
-    public function getEvents() : array;
+    private function loadFile(string $sRelativePath) : string {
+        $sPath = $this->sBasePath . $sRelativePath;
+        if (file_exists($sPath) && is_readable($sPath)) {
+            return file_get_contents($sPath);
+        }
+        throw new \Exception($sPath . ' could not be read');
+    }
 }

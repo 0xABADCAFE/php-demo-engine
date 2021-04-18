@@ -1,0 +1,30 @@
+{
+    "displays": {
+        "default": {
+            "sType": "DoubleVerticalRGB",
+            "iWidth": 100,
+            "iHeight": 100,
+            "iMaxFPS": 30
+        }
+    },
+    "routines": {
+        "image": {
+            "sType": "RGBImage",
+            "iPriority": 0,
+            "aParameters": {
+                "sPath": "images/slipped_disc_1.ppm"
+            }
+        }
+    },
+    "events": [
+        {
+            "at": 0.0,
+            "on": "routine/image",
+            "do": "enable"
+        },
+        {
+            "at": 0.1,
+            "do": "end"
+        }
+    ]
+}

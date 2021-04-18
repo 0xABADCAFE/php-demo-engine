@@ -42,6 +42,8 @@ class JSON implements System\ILoader {
      */
     private array $aEvents;
 
+    private string $sBasePath;
+
     /**
      * @inheritDoc
      */
@@ -53,6 +55,8 @@ class JSON implements System\ILoader {
         if (!$oDocument) {
             throw new \Exception('Unable to parse ' . $sFilePath . ', invalid JSON?');
         }
+
+        $this->sBasePath = dirname($sFilePath) . '/';
 
         if (
             !isset($oDocument->displays) ||
@@ -85,6 +89,13 @@ class JSON implements System\ILoader {
         foreach ($oDocument->events as $oJSON) {
             $this->aEvents[] = new Definition\Event($oJSON);
         }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getBasePath() : string {
+        return $this->sBasePath;
     }
 
     /**

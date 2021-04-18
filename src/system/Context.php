@@ -71,7 +71,7 @@ class Context {
      */
     public function __construct(ILoader $oLoader) {
         $this->initialiseDisplays($oLoader->getDisplays());
-        $this->initialiseRoutines($oLoader->getRoutines());
+        $this->initialiseRoutines($oLoader->getRoutines(), $oLoader->getBasePath());
         $this->initialiseTimeline($oLoader->getEvents());
     }
 
@@ -120,18 +120,23 @@ class Context {
      *
      * @param Definition\Routine[] $aRoutineDefinitions
      */
-    private function initialiseRoutines(array $aRoutineDefinitions) {
+    private function initialiseRoutines(array $aRoutineDefinitions, string $sBasePath) {
         $oRoutineFactory = PDE\Routine\Factory::get();
         foreach ($aRoutineDefinitions as $sIdentity => $oRoutineDefinition) {
             $sIdentity = self::NS_ROUTINE . $sIdentity;
             if (isset($this->aRoutineInstances[$sIdentity])) {
                 throw new \Exception('Duplicate routine identity ' . $sIdentity);
             }
-            $this->aRoutineInstances[$sIdentity] = $oRoutineFactory->create(
+            $this->aRoutineInstances[$sIdentity] = $oRoutine = $oRoutineFactory->create(
                 $oRoutineDefinition->sType,
                 $this->oDisplay,
                 $oRoutineDefinition->aParameters
             );
+            if ($oRoutine instanceof PDE\Routine\IResourceLoader) {
+                $oRoutine
+                    ->setBasePath($sBasePath)
+                    ->preload();
+            }
             $this->aRoutinePriorities[$sIdentity] = $oRoutineDefinition->iPriority;
         }
         asort($this->aRoutinePriorities, SORT_NUMERIC);

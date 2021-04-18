@@ -24,6 +24,8 @@ A bit of fun. A very simple ASCII Display with some routines.
 
 * PHP 7.4.15 or higher.
     * Lower versions of 7.4 may work but 7.4.3 is know not to due to buggy covariant return support.
+* A terminal that supports arbitrary RGB ANSI escape sequences and UTF8 blockmode characters.
+    * To check if your terminal is likely to work, download the [test card](./docs/testcard.txt) textfile, cat it in your termimal anc compare it to the expected reference output [image](./docs/testcard.png).
 * A sense of humour.
 * A disregard for best practise and standards.
 

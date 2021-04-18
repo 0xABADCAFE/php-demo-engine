@@ -2,7 +2,7 @@
     "displays": {
         "default": {
             "sType": "DoubleVerticalRGB",
-            "iWidth": 160,
+            "iWidth": 100,
             "iHeight": 100,
             "iMaxFPS": 30
         }

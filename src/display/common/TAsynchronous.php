@@ -35,13 +35,106 @@ trait TAsynchronous {
     private array $aSocketPair = [];
 
     /**
-     * Write the bixel buffer
+     * Construct the required message header, containing the following 32-bit fields
+     * { magic, command, size, check }
+     *
+     * @param  int $iCommand
+     * @param  int $iSize
+     * @return string
+     */
+    private function makeMessageHeader(int $iCommand, int $iSize) : string {
+        return pack(
+            'V4',
+            IAsynchronous::HEADER_MAGIC,
+            $iCommand,
+            $iSize,
+            IAsynchronous::HEADER_MAGIC ^ $iCommand ^ $iSize
+        );
+    }
+
+    /**
+     * Send a message containing the updated pixel buffer
      *
      * @param SPLFixedArray $oPixels
+     * @param int           $iDataFormat
      */
-    private function sendPixels(SPLFixedArray $oPixels) {
-        $sData = pack('V*', ...$oPixels);
-        socket_write($this->aSocketPair[1], $sData, strlen($sData));
+    private function sendNewFrameMessage(SPLFixedArray $oPixels, int $iDataFormat) {
+        if (!isset(IAsynchronous::DATA_FORMAT_MAP[$iDataFormat])) {
+            throw new \InvalidArgumentException();
+        }
+        $iSize = count($oPixels) * $iDataFormat;
+        $sData = $this->makeMessageHeader(IAsynchronous::MESSAGE_NEW_FRAME, $iSize) . pack(
+            IAsynchronous::DATA_FORMAT_MAP[$iDataFormat],
+            ...$oPixels
+        );
+        socket_write($this->aSocketPair[1], $sData, IAsynchronous::HEADER_SIZE + $iSize);
+    }
+
+    /**
+     * Send a message with a new write mask to use
+     *
+     * @param int $iWriteMask
+     */
+    private function sendSetWritemaskMessage(int $iWriteMask) {
+        $sData = $this->makeMessageHeader(IAsynchronous::MESSAGE_SET_WRITEMASK, 8) . pack('Q', $iWriteMask);
+        socket_write($this->aSocketPair[1], $sData, IAsynchronous::HEADER_SIZE + 8);
+    }
+
+    /**
+     * Send an arbitrary raw message.
+     *
+     * @param int    $iCommand
+     * @param string $sRawData
+     */
+    private function sendRawMessage(int $iCommand, string $sRawData) {
+        $iSize = strlen($sRawData);
+        $sData = $this->makeMessageHeader($iCommand, $iSize) . $sRawData;
+        socket_write($this->aSocketPair[1], $sData, IAsynchronous::HEADER_SIZE + $iSize);
+    }
+
+    /**
+     * Attempt to receive a message header. If successful and the message contains
+     * additional data, we expect to have to recieve it immediatelu afterwards/
+     *
+     * @return object|null { int $iMagic, $iCommand, $iSize, $iCheck }
+     */
+    private function receiveMessageHeader() : ?object {
+        $sData   = $this->receiveData(IAsynchronous::HEADER_SIZE);
+        if (empty($sData)) {
+            return null;
+        }
+        $oHeader = unpack(
+            'ViMagic/ViCommand/ViSize/ViCheck',
+            $sData
+        );
+        if (false === $oHeader) {
+            throw new \Exception("Could not read message header");
+        }
+        $oHeader = (object)$oHeader;
+        if (
+            IAsynchronous::HEADER_MAGIC !== $oHeader->iMagic ||
+            ($oHeader->iMagic ^ $oHeader->iCommand ^ $oHeader->iSize) !== $oHeader->iCheck
+        ) {
+            throw new \Exception("Invalid header definition/check");
+        }
+        return $oHeader;
+    }
+
+    /**
+     * Try to receive a given sized chunk of data.
+     */
+    private function receiveData(int $iExpectSize, int $iAttempts = 3) : string {
+        $sData     = socket_read($this->aSocketPair[0], $iExpectSize, PHP_BINARY_READ);
+        $iGotSize  = strlen($sData);
+        while ($iGotSize < $iExpectSize && $iAttempts--) {
+            usleep(100);
+            $sData .= socket_read($this->aSocketPair[0], $iExpectSize - $iGotSize);
+            $iGotSize = strlen($sData);
+        }
+        if (0 == $iAttempts) {
+            throw new \Exception("Gave up attempting to read " . $iExpectSize . " bytes");
+        }
+        return $sData;
     }
 
     /**
@@ -81,13 +174,6 @@ trait TAsynchronous {
         exit();
     }
 
-    /**
-     * @param int $iExpectSize
-     * return string
-     */
-    private function receivePixelData(int $iExpectSize) {
-        return socket_read($this->aSocketPair[0], $iExpectSize, PHP_BINARY_READ);
-    }
 
     /**
      * Safely close and dispose of an enumerated socket.

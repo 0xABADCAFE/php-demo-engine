@@ -37,6 +37,7 @@ class Factory {
         'RGBPulse'       => RGBPulse::class,
         'RGBPersistence' => RGBPersistence::class,
         'RGBImage'       => RGBImage::class,
+        'RGBMask'        => RGBMask::class,
     ];
 
     private static ?self $oInstance = null;

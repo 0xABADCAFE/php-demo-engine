@@ -63,10 +63,11 @@ class BasicRGB extends Base implements IPixelled {
      */
     public function redraw() : self {
         $this->beginRedraw();
-        $sRawBuffer = IANSIControl::CRSR_TOP_LEFT;
+        $sRawBuffer = IANSIControl::CRSR_TOP_LEFT . sprintf(IANSIControl::ATTR_BG_RGB_TPL, 0, 0, 0);
         $iLastRGB  = 0;
         $sTemplate = IANSIControl::ATTR_BG_RGB_TPL . ' ';
         foreach ($this->oPixels as $j => $iRGB) {
+            $iRGB &= $this->iRGBWriteMask;
             $sRawBuffer .= $this->aLineBreaks[$j] ?? '';
             if ($iRGB !== $iLastRGB) {
                 $sRawBuffer .= sprintf(

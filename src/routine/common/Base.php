@@ -109,11 +109,16 @@ abstract class Base implements PDE\IRoutine {
      * @return bool
      */
     protected function canRender(int $iFrameNumber, float $fTimeIndex) : bool {
-        $this->bEnabled = $this->bEnabled && (
+        $bWasEnabled   = $this->bEnabled;
+        $bStillEnabled = $bWasEnabled && (
             $this->fUntil > 0.0 ?
                 ($this->fUntil > $fTimeIndex) :
                 true
             );
+        // Disable via the method call in case any routines override it.
+        if ($bWasEnabled && !$bStillEnabled) {
+            $this->disable($iFrameNumber, $fTimeIndex);
+        }
         return $this->bEnabled;
     }
 

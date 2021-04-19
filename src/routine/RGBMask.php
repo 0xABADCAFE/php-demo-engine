@@ -18,64 +18,53 @@
 
 declare(strict_types=1);
 
-namespace ABadCafe\PDE\Display;
+namespace ABadCafe\PDE\Routine;
+
 use ABadCafe\PDE;
-use \SPLFixedArray;
 
 /**
- * TPixelled
+ * Changes the write mask
  *
- * A simple mixin for use with the IPixelled interface
  */
-trait TPixelled {
+class RGBMask extends Base {
 
-    private SPLFixedArray $oPixels, $oNewPixels;
+    const DEFAULT_PARAMETERS = [
+        'sMask' => "FFFFFF"
+    ];
 
-    private int $iPixelFormat, $iRGBWriteMask = 0xFFFFFF;
-
-    /**
-     * @inheritDoc
-     */
-    private function initPixelBuffer(int $iWidth, int $iHeight, int $iPixelFormat) {
-        $this->oPixels      = clone // drop through
-        $this->oNewPixels   = SPLFixedArray::fromArray(array_fill(0, $iWidth * $iHeight, 0));
-        $this->iPixelFormat = $iPixelFormat;
-    }
-
+    private int $iMask = 0xFFFFFF;
 
     /**
      * @inheritDoc
      */
-    private function resetPixelBuffer() {
-        $this->oPixels = clone $this->oNewPixels;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getPixelFormat() : int {
-        return $this->iPixelFormat;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getPixelBuffer() : SPLFixedArray {
-        return $this->oPixels;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setRGBWriteMask(int $iMask) : self {
-        $this->iRGBWriteMask = $iMask;
+    public function setDisplay(PDE\IDisplay $oDisplay) : self {
+        $this->bCanRender   = ($oDisplay instanceof PDE\Display\IPixelled);
+        $this->oDisplay     = $oDisplay;
         return $this;
     }
 
     /**
      * @inheritDoc
      */
-    public function getRGBWriteMask() : int {
-        return $this->iRGBWriteMask;
+    public function render(int $iFrameNumber, float $fTimeIndex) : self {
+        if ($this->canRender($iFrameNumber, $fTimeIndex)) {
+            $this->oDisplay->setRGBWriteMask($this->iMask);
+        }
+        return $this;
+    }
+
+    public function disable(int $iFrameNumber, float $fTimeIndex) : self {
+        parent::disable($iFrameNumber, $fTimeIndex);
+        if ($this->bCanRender) {
+            $this->oDisplay->setRGBWriteMask(0xFFFFFF);
+        }
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function parameterChange() {
+        $this->iMask = (int)base_convert($this->oParameters->sMask, 16, 10);
     }
 }

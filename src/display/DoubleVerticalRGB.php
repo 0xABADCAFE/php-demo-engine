@@ -26,7 +26,7 @@ use \SPLFixedArray;
  * DoubleVerticalRGB
  *
  */
-class DoubleVerticalRGB extends Base implements IPixelled  {
+class DoubleVerticalRGB extends Base implements IPixelled, IAsynchronous {
 
     use TPixelled, TInstrumented, TAsynchronous;
 
@@ -78,8 +78,19 @@ class DoubleVerticalRGB extends Base implements IPixelled  {
      */
     public function redraw() : self {
         $this->beginRedraw();
-        $this->sendPixels($this->oPixels);
+        $this->sendNewFrameMessage($this->oPixels, self::DATA_FORMAT_32);
         $this->endRedraw();
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setRGBWriteMask(int $iMask) : self {
+        if ($iMask !== $this->iRGBWriteMask) {
+            $this->iRGBWriteMask = $iMask;
+            $this->sendSetWritemaskMessage($iMask);
+        }
         return $this;
     }
 
@@ -87,12 +98,7 @@ class DoubleVerticalRGB extends Base implements IPixelled  {
      * Main subprocess loop. This sits and waits for data from the socket. When the data arrives
      * it decodes and prints it.
      */
-    private function subprocessRenderLoop() {
-        $sInput  = '';
-        $iExpectSize = $this->iWidth * $this->iHeight * 4;
-        $sTemplate   = IANSIControl::ATTR_BG_RGB_TPL;
-        $iShortReads = 0;
-
+    protected function subprocessRenderLoop() {
         $aTemplates = [
             // Everything changed
             0 => IANSIControl::ATTR_FG_RGB_TPL . IANSIControl::ATTR_BG_RGB_TPL . ICustomChars::MAP[0x80],
@@ -119,85 +125,92 @@ class DoubleVerticalRGB extends Base implements IPixelled  {
             7 => ' '
         ];
 
-        while (($sInput = $this->receivePixelData($iExpectSize))) {
+        $sInitial = IANSIControl::CRSR_TOP_LEFT . sprintf(IANSIControl::ATTR_BG_RGB_TPL, 0, 0, 0);
 
-            $iGotSize = strlen($sInput);
-            while ($iGotSize < $iExpectSize) {
-                usleep(100);
-                $sInput .= $this->receivePixelData($iExpectSize - $iGotSize);
-                $iGotSize = strlen($sInput);
-                ++$iShortReads;
+        while (($oMessage = $this->receiveMessageHeader())) {
+
+            // Get any expected data following the message header
+            $sData = $oMessage->iSize > 0 ? $this->receiveData($oMessage->iSize) : null;
+
+            switch ($oMessage->iCommand) {
+                case self::MESSAGE_SET_WRITEMASK:
+                    $aData = unpack('Q', $sData);
+                    $this->iRGBWriteMask = reset($aData);
+                    break;
+
+                case self::MESSAGE_NEW_FRAME:
+                    $this->drawFrame($sData, $sInitial, $aTemplates);
+                    break;
             }
+        }
+    }
 
-            $this->beginRedraw();
-            $aPixels     = array_values(unpack('V*', $sInput));
-            $sRawBuffer  = IANSIControl::CRSR_TOP_LEFT;
-            $iEvenOffset = 0;
-            $iOddOffset  = $this->iWidth;
+    private function drawFrame(string $sData, string $sInitial, array $aTemplates) {
+        $this->beginRedraw();
+        $aPixels     = array_values(unpack('V*', $sData));
+        $sRawBuffer  = $sInitial;
+        $iEvenOffset = 0;
+        $iOddOffset  = $this->iWidth;
 
-            $iLastBackRGB = 0;
-            $iLastForeRGB = 0;
+        $iLastBackRGB = 0;
+        $iLastForeRGB = 0;
 
-            for ($iRow = 0; $iRow < $this->iHeight; $iRow += 2) {
-                $i = $this->iWidth;
-                while ($i--) {
-                    $iForeRGB  = $aPixels[$iEvenOffset++];
-                    $iBackRGB  = $aPixels[$iOddOffset++];
-                    $iCase     = (int)($iForeRGB == $iBackRGB) | (int)($iForeRGB == $iLastForeRGB) << 1 | (int)($iBackRGB == $iLastBackRGB) << 2;
-                    $sTemplate = $aTemplates[$iCase];
-                    switch ($iCase) {
-                        case 1:
-                        //case 2: //TODO - why does this glitch?
-                        case 3:
-                        case 5:
-                            $sRawBuffer .= sprintf(
-                                $sTemplate,
-                                $iBackRGB >> 16,
-                                ($iBackRGB >> 8) & 0xFF,
-                                ($iBackRGB & 0xFF)
-                            );
-                            break;
-                        case 4:
-                            $sRawBuffer .= sprintf(
-                                $sTemplate,
-                                $iForeRGB >> 16,
-                                ($iForeRGB >> 8) & 0xFF,
-                                ($iForeRGB & 0xFF)
-                            );
-                            break;
-                        case 6:
-                        case 7:
-                            $sRawBuffer .= $sTemplate;
-                            break;
-                        case 0:
-                        default:
-                            $sRawBuffer .= sprintf(
-                                $aTemplates[0],
-                                $iForeRGB >> 16,
-                                ($iForeRGB >> 8) & 0xFF,
-                                ($iForeRGB & 0xFF),
-                                $iBackRGB >> 16,
-                                ($iBackRGB >> 8) & 0xFF,
-                                ($iBackRGB & 0xFF)
-                            );
-
-                    }
-                    $iLastForeRGB = $iForeRGB;
-                    $iLastBackRGB = $iBackRGB;
+        for ($iRow = 0; $iRow < $this->iHeight; $iRow += 2) {
+            $i = $this->iWidth;
+            while ($i--) {
+                $iForeRGB  = $aPixels[$iEvenOffset++] & $this->iRGBWriteMask;
+                $iBackRGB  = $aPixels[$iOddOffset++]  & $this->iRGBWriteMask;
+                $iCase     = (int)($iForeRGB == $iBackRGB) | (int)($iForeRGB == $iLastForeRGB) << 1 | (int)($iBackRGB == $iLastBackRGB) << 2;
+                $sTemplate = $aTemplates[$iCase];
+                //++$aCaseCount[$iCase];
+                switch ($iCase) {
+                    case 1:
+                    //case 2: //TODO - why does this glitch?
+                    case 3:
+                    case 5:
+                        $sRawBuffer .= sprintf(
+                            $sTemplate,
+                            $iBackRGB >> 16,
+                            ($iBackRGB >> 8) & 0xFF,
+                            ($iBackRGB & 0xFF)
+                        );
+                        break;
+                    case 4:
+                        $sRawBuffer .= sprintf(
+                            $sTemplate,
+                            $iForeRGB >> 16,
+                            ($iForeRGB >> 8) & 0xFF,
+                            ($iForeRGB & 0xFF)
+                        );
+                        break;
+                    case 6:
+                    case 7:
+                        $sRawBuffer .= $sTemplate;
+                        break;
+                    case 0:
+                    default:
+                        $sRawBuffer .= sprintf(
+                            $aTemplates[0],
+                            $iForeRGB >> 16,
+                            ($iForeRGB >> 8) & 0xFF,
+                            ($iForeRGB & 0xFF),
+                            $iBackRGB >> 16,
+                            ($iBackRGB >> 8) & 0xFF,
+                            ($iBackRGB & 0xFF)
+                        );
 
                 }
-                $iEvenOffset += $this->iWidth;
-                $iOddOffset  += $this->iWidth;
-                $sRawBuffer .= "\n";
+                $iLastForeRGB = $iForeRGB;
+                $iLastBackRGB = $iBackRGB;
             }
-            ob_start();
-            echo $sRawBuffer . IANSIControl::ATTR_RESET;
-            ob_end_flush();
-            $this->endRedraw();
+            $iEvenOffset += $this->iWidth;
+            $iOddOffset  += $this->iWidth;
+            $sRawBuffer .= "\n";
         }
-        echo "\n";
-        $this->reportRedraw("Subprocess");
-        echo "\nShort reads: " . $iShortReads . "\n";
+        ob_start(null, 0);
+        echo $sRawBuffer . IANSIControl::ATTR_RESET;
+        ob_end_flush();
+        $this->endRedraw();
     }
 
 }

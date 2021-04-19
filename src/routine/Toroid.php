@@ -45,7 +45,8 @@ class Toroid extends Base {
         DRAW_BLOCK_RGB          = 32,
 
         MASK_NEEDS_ASCII_BUFFER = 15,
-        MASK_NEEDS_PIX_BUFFER   = 62
+        MASK_NEEDS_PIX_BUFFER   = 62,
+        PALETTE_SIZE            = 256
     ;
 
     const PLOT_FUNCTIONS = [
@@ -89,11 +90,23 @@ class Toroid extends Base {
     /**
      * Pixel specific mode rendering facts
      */
-    private array $aPalette = [
-        0, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0x3333AA, 0x6666BB, 0x9999CC, 0xCCCCDD, 0xEEEEEE, 0xFFFFFF
+    private array $aPalettePoints = [
+        0 => 0x000000,
+        200 => 0x000FF,
+        255 => 0xFFFFF
     ];
 
-    private int $iMaxPallete = 15;
+    private SPLFixedArray $oPalette;
+
+    /**
+     * Basic constructor
+     *
+     * @implements IRoutine::__construct()
+     */
+    public function __construct(PDE\IDisplay $oDisplay, array $aParameters = []) {
+        parent::__construct($oDisplay, $aParameters);
+        $this->oPalette = (new Utils\Palette(self::PALETTE_SIZE))->gradient($this->aPalettePoints);
+    }
 
     /**
      * @inheritDoc
@@ -214,10 +227,10 @@ class Toroid extends Base {
     }
 
     private function plotASCIIGrey(int $iBufferPos, int $iXPos, int $iYPos, float $fLuma) {
-        $iLuminance = (int)(
+        $iLuminance = (int)min((
             $this->oParameters->fMinLuma +
             $this->oParameters->fLumaFactor * $fLuma * $this->iCharMaxLuma
-        );
+        ), $this->iCharMaxLuma);
         $this->sCharDrawBuffer[$iXPos + $this->iSpan * $iYPos] = $this->sLumaCharLUT[$iLuminance];
     }
 
@@ -237,19 +250,20 @@ class Toroid extends Base {
     }
 
     private function plotBlockGrey(int $iBufferPos, $iXPos, int $iYPos, float $fLuma) {
-        $iLuminance = (int)(
+        $iLuminance = (int)min((
             $this->oParameters->fMinLuma +
             $this->oParameters->fLumaFactor * $fLuma * 255
-        );
+        ), 255);
         $this->oPixelBuffer[$iBufferPos] = $iLuminance << 16 | $iLuminance << 8 | $iLuminance;
     }
 
     private function plotBlockRGB(int $iBufferPos, int $iXPos, int $iYPos, float $fLuma) {
-        $iPaletteIndex = (int)(
+        $iPaletteIndex = (int)min((
             $this->oParameters->fMinLuma +
-            $this->oParameters->fLumaFactor * $fLuma * $this->iMaxPallete
-        );
-        $this->oPixelBuffer[$iBufferPos] = $this->aPalette[$iPaletteIndex];
+            $this->oParameters->fLumaFactor * $fLuma * self::PALETTE_SIZE
+        ), self::PALETTE_SIZE - 1);
+
+        $this->oPixelBuffer[$iBufferPos] = $this->oPalette[$iPaletteIndex];
     }
 
     /**

@@ -75,4 +75,26 @@ interface IPixelled {
      * @return SPLFixedArray
      */
     public function getPixelBuffer() : SPLFixedArray;
+
+    /**
+     * Set an RGB write mask to use. This is an integer value that will be bitwise masked against the
+     * RGB value before displaying. This can be used for various effects, such as colour reduction (posterise)
+     * channel selection, etc.
+     *
+     * Examples:
+     *     Posterise: (2 bits per gun) 0xC0C0C0
+     *     Blue Filter                 0x0000FF
+     *     Green Filter                0x00FF00
+     *     Red Filter                  0xFF0000
+     *     Simulate RGB565             0xF8FCF8
+     *
+     * @param  int  $iMask
+     * @return self
+     */
+    public function setRGBWriteMask(int $iMask) : self;
+
+    /**
+     * @return int
+     */
+    public function getRGBWriteMask() : int;
 }

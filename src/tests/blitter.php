@@ -7,13 +7,13 @@ namespace ABadCafe\PDE;
 
 require_once '../PDE.php';
 
-$oSource   = \SPLFixedArray::fromArray(array_fill(0, 4*4, 'x'));
-$oTarget   = \SPLFixedArray::fromArray(array_fill(0, 8*8, '-'));
+$oSource   = new Graphics\Image(4, 4, 1);
+$oTarget   = new Graphics\Image(8, 8, 0);
 
 $oBlitter = new Graphics\Blitter();
 $oBlitter
-    ->setSource($oSource, 4, 4)
-    ->setTarget($oTarget, 8, 8);
+    ->setSource($oSource)
+    ->setTarget($oTarget);
 
 $oBlitter->copy(0, 0, 2, 2, 4, 4);
 

@@ -23,6 +23,7 @@ const CLASS_MAP = [
   'ABadCafe\\PDE\\Graphics\\Palette' => '/graphics/Palette.php',
   'ABadCafe\\PDE\\Graphics\\Blitter' => '/graphics/Blitter.php',
   'ABadCafe\\PDE\\Graphics\\IPixelBuffer' => '/graphics/IPixelBuffer.php',
+  'ABadCafe\\PDE\\Graphics\\Image' => '/graphics/Image.php',
   'ABadCafe\\PDE\\Routine\\NoOp' => '/routine/NoOp.php',
   'ABadCafe\\PDE\\Routine\\SimpleLine' => '/routine/SimpleLine.php',
   'ABadCafe\\PDE\\Routine\\RGBPulse' => '/routine/RGBPulse.php',

@@ -33,18 +33,13 @@ class Blitter {
         DM_SET = 0,
         DM_AND = 1,
         DM_OR  = 2,
-        DM_XOR = 3
+        DM_XOR = 3,
+        DM_NOT = 4
     ;
 
-    private ?SPLFixedArray $oSource = null, $oTarget = null;
+    private ?IPixelBuffer $oSource = null, $oTarget = null;
 
-    private int
-        $iSourceW  = 0,
-        $iSourceH  = 0,
-        $iTargetW  = 0,
-        $iTargetH  = 0,
-        $iDrawMode = self::DM_SET
-    ;
+    private int $iDrawMode = self::DM_SET;
 
     private bool
         $bCorrectNegativeTargetX = true,
@@ -54,18 +49,11 @@ class Blitter {
     /**
      * Fluently set the source for the blit operation.
      *
-     * @param  SPLFixedArray $oPixels
-     * @param  int           $iWidth
-     * @param  int           $iHeight
+     * @param  IPixelBuffer $oPixels
      * @return self
      */
-    public function setSource(SPLFixedArray $oPixels, int $iWidth, int $iHeight) : self {
-        if ($iWidth < 1 || $iHeight < 1) {
-            throw new \RangeException('Illegal dimensions');
-        }
+    public function setSource(IPixelBuffer $oPixels) : self {
         $this->oSource  = $oPixels;
-        $this->iSourceW = $iWidth;
-        $this->iSourceH = $iHeight;
         return $this;
     }
 
@@ -97,18 +85,11 @@ class Blitter {
     /**
      * Fluently set the target for the blit operation.
      *
-     * @param  SPLFixedArray $oPixels
-     * @param  int           $iWidth
-     * @param  int           $iHeight
+     * @param  IPixelBuffer $oPixels
      * @return self
      */
-    public function setTarget(SPLFixedArray $oPixels, int $iWidth, int $iHeight) : self {
-        if ($iWidth < 1 || $iHeight < 1) {
-            throw new \RangeException('Illegal dimensions');
-        }
+    public function setTarget(IPixelBuffer $oPixels) : self {
         $this->oTarget  = $oPixels;
-        $this->iTargetW = $iWidth;
-        $this->iTargetH = $iHeight;
         return $this;
     }
 
@@ -124,13 +105,18 @@ class Blitter {
             throw new \Exception();
         }
 
+        $iSourceW = $this->oSource->getWidth();
+        $iSourceH = $this->oSource->getHeight();
+        $iTargetW = $this->oTarget->getWidth();
+        $iTargetH = $this->oTarget->getHeight();
+
         // Check for totally out of bounds cases that we can just early out
         if (
             $iWidth < 1 || $iHeight < 1  ||
-            $iSourceX >= $this->iSourceW ||
-            $iSourceY >= $this->iSourceH ||
-            $iTargetX >= $this->iTargetW ||
-            $iTargetY >= $this->iTargetH
+            $iSourceX >= $iSourceW ||
+            $iSourceY >= $iSourceH ||
+            $iTargetX >= $iTargetW ||
+            $iTargetY >= $iTargetH
         ) {
             return;
         }
@@ -146,8 +132,8 @@ class Blitter {
 
         $oCropped = $this->cropRectangleToArea(
             $iTargetX, $iTargetY,
-            $iWidth, $iHeight,
-            $this->iTargetW, $this->iTargetH
+            $iWidth,   $iHeight,
+            $iTargetW, $iTargetH
         );
 
         if (!$oCropped) {
@@ -161,8 +147,8 @@ class Blitter {
 
         $oCropped = $this->cropRectangleToArea(
             $iSourceX, $iSourceY,
-            $iWidth, $iHeight,
-            $this->iSourceW, $this->iSourceH
+            $iWidth,   $iHeight,
+            $iSourceW, $iSourceH
         );
 
         if (!$oCropped) {
@@ -174,25 +160,28 @@ class Blitter {
             $iHeight  = $oCropped->iRectH;
         }
 
+        $oSource = $this->oSource->getPixels();
+        $oTarget = $this->oTarget->getPixels();
+
         // The following loops are duplicated for performance reasons
         switch ($this->iDrawMode) {
             case self::DM_AND:
                 while ($iHeight--) {
                     $iPixels      = $iWidth;
-                    $iSourceIndex = $iSourceX + $iSourceY++ * $this->iSourceW;
-                    $iTargetIndex = $iTargetX + $iTargetY++ * $this->iTargetW;
+                    $iSourceIndex = $iSourceX + $iSourceY++ * $iSourceW;
+                    $iTargetIndex = $iTargetX + $iTargetY++ * $iTargetW;
                     while ($iPixels--) {
-                        $this->oTarget[$iTargetIndex++] &= $this->oSource[$iSourceIndex++];
+                        $oTarget[$iTargetIndex++] &= $oSource[$iSourceIndex++];
                     }
                 }
                 break;
             case self::DM_OR:
                 while ($iHeight--) {
                     $iPixels      = $iWidth;
-                    $iSourceIndex = $iSourceX + $iSourceY++ * $this->iSourceW;
-                    $iTargetIndex = $iTargetX + $iTargetY++ * $this->iTargetW;
+                    $iSourceIndex = $iSourceX + $iSourceY++ * $iSourceW;
+                    $iTargetIndex = $iTargetX + $iTargetY++ * $iTargetW;
                     while ($iPixels--) {
-                        $this->oTarget[$iTargetIndex++] |= $this->oSource[$iSourceIndex++];
+                        $oTarget[$iTargetIndex++] |= $oSource[$iSourceIndex++];
                     }
                 }
                 break;
@@ -200,21 +189,32 @@ class Blitter {
             case self::DM_XOR:
                 while ($iHeight--) {
                     $iPixels      = $iWidth;
-                    $iSourceIndex = $iSourceX + $iSourceY++ * $this->iSourceW;
-                    $iTargetIndex = $iTargetX + $iTargetY++ * $this->iTargetW;
+                    $iSourceIndex = $iSourceX + $iSourceY++ * $iSourceW;
+                    $iTargetIndex = $iTargetX + $iTargetY++ * $iTargetW;
                     while ($iPixels--) {
-                        $this->oTarget[$iTargetIndex++] ^= $this->oSource[$iSourceIndex++];
+                        $oTarget[$iTargetIndex++] ^= $oSource[$iSourceIndex++];
+                    }
+                }
+                break;
+            case self::DM_NOT:
+                while ($iHeight--) {
+                    $iPixels      = $iWidth;
+                    $iSourceIndex = $iSourceX + $iSourceY++ * $iSourceW;
+                    $iTargetIndex = $iTargetX + $iTargetY++ * $iTargetW;
+                    while ($iPixels--) {
+                        $oTarget[$iTargetIndex++] = ~$oSource[$iSourceIndex++];
                     }
                 }
                 break;
 
+
             default:
                 while ($iHeight--) {
                     $iPixels      = $iWidth;
-                    $iSourceIndex = $iSourceX + $iSourceY++ * $this->iSourceW;
-                    $iTargetIndex = $iTargetX + $iTargetY++ * $this->iTargetW;
+                    $iSourceIndex = $iSourceX + $iSourceY++ * $iSourceW;
+                    $iTargetIndex = $iTargetX + $iTargetY++ * $iTargetW;
                     while ($iPixels--) {
-                        $this->oTarget[$iTargetIndex++] = $this->oSource[$iSourceIndex++];
+                        $oTarget[$iTargetIndex++] = $oSource[$iSourceIndex++];
                     }
                 }
                 break;

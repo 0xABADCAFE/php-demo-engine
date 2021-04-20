@@ -29,13 +29,21 @@ use \SPLFixedArray;
  */
 class Blitter {
 
+    const
+        DM_SET = 0,
+        DM_AND = 1,
+        DM_OR  = 2,
+        DM_XOR = 3
+    ;
+
     private ?SPLFixedArray $oSource = null, $oTarget = null;
 
     private int
-        $iSourceW = 0,
-        $iSourceH = 0,
-        $iTargetW = 0,
-        $iTargetH = 0
+        $iSourceW  = 0,
+        $iSourceH  = 0,
+        $iTargetW  = 0,
+        $iTargetH  = 0,
+        $iDrawMode = self::DM_SET
     ;
 
     private bool
@@ -58,6 +66,11 @@ class Blitter {
         $this->oSource  = $oPixels;
         $this->iSourceW = $iWidth;
         $this->iSourceH = $iHeight;
+        return $this;
+    }
+
+    public function setDrawMode(int $iDrawMode) : self {
+        $this->iDrawMode = $iDrawMode;
         return $this;
     }
 
@@ -123,7 +136,7 @@ class Blitter {
         }
 
         // When we wish to plot the image off the negative ends of the display, we
-        // need to update the start c
+        // need to update the source coordinates too. Unless we want a wipe effect.
         if ($this->bCorrectNegativeTargetX && $iTargetX < 0) {
             $iSourceX -= $iTargetX;
         }
@@ -161,15 +174,51 @@ class Blitter {
             $iHeight  = $oCropped->iRectH;
         }
 
-        while ($iHeight--) {
-            $iPixels      = $iWidth;
-            $iSourceIndex = $iSourceX + $iSourceY++ * $this->iSourceW;
-            $iTargetIndex = $iTargetX + $iTargetY++ * $this->iTargetW;
-            while ($iPixels--) {
-                $this->oTarget[$iTargetIndex++] = $this->oSource[$iSourceIndex++];
-            }
-        }
+        // The following loops are duplicated for performance reasons
+        switch ($this->iDrawMode) {
+            case self::DM_AND:
+                while ($iHeight--) {
+                    $iPixels      = $iWidth;
+                    $iSourceIndex = $iSourceX + $iSourceY++ * $this->iSourceW;
+                    $iTargetIndex = $iTargetX + $iTargetY++ * $this->iTargetW;
+                    while ($iPixels--) {
+                        $this->oTarget[$iTargetIndex++] &= $this->oSource[$iSourceIndex++];
+                    }
+                }
+                break;
+            case self::DM_OR:
+                while ($iHeight--) {
+                    $iPixels      = $iWidth;
+                    $iSourceIndex = $iSourceX + $iSourceY++ * $this->iSourceW;
+                    $iTargetIndex = $iTargetX + $iTargetY++ * $this->iTargetW;
+                    while ($iPixels--) {
+                        $this->oTarget[$iTargetIndex++] |= $this->oSource[$iSourceIndex++];
+                    }
+                }
+                break;
 
+            case self::DM_XOR:
+                while ($iHeight--) {
+                    $iPixels      = $iWidth;
+                    $iSourceIndex = $iSourceX + $iSourceY++ * $this->iSourceW;
+                    $iTargetIndex = $iTargetX + $iTargetY++ * $this->iTargetW;
+                    while ($iPixels--) {
+                        $this->oTarget[$iTargetIndex++] ^= $this->oSource[$iSourceIndex++];
+                    }
+                }
+                break;
+
+            default:
+                while ($iHeight--) {
+                    $iPixels      = $iWidth;
+                    $iSourceIndex = $iSourceX + $iSourceY++ * $this->iSourceW;
+                    $iTargetIndex = $iTargetX + $iTargetY++ * $this->iTargetW;
+                    while ($iPixels--) {
+                        $this->oTarget[$iTargetIndex++] = $this->oSource[$iSourceIndex++];
+                    }
+                }
+                break;
+        }
     }
 
     /**

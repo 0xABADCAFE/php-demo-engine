@@ -38,9 +38,10 @@ class RGBImage extends Base implements IResourceLoader {
     private Utils\Blitter $oBlitter;
 
     const DEFAULT_PARAMETERS = [
-        'sPath' => 'required',
-        'iTop'  => 0,
-        'iLeft' => 0,
+        'sPath'   => 'required',
+        'iTop'    => 0,
+        'iLeft'   => 0,
+        'iMode'   => Utils\Blitter::DM_SET,
         'fXSpeed' => 0.0,
         'fYSpeed' => 0.0,
     ];
@@ -82,6 +83,7 @@ class RGBImage extends Base implements IResourceLoader {
                     $this->iViewWidth,
                     $this->iViewHeight
                 )
+                ->setDrawMode($this->oParameters->iMode)
                 ->copy(
                     0,
                     0,

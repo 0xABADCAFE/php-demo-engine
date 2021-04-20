@@ -18,24 +18,12 @@
                 "fXSpeed": 1.0,
                 "fYSpeed": 0
             }
-        },
-        "trails": {
-            "sType": "RGBPersistence",
-            "iPriority": 2,
-            "aParameters": {
-                "iStrength":1
-            }
         }
     },
     "events": [
         {
             "at": 0.0,
             "on": "routine/image",
-            "do": "enable"
-        },
-        {
-            "at": 4.0,
-            "on": "routine/trails",
             "do": "enable"
         },
         {

@@ -35,13 +35,13 @@ class RGBImage extends Base implements IResourceLoader {
 
     private SPLFixedArray $oPixels;
 
-    private Utils\Blitter $oBlitter;
+    private PDE\Graphics\Blitter $oBlitter;
 
     const DEFAULT_PARAMETERS = [
         'sPath'   => 'required',
         'iTop'    => 0,
         'iLeft'   => 0,
-        'iMode'   => Utils\Blitter::DM_SET,
+        'iMode'   => PDE\Graphics\Blitter::DM_SET,
         'fXSpeed' => 0.0,
         'fYSpeed' => 0.0,
     ];
@@ -52,7 +52,7 @@ class RGBImage extends Base implements IResourceLoader {
      * @implements IRoutine::__construct()
      */
     public function __construct(PDE\IDisplay $oDisplay, array $aParameters = []) {
-        $this->oBlitter = new Utils\Blitter;
+        $this->oBlitter = new PDE\Graphics\Blitter();
         parent::__construct($oDisplay, $aParameters);
     }
 
@@ -79,7 +79,7 @@ class RGBImage extends Base implements IResourceLoader {
         if ($this->canRender($iFrameNumber, $fTimeIndex)) {
             $this->oBlitter
                 ->setTarget(
-                    $this->oDisplay->getPixelBuffer(),
+                    $this->oDisplay->getPixels(),
                     $this->iViewWidth,
                     $this->iViewHeight
                 )

@@ -7,7 +7,7 @@ namespace ABadCafe\PDE;
 
 require_once '../PDE.php';
 
-$oPalette = new Routine\Utils\Palette(256);
+$oPalette = new Graphics\Palette(256);
 
 
 $oPalette->gradient([

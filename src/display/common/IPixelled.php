@@ -19,6 +19,7 @@
 declare(strict_types=1);
 
 namespace ABadCafe\PDE\Display;
+use ABadCafe\PDE\Graphics;
 use \SPLFixedArray;
 
 /**
@@ -27,7 +28,7 @@ use \SPLFixedArray;
  * Interface for displays that model some sort of basic pixelling. This will typically involve a lot of
  * cheating around with ANSI escape sequences to simulate a (very blocky) bitmap.
  */
-interface IPixelled {
+interface IPixelled extends Graphics\IPixelBuffer {
 
     const
         /**
@@ -74,7 +75,7 @@ interface IPixelled {
      *
      * @return SPLFixedArray
      */
-    public function getPixelBuffer() : SPLFixedArray;
+    public function getPixels() : SPLFixedArray;
 
     /**
      * Set an RGB write mask to use. This is an integer value that will be bitwise masked against the

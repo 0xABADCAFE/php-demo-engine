@@ -19,7 +19,7 @@
 declare(strict_types=1);
 
 
-namespace ABadCafe\PDE\Routine\Utils;
+namespace ABadCafe\PDE\Graphics;
 use \SPLFixedArray;
 
 /**

@@ -49,7 +49,7 @@ class RGBPulse extends Base {
         if ($this->canRender($iFrameNumber, $fTimeIndex)) {
             $iWidth  = $this->oDisplay->getWidth();
             $iHeight = $this->oDisplay->getHeight();
-            $oPixels = $this->oDisplay->getPixelBuffer();
+            $oPixels = $this->oDisplay->getPixels();
 
             $fTScale1 = $this->fYScale * 0.5*(1.0 - cos($fTimeIndex));
             $fTScale2 = $this->fXScale * 0.5*(1.0 - cos($fTimeIndex * 2.0));

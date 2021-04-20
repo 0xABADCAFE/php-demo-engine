@@ -43,7 +43,7 @@ class RGBPersistence extends Base {
     public function enable(int $iFrameNumber, float $fTimeIndex) : self {
         parent::enable($iFrameNumber, $fTimeIndex);
         if ($this->bEnabled) {
-            $this->oLastBuffer = clone $this->oDisplay->getPixelBuffer();
+            $this->oLastBuffer = clone $this->oDisplay->getPixels();
         }
         return $this;
     }
@@ -54,7 +54,7 @@ class RGBPersistence extends Base {
     public function setDisplay(PDE\IDisplay $oDisplay) : self {
         $this->bCanRender = ($oDisplay instanceof PDE\Display\IPixelled);
         $this->oDisplay    = $oDisplay;
-        $this->oLastBuffer = clone $oDisplay->getPixelBuffer();
+        $this->oLastBuffer = clone $oDisplay->getPixels();
         return $this;
     }
 
@@ -63,7 +63,7 @@ class RGBPersistence extends Base {
      */
     public function render(int $iFrameNumber, float $fTimeIndex) : self {
         if ($this->canRender($iFrameNumber, $fTimeIndex)) {
-            $oPixels = $this->oDisplay->getPixelBuffer();
+            $oPixels = $this->oDisplay->getPixels();
             $oLast   = $this->oLastBuffer;
 
             // Dosage!

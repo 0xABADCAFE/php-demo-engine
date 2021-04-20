@@ -10,7 +10,7 @@ require_once '../PDE.php';
 $oSource   = \SPLFixedArray::fromArray(array_fill(0, 4*4, 'x'));
 $oTarget   = \SPLFixedArray::fromArray(array_fill(0, 8*8, '-'));
 
-$oBlitter = new Routine\Utils\Blitter();
+$oBlitter = new Graphics\Blitter();
 $oBlitter
     ->setSource($oSource, 4, 4)
     ->setTarget($oTarget, 8, 8);

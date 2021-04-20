@@ -106,7 +106,7 @@ class Toroid extends Base {
      */
     public function __construct(PDE\IDisplay $oDisplay, array $aParameters = []) {
         parent::__construct($oDisplay, $aParameters);
-        $this->oPalette = (new Utils\Palette(self::PALETTE_SIZE))->gradient($this->aPalettePoints);
+        $this->oPalette = (new PDE\Graphics\Palette(self::PALETTE_SIZE))->gradient($this->aPalettePoints);
     }
 
     /**
@@ -154,7 +154,7 @@ class Toroid extends Base {
         if ($iDrawMode && $this->canRender($iFrameNumber, $fTimeIndex)) {
 
             if ($iDrawMode & self::MASK_NEEDS_PIX_BUFFER) {
-                $this->oPixelBuffer = $this->oDisplay->getPixelBuffer();
+                $this->oPixelBuffer = $this->oDisplay->getPixels();
             }
             if ($iDrawMode & self::MASK_NEEDS_ASCII_BUFFER) {
                 $this->sCharDrawBuffer = &$this->oDisplay->getCharacterBuffer();

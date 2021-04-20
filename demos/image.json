@@ -2,7 +2,7 @@
     "displays": {
         "default": {
             "sType": "DoubleVerticalRGB",
-            "iWidth": 100,
+            "iWidth": 160,
             "iHeight": 100,
             "iMaxFPS": 30
         }
@@ -12,7 +12,18 @@
             "sType": "RGBImage",
             "iPriority": 0,
             "aParameters": {
-                "sPath": "images/slipped_disc_1.ppm"
+                "sPath": "images/slipped_disc_1.ppm",
+                "iLeft": -100,
+                "iTop": 0,
+                "fXSpeed": 1.0,
+                "fYSpeed": 0
+            }
+        },
+        "trails": {
+            "sType": "RGBPersistence",
+            "iPriority": 2,
+            "aParameters": {
+                "iStrength":1
             }
         }
     },
@@ -23,7 +34,12 @@
             "do": "enable"
         },
         {
-            "at": 0.1,
+            "at": 4.0,
+            "on": "routine/trails",
+            "do": "enable"
+        },
+        {
+            "at": 10,
             "do": "end"
         }
     ]

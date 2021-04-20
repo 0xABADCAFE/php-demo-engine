@@ -91,9 +91,10 @@ class Toroid extends Base {
      * Pixel specific mode rendering facts
      */
     private array $aPalettePoints = [
-        0 => 0x000000,
-        200 => 0x000FF,
-        255 => 0xFFFFF
+        0   => 0x000033,
+        200 => 0x0000CC,
+        240 => 0x0000FF,
+        255 => 0xFFFFFF
     ];
 
     private SPLFixedArray $oPalette;

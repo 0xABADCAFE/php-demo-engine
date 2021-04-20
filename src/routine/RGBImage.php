@@ -26,7 +26,6 @@ use \SPLFixedArray;
 /**
  * Display an image
  *
- * TODO controls and optimise
  */
 class RGBImage extends Base implements IResourceLoader {
 
@@ -36,9 +35,26 @@ class RGBImage extends Base implements IResourceLoader {
 
     private SPLFixedArray $oPixels;
 
+    private Utils\Blitter $oBlitter;
+
     const DEFAULT_PARAMETERS = [
-        'sPath' => 'required'
+        'sPath'   => 'required',
+        'iTop'    => 0,
+        'iLeft'   => 0,
+        'iMode'   => Utils\Blitter::DM_SET,
+        'fXSpeed' => 0.0,
+        'fYSpeed' => 0.0,
     ];
+
+    /**
+     * Basic constructor
+     *
+     * @implements IRoutine::__construct()
+     */
+    public function __construct(PDE\IDisplay $oDisplay, array $aParameters = []) {
+        $this->oBlitter = new Utils\Blitter;
+        parent::__construct($oDisplay, $aParameters);
+    }
 
     public function preload() : self {
         $this->loadPNM($this->oParameters->sPath);
@@ -61,12 +77,21 @@ class RGBImage extends Base implements IResourceLoader {
      */
     public function render(int $iFrameNumber, float $fTimeIndex) : self {
         if ($this->canRender($iFrameNumber, $fTimeIndex)) {
-            $oBuffer = $this->oDisplay->getPixelBuffer();
-            if ($this->iWidth == $this->iViewWidth && $this->iHeight == $this->iViewHeight) {
-                foreach ($oBuffer as $i => $iBufferRGB) {
-                    $oBuffer[$i] = $this->oPixels[$i];
-                }
-            }
+            $this->oBlitter
+                ->setTarget(
+                    $this->oDisplay->getPixelBuffer(),
+                    $this->iViewWidth,
+                    $this->iViewHeight
+                )
+                ->setDrawMode($this->oParameters->iMode)
+                ->copy(
+                    0,
+                    0,
+                    (int)($this->oParameters->iLeft + $this->oParameters->fXSpeed * $iFrameNumber),
+                    (int)($this->oParameters->iTop  + $this->oParameters->fYSpeed * $iFrameNumber),
+                    $this->iWidth,
+                    $this->iHeight
+                );
         }
         return $this;
     }
@@ -95,6 +120,8 @@ class RGBImage extends Base implements IResourceLoader {
                     (ord($sData[$iDataOffset++]) << 8) |
                     (ord($sData[$iDataOffset++]));
             }
+            $this->oBlitter->setSource($this->oPixels, $this->iWidth, $this->iHeight);
+
         } else {
             throw new \Exception('Invalid PNM Format');
         }

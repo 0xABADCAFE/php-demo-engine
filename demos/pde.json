@@ -129,7 +129,8 @@
             "do": "update",
             "aParameters": {
                 "iDrawMode": 32,
-                "fLumaFactor": 0.9
+                "fMinLuma": 0.0,
+                "fLumaFactor": 0.85
             }
         },
 
@@ -140,6 +141,7 @@
             "do": "update",
             "aParameters": {
                 "iDrawMode": 1,
+                "fMinLuma": 1.0,
                 "fLumaFactor": 0.8
             }
         },
@@ -187,7 +189,8 @@
             "do": "update",
             "aParameters": {
                 "iDrawMode": 32,
-                "fLumaFactor": 0.9
+                "fMinLuma": 0.0,
+                "fLumaFactor": 0.85
             }
         },
         {

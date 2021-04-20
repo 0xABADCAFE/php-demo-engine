@@ -30,6 +30,7 @@ const CLASS_MAP = [
   'ABadCafe\\PDE\\Routine\\RGBPersistence' => '/routine/RGBPersistence.php',
   'ABadCafe\\PDE\\Routine\\StaticNoise' => '/routine/StaticNoise.php',
   'ABadCafe\\PDE\\Routine\\Utils\\Palette' => '/routine/utils/Palette.php',
+  'ABadCafe\\PDE\\Routine\\Utils\\Blitter' => '/routine/utils/Blitter.php',
   'ABadCafe\\PDE\\Routine\\IResourceLoader' => '/routine/common/IResourceLoader.php',
   'ABadCafe\\PDE\\Routine\\TResourceLoader' => '/routine/common/TResourceLoader.php',
   'ABadCafe\\PDE\\Routine\\Base' => '/routine/common/Base.php',

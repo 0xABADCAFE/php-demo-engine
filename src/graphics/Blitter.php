@@ -18,7 +18,6 @@
 
 declare(strict_types=1);
 
-
 namespace ABadCafe\PDE\Graphics;
 use \SPLFixedArray;
 
@@ -30,21 +29,44 @@ use \SPLFixedArray;
 class Blitter {
 
     const
-        DM_SET = 0,
-        DM_AND = 1,
-        DM_OR  = 2,
-        DM_XOR = 3,
-        DM_NOT = 4
+        MODE_REPLACE  = 0,
+        MODE_INVERSE  = 1,
+        MODE_MODULATE = 2,
+        MODE_AND      = 3,
+        MODE_OR       = 4,
+        MODE_XOR      = 5
     ;
 
     private ?IPixelBuffer $oSource = null, $oTarget = null;
 
-    private int $iDrawMode = self::DM_SET;
+    /**
+     * @var BlitterModes\IMode[] $aModes
+     */
+    private static array $aModes = [];
+
+    private int $iMode = self::MODE_REPLACE;
 
     private bool
         $bCorrectNegativeTargetX = true,
         $bCorrectNegativeTargetY = true
     ;
+
+    /**
+     * Constructor
+     */
+    public function __construct() {
+        if (empty(self::$aModes)) {
+            self::$aModes = [
+                self::MODE_REPLACE  => new BlitterModes\Replace,
+                self::MODE_INVERSE  => new BlitterModes\Inverse,
+                self::MODE_MODULATE => new BlitterModes\CombineMultiply,
+                self::MODE_AND      => new BlitterModes\CombineAnd,
+                self::MODE_OR       => new BlitterModes\CombineOr,
+                self::MODE_XOR      => new BlitterModes\CombineXor,
+
+            ];
+        }
+    }
 
     /**
      * Fluently set the source for the blit operation.
@@ -57,28 +79,25 @@ class Blitter {
         return $this;
     }
 
-    public function setDrawMode(int $iDrawMode) : self {
-        $this->iDrawMode = $iDrawMode;
+    public function setMode(int $iMode) : self {
+        $iMode = isset(self::$aModes[$iMode]) ? $iMode : self::MODE_REPLACE;
+        $this->iMode = $iMode;
         return $this;
     }
 
-    public function enableNegativeTargetX() : self {
-        $this->bCorrectNegativeTargetX = true;
-        return $this;
-    }
-
-    public function enableNegativeTargetY() : self {
-        $this->bCorrectNegativeTargetY = true;
-        return $this;
-    }
-
-    public function disableNegativeTargetX() : self {
-        $this->bCorrectNegativeTargetX = false;
-        return $this;
-    }
-
-    public function disableNegativeTargetY() : self {
-        $this->bCorrectNegativeTargetY = false;
+    /**
+     * Controls how the source area is determined when the target coordinates are negative.
+     *
+     * When set to true, copying to a decreasingly negative coordinate results in a scrolling into view.
+     * When set to false, copying to a decreasingly negative coordinate results in a reveal.
+     *
+     * @param  bool $bX
+     * @param  bool $bY
+     * @return self
+     */
+    public function setNegativeTargetBehaviour(bool $bX, bool $bY) : self {
+        $this->bCorrectNegativeTargetX = $bX;
+        $this->bCorrectNegativeTargetY = $bY;
         return $this;
     }
 
@@ -94,13 +113,22 @@ class Blitter {
     }
 
     /**
-     * Perform a copy
+     * Perform a copy. This handles all the necessary cropping and other checks, then delegates the final
+     * operation to the IMode implementation directed by the current mode.
+     *
+     * @param  int $iSourceX,
+     * @param  int $iSourceY,
+     * @param  int $iTargetX,
+     * @param  int $iTargetY,
+     * @param  int $iWidth,
+     * @param  int $iHeight
+     * @return self
      */
     public function copy(
         int $iSourceX, int $iSourceY,
         int $iTargetX, int $iTargetY,
         int $iWidth,   int $iHeight
-    ) : void {
+    ) : self {
         if (!$this->oSource || !$this->oTarget) {
             throw new \Exception();
         }
@@ -118,7 +146,7 @@ class Blitter {
             $iTargetX >= $iTargetW ||
             $iTargetY >= $iTargetH
         ) {
-            return;
+            return $this;
         }
 
         // When we wish to plot the image off the negative ends of the display, we
@@ -130,95 +158,42 @@ class Blitter {
             $iSourceY -= $iTargetY;
         }
 
-        $oCropped = $this->cropRectangleToArea(
+        // Crop to the Target
+        if (!($oCropped = $this->cropRectangleToArea(
             $iTargetX, $iTargetY,
             $iWidth,   $iHeight,
             $iTargetW, $iTargetH
-        );
-
-        if (!$oCropped) {
-            return;
-        } else {
-            $iTargetX = $oCropped->iRectX;
-            $iTargetY = $oCropped->iRectY;
-            $iWidth   = $oCropped->iRectW;
-            $iHeight  = $oCropped->iRectH;
+        ))) {
+            return $this;
         }
 
-        $oCropped = $this->cropRectangleToArea(
+        $iTargetX = $oCropped->iRectX;
+        $iTargetY = $oCropped->iRectY;
+        $iWidth   = $oCropped->iRectW;
+        $iHeight  = $oCropped->iRectH;
+
+        // Crop to the Source
+        if (!($oCropped = $this->cropRectangleToArea(
             $iSourceX, $iSourceY,
             $iWidth,   $iHeight,
             $iSourceW, $iSourceH
+        ))) {
+            return $this;
+        }
+
+        $iSourceX = $oCropped->iRectX;
+        $iSourceY = $oCropped->iRectY;
+        $iWidth   = $oCropped->iRectW;
+        $iHeight  = $oCropped->iRectH;
+
+        self::$aModes[$this->iMode]->copy(
+            $this->oSource, $this->oTarget,
+            $iSourceX, $iSourceY,
+            $iTargetX, $iTargetY,
+            $iWidth,   $iHeight
         );
 
-        if (!$oCropped) {
-            return;
-        } else {
-            $iSourceX = $oCropped->iRectX;
-            $iSourceY = $oCropped->iRectY;
-            $iWidth   = $oCropped->iRectW;
-            $iHeight  = $oCropped->iRectH;
-        }
-
-        $oSource = $this->oSource->getPixels();
-        $oTarget = $this->oTarget->getPixels();
-
-        // The following loops are duplicated for performance reasons
-        switch ($this->iDrawMode) {
-            case self::DM_AND:
-                while ($iHeight--) {
-                    $iPixels      = $iWidth;
-                    $iSourceIndex = $iSourceX + $iSourceY++ * $iSourceW;
-                    $iTargetIndex = $iTargetX + $iTargetY++ * $iTargetW;
-                    while ($iPixels--) {
-                        $oTarget[$iTargetIndex++] &= $oSource[$iSourceIndex++];
-                    }
-                }
-                break;
-            case self::DM_OR:
-                while ($iHeight--) {
-                    $iPixels      = $iWidth;
-                    $iSourceIndex = $iSourceX + $iSourceY++ * $iSourceW;
-                    $iTargetIndex = $iTargetX + $iTargetY++ * $iTargetW;
-                    while ($iPixels--) {
-                        $oTarget[$iTargetIndex++] |= $oSource[$iSourceIndex++];
-                    }
-                }
-                break;
-
-            case self::DM_XOR:
-                while ($iHeight--) {
-                    $iPixels      = $iWidth;
-                    $iSourceIndex = $iSourceX + $iSourceY++ * $iSourceW;
-                    $iTargetIndex = $iTargetX + $iTargetY++ * $iTargetW;
-                    while ($iPixels--) {
-                        $oTarget[$iTargetIndex++] ^= $oSource[$iSourceIndex++];
-                    }
-                }
-                break;
-            case self::DM_NOT:
-                while ($iHeight--) {
-                    $iPixels      = $iWidth;
-                    $iSourceIndex = $iSourceX + $iSourceY++ * $iSourceW;
-                    $iTargetIndex = $iTargetX + $iTargetY++ * $iTargetW;
-                    while ($iPixels--) {
-                        $oTarget[$iTargetIndex++] = ~$oSource[$iSourceIndex++];
-                    }
-                }
-                break;
-
-
-            default:
-                while ($iHeight--) {
-                    $iPixels      = $iWidth;
-                    $iSourceIndex = $iSourceX + $iSourceY++ * $iSourceW;
-                    $iTargetIndex = $iTargetX + $iTargetY++ * $iTargetW;
-                    while ($iPixels--) {
-                        $oTarget[$iTargetIndex++] = $oSource[$iSourceIndex++];
-                    }
-                }
-                break;
-        }
+        return $this;
     }
 
     /**

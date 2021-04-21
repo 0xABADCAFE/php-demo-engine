@@ -35,13 +35,14 @@ class RGBImage extends Base implements IResourceLoader {
     private Graphics\Image   $oImage;
     private Graphics\Blitter $oBlitter;
 
+    private float $fDisplacementX = 0.0, $fDisplacementY = 0.0;
+
     const DEFAULT_PARAMETERS = [
         'sPath'   => 'required',
         'iTop'    => 0,
         'iLeft'   => 0,
-        'iMode'   => Graphics\Blitter::DM_SET,
-        'fXSpeed' => 0.0,
-        'fYSpeed' => 0.0,
+        'iMode'   => Graphics\Blitter::MODE_REPLACE,
+        'aPath'   => []
     ];
 
     /**
@@ -75,12 +76,12 @@ class RGBImage extends Base implements IResourceLoader {
     public function render(int $iFrameNumber, float $fTimeIndex) : self {
         if ($this->canRender($iFrameNumber, $fTimeIndex)) {
             $this->oBlitter
-                ->setDrawMode($this->oParameters->iMode)
+                ->setMode($this->oParameters->iMode)
                 ->copy(
                     0,
                     0,
-                    (int)($this->oParameters->iLeft + $this->oParameters->fXSpeed * $iFrameNumber),
-                    (int)($this->oParameters->iTop  + $this->oParameters->fYSpeed * $iFrameNumber),
+                    $this->oParameters->iLeft,
+                    $this->oParameters->iTop,
                     $this->oImage->getWidth(),
                     $this->oImage->getHeight()
                 );
@@ -92,6 +93,7 @@ class RGBImage extends Base implements IResourceLoader {
      * @inheritDoc
      */
     protected function parameterChange() {
+
     }
 
     /**

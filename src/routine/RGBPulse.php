@@ -29,7 +29,11 @@ use ABadCafe\PDE;
  */
 class RGBPulse extends Base {
 
-    const DEFAULT_PARAMETERS = [];
+    const DEFAULT_PARAMETERS = [
+        'fRate1' => 1.0,
+        'fRate2' => 2.0,
+        'fRate3' => 3.0
+    ];
 
     /**
      * @inheritDoc
@@ -51,9 +55,9 @@ class RGBPulse extends Base {
             $iHeight = $this->oDisplay->getHeight();
             $oPixels = $this->oDisplay->getPixels();
 
-            $fTScale1 = $this->fYScale * 0.5*(1.0 - cos($fTimeIndex));
-            $fTScale2 = $this->fXScale * 0.5*(1.0 - cos($fTimeIndex * 2.0));
-            $fTScale3 = $this->fXScale * 0.5*(1.0 - cos($fTimeIndex * 3.0));
+            $fTScale1 = $this->fYScale * 0.5*(1.0 - cos($fTimeIndex * $this->oParameters->fRate1));
+            $fTScale2 = $this->fXScale * 0.5*(1.0 - cos($fTimeIndex * $this->oParameters->fRate2));
+            $fTScale3 = $this->fXScale * 0.5*(1.0 - cos($fTimeIndex * $this->oParameters->fRate3));
 
             $i = 0;
             for ($y = 0; $y < $iHeight; $y++) {

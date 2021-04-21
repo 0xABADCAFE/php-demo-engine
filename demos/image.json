@@ -8,26 +8,90 @@
         }
     },
     "routines": {
-        "image": {
-            "sType": "RGBImage",
+        "pulse": {
+            "sType": "RGBPulse",
             "iPriority": 0,
             "aParameters": {
+                "fRate1": 0.5,
+                "fRate2": 0.7,
+                "fRate3": 1.3
+            }
+        },
+        "image": {
+            "sType": "RGBImage",
+            "iPriority": 1,
+            "aParameters": {
                 "sPath": "images/slipped_disc_1.ppm",
-                "iLeft": -100,
+                "iLeft": 30,
                 "iTop": 0,
-                "fXSpeed": 1.0,
-                "fYSpeed": 0
+                "aPath": [
+                    [10, 10, 0.5],
+                    [20, 20, 2.0]
+                ]
             }
         }
     },
     "events": [
         {
             "at": 0.0,
+            "on": "routine/pulse",
+            "do": "enable"
+        },
+        {
+            "at": 0.0,
             "on": "routine/image",
             "do": "enable"
         },
         {
-            "at": 10,
+            "at": 2.0,
+            "on": "routine/image",
+            "do": "update",
+            "aParameters": {
+                "iMode": 1
+            }
+        },
+        {
+            "at": 4.0,
+            "on": "routine/image",
+            "do": "update",
+            "aParameters": {
+                "iMode": 2
+            }
+        },
+        {
+            "at": 6.0,
+            "on": "routine/image",
+            "do": "update",
+            "aParameters": {
+                "iMode": 3
+            }
+        },
+        {
+            "at": 8.0,
+            "on": "routine/image",
+            "do": "update",
+            "aParameters": {
+                "iMode": 4
+            }
+        },
+        {
+            "at": 10.0,
+            "on": "routine/image",
+            "do": "update",
+            "aParameters": {
+                "iMode": 5
+            }
+        },
+        {
+            "at": 12.0,
+            "on": "routine/image",
+            "do": "update",
+            "aParameters": {
+                "iMode": 0
+            }
+        },
+        {
+            "at": 12.1,
             "do": "end"
         }
     ]

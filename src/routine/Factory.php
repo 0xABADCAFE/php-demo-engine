@@ -38,6 +38,7 @@ class Factory {
         'RGBPersistence' => RGBPersistence::class,
         'RGBImage'       => RGBImage::class,
         'RGBMask'        => RGBMask::class,
+        'Voxel'          => Voxel::class,
     ];
 
     private static ?self $oInstance = null;

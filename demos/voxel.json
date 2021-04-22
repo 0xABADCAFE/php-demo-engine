@@ -1,0 +1,71 @@
+{
+    "displays": {
+        "default": {
+            "sType": "DoubleVerticalRGB",
+            "iWidth": 160,
+            "iHeight": 100,
+            "iMaxFPS": 30
+        }
+    },
+    "routines": {
+        "voxel": {
+            "sType": "Voxel",
+            "iPriority": 1,
+            "aParameters": {
+                "sTexture": "images/voxel_texture.ppm",
+                "sElevation": "images/voxel_height.pgm",
+                "fHorizon": 40.0
+            }
+        },
+        "trails": {
+            "sType": "RGBPersistence",
+            "iPriority": 2,
+            "aParameters": {
+                "iStrength":2
+            }
+        },
+        "toroid": {
+            "sType": "Toroid",
+            "iPriority": 5,
+            "aParameters": {
+                "fMinLuma": 0.0,
+                "fLumaFactor": 0.84,
+                "iDrawMode":32,
+                "fRenderYScale": 60.0
+            }
+        }
+    },
+    "events": [
+        {
+            "at": 0.0,
+            "on": "routine/voxel",
+            "do": "enable"
+        },
+
+        {
+            "at": 4.0,
+            "on": "routine/trails",
+            "do": "enable"
+        },
+
+        {
+            "at": 4.0,
+            "on": "routine/voxel",
+            "do": "update",
+            "aParameters": {
+                "fLODScale": 0.0001
+            }
+        },
+
+        {
+            "at": 0.0,
+            "on": "routine/toroid",
+            "do": "enable"
+        },
+
+        {
+            "at": 15.0,
+            "do": "end"
+        }
+    ]
+}

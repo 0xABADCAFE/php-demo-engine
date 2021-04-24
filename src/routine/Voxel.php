@@ -145,7 +145,6 @@ class Voxel extends Base implements IResourceLoader {
                     );
 
                     $iRGB       = $oColourMap[$iMapIndex];
-
                     $iViewIndex = $iX + $oHeightBuffer[$iX] * $iViewWidth;
 
                     if ($iViewIndex < 0) {
@@ -168,7 +167,6 @@ class Voxel extends Base implements IResourceLoader {
                 $fZ += $fDeltaZ;
                 $fDeltaZ += $this->oParameters->fLODScale;
             }
-
         }
         return $this;
     }

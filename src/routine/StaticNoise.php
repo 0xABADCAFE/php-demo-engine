@@ -25,7 +25,7 @@ use ABadCafe\PDE;
 /**
  * StaticNoise
  *
- * Simple text mode white noise
+ * Simple text mode white noise. Requires an IASCIIArt capable IDisplay
  */
 class StaticNoise extends Base {
 

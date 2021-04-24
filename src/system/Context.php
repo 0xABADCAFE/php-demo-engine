@@ -88,6 +88,8 @@ class Context {
             $fTimeIndex = $this->oRateLimiter->limit();
             $iFrameNumber++;
         }
+        // Wait for the last frame to be complete before exit.
+        $this->oDisplay->waitForFrame();
         echo "\n";
     }
 
@@ -191,9 +193,12 @@ class Context {
         $oDisplay = $this->aDisplayInstances[$oEvent->sTarget];
         switch ($oEvent->iAction) {
             case Definition\Event::ENABLE:
-                $this->oDisplay = $oDisplay;
-                foreach ($this->aRoutineInstances as $oRoutine) {
-                    $oRoutine->setDisplay($this->oDisplay);
+                if ($oDisplay !== $this->oDisplay) {
+                    $this->oDisplay->waitForFrame();
+                    $this->oDisplay = $oDisplay;
+                    foreach ($this->aRoutineInstances as $oRoutine) {
+                        $oRoutine->setDisplay($this->oDisplay);
+                    }
                 }
                 break;
             default:

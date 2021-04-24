@@ -24,7 +24,9 @@ use ABadCafe\PDE;
 use \SPLFixedArray;
 
 /**
+ * IPixelBuffer
  *
+ * Basic interface for pixel based data
  */
 interface IPixelBuffer {
     /**

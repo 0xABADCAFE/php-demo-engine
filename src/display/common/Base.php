@@ -72,4 +72,10 @@ abstract class Base implements PDE\IDisplay {
         return $this->iHeight;
     }
 
+    /**
+     * @inheritDoc
+     */
+    public function waitForFrame() : self {
+        return $this;
+    }
 }

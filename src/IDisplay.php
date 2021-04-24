@@ -22,6 +22,9 @@ namespace ABadCafe\PDE;
 
 /**
  * IDisplay
+ *
+ * A basic fluent interface for display implementors. This does not make any assumption about what the display device
+ * is, other than that it a raster displays.
  */
 interface IDisplay {
 
@@ -67,10 +70,18 @@ interface IDisplay {
     public function clear() : self;
 
     /**
-     * Use redraw to just repaint whatever is in the raw buffer.
+     * Render the frame.
      *
      * @return self
      */
     public function redraw() : self;
+
+    /**
+     * Waits for the frame to be drawn. The primary use for this is when
+     * switching between synchronous and asynchronous modes of rendering.
+     *
+     * @return self
+     */
+    public function waitForFrame() : self;
 
 }

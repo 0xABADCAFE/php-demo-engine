@@ -22,7 +22,7 @@ namespace ABadCafe\PDE\Graphics\BlitterModes;
 use ABadCafe\PDE\Graphics\IPixelBuffer;
 
 /**
- * Realisation of various blitter operations.
+ * IMode implementation for MODE_REPLACE
  */
 class Inverse implements IMode {
 

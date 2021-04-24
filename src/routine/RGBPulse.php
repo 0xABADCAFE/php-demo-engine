@@ -23,9 +23,7 @@ namespace ABadCafe\PDE\Routine;
 use ABadCafe\PDE;
 
 /**
- * Colour pulsating effect based on simple interpolation.
- *
- * TODO controls and optimise
+ * Colour pulsating effect based on simple interpolation. Requires an IPixelled display.
  */
 class RGBPulse extends Base {
 

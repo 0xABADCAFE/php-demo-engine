@@ -27,16 +27,22 @@ use \SPLFixedArray;
 abstract class Base implements IMode {
 
     /**
-     *
+     * Lookup array of channel multiplication values
      */
     protected static ?SPLFixedArray $oProducts = null;
 
+    /**
+     * Constructor
+     */
     public function construct() {
         if (null === self::$oProducts) {
             self::initProducts();
         }
     }
 
+    /**
+     * Lookup initialisation
+     */
     private static function initProducts() : void {
         self::$oProducts = new SPLFixedArray(65536);
         $iIndex = 0;

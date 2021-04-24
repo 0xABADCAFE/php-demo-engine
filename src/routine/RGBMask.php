@@ -23,8 +23,7 @@ namespace ABadCafe\PDE\Routine;
 use ABadCafe\PDE;
 
 /**
- * Changes the write mask
- *
+ * Changes the write mask on the current display
  */
 class RGBMask extends Base {
 

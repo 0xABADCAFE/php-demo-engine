@@ -26,7 +26,6 @@ use \SPLFixedArray;
 
 /**
  * Display an image
- *
  */
 class RGBImage extends Base implements IResourceLoader {
 
@@ -65,9 +64,10 @@ class RGBImage extends Base implements IResourceLoader {
      * @inheritDoc
      */
     public function setDisplay(PDE\IDisplay $oDisplay) : self {
-        $this->bCanRender  = ($oDisplay instanceof PDE\Display\IPixelled);
+        if ($this->bCanRender  = ($oDisplay instanceof PDE\Display\IPixelled)) {
+            $this->oBlitter->setTarget($oDisplay);
+        }
         $this->oDisplay    = $oDisplay;
-        $this->oBlitter->setTarget($oDisplay);
         return $this;
     }
 

@@ -22,7 +22,7 @@ namespace ABadCafe\PDE\Graphics\BlitterModes;
 use ABadCafe\PDE\Graphics\IPixelBuffer;
 
 /**
- * IMode implementation
+ * IMode implementation for MODE_OR
  */
 class CombineOr implements IMode {
 

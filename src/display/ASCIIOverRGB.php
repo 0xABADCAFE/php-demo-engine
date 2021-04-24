@@ -140,6 +140,9 @@ class ASCIIOverRGB extends Base implements IPixelled, IASCIIArt, IAsynchronous {
                     echo $sRawBuffer . IANSIControl::ATTR_RESET;
                     $this->endRedraw();
                     break;
+                case self::MESSAGE_WAIT_FOR_FRAME:
+                    $this->sendResponseCode(self::RESPONSE_OK);
+                    break;
                 default:
                     break;
             }

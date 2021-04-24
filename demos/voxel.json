@@ -5,6 +5,12 @@
             "iWidth": 160,
             "iHeight": 100,
             "iMaxFPS": 30
+        },
+        "plain": {
+            "sType": "PlainASCII",
+            "iWidth": 160,
+            "iHeight": 50,
+            "iMaxFPS": 30
         }
     },
     "routines": {
@@ -21,7 +27,7 @@
             "sType": "RGBPersistence",
             "iPriority": 2,
             "aParameters": {
-                "iStrength":2
+                "iStrength":1
             }
         },
         "toroid": {
@@ -33,7 +39,25 @@
                 "iDrawMode":32,
                 "fRenderYScale": 60.0
             }
+        },
+        "image": {
+            "sType": "RGBImage",
+            "iPriority": 3,
+            "aParameters": {
+                "sPath": "images/slipped_disc_1.ppm",
+                "iLeft": 30,
+                "iTop": 0,
+                "iMode": 2
+            }
+        },
+        "static": {
+            "sType": "StaticNoise",
+            "iPriority": 10,
+            "aParameters": {
+                "fDuration": 0.25
+            }
         }
+
     },
     "events": [
         {
@@ -43,28 +67,94 @@
         },
 
         {
-            "at": 4.0,
+            "at": 2.75,
+            "on": "display/plain",
+            "do": "enable"
+        },
+        {
+            "at": 2.75,
+            "on": "routine/static",
+            "do": "enable"
+        },
+        {
+            "at": 3.0,
+            "on": "display/default",
+            "do": "enable"
+        },
+
+        {
+            "at": 3.0,
             "on": "routine/trails",
             "do": "enable"
         },
 
         {
-            "at": 4.0,
+            "at": 4.75,
+            "on": "display/plain",
+            "do": "enable"
+        },
+        {
+            "at": 4.75,
+            "on": "routine/static",
+            "do": "enable"
+        },
+        {
+            "at": 5.0,
+            "on": "display/default",
+            "do": "enable"
+        },
+
+        {
+            "at": 5.0,
+            "on": "routine/trails",
+            "do": "update",
+            "aParameters": {
+                "iStrength": 2
+            }
+        },
+
+        {
+            "at": 5.0,
             "on": "routine/voxel",
             "do": "update",
             "aParameters": {
                 "fLODScale": 0.0001
             }
         },
+        {
+            "at": 5.0,
+            "on": "routine/image",
+            "do": "enable"
+        },
 
         {
-            "at": 0.0,
+            "at": 8.0,
             "on": "routine/toroid",
             "do": "enable"
         },
 
         {
-            "at": 15.0,
+            "at": 12.0,
+            "on": "display/plain",
+            "do": "enable"
+        },
+        {
+            "at": "12.0",
+            "on": "routine/toroid",
+            "do": "update",
+            "aParameters": {
+                "iDrawMode":1,
+                "fMinLuma": 1.0,
+                "fRenderYScale": 30.0
+            }
+        },
+        {
+            "at": 14.75,
+            "on": "routine/static",
+            "do": "enable"
+        },
+        {
+            "at": 15.5,
             "do": "end"
         }
     ]

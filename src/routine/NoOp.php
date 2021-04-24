@@ -23,7 +23,7 @@ namespace ABadCafe\PDE\Routine;
 use ABadCafe\PDE;
 
 /**
- * Does Nothing
+ * Does Nothing.
  */
 class NoOp extends Base {
 

@@ -26,7 +26,6 @@ use \SPLFixedArray;
 
 /**
  * Display an image
- *
  */
 class RGBImage extends Base implements IResourceLoader {
 

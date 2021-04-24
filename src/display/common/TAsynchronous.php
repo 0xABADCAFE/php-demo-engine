@@ -25,7 +25,7 @@ use \SPLFixedArray;
 /**
  * TAsynchronous
  *
- * Common implementation for subprocess display rendering
+ * Common implementation for subprocess display rendering.
  */
 trait TAsynchronous {
 

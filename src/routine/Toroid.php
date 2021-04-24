@@ -227,6 +227,19 @@ class Toroid extends Base {
         return $this;
     }
 
+    /**
+     * @inheritDoc
+     */
+    protected function parameterChange() {
+
+    }
+
+    /**
+     * @param int $iBufferPos
+     * @param int $iXPos
+     * @param int $iYPos
+     * @param float $fLuma
+     */
     private function plotASCIIGrey(int $iBufferPos, int $iXPos, int $iYPos, float $fLuma) {
         $iLuminance = (int)min((
             $this->oParameters->fMinLuma +
@@ -235,6 +248,12 @@ class Toroid extends Base {
         $this->sCharDrawBuffer[$iXPos + $this->iSpan * $iYPos] = $this->sLumaCharLUT[$iLuminance];
     }
 
+    /**
+     * @param int $iBufferPos
+     * @param int $iXPos
+     * @param int $iYPos
+     * @param float $fLuma
+     */
     private function plotASCIIGreyDarkenBG(int $iBufferPos, int $iXPos, int $iYPos, float $fLuma) {
         $this->plotASCIIGrey($iBufferPos, $iXPos, $iYPos, $fLuma);
         $iHalfRGB  = ($this->oPixelBuffer[$iBufferPos] >> 1) & 0x007F7F7F;
@@ -242,14 +261,32 @@ class Toroid extends Base {
         $this->oPixelBuffer[$iBufferPos] = $iHalfRGB + $iQtrRGB;
     }
 
+    /**
+     * @param int $iBufferPos
+     * @param int $iXPos
+     * @param int $iYPos
+     * @param float $fLuma
+     */
     private function plotASCIIRGB(int $iBufferPos, int $iXPos, int $iYPos, float $fLuma) {
 
     }
 
+    /**
+     * @param int $iBufferPos
+     * @param int $iXPos
+     * @param int $iYPos
+     * @param float $fLuma
+     */
     private function plotASCIIRGBDarkenBG(int $iBufferPos, int $iXPos, int $iYPos, float $fLuma) {
 
     }
 
+    /**
+     * @param int $iBufferPos
+     * @param int $iXPos
+     * @param int $iYPos
+     * @param float $fLuma
+     */
     private function plotBlockGrey(int $iBufferPos, $iXPos, int $iYPos, float $fLuma) {
         $iLuminance = (int)min((
             $this->oParameters->fMinLuma +
@@ -258,6 +295,12 @@ class Toroid extends Base {
         $this->oPixelBuffer[$iBufferPos] = $iLuminance << 16 | $iLuminance << 8 | $iLuminance;
     }
 
+    /**
+     * @param int $iBufferPos
+     * @param int $iXPos
+     * @param int $iYPos
+     * @param float $fLuma
+     */
     private function plotBlockRGB(int $iBufferPos, int $iXPos, int $iYPos, float $fLuma) {
         $iPaletteIndex = (int)min((
             $this->oParameters->fMinLuma +
@@ -267,10 +310,5 @@ class Toroid extends Base {
         $this->oPixelBuffer[$iBufferPos] = $this->oPalette[$iPaletteIndex];
     }
 
-    /**
-     * @inheritDoc
-     */
-    protected function parameterChange() {
 
-    }
 }

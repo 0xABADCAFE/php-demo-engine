@@ -25,7 +25,7 @@ use ABadCafe\PDE;
 /**
  * SimpleLine
  *
- * Lame test effect.
+ * Lame test effect. Requires an IASCIIArt based display
  */
 class SimpleLine extends Base {
 

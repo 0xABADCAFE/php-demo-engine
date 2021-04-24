@@ -88,6 +88,8 @@ class Context {
             $fTimeIndex = $this->oRateLimiter->limit();
             $iFrameNumber++;
         }
+        // Wait for the last frame to be complete before exit.
+        $this->oDisplay->waitForFrame();
         echo "\n";
     }
 

@@ -25,6 +25,8 @@ use \SPLFixedArray;
 
 /**
  * RGBPersistence
+ *
+ * Blends frames with previous ones in a decaying fashion to produce a form or motion blur.
  */
 class RGBPersistence extends Base {
 

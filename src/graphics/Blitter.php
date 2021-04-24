@@ -79,6 +79,12 @@ class Blitter {
         return $this;
     }
 
+    /**
+     * Set the render mode. Unknown modes will be interpreted as MODE_REPLACE
+     *
+     * @param  int $iMode
+     * @return self
+     */
     public function setMode(int $iMode) : self {
         $iMode = isset(self::$aModes[$iMode]) ? $iMode : self::MODE_REPLACE;
         $this->iMode = $iMode;

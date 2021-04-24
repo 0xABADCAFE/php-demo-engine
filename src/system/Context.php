@@ -191,9 +191,12 @@ class Context {
         $oDisplay = $this->aDisplayInstances[$oEvent->sTarget];
         switch ($oEvent->iAction) {
             case Definition\Event::ENABLE:
-                $this->oDisplay = $oDisplay;
-                foreach ($this->aRoutineInstances as $oRoutine) {
-                    $oRoutine->setDisplay($this->oDisplay);
+                if ($oDisplay !== $this->oDisplay) {
+                    $this->oDisplay->waitForFrame();
+                    $this->oDisplay = $oDisplay;
+                    foreach ($this->aRoutineInstances as $oRoutine) {
+                        $oRoutine->setDisplay($this->oDisplay);
+                    }
                 }
                 break;
             default:

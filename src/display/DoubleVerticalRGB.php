@@ -141,6 +141,9 @@ class DoubleVerticalRGB extends Base implements IPixelled, IAsynchronous {
                 case self::MESSAGE_NEW_FRAME:
                     $this->drawFrame($sData, $sInitial, $aTemplates);
                     break;
+                case self::MESSAGE_WAIT_FOR_FRAME:
+                    $this->sendResponseCode(self::RESPONSE_OK);
+                    break;
             }
         }
     }

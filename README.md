@@ -123,5 +123,7 @@ class Factory {
 }
 ```
 
+Any time you add new code, you should run the provided `createclassmap` script. This isn't PSR autoloading.
+
 ### Loaders
 Loaders import definition files which describe the components and timeline of a demo. Loaders are classes that implement the ILoader interface. A JSON model is provided by default, but adding other formats should be trivial.

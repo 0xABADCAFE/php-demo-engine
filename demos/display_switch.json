@@ -1,0 +1,59 @@
+{
+    "displays": {
+        "default": {
+            "sType": "BasicRGB",
+            "iWidth": 160,
+            "iHeight": 50,
+            "iMaxFPS": 10
+        },
+        "high": {
+            "sType": "DoubleVerticalRGB",
+            "iWidth": 160,
+            "iHeight": 100,
+            "iMaxFPS": 10
+        }
+    },
+    "routines": {
+        "pulse": {
+            "sType": "RGBPulse",
+            "iPriority": 0,
+            "aParameters": {
+            }
+        },
+        "image": {
+            "sType": "RGBImage",
+            "iPriority": 1,
+            "aParameters": {
+                "sPath": "images/slipped_disc_1.ppm",
+                "iLeft": 30,
+                "iTop": 0
+            }
+        }
+    },
+    "events": [
+        {
+            "at": 0.0,
+            "on": "routine/pulse",
+            "do": "enable"
+        },
+        {
+            "at": 2.0,
+            "on": "display/high",
+            "do": "enable"
+        },
+        {
+            "at": 2.0,
+            "on": "routine/image",
+            "do": "enable"
+        },
+        {
+            "at": 4.0,
+            "on": "display/default",
+            "do": "enable"
+        },
+        {
+            "at": 10.0,
+            "do": "end"
+        }
+    ]
+}

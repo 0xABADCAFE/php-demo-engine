@@ -119,7 +119,7 @@ abstract class Base implements PDE\IRoutine {
         if ($bWasEnabled && !$bStillEnabled) {
             $this->disable($iFrameNumber, $fTimeIndex);
         }
-        return $this->bEnabled;
+        return $this->bEnabled && $this->bCanRender;
     }
 
     /**

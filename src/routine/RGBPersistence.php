@@ -52,9 +52,10 @@ class RGBPersistence extends Base {
      * @inheritDoc
      */
     public function setDisplay(PDE\IDisplay $oDisplay) : self {
-        $this->bCanRender = ($oDisplay instanceof PDE\Display\IPixelled);
-        $this->oDisplay    = $oDisplay;
-        $this->oLastBuffer = clone $oDisplay->getPixels();
+        if ($this->bCanRender = ($oDisplay instanceof PDE\Display\IPixelled)) {
+            $this->oLastBuffer = clone $oDisplay->getPixels();
+        }
+        $this->oDisplay = $oDisplay;
         return $this;
     }
 

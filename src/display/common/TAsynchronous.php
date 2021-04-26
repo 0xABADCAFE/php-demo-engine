@@ -48,7 +48,7 @@ trait TAsynchronous {
             4,
             PHP_BINARY_READ
         );
-
+        echo IANSIControl::ATTR_RESET;
         return $this;
     }
 
@@ -76,7 +76,7 @@ trait TAsynchronous {
      * @param SPLFixedArray $oPixels
      * @param int           $iDataFormat
      */
-    private function sendNewFrameMessage(SPLFixedArray $oPixels, int $iDataFormat) {
+    protected function sendNewFrameMessage(SPLFixedArray $oPixels, int $iDataFormat) {
         if (!isset(IAsynchronous::DATA_FORMAT_MAP[$iDataFormat])) {
             throw new \InvalidArgumentException();
         }
@@ -192,7 +192,7 @@ trait TAsynchronous {
         if (-1 == $iProcessID) {
             $this->closeSocket(IAsynchronous::ID_CHILD);
             $this->closeSocket(IAsynchronous::ID_PARENT);
-            throw new \Exception("Couldn't create sub process");
+            throw new \Exception(self::class . "Couldn't create sub process");
         }
         if (0 == $iProcessID) {
             $this->runSubprocess();
@@ -214,7 +214,7 @@ trait TAsynchronous {
         $this->closeSocket(IAsynchronous::ID_PARENT);
         $this->subprocessRenderLoop();
         $this->closeSocket(IAsynchronous::ID_CHILD);
-        $this->reportRedraw("Subprocess");
+        $this->reportRedraw(self::class . " Subprocess");
         exit();
     }
 

@@ -50,14 +50,14 @@ trait TInstrumented {
     /**
      * Mark the beginning of a redraw
      */
-    private function beginRedraw() {
+    protected function beginRedraw() {
         $this->fRedrawMark = microtime(true);
     }
 
     /**
      * Mark the end of a redraw
      */
-    private function endRedraw() {
+    protected function endRedraw() {
         $this->fTotalRedrawTime += microtime(true) - $this->fRedrawMark;
         ++$this->iTotalRedrawCount;
     }

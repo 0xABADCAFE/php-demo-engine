@@ -23,15 +23,15 @@ use ABadCafe\PDE;
 use \SPLFixedArray;
 
 /**
- * ASCIIOverRGB
+ * RGBASCII
  *
- * ASCII with fixed foreground colour over RGB background. All of the implementation is present in the base
+ * ASCII with RGB foreground colour over fixed background. All of the implementation is present in the base
  * class, this just defines some necessary properties for it to work.
  */
-class ASCIIOverRGB extends BaseAsyncASCIIWithRGB {
+class RGBASCII extends BaseAsyncASCIIWithRGB {
 
     const
-        ATTR_TEMPLATE = IANSIControl::ATTR_BG_RGB_TPL, // ANSI template for setting the RGB value
+        ATTR_TEMPLATE = IANSIControl::ATTR_FG_RGB_TPL, // ANSI template for setting the RGB value
         DATA_FORMAT   = self::DATA_FORMAT_32           // Data transfer size
     ;
 }

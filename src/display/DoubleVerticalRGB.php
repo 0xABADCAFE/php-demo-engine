@@ -28,6 +28,32 @@ use \SPLFixedArray;
  */
 class DoubleVerticalRGB extends Base implements IPixelled, IAsynchronous {
 
+    const ATTR_TEMPLATE = [
+        // Everything changed
+        0 => IANSIControl::ATTR_FG_RGB_TPL . IANSIControl::ATTR_BG_RGB_TPL . ICustomChars::MAP[0x80],
+
+        // Foreground and Background are equal but changed
+        1 => IANSIControl::ATTR_BG_RGB_TPL . ' ',
+
+        // Foreground and Background unequal, foreground unchanged
+        2 => IANSIControl::ATTR_BG_RGB_TPL . ICustomChars::MAP[0x80],
+
+        // Foreground and Background equal, foreground unchanged
+        3 => IANSIControl::ATTR_BG_RGB_TPL . ' ',
+
+        // Foreground and Background unequal, background unchanged
+        4 => IANSIControl::ATTR_FG_RGB_TPL . ICustomChars::MAP[0x80],
+
+        // Foreground and Backgrounc equal, foreground unchanged
+        5 => IANSIControl::ATTR_BG_RGB_TPL . ' ',
+
+        // Foreground and Background unequal, unchanged
+        6 => ICustomChars::MAP[0x80],
+
+        // Foreground and background unequal, unchanged
+        7 => ' '
+    ];
+
     use TPixelled, TInstrumented, TAsynchronous;
 
     /**
@@ -37,7 +63,6 @@ class DoubleVerticalRGB extends Base implements IPixelled, IAsynchronous {
         // Height must be even
         $iHeight &= ~1;
         parent::__construct($iWidth, $iHeight);
-        ini_set('output_buffering', 'true');
 
         // Initialise the subprocess now as it only needs access to the properties evaluated to now.
         $this->initAsyncProcess();
@@ -99,31 +124,8 @@ class DoubleVerticalRGB extends Base implements IPixelled, IAsynchronous {
      * it decodes and prints it.
      */
     protected function subprocessRenderLoop() {
-        $aTemplates = [
-            // Everything changed
-            0 => IANSIControl::ATTR_FG_RGB_TPL . IANSIControl::ATTR_BG_RGB_TPL . ICustomChars::MAP[0x80],
+        ini_set('output_buffering', 'true');
 
-            // Foreground and Background are equal but changed
-            1 => IANSIControl::ATTR_BG_RGB_TPL . ' ',
-
-            // Foreground and Background unequal, foreground unchanged
-            2 => IANSIControl::ATTR_BG_RGB_TPL . ICustomChars::MAP[0x80],
-
-            // Foreground and Background equal, foreground unchanged
-            3 => IANSIControl::ATTR_BG_RGB_TPL . ' ',
-
-            // Foreground and Background unequal, background unchanged
-            4 => IANSIControl::ATTR_FG_RGB_TPL . ICustomChars::MAP[0x80],
-
-            // Foreground and Backgrounc equal, foreground unchanged
-            5 => IANSIControl::ATTR_BG_RGB_TPL . ' ',
-
-            // Foreground and Background unequal, unchanged
-            6 => ICustomChars::MAP[0x80],
-
-            // Foreground and background unequal, unchanged
-            7 => ' '
-        ];
 
         $sInitial = IANSIControl::CRSR_TOP_LEFT . sprintf(IANSIControl::ATTR_BG_RGB_TPL, 0, 0, 0);
 
@@ -139,25 +141,26 @@ class DoubleVerticalRGB extends Base implements IPixelled, IAsynchronous {
                     break;
 
                 case self::MESSAGE_NEW_FRAME:
-                    $this->drawFrame($sData, $sInitial, $aTemplates);
+                    $this->drawFrame($sData, $sInitial);
                     break;
                 case self::MESSAGE_WAIT_FOR_FRAME:
                     $this->sendResponseCode(self::RESPONSE_OK);
+                    break;
+                default:
                     break;
             }
         }
     }
 
-    private function drawFrame(string $sData, string $sInitial, array $aTemplates) {
+    private function drawFrame(string $sData, string $sInitial) {
         $this->beginRedraw();
-        $aPixels     = array_values(unpack('V*', $sData));
-        $sRawBuffer  = $sInitial;
-        $iEvenOffset = 0;
-        $iOddOffset  = $this->iWidth;
-
+        $aPixels      = array_values(unpack('V*', $sData));
+        $sRawBuffer   = $sInitial;
+        $iEvenOffset  = 0;
+        $iOddOffset   = $this->iWidth;
         $iLastBackRGB = 0;
         $iLastForeRGB = 0;
-
+        $aTemplates   = self::ATTR_TEMPLATE;
         for ($iRow = 0; $iRow < $this->iHeight; $iRow += 2) {
             $i = $this->iWidth;
             while ($i--) {
@@ -211,7 +214,7 @@ class DoubleVerticalRGB extends Base implements IPixelled, IAsynchronous {
             $sRawBuffer .= "\n";
         }
         ob_start(null, 0);
-        echo $sRawBuffer . IANSIControl::ATTR_RESET;
+        echo $sRawBuffer;
         ob_end_flush();
         $this->endRedraw();
     }

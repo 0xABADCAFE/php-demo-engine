@@ -30,20 +30,41 @@ use \SPLFixedArray;
  */
 interface IPixelled extends Graphics\IPixelBuffer {
 
+    /**
+     * Define the display format in terms of the supported Drawing Modes
+     */
     const
-        FORMAT_ASCII         = 0, // Fixed ASCII on fixed background
-        FORMAT_RGB           = 1, // RGB only (no ASCII)
-        FORMAT_RGB_ASCII     = 2, // RGB ASCII on fixed background
-        FORMAT_ASCII_RGB     = 3, // Fixed ASCII on RGB background
-        FORMAT_RGB_ASCII_RGB = 4  // RGB ASCII on RGB background
+        // Fixed ASCII on fixed background
+        FORMAT_ASCII         = Graphics\IDrawMode::ASCII    |
+                               Graphics\IDrawMode::BG_FIXED |
+                               Graphics\IDrawMode::BG_FIXED,
+
+        // RGB only (no ASCII)
+        FORMAT_RGB           = Graphics\IDrawMode::FG_FIXED |
+                               Graphics\IDrawMode::BG_RGB,
+
+         // RGB ASCII on fixed background
+        FORMAT_RGB_ASCII     = Graphics\IDrawMode::ASCII    |
+                               Graphics\IDrawMode::FG_RGB   |
+                               Graphics\IDrawMode::BG_FIXED,
+
+        // Fixed ASCII on RGB background
+        FORMAT_ASCII_RGB     = Graphics\IDrawMode::ASCII    |
+                               Graphics\IDrawMode::FG_FIXED |
+                               Graphics\IDrawMode::BG_RGB,
+
+        // RGB ASCII on RGB background
+        FORMAT_RGB_ASCII_RGB = Graphics\IDrawMode::ASCII    |
+                               Graphics\IDrawMode::BG_RGB   |
+                               Graphics\IDrawMode::BG_RGB
     ;
 
     /**
-     * Query the format of the pixel. Returns an integer matching one of the PIX_ constants.
+     * Query the format of the display. Returns an integer matching one of the FORMAT_ constants above.
      *
      * @return int
      */
-    public function getPixelFormat() : int;
+    public function getFormat() : int;
 
     /**
      * Returns a fixed length array of integer values that represent the pixels. The size of the array

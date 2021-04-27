@@ -31,15 +31,15 @@ trait TPixelled {
 
     private SPLFixedArray $oPixels, $oNewPixels;
 
-    private int $iPixelFormat, $iRGBWriteMask = 0xFFFFFF;
+    private int $iFormat, $iRGBWriteMask = 0xFFFFFF;
 
     /**
      * @inheritDoc
      */
-    private function initPixelBuffer(int $iWidth, int $iHeight, int $iPixelFormat) {
+    private function initPixelBuffer(int $iWidth, int $iHeight, int $iFormat) {
         $this->oPixels      = clone // drop through
         $this->oNewPixels   = SPLFixedArray::fromArray(array_fill(0, $iWidth * $iHeight, 0));
-        $this->iPixelFormat = $iPixelFormat;
+        $this->iFormat = $iFormat;
     }
 
 
@@ -53,8 +53,8 @@ trait TPixelled {
     /**
      * @inheritDoc
      */
-    public function getPixelFormat() : int {
-        return $this->iPixelFormat;
+    public function getFormat() : int {
+        return $this->iFormat;
     }
 
     /**

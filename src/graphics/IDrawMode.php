@@ -24,25 +24,17 @@ use ABadCafe\PDE;
 use \SPLFixedArray;
 
 /**
- * IPixelBuffer
+ * IDrawMode
  *
- * Basic interface for pixel based data
  */
-interface IPixelBuffer {
+interface IDrawMode {
 
-    /**
-     * Get the pixel width
-     *
-     * @return int
-     */
-    public function getWidth() : int;
-
-    /**
-     * Get the pixel height
-     *
-     * @return int
-     */
-    public function getHeight() : int;
-
-    public function getPixels() : SPLFixedArray;
+    const
+        // Bitmask enumerations
+        BG_FIXED = 0,
+        FG_FIXED = 0,
+        BG_RGB   = 1,
+        FG_RGB   = 2,
+        ASCII    = 8
+    ;
 }

@@ -28,8 +28,55 @@ use ABadCafe\PDE;
  */
 trait TASCIIArt {
 
-    private int     $iMaxLuma = IASCIIArt::DEF_MAX_LUMA;
-    private string  $sRawBuffer, $sNewRawBuffer, $sLumaChars = IASCIIArt::DEF_LUMA_CHAR;
+    private int
+        $iMaxLuma  = IASCIIArt::DEF_MAX_LUMA,
+        $iFGColour = IASCIIArt::DEF_FG_COLOUR,
+        $iBGColour = IASCIIArt::DEF_BG_COLOUR
+    ;
+
+    private string
+        $sRawBuffer,
+        $sNewRawBuffer,
+        $sLumaChars = IASCIIArt::DEF_LUMA_CHAR,
+        $sSetColour = '';
+
+    /**
+     * Set the default foreground ANSI colour to use.
+     *
+     * @param  int  $iColour
+     * @return self
+     */
+    public function setForegroundColour(int $iColour) : self {
+        $iColour &= 7;
+        if ($iColour != $this->iFGColour) {
+            $this->iFGColour  = $iColour;
+            $this->sSetColour = sprintf(
+                IANSIControl::ATTR_COLOUR_TPL,
+                $this->iFGColour,
+                $this->iBGColour
+            );
+        }
+        return $this;
+    }
+
+    /**
+     * Set the default background ANSI colour to use.
+     *
+     * @param  int  $iColour
+     * @return self
+     */
+    public function setBackgroundColour(int $iColour) : self {
+        $iColour &= 7;
+        if ($iColour != $this->iFGColour) {
+            $this->iBGColour  = $iColour;
+            $this->sSetColour = sprintf(
+                IANSIControl::ATTR_COLOUR_TPL,
+                $this->iFGColour,
+                $this->iBGColour
+            );
+        }
+        return $this;
+    }
 
     /**
      * Constructor hook

@@ -29,6 +29,7 @@ use \SPLFixedArray;
  * Basic interface for pixel based data
  */
 interface IPixelBuffer {
+
     /**
      * Get the pixel width
      *

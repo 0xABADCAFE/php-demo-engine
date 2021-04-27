@@ -28,9 +28,27 @@ namespace ABadCafe\PDE\Display;
 interface IASCIIArt {
 
     const
+        DEF_BG_COLOUR = IANSIControl::BLACK,
+        DEF_FG_COLOUR = IANSIControl::WHITE,
         DEF_LUMA_CHAR = ' .,-~:;=!*+|%$#@',
         DEF_MAX_LUMA  = 15
     ;
+
+    /**
+     * Set the default foreground ANSI colour to use.
+     *
+     * @param  int  $iColour
+     * @return self
+     */
+    public function setForegroundColour(int $iColour) : self;
+
+    /**
+     * Set the default background ANSI colour to use.
+     *
+     * @param  int  $iColour
+     * @return self
+     */
+    public function setBackgroundColour(int $iColour) : self;
 
     /**
      * Returns the span width of the text display which will typically be the display width plus however many bytes

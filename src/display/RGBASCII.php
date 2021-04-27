@@ -23,42 +23,16 @@ use ABadCafe\PDE;
 use \SPLFixedArray;
 
 /**
- * TInstrumented
+ * RGBASCII
  *
- * Frame redraw time measurement
+ * ASCII with RGB foreground colour over fixed background. All of the implementation is present in the base
+ * class, this just defines some necessary properties for it to work.
  */
-trait TInstrumented {
+class RGBASCII extends BaseAsyncASCIIWithRGB {
 
-    private int   $iTotalRedrawCount = 0;
-    private float $fRedrawMark, $fTotalRedrawTime  = 0.0;
-
-    /**
-     * @param string|null $sWho
-     */
-    private function reportRedraw(?string $sWho = null) {
-        // Only report the statistics if the instance was used
-        if ($this->iTotalRedrawCount) {
-            printf(
-                "%s Total Redraw Time: %.3f seconds, %.2f ms/redraw\n",
-                $sWho ?? static::class,
-                $this->fTotalRedrawTime,
-                1000.0 * $this->fTotalRedrawTime / $this->iTotalRedrawCount
-            );
-        }
-    }
-
-    /**
-     * Mark the beginning of a redraw
-     */
-    protected function beginRedraw() {
-        $this->fRedrawMark = microtime(true);
-    }
-
-    /**
-     * Mark the end of a redraw
-     */
-    protected function endRedraw() {
-        $this->fTotalRedrawTime += microtime(true) - $this->fRedrawMark;
-        ++$this->iTotalRedrawCount;
-    }
+    const
+        ATTR_TEMPLATE = IANSIControl::ATTR_FG_RGB_TPL, // ANSI template for setting the RGB value
+        DATA_FORMAT   = self::DATA_FORMAT_32,          // Data transfer size
+        PIXEL_FORMAT  = self::FORMAT_RGB_ASCII
+    ;
 }

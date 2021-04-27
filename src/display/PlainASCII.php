@@ -68,7 +68,7 @@ class PlainASCII extends Base implements IASCIIArt {
      */
     public function redraw() : self {
         $this->beginRedraw();
-        echo IANSIControl::CRSR_TOP_LEFT .
+        echo IANSIControl::CRSR_TOP_LEFT . $this->sSetColour .
             str_replace(
                 self::$aBlockMapSearch,
                 self::$aBlockMapReplace,

@@ -78,4 +78,5 @@ abstract class Base implements PDE\IDisplay {
     public function waitForFrame() : self {
         return $this;
     }
+
 }

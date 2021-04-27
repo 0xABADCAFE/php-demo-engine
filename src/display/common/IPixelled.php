@@ -31,35 +31,11 @@ use \SPLFixedArray;
 interface IPixelled extends Graphics\IPixelBuffer {
 
     const
-        /**
-         * LUT : Background character cell only
-         */
-        PIX_LUT = 0,
-
-        /**
-         * ASCII + Forground LUT + Background Black
-         */
-        PIX_ASCII_LUT = 1,
-
-        /**
-         * ASCII + Forground LUT + Background LUT
-         */
-        PIX_ASCII_LUT2 = 2,
-
-        /**
-         * RGB : Background character cell only
-         */
-        PIX_RGB = 3,
-
-        /**
-         * ASCII + Forground RGB + Background Black
-         */
-        PIX_ASCII_RGB = 4,
-
-        /**
-         * ASCII + Forground RGB + Background RGB
-         */
-        PIX_ASCII_RGB2 = 5
+        FORMAT_ASCII         = 0, // Fixed ASCII on fixed background
+        FORMAT_RGB           = 1, // RGB only (no ASCII)
+        FORMAT_RGB_ASCII     = 2, // RGB ASCII on fixed background
+        FORMAT_ASCII_RGB     = 3, // Fixed ASCII on RGB background
+        FORMAT_RGB_ASCII_RGB = 4  // RGB ASCII on RGB background
     ;
 
     /**

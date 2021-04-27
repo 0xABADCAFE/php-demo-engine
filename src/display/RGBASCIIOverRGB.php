@@ -33,7 +33,9 @@ class RGBASCIIOverRGB extends BaseAsyncASCIIWithRGB {
 
     const
         ATTR_TEMPLATE = IANSIControl::ATTR_FG_RGB_TPL . IANSIControl::ATTR_BG_RGB_TPL,
-        DATA_FORMAT   = self::DATA_FORMAT_64;
+        DATA_FORMAT   = self::DATA_FORMAT_64,
+        PIXEL_FORMAT  = self::FORMAT_RGB_ASCII_RGB
+    ;
 
     /**
      * @inheritDoc
@@ -62,13 +64,12 @@ class RGBASCIIOverRGB extends BaseAsyncASCIIWithRGB {
      *
      * @param string $sData     - The raw binary data representing the pixel array
      * @param string $sInitial  - The first part of the output, e.g. reset the cursor position etc.
-     * @param strint $sTemplate - The template to use for setting a new RGB colour
      */
     protected function drawFrame(string $sData, string $sInitial) {
         $aPixels       = unpack(self::DATA_FORMAT_MAP[self::DATA_FORMAT], $sData);
         $sRawBuffer    = $sInitial;
-        $iLastForeRGB  = 0;
-        $iLastBackRGB  = 0;
+        $iLastForeRGB  = 0xFF000000;
+        $iLastBackRGB  = 0xFF000000;
         $i             = 0;
         $iRGBWriteMask = $this->getRGBWriteMask();
         foreach ($aPixels as $iCRGBRGB) {
@@ -77,44 +78,46 @@ class RGBASCIIOverRGB extends BaseAsyncASCIIWithRGB {
             $iRGBRGB     = $iCRGBRGB & $iRGBWriteMask;
             $iForeRGB    = $iRGBRGB >> 24;
             $iBackRGB    = $iRGBRGB &  0xFFFFFF;
-            $sChar       = ICustomChars::MAP[$iCharCode] ?? chr($iCharCode);
-            $iCase       = (int)($iForeRGB == $iBackRGB) |
-                           (int)($iForeRGB == $iLastForeRGB) << 1 |
-                           (int)($iBackRGB == $iLastBackRGB) << 2;
-            switch ($iCase) {
+            $sTextChar   = ICustomChars::MAP[$iCharCode] ?? chr($iCharCode);
+            $iChanged    = (int)($iForeRGB != $iBackRGB) |
+                           (int)($iForeRGB != $iLastForeRGB) << 1 |
+                           (int)($iBackRGB != $iLastBackRGB) << 2;
+            switch ($iChanged) {
+                case 0:
+                    // Colours same, unchanged, character not visible
+                    $sRawBuffer .= ' ';
+                    break;
                 case 1:
-                    // Foreground == Background, both changed
+                    $sRawBuffer .= $sTextChar;
+                    break;
                 case 2:
-                    // Background changed
-                case 3:
-                    // Foreground == background, background changed
+                case 4:
+                    // Colours same, character not visible
+                    $sTextChar = ' ';
+                case 5:
+                    // Background RGB changes only
                     $sRawBuffer .= sprintf(
                         IANSIControl::ATTR_BG_RGB_TPL,
                         $iBackRGB >> 16,
                         ($iBackRGB >> 8) & 0xFF,
                         ($iBackRGB & 0xFF)
-                    ) . $sChar;
+                    ) . $sTextChar;
                     break;
-                case 4:
-                    // Foreground changed
-                case 5:
-                    // Foreground == Background, foreground changed
+                case 3:
+                    // Foreground RGB changes
                     $sRawBuffer .= sprintf(
-                        IANSIControl::ATTR_FG_RGB_TPL,
+                        IANSIControl::ATTR_BG_RGB_TPL,
                         $iForeRGB >> 16,
                         ($iForeRGB >> 8) & 0xFF,
                         ($iForeRGB & 0xFF)
-                    ) . $sChar;
+                    ) . $sTextChar;
                     break;
+
                 case 6:
-                    // Foreground and background unequal, unchanged
+                    // Colours same, character not visible
+                    $sTextChar = ' ';
                 case 7:
-                    // Foreground and background equal, unchanged
-                    $sRawBuffer .= $sChar;
-                    break;
-                case 0:
-                    // Everything changed
-                default:
+                    // Background and foreground changes
                     $sRawBuffer .= sprintf(
                         self::ATTR_TEMPLATE,
                         $iForeRGB >> 16,
@@ -123,7 +126,8 @@ class RGBASCIIOverRGB extends BaseAsyncASCIIWithRGB {
                         $iBackRGB >> 16,
                         ($iBackRGB >> 8) & 0xFF,
                         ($iBackRGB & 0xFF)
-                    ) . $sChar;
+                    ) . $sTextChar;
+                    break;
             }
             $iLastForeRGB = $iForeRGB;
             $iLastBackRGB = $iBackRGB;

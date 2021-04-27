@@ -28,30 +28,37 @@ use \SPLFixedArray;
  */
 class DoubleVerticalRGB extends Base implements IPixelled, IAsynchronous {
 
+    /**
+     * Maps a 3-bit change indicator to a suitable template for output.
+     *
+     * Bit 0 is set when the current foreground and background RGB values are different.
+     * Bit 1 is set when the current and previous foreground RGB values are different.
+     * Bit 2 is set when the current and previous background RGB values are different.
+     */
     const ATTR_TEMPLATE = [
-        // Everything changed
-        0 => IANSIControl::ATTR_FG_RGB_TPL . IANSIControl::ATTR_BG_RGB_TPL . ICustomChars::MAP[0x80],
+        // Nothing changed, foreground == background : No ANSI, whitespace
+        0 => ' ',
 
-        // Foreground and Background are equal but changed
-        1 => IANSIControl::ATTR_BG_RGB_TPL . ' ',
+        // Nothing changed, foreground != background : No ANSI, half-block
+        1 => ICustomChars::MAP[0x80],
 
-        // Foreground and Background unequal, foreground unchanged
-        2 => IANSIControl::ATTR_BG_RGB_TPL . ICustomChars::MAP[0x80],
+        // Foreground changed, background == foreground : ANSI BG, whitespace
+        2 => IANSIControl::ATTR_BG_RGB_TPL . ' ',
 
-        // Foreground and Background equal, foreground unchanged
-        3 => IANSIControl::ATTR_BG_RGB_TPL . ' ',
+        // Foreground changed, background != foreground : ANSI FG, half-block
+        3 => IANSIControl::ATTR_FG_RGB_TPL . ICustomChars::MAP[0x80],
 
-        // Foreground and Background unequal, background unchanged
-        4 => IANSIControl::ATTR_FG_RGB_TPL . ICustomChars::MAP[0x80],
+        // Background changed, background == foreground : ANSI BG, whitespace
+        4 => IANSIControl::ATTR_BG_RGB_TPL . ' ',
 
-        // Foreground and Backgrounc equal, foreground unchanged
-        5 => IANSIControl::ATTR_BG_RGB_TPL . ' ',
+        // Background changed, background != foreground : ANSI BG, half-block
+        5 => IANSIControl::ATTR_BG_RGB_TPL .  ICustomChars::MAP[0x80],
 
-        // Foreground and Background unequal, unchanged
-        6 => ICustomChars::MAP[0x80],
+        // Background and Foreground changed, background == foreground : ANSI FG + BG, whitespace
+        6 => IANSIControl::ATTR_FG_RGB_TPL . IANSIControl::ATTR_BG_RGB_TPL . ' ',
 
-        // Foreground and background unequal, unchanged
-        7 => ' '
+        // Everything changed, foreground and background not equal : ANSI FG + BG, half-block
+        7 => IANSIControl::ATTR_FG_RGB_TPL . IANSIControl::ATTR_BG_RGB_TPL . ICustomChars::MAP[0x80]
     ];
 
     use TPixelled, TInstrumented, TAsynchronous;
@@ -66,7 +73,7 @@ class DoubleVerticalRGB extends Base implements IPixelled, IAsynchronous {
 
         // Initialise the subprocess now as it only needs access to the properties evaluated to now.
         $this->initAsyncProcess();
-        $this->initPixelBuffer($iWidth, $iHeight, self::PIX_ASCII_RGB2);
+        $this->initPixelBuffer($iWidth, $iHeight, self::FORMAT_RGB);
         $this->reset();
     }
 
@@ -126,7 +133,6 @@ class DoubleVerticalRGB extends Base implements IPixelled, IAsynchronous {
     protected function subprocessRenderLoop() {
         ini_set('output_buffering', 'true');
 
-
         $sInitial = IANSIControl::CRSR_TOP_LEFT . sprintf(IANSIControl::ATTR_BG_RGB_TPL, 0, 0, 0);
 
         while (($oMessage = $this->receiveMessageHeader())) {
@@ -158,22 +164,29 @@ class DoubleVerticalRGB extends Base implements IPixelled, IAsynchronous {
         $sRawBuffer   = $sInitial;
         $iEvenOffset  = 0;
         $iOddOffset   = $this->iWidth;
-        $iLastBackRGB = 0;
-        $iLastForeRGB = 0;
+        $iLastBackRGB = 0xFF000000;
+        $iLastForeRGB = 0xFF000000;
         $aTemplates   = self::ATTR_TEMPLATE;
         for ($iRow = 0; $iRow < $this->iHeight; $iRow += 2) {
             $i = $this->iWidth;
             while ($i--) {
                 $iForeRGB  = $aPixels[$iEvenOffset++] & $this->iRGBWriteMask;
                 $iBackRGB  = $aPixels[$iOddOffset++]  & $this->iRGBWriteMask;
-                $iCase     = (int)($iForeRGB == $iBackRGB) | (int)($iForeRGB == $iLastForeRGB) << 1 | (int)($iBackRGB == $iLastBackRGB) << 2;
-                $sTemplate = $aTemplates[$iCase];
-                //++$aCaseCount[$iCase];
-                switch ($iCase) {
+                $iChanged  = (int)($iForeRGB != $iBackRGB)          | // Foreground and background differ
+                             (int)($iForeRGB != $iLastForeRGB) << 1 | // Foreground has changed
+                             (int)($iBackRGB != $iLastBackRGB) << 2;  // Background has changed
+                $sTemplate = $aTemplates[$iChanged];
+
+                switch ($iChanged) {
+                    case 0:
                     case 1:
-                    //case 2: //TODO - why does this glitch?
-                    case 3:
+                        // No RGB changes
+                        $sRawBuffer .= $sTemplate;
+                        break;
+                    case 2:
+                    case 4:
                     case 5:
+                        // Background RGB changes only
                         $sRawBuffer .= sprintf(
                             $sTemplate,
                             $iBackRGB >> 16,
@@ -181,7 +194,8 @@ class DoubleVerticalRGB extends Base implements IPixelled, IAsynchronous {
                             ($iBackRGB & 0xFF)
                         );
                         break;
-                    case 4:
+                    case 3:
+                        // Foreground RGB changes
                         $sRawBuffer .= sprintf(
                             $sTemplate,
                             $iForeRGB >> 16,
@@ -191,12 +205,9 @@ class DoubleVerticalRGB extends Base implements IPixelled, IAsynchronous {
                         break;
                     case 6:
                     case 7:
-                        $sRawBuffer .= $sTemplate;
-                        break;
-                    case 0:
-                    default:
+                        // Background and foreground changes
                         $sRawBuffer .= sprintf(
-                            $aTemplates[0],
+                            $sTemplate,
                             $iForeRGB >> 16,
                             ($iForeRGB >> 8) & 0xFF,
                             ($iForeRGB & 0xFF),
@@ -204,7 +215,7 @@ class DoubleVerticalRGB extends Base implements IPixelled, IAsynchronous {
                             ($iBackRGB >> 8) & 0xFF,
                             ($iBackRGB & 0xFF)
                         );
-
+                        break;
                 }
                 $iLastForeRGB = $iForeRGB;
                 $iLastBackRGB = $iBackRGB;

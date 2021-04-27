@@ -24,6 +24,8 @@ use \SPLFixedArray;
 
 /**
  * BaseAsyncASCIIWithRGB
+ *
+ * Common base class for RGBASCII, ASCIIOverRGB and RGBASCIIOverRGB, all of which support ASCII Art and RGB.
  */
 abstract class BaseAsyncASCIIWithRGB extends Base implements IPixelled, IASCIIArt, IAsynchronous {
 
@@ -44,7 +46,7 @@ abstract class BaseAsyncASCIIWithRGB extends Base implements IPixelled, IASCIIAr
         // Initialise the subprocess now as it only needs access to the properties evaluated to now.
         $this->initAsyncProcess();
         $this->initASCIIBuffer($iWidth, $iHeight);
-        $this->initPixelBuffer($iWidth, $iHeight, self::PIX_ASCII_RGB2);
+        $this->initPixelBuffer($iWidth, $iHeight, static::PIXEL_FORMAT);
         $this->reset();
     }
 
@@ -131,23 +133,23 @@ abstract class BaseAsyncASCIIWithRGB extends Base implements IPixelled, IASCIIAr
     protected function drawFrame(string $sData, string $sInitial) {
         $aPixels    = unpack(self::DATA_FORMAT_MAP[static::DATA_FORMAT], $sData);
         $sRawBuffer = $sInitial;
-        $iLastRGB   = 0;
+        $iLastRGB   = 0xFF000000;
         $i          = 0;
         foreach ($aPixels as $iCRGB) {
             $sRawBuffer .= $this->aLineBreaks[$i++] ?? '';
             $iCharCode   = $iCRGB >> 24;
             $iRGB        = $iCRGB & $this->iRGBWriteMask;
-            $sChar       = ICustomChars::MAP[$iCharCode] ?? chr($iCharCode);
+            $sTextChar   = ICustomChars::MAP[$iCharCode] ?? chr($iCharCode);
             if ($iRGB !== $iLastRGB) {
                 $sRawBuffer .= sprintf(
                     static::ATTR_TEMPLATE,
                     ($iRGB >> 16) & 0xFF, // Red
                     ($iRGB >> 8) & 0xFF,  // Green
                     ($iRGB & 0xFF)        // Blue
-                ) . $sChar;
+                ) . $sTextChar;
                 $iLastRGB = $iRGB;
             } else {
-                $sRawBuffer .= $sChar;
+                $sRawBuffer .= $sTextChar;
             }
         }
         // Make sure we output the data in one blast to try to mitigate partial redraw.

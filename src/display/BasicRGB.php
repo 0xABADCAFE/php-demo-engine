@@ -38,7 +38,7 @@ class BasicRGB extends Base implements IPixelled {
      */
     public function __construct(int $iWidth, int $iHeight) {
         parent::__construct($iWidth, $iHeight);
-        $this->initPixelBuffer($iWidth, $iHeight, self::PIX_RGB);
+        $this->initPixelBuffer($iWidth, $iHeight, self::FORMAT_RGB);
         $aLineBreaks   = range(0, $iWidth * $iHeight, $iWidth);
         unset($aLineBreaks[0]);
         $this->aLineBreaks = array_fill_keys($aLineBreaks, "\n");

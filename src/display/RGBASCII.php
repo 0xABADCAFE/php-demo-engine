@@ -32,6 +32,7 @@ class RGBASCII extends BaseAsyncASCIIWithRGB {
 
     const
         ATTR_TEMPLATE = IANSIControl::ATTR_FG_RGB_TPL, // ANSI template for setting the RGB value
-        DATA_FORMAT   = self::DATA_FORMAT_32           // Data transfer size
+        DATA_FORMAT   = self::DATA_FORMAT_32,          // Data transfer size
+        PIXEL_FORMAT  = self::FORMAT_RGB_ASCII
     ;
 }

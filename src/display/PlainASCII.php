@@ -42,6 +42,7 @@ class PlainASCII extends Base implements IASCIIArt {
      */
     public function __construct(int $iWidth, int $iHeight) {
         parent::__construct($iWidth, $iHeight);
+        $this->initFixedColours();
         $this->initASCIIBuffer($iWidth, $iHeight);
         if (empty(self::$aBlockMapSearch)) {
             self::$aBlockMapSearch  = array_map('chr', array_keys(ICustomChars::MAP));

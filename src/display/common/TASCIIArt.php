@@ -50,6 +50,9 @@ trait TASCIIArt {
      */
     public function setForegroundColour(int $iColour) : self {
         $iColour &= 0xFF;
+        if ($iColour < 16) {
+            $iColour = IASCIIArt::REMAP_DEFAULTS[$iColour & 0x0F];
+        }
         if ($iColour != $this->iFGColour) {
             $this->iFGColour = $iColour;
             $this->sFGColour = sprintf(
@@ -68,14 +71,31 @@ trait TASCIIArt {
      */
     public function setBackgroundColour(int $iColour) : self {
         $iColour &= 0xFF;
-        if ($iColour != $this->iFGColour) {
+        if ($iColour < 16) {
+            $iColour = IASCIIArt::REMAP_DEFAULTS[$iColour & 0x0F];
+        }
+        if ($iColour != $this->iBGColour) {
             $this->iBGColour = $iColour;
-            $this->sFGColour = sprintf(
-                IANSIControl::ATTR_FG_FIXED_TPL,
+            $this->sBGColour = sprintf(
+                IANSIControl::ATTR_BG_FIXED_TPL,
                 $this->iBGColour
             );
         }
         return $this;
+    }
+
+    /**
+     * Initialise the default fixed colours.
+     */
+    private function initFixedColours() {
+        $this->sBGColour = sprintf(
+            IANSIControl::ATTR_BG_FIXED_TPL,
+            $this->iBGColour
+        );
+        $this->sFGColour = sprintf(
+            IANSIControl::ATTR_FG_FIXED_TPL,
+            $this->iFGColour
+        );
     }
 
     /**
@@ -87,14 +107,6 @@ trait TASCIIArt {
     private function initASCIIBuffer(int $iWidth, int $iHeight) {
         $this->sRawBuffer    = // drop through
         $this->sNewRawBuffer = str_repeat(str_repeat(' ', $iWidth) . "\n", $iHeight);
-        $this->sFGColour = sprintf(
-            IANSIControl::ATTR_FG_FIXED_TPL,
-            $this->iBGColour
-        );
-        $this->sFGColour = sprintf(
-            IANSIControl::ATTR_FG_FIXED_TPL,
-            $this->iFGColour
-        );
     }
 
     /**

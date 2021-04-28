@@ -28,12 +28,12 @@ namespace ABadCafe\PDE\Display;
 interface IASCIIArt {
 
     const
-        // ITY T.416 mapped colours using 6x6x6 as a subsitute for the
+        // ITU T.416 mapped colours using the 6x6x6 colour cube as a subsitute for the
         // "standard" ANSI 16 colours, which basically aren't standard.
         BLACK          = 16,  // 0:0:0
-        DARK_GREY      = 102, // 2:2:2
-        BRIGHT_GREY    = 188, // 4:4:4
-        WHITE          = 231, // 5:5:5
+        DARK_GREY      = 102, // 2:2:2 // AKA Bright Black (lol)
+        BRIGHT_GREY    = 188, // 4:4:4 // AKA White
+        WHITE          = 231, // 5:5:5 // AKA Bright White
         RED            = 160, // 4:0:0
         BRIGHT_RED     = 196, // 5:0:0
         GREEN          = 40,  // 0:4:0
@@ -53,7 +53,31 @@ interface IASCIIArt {
     ;
 
     /**
-     * Set the default foreground ANSI colour to use.
+     * Remaps the low 16 values of the ITU T.416 specification to our hand selected values
+     * to eliminate variance between terminals/platforms/etc.
+     */
+    const REMAP_DEFAULTS = [
+        0  => self::BLACK,
+        1  => self::RED,
+        2  => self::GREEN,
+        3  => self::YELLOW,
+        4  => self::BLUE,
+        5  => self::MAGENTA,
+        6  => self::CYAN,
+        7  => self::BRIGHT_GREY,
+        8  => self::DARK_GREY,
+        9  => self::BRIGHT_RED,
+        10 => self::BRIGHT_GREEN,
+        11 => self::BRIGHT_YELLOW,
+        12 => self::BRIGHT_BLUE,
+        13 => self::BRIGHT_MAGENTA,
+        14 => self::BRIGHT_CYAN,
+        15 => self::WHITE
+    ];
+
+    /**
+     * Set the default foreground ANSI colour to use. Accepts a value in the range 0-255 which is set using the
+     * ITU T.416 256 colour mode. If a value in the range 0-15 is passed, it will be remapped internally.
      *
      * @param  int  $iColour
      * @return self
@@ -61,7 +85,8 @@ interface IASCIIArt {
     public function setForegroundColour(int $iColour) : self;
 
     /**
-     * Set the default background ANSI colour to use.
+     * Set the default background ANSI colour to use. Accepts a value in the range 0-255 which is set using the
+     * ITU T.416 256 colour mode.
      *
      * @param  int  $iColour
      * @return self

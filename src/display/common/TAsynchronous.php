@@ -99,6 +99,26 @@ trait TAsynchronous {
     }
 
     /**
+     * Send a message with a new fixed foreground colour to use
+     *
+     * @param int $iWriteMask
+     */
+    private function sendSetForegroundColour(int $iColour) {
+        $sMessageData = $this->makeMessageHeader(IAsynchronous::MESSAGE_SET_FG_COLOUR, 4) . pack('V', $iColour);
+        socket_write($this->aSocketPair[IAsynchronous::ID_PARENT], $sMessageData, IAsynchronous::HEADER_SIZE + 4);
+    }
+
+    /**
+     * Send a message with a new fixed background colour to use
+     *
+     * @param int $iWriteMask
+     */
+    private function sendSetBackgroundColour(int $iColour) {
+        $sMessageData = $this->makeMessageHeader(IAsynchronous::MESSAGE_SET_BG_COLOUR, 4) . pack('V', $iColour);
+        socket_write($this->aSocketPair[IAsynchronous::ID_PARENT], $sMessageData, IAsynchronous::HEADER_SIZE + 4);
+    }
+
+    /**
      * Send an arbitrary raw message.
      *
      * @param int    $iCommand

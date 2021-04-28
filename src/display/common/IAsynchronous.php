@@ -46,12 +46,14 @@ interface IAsynchronous {
         HEADER_OFFSET_COMMAND  = 1,
         HEADER_OFFSET_SIZE     = 2,
         HEADER_OFFSET_CHECK    = 3,
-
         HEADER_MAGIC           = 0xABADCAFE,
+
+        // Message types
         MESSAGE_NEW_FRAME      = 0,
         MESSAGE_SET_WRITEMASK  = 1,
-
         MESSAGE_WAIT_FOR_FRAME = 2,
+        MESSAGE_SET_FG_COLOUR  = 3,
+        MESSAGE_SET_BG_COLOUR  = 4,
 
         RESPONSE_OK            = 0,
 

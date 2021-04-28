@@ -28,10 +28,28 @@ namespace ABadCafe\PDE\Display;
 interface IASCIIArt {
 
     const
-        DEF_BG_COLOUR = IANSIControl::BLACK,
-        DEF_FG_COLOUR = IANSIControl::WHITE,
-        DEF_LUMA_CHAR = ' .,-~:;=!*+|%$#@',
-        DEF_MAX_LUMA  = 15
+        // ITY T.416 mapped colours using 6x6x6 as a subsitute for the
+        // "standard" ANSI 16 colours, which basically aren't standard.
+        BLACK          = 16,  // 0:0:0
+        DARK_GREY      = 102, // 2:2:2
+        BRIGHT_GREY    = 188, // 4:4:4
+        WHITE          = 231, // 5:5:5
+        RED            = 160, // 4:0:0
+        BRIGHT_RED     = 196, // 5:0:0
+        GREEN          = 40,  // 0:4:0
+        BRIGHT_GREEN   = 46,  // 0:5:0
+        YELLOW         = 184, // 4:4:0
+        BRIGHT_YELLOW  = 226, // 5:5:0
+        BLUE           = 20,  // 0:0:4
+        BRIGHT_BLUE    = 21,  // 0:0:5
+        MAGENTA        = 164, // 4:0:4
+        BRIGHT_MAGENTA = 201, // 5:0:5
+        CYAN           = 44,  // 0:4:4
+        BRIGHT_CYAN    = 51,  // 0:5:5
+        DEF_BG_COLOUR  = self::BLACK,
+        DEF_FG_COLOUR  = self::WHITE,
+        DEF_LUMA_CHAR  = ' .,-~:;=!*+|%$#@',
+        DEF_MAX_LUMA   = 15
     ;
 
     /**

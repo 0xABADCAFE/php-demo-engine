@@ -27,21 +27,12 @@ namespace ABadCafe\PDE\Display;
  */
 interface IANSIControl {
     const
-        // Simple legacy colour mode
-        ATTR_COLOUR_TPL = "\x1b[3%d;4%dm",
-        ATTR_COLOUR_DEF = "\x1b[37;40m",
-
-        BLACK   = 0,
-        RED     = 1,
-        GREEN   = 2,
-        YELLOW  = 3,
-        BLUE    = 4,
-        MAGENTA = 5,
-        CYAN    = 6,
-        WHITE   = 7,
 
         // Character cell attributes
         ATTR_RESET      = "\x1b[m",
+        ATTR_FG_FIXED_TPL = "\x1b[38:5:%dm",
+        ATTR_BG_FIXED_TPL = "\x1b[48:5:%dm",
+
         ATTR_FG_RGB_TPL = "\x1b[38;2;%d;%d;%dm",
         ATTR_BG_RGB_TPL = "\x1b[48;2;%d;%d;%dm",
 

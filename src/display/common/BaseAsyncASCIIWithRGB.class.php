@@ -43,7 +43,7 @@ abstract class BaseAsyncASCIIWithRGB extends Base implements IPixelled, IASCIIAr
         unset($aLineBreaks[0]);
         $this->aLineBreaks = array_fill_keys($aLineBreaks, "\n");
 
-        // Initialise the subprocess now as it only needs access to the properties evaluated to now.
+        $this->initFixedColours();
         $this->initAsyncProcess();
         $this->initASCIIBuffer($iWidth, $iHeight);
         $this->initPixelBuffer($iWidth, $iHeight, static::PIXEL_FORMAT);
@@ -54,7 +54,7 @@ abstract class BaseAsyncASCIIWithRGB extends Base implements IPixelled, IASCIIAr
      * Destructor. Ensured our end of the socket pair is closed.
      */
     public function __destruct() {
-        $this->closeSocket(1);
+        $this->closeSocket(self::ID_PARENT);
         echo IANSIControl::CRSR_ON, "\n";
         $this->reportRedraw();
     }
@@ -91,13 +91,49 @@ abstract class BaseAsyncASCIIWithRGB extends Base implements IPixelled, IASCIIAr
     }
 
     /**
+     * Set the default foreground ANSI colour to use. Replaces the trait version.
+     *
+     * @param  int  $iColour
+     * @return self
+     */
+    public function setForegroundColour(int $iColour) : self {
+        $iColour &= 0xFF;
+        if ($iColour < 16) {
+            $iColour = IASCIIArt::REMAP_DEFAULTS[$iColour & 0x0F];
+        }
+        if ($iColour != $this->iFGColour) {
+            $this->iFGColour = $iColour;
+            $this->sendSetForegroundColour($iColour);
+        }
+        return $this;
+    }
+
+    /**
+     * Set the default background ANSI colour to use. Replaces the trait version.
+     *
+     * @param  int  $iColour
+     * @return self
+     */
+    public function setBackgroundColour(int $iColour) : self {
+        $iColour &= 0xFF;
+        if ($iColour < 16) {
+            $iColour = IASCIIArt::REMAP_DEFAULTS[$iColour & 0x0F];
+        }
+        if ($iColour != $this->iBGColour) {
+            $this->iBGColour = $iColour;
+            $this->sendSetBackgroundColour($iColour);
+        }
+        return $this;
+    }
+
+    /**
      * Main subprocess loop. This sits and waits for data from the socket. When the data arrives
      * it decodes and prints it.
      */
     protected function subprocessRenderLoop() {
         ini_set('output_buffering', 'true');
         $sInput   = '';
-        $sInitial = IANSIControl::CRSR_TOP_LEFT . sprintf(IANSIControl::ATTR_BG_RGB_TPL, 0, 0, 0);
+        $sInitial = IANSIControl::CRSR_TOP_LEFT;
         while (($oMessage = $this->receiveMessageHeader())) {
 
             // Get any expected data following the message header
@@ -111,11 +147,30 @@ abstract class BaseAsyncASCIIWithRGB extends Base implements IPixelled, IASCIIAr
 
                 case self::MESSAGE_NEW_FRAME:
                     $this->beginRedraw();
-                    $this->drawFrame($sData, $sInitial);
+                    $this->drawFrame($sData, $sInitial . $this->sFGColour . $this->sBGColour);
                     $this->endRedraw();
                     break;
+
                 case self::MESSAGE_WAIT_FOR_FRAME:
                     $this->sendResponseCode(self::RESPONSE_OK);
+                    break;
+
+                case self::MESSAGE_SET_FG_COLOUR:
+                    $aData = unpack('V', $sData);
+                    $this->iFGColour = reset($aData);
+                    $this->sFGColour = sprintf(
+                        IANSIControl::ATTR_FG_FIXED_TPL,
+                        $this->iFGColour
+                    );
+                    break;
+
+                case self::MESSAGE_SET_BG_COLOUR:
+                    $aData = unpack('V', $sData);
+                    $this->iBGColour = reset($aData);
+                    $this->sBGColour = sprintf(
+                        IANSIControl::ATTR_BG_FIXED_TPL,
+                        $this->iBGColour
+                    );
                     break;
                 default:
                     break;

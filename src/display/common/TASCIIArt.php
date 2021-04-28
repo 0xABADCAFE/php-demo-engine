@@ -38,7 +38,9 @@ trait TASCIIArt {
         $sRawBuffer,
         $sNewRawBuffer,
         $sLumaChars = IASCIIArt::DEF_LUMA_CHAR,
-        $sSetColour = '';
+        $sFGColour  = '',
+        $sBGColour  = ''
+    ;
 
     /**
      * Set the default foreground ANSI colour to use.
@@ -47,13 +49,15 @@ trait TASCIIArt {
      * @return self
      */
     public function setForegroundColour(int $iColour) : self {
-        $iColour &= 7;
+        $iColour &= 0xFF;
+        if ($iColour < 16) {
+            $iColour = IASCIIArt::REMAP_DEFAULTS[$iColour & 0x0F];
+        }
         if ($iColour != $this->iFGColour) {
-            $this->iFGColour  = $iColour;
-            $this->sSetColour = sprintf(
-                IANSIControl::ATTR_COLOUR_TPL,
-                $this->iFGColour,
-                $this->iBGColour
+            $this->iFGColour = $iColour;
+            $this->sFGColour = sprintf(
+                IANSIControl::ATTR_FG_FIXED_TPL,
+                $this->iFGColour
             );
         }
         return $this;
@@ -66,16 +70,32 @@ trait TASCIIArt {
      * @return self
      */
     public function setBackgroundColour(int $iColour) : self {
-        $iColour &= 7;
-        if ($iColour != $this->iFGColour) {
-            $this->iBGColour  = $iColour;
-            $this->sSetColour = sprintf(
-                IANSIControl::ATTR_COLOUR_TPL,
-                $this->iFGColour,
+        $iColour &= 0xFF;
+        if ($iColour < 16) {
+            $iColour = IASCIIArt::REMAP_DEFAULTS[$iColour & 0x0F];
+        }
+        if ($iColour != $this->iBGColour) {
+            $this->iBGColour = $iColour;
+            $this->sBGColour = sprintf(
+                IANSIControl::ATTR_BG_FIXED_TPL,
                 $this->iBGColour
             );
         }
         return $this;
+    }
+
+    /**
+     * Initialise the default fixed colours.
+     */
+    private function initFixedColours() {
+        $this->sBGColour = sprintf(
+            IANSIControl::ATTR_BG_FIXED_TPL,
+            $this->iBGColour
+        );
+        $this->sFGColour = sprintf(
+            IANSIControl::ATTR_FG_FIXED_TPL,
+            $this->iFGColour
+        );
     }
 
     /**

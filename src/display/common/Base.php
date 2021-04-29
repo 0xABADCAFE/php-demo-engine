@@ -79,4 +79,19 @@ abstract class Base implements PDE\IDisplay {
         return $this;
     }
 
+    /**
+     * Each input value is key checked against the DEFAULT_PARAMETERS set and if the key matches the
+     * value is first type cooerced then assigned.
+     */
+    protected function filterRawParameters(array $aParameters) : object {
+        $aDefaults = static::DEFAULT_PARAMETERS;
+        $aFiltered = [];
+        foreach ($aParameters as $sParameterName => $mParameterValue) {
+            if (isset($aDefaults[$sParameterName])) {
+                settype($mParameterValue, gettype($aDefaults[$sParameterName]));
+                $aFiltered[$sParameterName] = $mParameterValue;
+            }
+        }
+        return (object)$aFiltered;
+    }
 }

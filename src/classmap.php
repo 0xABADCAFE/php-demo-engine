@@ -5,6 +5,7 @@ namespace ABadCafe\PDE;
 const CLASS_MAP = [
   'ABadCafe\\PDE\\IDisplay' => '/IDisplay.php',
   'ABadCafe\\PDE\\IRoutine' => '/IRoutine.php',
+  'ABadCafe\\PDE\\IParameterisable' => '/IParameterisable.php',
   'ABadCafe\\PDE\\Display\\PlainASCII' => '/display/PlainASCII.php',
   'ABadCafe\\PDE\\Display\\RGBASCIIOverRGB' => '/display/RGBASCIIOverRGB.php',
   'ABadCafe\\PDE\\Display\\DoubleVerticalRGB' => '/display/DoubleVerticalRGB.php',

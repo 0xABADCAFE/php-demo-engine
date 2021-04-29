@@ -1,0 +1,109 @@
+{
+    "displays": {
+        "default": {
+            "sType": "PlainASCII",
+            "iWidth": 160,
+            "iHeight": 50,
+            "iMaxFPS": 60
+        }
+    },
+    "routines": {
+        "doughnut": {
+            "sType": "Toroid",
+            "iPriority": 1,
+            "aParameters": {
+                "fMinLuma": 0.5,
+                "fLumaFactor": 1.0
+            }
+        }
+    },
+    "events": [
+        {
+            "at": 0.0,
+            "on": "routine/doughnut",
+            "do": "enable"
+        },
+
+        {
+            "at": 0.5,
+            "on": "display/default",
+            "do": "update",
+            "aParameters": {
+                "iBGColour": 1
+            }
+        },
+
+        {
+            "at": 1.0,
+            "on": "display/default",
+            "do": "update",
+            "aParameters": {
+                "iBGColour": 2,
+                "iFGColour": 0
+            }
+        },
+
+        {
+            "at": 1.5,
+            "on": "display/default",
+            "do": "update",
+            "aParameters": {
+                "iBGColour": 3
+            }
+        },
+
+        {
+            "at": 2.0,
+            "on": "display/default",
+            "do": "update",
+            "aParameters": {
+                "iBGColour": 4,
+                "iFGColour": 15
+            }
+        },
+
+        {
+            "at": 2.5,
+            "on": "display/default",
+            "do": "update",
+            "aParameters": {
+                "iBGColour": 5
+            }
+        },
+
+        {
+            "at": 3.0,
+            "on": "display/default",
+            "do": "update",
+            "aParameters": {
+                "iBGColour": 6
+            }
+        },
+
+        {
+            "at": 3.0,
+            "on": "display/default",
+            "do": "update",
+            "aParameters": {
+                "iBGColour": 7,
+                "iFGColour": 0
+            }
+        },
+
+        {
+            "at": 3.5,
+            "on": "display/default",
+            "do": "update",
+            "aParameters": {
+                "iBGColour": 0,
+                "iFGColour": 11,
+                "sLumaChars": " %91%92%93%88"
+            }
+        },
+
+        {
+            "at": 10.0,
+            "do": "end"
+        }
+    ]
+}

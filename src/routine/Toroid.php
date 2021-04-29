@@ -158,6 +158,9 @@ class Toroid extends Base {
             }
             if ($iDrawMode & self::MASK_NEEDS_ASCII_BUFFER) {
                 $this->sCharDrawBuffer = &$this->oDisplay->getCharacterBuffer();
+                $this->iCharMaxLuma = $this->oDisplay->getMaxLuminance();
+                $this->sLumaCharLUT = $this->oDisplay->getLuminanceCharacters();
+                $this->iSpan        = $this->oDisplay->getCharacterWidth();
             }
             $cPlotPixel = [$this, self::PLOT_FUNCTIONS[$iDrawMode]];
 

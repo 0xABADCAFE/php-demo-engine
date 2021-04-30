@@ -125,6 +125,7 @@ class PlainASCII extends Base implements IASCIIArt {
      * @inheritDoc
      */
     public function waitForFrame() : self {
+        // If we are leaving this display, make sure we reset anything we messed with.
         echo IANSIControl::ATTR_RESET;
         return $this;
     }

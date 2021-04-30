@@ -15,7 +15,7 @@
     },
     "routines": {
         "pulse": {
-            "sType": "RGBPulse",
+            "sType": "2D/RGBPulse",
             "iPriority": 0,
             "aParameters": {
             }

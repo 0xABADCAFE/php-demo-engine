@@ -9,13 +9,13 @@
     },
     "routines": {
         "pulse": {
-            "sType": "RGBPulse",
+            "sType": "2D/RGBPulse",
             "iPriority": 0,
             "aParameters": {
             }
         },
         "doughnut": {
-            "sType": "Toroid",
+            "sType": "3D/Toroid",
             "iPriority": 1,
             "aParameters": {
                 "fMinLuma": 0.0,

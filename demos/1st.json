@@ -4,12 +4,12 @@
             "sType": "PlainASCII",
             "iWidth": 160,
             "iHeight": 50,
-            "iMaxFPS": 30
+            "iMaxFPS": 60
         }
     },
     "routines": {
         "lines": {
-            "sType": "SimpleLine",
+            "sType": "2D/ASCIILines",
             "iPriority": 0,
             "aParameters": {
                 "iSpacing": 1,
@@ -18,7 +18,7 @@
             }
         },
         "doughnut": {
-            "sType": "Toroid",
+            "sType": "3D/Toroid",
             "iPriority": 1,
             "aParameters": {
                 "fMinLuma": 0.0,

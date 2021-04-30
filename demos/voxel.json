@@ -15,7 +15,7 @@
     },
     "routines": {
         "voxel": {
-            "sType": "Voxel",
+            "sType": "3D/Voxel",
             "iPriority": 1,
             "aParameters": {
                 "sTexture": "images/voxel_texture.ppm",
@@ -24,14 +24,14 @@
             }
         },
         "trails": {
-            "sType": "RGBPersistence",
+            "sType": "2D/RGBPersistence",
             "iPriority": 2,
             "aParameters": {
                 "iStrength":1
             }
         },
         "toroid": {
-            "sType": "Toroid",
+            "sType": "3D/Toroid",
             "iPriority": 5,
             "aParameters": {
                 "fMinLuma": 0.0,
@@ -41,7 +41,7 @@
             }
         },
         "image": {
-            "sType": "RGBImage",
+            "sType": "2D/RGBImage",
             "iPriority": 3,
             "aParameters": {
                 "sPath": "images/slipped_disc_1.ppm",
@@ -51,7 +51,7 @@
             }
         },
         "static": {
-            "sType": "StaticNoise",
+            "sType": "2D/StaticNoise",
             "iPriority": 10,
             "aParameters": {
                 "fDuration": 0.25

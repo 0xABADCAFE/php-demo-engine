@@ -9,7 +9,7 @@
     },
     "routines": {
         "doughnut": {
-            "sType": "Toroid",
+            "sType": "3D/Toroid",
             "iPriority": 1,
             "aParameters": {
                 "fMinLuma": 1.0,

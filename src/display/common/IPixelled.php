@@ -55,7 +55,7 @@ interface IPixelled extends Graphics\IPixelBuffer {
 
         // RGB ASCII on RGB background
         FORMAT_RGB_ASCII_RGB = Graphics\IDrawMode::ASCII    |
-                               Graphics\IDrawMode::BG_RGB   |
+                               Graphics\IDrawMode::FG_RGB   |
                                Graphics\IDrawMode::BG_RGB
     ;
 

@@ -1,0 +1,86 @@
+{
+    "displays": {
+        "default": {
+            "sType": "RGBASCIIOverRGB",
+            "iWidth": 160,
+            "iHeight": 50,
+            "iMaxFPS": 30
+        }
+    },
+    "routines": {
+        "loader": {
+            "sType": "2D/TapeLoader",
+            "iPriority": 1,
+            "aParameters": {
+                "iState": 0
+            }
+        },
+        "pulse": {
+            "sType": "2D/RGBPulse",
+            "iPriority": 0,
+            "aParameters": {
+            }
+        }
+    },
+    "events": [
+        {
+            "at": 0.0,
+            "on": "routine/pulse",
+            "do": "enable"
+        },
+        {
+            "at": 0.0,
+            "on": "routine/loader",
+            "do": "enable"
+        },
+        {
+            "at": 1.0,
+            "on": "routine/loader",
+            "do": "update",
+            "aParameters": {
+                "iState" : 1
+            }
+        },
+
+        {
+            "at": 3.0,
+            "on": "routine/loader",
+            "do": "update",
+            "aParameters": {
+                "iState" : 2
+            }
+        },
+
+        {
+            "at": 3.2,
+            "on": "routine/loader",
+            "do": "update",
+            "aParameters": {
+                "iState" : 0
+            }
+        },
+
+        {
+            "at": 5.0,
+            "on": "routine/loader",
+            "do": "update",
+            "aParameters": {
+                "iState" : 1
+            }
+        },
+
+        {
+            "at": 7.0,
+            "on": "routine/loader",
+            "do": "update",
+            "aParameters": {
+                "iState" : 2
+            }
+        },
+
+        {
+            "at": 10.0,
+            "do": "end"
+        }
+    ]
+}

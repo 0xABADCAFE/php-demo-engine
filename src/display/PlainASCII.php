@@ -72,7 +72,7 @@ class PlainASCII extends Base implements IASCIIArt {
     }
 
     public function __destruct() {
-        echo IANSIControl::CRSR_ON, "\n";
+        echo IANSIControl::ATTR_RESET . IANSIControl::CRSR_ON, "\n";
         $this->reportRedraw();
     }
 
@@ -92,6 +92,8 @@ class PlainASCII extends Base implements IASCIIArt {
 
         $sRawBuffer = '';
         $sLength    = strlen($this->sRawBuffer);
+        // We can't use str_replace() here due to subsequent search terms matching previous replace terms.
+        // Also, this iterates once.
         for ($i = 0; $i < $sLength; ++$i) {
             $sCharacter = $this->sRawBuffer[$i];
             $sRawBuffer .= self::$aBlockMapReplace[$sCharacter] ?? $sCharacter;
@@ -116,6 +118,14 @@ class PlainASCII extends Base implements IASCIIArt {
         if (isset($oParameters->sLumaChars)) {
             $this->setLuminanceCharacters(urldecode($oParameters->sLumaChars));
         }
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function waitForFrame() : self {
+        echo IANSIControl::ATTR_RESET;
         return $this;
     }
 }

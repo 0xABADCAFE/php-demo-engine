@@ -4,7 +4,7 @@
             "sType": "PlainASCII",
             "iWidth": 160,
             "iHeight": 50,
-            "iMaxFPS": 60
+            "iMaxFPS": 30
         }
     },
     "routines": {
@@ -12,8 +12,8 @@
             "sType": "Toroid",
             "iPriority": 1,
             "aParameters": {
-                "fMinLuma": 0.5,
-                "fLumaFactor": 1.0
+                "fMinLuma": 1.0,
+                "fLumaFactor": 0.9
             }
         }
     },
@@ -98,6 +98,17 @@
                 "iBGColour": 0,
                 "iFGColour": 11,
                 "sLumaChars": " %91%92%93%88"
+            }
+        },
+
+        {
+            "at": 4.5,
+            "on": "display/default",
+            "do": "update",
+            "aParameters": {
+                "iBGColour": 0,
+                "iFGColour": 11,
+                "sLumaChars": ""
             }
         },
 

@@ -148,12 +148,17 @@ trait TASCIIArt {
      * @inheritDoc
      */
     public function setLuminanceCharacters(string $sLumaChars) : self {
-        $iLength = strlen($sLumaChars);
-        if ($iLength < 2) {
-            throw new \LengthException();
+        if (empty($sLumaChars)) {
+            $this->sLumaChars = IASCIIArt::DEF_LUMA_CHAR;
+            $this->iMaxLuma   = IASCIIArt::DEF_MAX_LUMA;
+        } else {
+            $iLength = strlen($sLumaChars);
+            if ($iLength < 2) {
+                throw new \LengthException();
+            }
+            $this->sLumaChars = $sLumaChars;
+            $this->iMaxLuma   = $iLength - 1;
         }
-        $this->sLumaChars = $sLumaChars;
-        $this->iMaxLuma   = $iLength - 1;
         return $this;
     }
 }

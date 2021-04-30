@@ -15,7 +15,7 @@
     },
     "routines": {
         "static": {
-            "sType": "StaticNoise",
+            "sType": "2D/StaticNoise",
             "iPriority": 0,
             "aParameters": {
             }

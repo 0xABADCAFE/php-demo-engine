@@ -9,7 +9,7 @@
     },
     "routines": {
         "lines": {
-            "sType": "SimpleLine",
+            "sType": "2D/ASCIILines",
             "iPriority": 1,
             "aParameters": {
                 "iSpacing": 1,
@@ -18,7 +18,7 @@
             }
         },
         "doughnut": {
-            "sType": "Toroid",
+            "sType": "3D/Toroid",
             "iPriority": 2,
             "aParameters": {
                 "fMinLuma": 0.0,
@@ -27,20 +27,20 @@
             }
         },
         "pulse": {
-            "sType": "RGBPulse",
+            "sType": "2D/RGBPulse",
             "iPriority": 0,
             "aParameters": {
             }
         },
         "trails": {
-            "sType": "RGBPersistence",
+            "sType": "2D/RGBPersistence",
             "iPriority": 10,
             "aParameters": {
                 "iStrength":1
             }
         },
         "static": {
-            "sType": "StaticNoise",
+            "sType": "2D/StaticNoise",
             "iPriority": 8,
             "aParameters": {
                 "fDuration": 0.25

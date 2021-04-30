@@ -15,13 +15,13 @@
     },
     "routines": {
         "pulse": {
-            "sType": "RGBPulse",
+            "sType": "2D/RGBPulse",
             "iPriority": 0,
             "aParameters": {
             }
         },
         "image": {
-            "sType": "RGBImage",
+            "sType": "2D/RGBImage",
             "iPriority": 1,
             "aParameters": {
                 "sPath": "images/slipped_disc_1.ppm",

@@ -201,6 +201,9 @@ class Context {
                     }
                 }
                 break;
+            case Definition\Event::UPDATE:
+                $this->oDisplay->setParameters($oEvent->aParameters);
+                break;
             default:
                 break;
         }

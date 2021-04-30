@@ -29,6 +29,13 @@ use \SPLFixedArray;
  */
 class BasicRGB extends Base implements IPixelled {
 
+    const DEFAULT_PARAMETERS = [
+        /**
+         * Default writemask code (hex)
+         */
+        'sMaskRGB'     => 'FFFFFF'
+    ];
+
     use TPixelled, TInstrumented;
 
     private array $aLineBreaks = [];
@@ -83,6 +90,17 @@ class BasicRGB extends Base implements IPixelled {
         }
         echo $sRawBuffer . IANSIControl::ATTR_RESET;
         $this->endRedraw();
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setParameters(array $aParameters) : self {
+        $oParameters = $this->filterRawParameters($aParameters);
+        if (isset($oParameters->sMaskRGB)) {
+            $this->setRGBWriteMask((int)base_convert($oParameters->sMaskRGB, 16, 10));
+        }
         return $this;
     }
 }

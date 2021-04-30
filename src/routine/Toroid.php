@@ -63,12 +63,14 @@ class Toroid extends Base {
         'fAxis2Rotation' => 0.0,
         'fAxis1Step'     => 0.04,
         'fAxis2Step'     => 0.02,
-        'fPoloidStep'    => 0.05,
+        'fPoloidStep'    => 0.04,
         'fToroidStep'    => 0.01,
         'fRenderXScale'  => 64.0,
         'fRenderYScale'  => 32.0,
         'fMinLuma'       => 0.0,
         'fLumaFactor'    => 0.666,
+        'fUncoilPoloid'  => 0.0,
+        'fUncoilToroid'  => 1.0,
         'iDrawMode'      => self::DRAW_ASCII_GREY
     ];
 
@@ -141,7 +143,6 @@ class Toroid extends Base {
         }
 
         $this->bCanRender = true;
-
         return $this;
     }
 
@@ -158,6 +159,9 @@ class Toroid extends Base {
             }
             if ($iDrawMode & self::MASK_NEEDS_ASCII_BUFFER) {
                 $this->sCharDrawBuffer = &$this->oDisplay->getCharacterBuffer();
+                $this->iCharMaxLuma = $this->oDisplay->getMaxLuminance();
+                $this->sLumaCharLUT = $this->oDisplay->getLuminanceCharacters();
+                $this->iSpan        = $this->oDisplay->getCharacterWidth();
             }
             $cPlotPixel = [$this, self::PLOT_FUNCTIONS[$iDrawMode]];
 
@@ -167,11 +171,24 @@ class Toroid extends Base {
             $fSinAxis2Rot  = sin($this->oParameters->fAxis2Rotation);
             $aDepthBuffer  = array_fill(0, $this->iArea, 0.0);
 
+            $fToroidStep   = $this->oParameters->fToroidStep;
+            $fPoloidStep   = $this->oParameters->fPoloidStep;
+
             // This is to do the dissolve into rings effect
-            $fToroidStep = self::EIGHTH_PI * (1.0 - cos($fTimeIndex)) + $this->oParameters->fToroidStep;
+            if (abs($this->oParameters->fUncoilToroid) > 0) {
+                $fToroidStep = self::EIGHTH_PI * (1.0 - cos(
+                    $fTimeIndex * $this->oParameters->fUncoilToroid
+                )) + $this->oParameters->fToroidStep;
+            }
+            // This is to do the dissolve into rings effect
+            if (abs($this->oParameters->fUncoilPoloid) > 0) {
+                $fPoloidStep = self::EIGHTH_PI * (1.0 - cos(
+                    $fTimeIndex * $this->oParameters->fUncoilPoloid
+                )) + $this->oParameters->fPoloidStep;
+            }
 
             $iWidth = $this->iMaxX + 1;
-            for ($fPoloid = 0.0; $fPoloid < self::TWICE_PI; $fPoloid += $this->oParameters->fPoloidStep) {
+            for ($fPoloid = 0.0; $fPoloid < self::TWICE_PI; $fPoloid += $fPoloidStep) {
                 $fCosPoloid = cos($fPoloid);
                 $fSinPoloid = sin($fPoloid);
                 for ($fToroid = 0.0; $fToroid < self::TWICE_PI; $fToroid += $fToroidStep) {

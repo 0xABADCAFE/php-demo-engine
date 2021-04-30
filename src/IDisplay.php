@@ -26,7 +26,7 @@ namespace ABadCafe\PDE;
  * A basic fluent interface for display implementors. This does not make any assumption about what the display device
  * is, other than that it a raster displays.
  */
-interface IDisplay {
+interface IDisplay extends IParameterisable {
 
     const
         I_MIN_WIDTH  = 40,

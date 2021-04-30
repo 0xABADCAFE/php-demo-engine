@@ -28,6 +28,13 @@ use \SPLFixedArray;
  */
 class DoubleVerticalRGB extends Base implements IPixelled, IAsynchronous {
 
+    const DEFAULT_PARAMETERS = [
+        /**
+         * Default writemask code (hex)
+         */
+        'sMaskRGB'     => 'FFFFFF'
+    ];
+
     /**
      * Maps a 3-bit change indicator to a suitable template for output.
      *
@@ -122,6 +129,17 @@ class DoubleVerticalRGB extends Base implements IPixelled, IAsynchronous {
         if ($iMask !== $this->iRGBWriteMask) {
             $this->iRGBWriteMask = $iMask;
             $this->sendSetWritemaskMessage($iMask);
+        }
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setParameters(array $aParameters) : self {
+        $oParameters = $this->filterRawParameters($aParameters);
+        if (isset($oParameters->sMaskRGB)) {
+            $this->setRGBWriteMask((int)base_convert($oParameters->sMaskRGB, 16, 10));
         }
         return $this;
     }

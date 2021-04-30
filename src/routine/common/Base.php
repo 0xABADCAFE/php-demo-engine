@@ -56,7 +56,7 @@ abstract class Base implements PDE\IRoutine {
 
     /**
      * @inheritDoc
-     * @implements IRoutine::setParameters()
+     * @implements IParameterisable::setParameters()
      *
      * Each input value is key checked against the DEFAULT_PARAMETERS set and if the key matches the
      * value is first type cooerced then assigned.

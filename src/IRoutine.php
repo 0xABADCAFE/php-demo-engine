@@ -25,7 +25,7 @@ namespace ABadCafe\PDE;
  *
  * Base interface for routines
  */
-interface IRoutine {
+interface IRoutine extends IParameterisable {
 
     /**
      * Common parameters. These can be redefined by implementing classes.
@@ -49,20 +49,6 @@ interface IRoutine {
      * @return self     fluent
      */
     public function setDisplay(IDisplay $oDisplay) : self;
-
-    /**
-     * Accepts a key/value set of parameters to change. This can be a sequence event in
-     * the overall timeline and will generally take effect on the next call to render().
-     *
-     * The implementation should not throw here. rather:
-     *     Unknown parameter names will be ignored.
-     *     The type of a parameter will be force cast (where appropriate)
-     *     Out of range values will be clamped..
-     *
-     * @param  array $aParameters [key => value]
-     * @return self  fluent
-     */
-    public function setParameters(array $aParameters) : self;
 
     /**
      * Render a frame to the given display

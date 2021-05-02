@@ -70,19 +70,16 @@ class TapeLoader extends Base {
      * @inheritDoc
      */
     public function render(int $iFrameNumber, float $fTimeIndex) : self {
-        if ($this->canRender($iFrameNumber, $fTimeIndex)) {
-            switch ($this->oParameters->iState) {
-                case self::STATE_SYNC:
-                    $this->renderSync($iFrameNumber, $fTimeIndex);
-                    break;
-                case self::STATE_LOAD:
-                    $this->renderLoad($iFrameNumber, $fTimeIndex);
-                    break;
-                default:
-                    $this->renderIdle($iFrameNumber, $fTimeIndex);
-                    break;
-            }
-
+        switch ($this->oParameters->iState) {
+            case self::STATE_SYNC:
+                $this->renderSync($iFrameNumber, $fTimeIndex);
+                break;
+            case self::STATE_LOAD:
+                $this->renderLoad($iFrameNumber, $fTimeIndex);
+                break;
+            default:
+                $this->renderIdle($iFrameNumber, $fTimeIndex);
+                break;
         }
         return $this;
     }

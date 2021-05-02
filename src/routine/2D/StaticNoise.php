@@ -57,16 +57,14 @@ class StaticNoise extends Base {
      * @inheritDoc
      */
     public function render(int $iFrameNumber, float $fTimeIndex) : self {
-        if ($this->canRender($iFrameNumber, $fTimeIndex)) {
-            $sCharBuffer = &$this->oDisplay->getCharacterBuffer();
-            $iSpan       = $this->oDisplay->getCharacterWidth();
-            $iMaxY       = $this->iHeight - $this->oParameters->iBorderV;
-            $iMaxX       = $this->iWidth  - $this->oParameters->iBorderH;
-            for ($iYPos = $this->oParameters->iBorderV; $iYPos < $iMaxY; ++$iYPos) {
-                for ($iXPos = $this->oParameters->iBorderH; $iXPos < $iMaxX; ++$iXPos) {
-                    $iBufferPos = $iXPos + $iSpan * $iYPos;
-                    $sCharBuffer[$iBufferPos] = self::NOISE_CHARS[mt_rand(0, self::MAX_CHAR)];
-                }
+        $sCharBuffer = &$this->oDisplay->getCharacterBuffer();
+        $iSpan       = $this->oDisplay->getCharacterWidth();
+        $iMaxY       = $this->iHeight - $this->oParameters->iBorderV;
+        $iMaxX       = $this->iWidth  - $this->oParameters->iBorderH;
+        for ($iYPos = $this->oParameters->iBorderV; $iYPos < $iMaxY; ++$iYPos) {
+            for ($iXPos = $this->oParameters->iBorderH; $iXPos < $iMaxX; ++$iXPos) {
+                $iBufferPos = $iXPos + $iSpan * $iYPos;
+                $sCharBuffer[$iBufferPos] = self::NOISE_CHARS[mt_rand(0, self::MAX_CHAR)];
             }
         }
         return $this;

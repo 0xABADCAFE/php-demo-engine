@@ -48,21 +48,19 @@ class SimpleLine extends Base {
      * @inheritDoc
      */
     public function render(int $iFrameNumber, float $fTimeIndex) : self {
-        if ($this->canRender($iFrameNumber, $fTimeIndex)) {
-            $sDrawBuffer = &$this->oDisplay->getCharacterBuffer();
-            $sDrawBuffer = '';
-            $iWidth      = $this->oDisplay->getWidth();
-            $sBlank      = str_repeat(' ', $iWidth) . "\n";
-            $sFill       = urldecode($this->oParameters->sFill);
-            $sFilled     = str_repeat($sFill[$iFrameNumber % strlen($sFill)], $iWidth) . "\n";
-            $iLineCount  = $this->oDisplay->getHeight();
-            $iFrameNumber >>= $this->oParameters->iRate;
-            while ($iLineCount--) {
-                if (0 == ($iFrameNumber++ % $this->oParameters->iSpacing)) {
-                    $sDrawBuffer .= $sFilled;
-                } else {
-                    $sDrawBuffer .= $sBlank;
-                }
+        $sDrawBuffer = &$this->oDisplay->getCharacterBuffer();
+        $sDrawBuffer = '';
+        $iWidth      = $this->oDisplay->getWidth();
+        $sBlank      = str_repeat(' ', $iWidth) . "\n";
+        $sFill       = urldecode($this->oParameters->sFill);
+        $sFilled     = str_repeat($sFill[$iFrameNumber % strlen($sFill)], $iWidth) . "\n";
+        $iLineCount  = $this->oDisplay->getHeight();
+        $iFrameNumber >>= $this->oParameters->iRate;
+        while ($iLineCount--) {
+            if (0 == ($iFrameNumber++ % $this->oParameters->iSpacing)) {
+                $sDrawBuffer .= $sFilled;
+            } else {
+                $sDrawBuffer .= $sBlank;
             }
         }
         return $this;

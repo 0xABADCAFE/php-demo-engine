@@ -48,23 +48,21 @@ class RGBPulse extends Base {
      * @inheritDoc
      */
     public function render(int $iFrameNumber, float $fTimeIndex) : self {
-        if ($this->canRender($iFrameNumber, $fTimeIndex)) {
-            $iWidth  = $this->oDisplay->getWidth();
-            $iHeight = $this->oDisplay->getHeight();
-            $oPixels = $this->oDisplay->getPixels();
+        $iWidth  = $this->oDisplay->getWidth();
+        $iHeight = $this->oDisplay->getHeight();
+        $oPixels = $this->oDisplay->getPixels();
 
-            $fTScale1 = $this->fYScale * 0.5*(1.0 - cos($fTimeIndex * $this->oParameters->fRate1));
-            $fTScale2 = $this->fXScale * 0.5*(1.0 - cos($fTimeIndex * $this->oParameters->fRate2));
-            $fTScale3 = $this->fXScale * 0.5*(1.0 - cos($fTimeIndex * $this->oParameters->fRate3));
+        $fTScale1 = $this->fYScale * 0.5*(1.0 - cos($fTimeIndex * $this->oParameters->fRate1));
+        $fTScale2 = $this->fXScale * 0.5*(1.0 - cos($fTimeIndex * $this->oParameters->fRate2));
+        $fTScale3 = $this->fXScale * 0.5*(1.0 - cos($fTimeIndex * $this->oParameters->fRate3));
 
-            $i = 0;
-            for ($y = 0; $y < $iHeight; $y++) {
-                for ($x = 0; $x < $iWidth; $x++) {
-                    $iRGB = (($y * $fTScale1) & 0xFF) << 8;
-                    $iRGB |= (($x * $fTScale2) & 0xFF) << 16;
-                    $iRGB |= (($iWidth - $x) * $fTScale3) & 0xFF;
-                    $oPixels[$i++] = $iRGB;
-                }
+        $i = 0;
+        for ($y = 0; $y < $iHeight; $y++) {
+            for ($x = 0; $x < $iWidth; $x++) {
+                $iRGB = (($y * $fTScale1) & 0xFF) << 8;
+                $iRGB |= (($x * $fTScale2) & 0xFF) << 16;
+                $iRGB |= (($iWidth - $x) * $fTScale3) & 0xFF;
+                $oPixels[$i++] = $iRGB;
             }
         }
         return $this;

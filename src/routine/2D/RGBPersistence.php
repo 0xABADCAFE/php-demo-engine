@@ -65,39 +65,37 @@ class RGBPersistence extends Base {
      * @inheritDoc
      */
     public function render(int $iFrameNumber, float $fTimeIndex) : self {
-        if ($this->canRender($iFrameNumber, $fTimeIndex)) {
-            $oPixels = $this->oDisplay->getPixels();
-            $oLast   = $this->oLastBuffer;
+        $oPixels = $this->oDisplay->getPixels();
+        $oLast   = $this->oLastBuffer;
 
-            // Dosage!
-            switch ($this->oParameters->iStrength) {
-                case 2:
-                    // 75% previous / 25% current
-                    foreach ($oLast as $i => $iRGB) {
-                        $iHalfRGB    = ($iRGB >> 1)     & 0x7F7F7F;
-                        $iQrtrRGB    = ($iHalfRGB >> 1) & 0x3F3F3F;
-                        $iLastRGB    = ($oPixels[$i] >> 2) & 0x3F3F3F;
-                        $oLast[$i]   = $oPixels[$i] = $iHalfRGB + $iQrtrRGB + $iLastRGB;
-                    }
-                    break;
-                case 1:
-                    // 50% previous / 50% current
-                    foreach ($oPixels as $i => $iRGB) {
-                        $iHalfRGB    = ($iRGB >> 1)     & 0x7F7F7F;
-                        $iLastRGB    = ($oLast[$i] >> 1) & 0x7F7F7F;
-                        $oLast[$i]   = $oPixels[$i] = $iHalfRGB + $iLastRGB;
-                    }
-                    break;
-                default:
-                    // 25% previous / 75% current
-                    foreach ($oPixels as $i => $iRGB) {
-                        $iHalfRGB    = ($iRGB >> 1)     & 0x7F7F7F;
-                        $iQrtrRGB    = ($iHalfRGB >> 1) & 0x3F3F3F;
-                        $iLastRGB    = ($oLast[$i] >> 2) & 0x3F3F3F;
-                        $oLast[$i]   = $oPixels[$i] = $iHalfRGB + $iQrtrRGB + $iLastRGB;
-                    }
-                    break;
-            }
+        // Dosage!
+        switch ($this->oParameters->iStrength) {
+            case 2:
+                // 75% previous / 25% current
+                foreach ($oLast as $i => $iRGB) {
+                    $iHalfRGB    = ($iRGB >> 1)        & 0x7F7F7F;
+                    $iQrtrRGB    = ($iHalfRGB >> 1)    & 0x3F3F3F;
+                    $iLastRGB    = ($oPixels[$i] >> 2) & 0x3F3F3F;
+                    $oLast[$i]   = $oPixels[$i] = $iHalfRGB + $iQrtrRGB + $iLastRGB;
+                }
+                break;
+            case 1:
+                // 50% previous / 50% current
+                foreach ($oPixels as $i => $iRGB) {
+                    $iHalfRGB    = ($iRGB >> 1)      & 0x7F7F7F;
+                    $iLastRGB    = ($oLast[$i] >> 1) & 0x7F7F7F;
+                    $oLast[$i]   = $oPixels[$i] = $iHalfRGB + $iLastRGB;
+                }
+                break;
+            default:
+                // 25% previous / 75% current
+                foreach ($oPixels as $i => $iRGB) {
+                    $iHalfRGB    = ($iRGB >> 1)      & 0x7F7F7F;
+                    $iQrtrRGB    = ($iHalfRGB >> 1)  & 0x3F3F3F;
+                    $iLastRGB    = ($oLast[$i] >> 2) & 0x3F3F3F;
+                    $oLast[$i]   = $oPixels[$i] = $iHalfRGB + $iQrtrRGB + $iLastRGB;
+                }
+                break;
         }
         return $this;
     }

@@ -90,13 +90,10 @@ class MyRoutine extends Base {
      * current frame number and the current time in seconds since the demo began execution.
      */
     public function render(int $iFrameNumber, float $fTimeIndex) : self {
-        // You need to check if you can render right now...
-        if ($this->canRender($iFrameNumber, $fTimeIndex)) {
-            // Your magic here...
-            // You have access to:
-            //    $this->oParameters for the current parameter values
-            //    $this->oDisplay for the current render target
-        }
+        // Your magic here...
+        // You have access to:
+        //    $this->oParameters for the current parameter values
+        //    $this->oDisplay for the current render target
         return $this;
     }
 

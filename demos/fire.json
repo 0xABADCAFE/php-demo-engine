@@ -1,0 +1,29 @@
+{
+    "displays": {
+        "default": {
+            "sType": "DoubleVerticalRGB",
+            "iWidth": 160,
+            "iHeight": 100,
+            "iMaxFPS": 30
+        }
+    },
+    "routines": {
+        "fire": {
+            "sType": "2D/RGBFire",
+            "iPriority": 0,
+            "aParameters": {
+            }
+        }
+    },
+    "events": [
+        {
+            "at": 0.0,
+            "on": "routine/fire",
+            "do": "enable"
+        },
+        {
+            "at": 15.0,
+            "do": "end"
+        }
+    ]
+}

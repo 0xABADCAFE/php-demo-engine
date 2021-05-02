@@ -83,7 +83,7 @@ class RGBFire extends Base {
             $fPhase2 =
                 $this->oParameters->fPhase2Base +
                 $this->oParameters->fPhase2Amp * sin($fTimeIndex * $this->oParameters->fPhase2Rate + $fX);
-            $this->oBuffer[$iOffset++] = mt_rand((int)$fPhase1, (int)$fPhase2);
+            $this->oBuffer[$iOffset++] = mt_rand((int)min($fPhase1, $fPhase2), (int)max($fPhase1, $fPhase2));
         }
 
         // Fan the flames up

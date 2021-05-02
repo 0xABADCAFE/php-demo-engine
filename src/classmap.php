@@ -42,6 +42,7 @@ const CLASS_MAP = [
   'ABadCafe\\PDE\\Routine\\SimpleLine' => '/routine/2D/SimpleLine.php',
   'ABadCafe\\PDE\\Routine\\RGBPulse' => '/routine/2D/RGBPulse.php',
   'ABadCafe\\PDE\\Routine\\RGBImage' => '/routine/2D/RGBImage.php',
+  'ABadCafe\\PDE\\Routine\\RGBFire' => '/routine/2D/RGBFire.php',
   'ABadCafe\\PDE\\Routine\\RGBMask' => '/routine/2D/RGBMask.php',
   'ABadCafe\\PDE\\Routine\\TapeLoader' => '/routine/2D/TapeLoader.php',
   'ABadCafe\\PDE\\Routine\\RGBPersistence' => '/routine/2D/RGBPersistence.php',

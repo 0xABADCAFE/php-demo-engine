@@ -240,7 +240,10 @@ class Context {
      */
     private function runRoutines(int $iFrameNumber, float $fTimeIndex) {
         foreach ($this->aRoutinePriorities as $sIdentity => $iPrority) {
-            $this->aRoutineInstances[$sIdentity]->render($iFrameNumber, $fTimeIndex);
+            $oRoutine = $this->aRoutineInstances[$sIdentity];
+            if ($oRoutine->canRender($iFrameNumber, $fTimeIndex)) {
+                $oRoutine->render($iFrameNumber, $fTimeIndex);
+            }
         }
     }
 

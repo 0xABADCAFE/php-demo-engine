@@ -23,13 +23,6 @@
                 "iDrawMode":32,
                 "fRenderYScale": 60.0
             }
-        },
-        "mask": {
-            "sType": "2D/RGBMask",
-            "iPriority": 2,
-            "aParameters": {
-                "sMask":"FFFFFF"
-            }
         }
     },
     "events": [
@@ -44,109 +37,104 @@
             "do": "enable"
         },
         {
-            "at": 0.0,
-            "on": "routine/mask",
-            "do": "enable"
-        },
-        {
             "at": 1.0,
-            "on": "routine/mask",
+            "on": "display/default",
             "do": "update",
             "aParameters": {
-                "sMask":"0000FF"
+                "sMaskRGB":"0000FF"
             }
         },
         {
             "at": 2.0,
-            "on": "routine/mask",
+            "on": "display/default",
             "do": "update",
             "aParameters": {
-                "sMask":"FF0000"
+                "sMaskRGB":"FF0000"
             }
         },
         {
             "at": 3.0,
-            "on": "routine/mask",
+            "on": "display/default",
             "do": "update",
             "aParameters": {
-                "sMask":"FF00FF"
+                "sMaskRGB":"FF00FF"
             }
         },
         {
             "at": 4.0,
-            "on": "routine/mask",
+            "on": "display/default",
             "do": "update",
             "aParameters": {
-                "sMask":"00FF00"
+                "sMaskRGB":"00FF00"
             }
         },
         {
             "at": 5.0,
-            "on": "routine/mask",
+            "on": "display/default",
             "do": "update",
             "aParameters": {
-                "sMask":"00FFFF"
+                "sMaskRGB":"00FFFF"
             }
         },
         {
             "at": 6.0,
-            "on": "routine/mask",
+            "on": "display/default",
             "do": "update",
             "aParameters": {
-                "sMask":"FFFF00"
+                "sMaskRGB":"FFFF00"
             }
         },
         {
             "at": 7.0,
-            "on": "routine/mask",
+            "on": "display/default",
             "do": "update",
             "aParameters": {
-                "sMask":"FFFFFF"
+                "sMaskRGB":"FFFFFF"
             }
         },
 
         {
             "at": 8.0,
-            "on": "routine/mask",
+            "on": "display/default",
             "do": "update",
             "aParameters": {
-                "sMask":"FCFCFC"
+                "sMaskRGB":"FCFCFC"
             }
         },
 
         {
             "at": 9.0,
-            "on": "routine/mask",
+            "on": "display/default",
             "do": "update",
             "aParameters": {
-                "sMask":"F0F0F0"
+                "sMaskRGB":"F0F0F0"
             }
         },
 
         {
             "at": 10.0,
-            "on": "routine/mask",
+            "on": "display/default",
             "do": "update",
             "aParameters": {
-                "sMask":"C0C0C0"
+                "sMaskRGB":"C0C0C0"
             }
         },
 
         {
             "at": 11.0,
-            "on": "routine/mask",
+            "on": "display/default",
             "do": "update",
             "aParameters": {
-                "sMask":"808080"
+                "sMaskRGB":"808080"
             }
         },
 
         {
             "at": 12.0,
-            "on": "routine/mask",
+            "on": "display/default",
             "do": "update",
             "aParameters": {
-                "sMask":"FFFFFF"
+                "sMaskRGB":"FFFFFF"
             }
         },
 

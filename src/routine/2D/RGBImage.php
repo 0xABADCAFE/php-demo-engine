@@ -75,18 +75,16 @@ class RGBImage extends Base implements IResourceLoader {
      * @inheritDoc
      */
     public function render(int $iFrameNumber, float $fTimeIndex) : self {
-        if ($this->canRender($iFrameNumber, $fTimeIndex)) {
-            $this->oBlitter
-                ->setMode($this->oParameters->iMode)
-                ->copy(
-                    0,
-                    0,
-                    $this->oParameters->iLeft,
-                    $this->oParameters->iTop,
-                    $this->oImage->getWidth(),
-                    $this->oImage->getHeight()
-                );
-        }
+        $this->oBlitter
+            ->setMode($this->oParameters->iMode)
+            ->copy(
+                0,
+                0,
+                $this->oParameters->iLeft,
+                $this->oParameters->iTop,
+                $this->oImage->getWidth(),
+                $this->oImage->getHeight()
+            );
         return $this;
     }
 

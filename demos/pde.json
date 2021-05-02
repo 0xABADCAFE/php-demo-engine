@@ -5,12 +5,30 @@
             "iWidth": 160,
             "iHeight": 50,
             "iMaxFPS": 30
+        },
+        "text": {
+            "sType": "PlainASCII",
+            "iWidth": 160,
+            "iHeight": 50,
+            "iMaxFPS": 30
+        },
+        "rgbtext": {
+            "sType": "RGBASCIIOverRGB",
+            "iWidth": 160,
+            "iHeight": 50,
+            "iMaxFPS": 30
+        },
+        "hires": {
+            "sType": "DoubleVerticalRGB",
+            "iWidth": 160,
+            "iHeight": 100,
+            "iMaxFPS": 30
         }
     },
     "routines": {
         "lines": {
             "sType": "2D/ASCIILines",
-            "iPriority": 1,
+            "iPriority": 10,
             "aParameters": {
                 "iSpacing": 1,
                 "iRate": 16,
@@ -19,11 +37,11 @@
         },
         "doughnut": {
             "sType": "3D/Toroid",
-            "iPriority": 2,
+            "iPriority": 20,
             "aParameters": {
                 "fMinLuma": 0.0,
                 "fLumaFactor": 0.0,
-                "iDrawMode":2
+                "iDrawMode": 2
             }
         },
         "pulse": {
@@ -34,20 +52,57 @@
         },
         "trails": {
             "sType": "2D/RGBPersistence",
-            "iPriority": 10,
+            "iPriority": 100,
             "aParameters": {
                 "iStrength":1
             }
         },
         "static": {
             "sType": "2D/StaticNoise",
-            "iPriority": 8,
+            "iPriority": 200,
             "aParameters": {
                 "fDuration": 0.25
+            }
+        },
+        "loader": {
+            "sType": "2D/TapeLoader",
+            "iPriority": 200,
+            "aParameters": {
+                "iState": 0
+            }
+        },
+        "fire": {
+            "sType": "2D/RGBFire",
+            "iPriority": 10,
+            "aParameters": {
+            }
+        },
+        "logo": {
+            "sType": "2D/RGBImage",
+            "iPriority": 15,
+            "aParameters": {
+                "sPath": "images/slipped_disc_1.ppm",
+                "iLeft": 30,
+                "iTop": 0,
+                "iMode": 2
+            }
+        },
+        "voxel": {
+            "sType": "3D/Voxel",
+            "iPriority": 1,
+            "aParameters": {
+                "sTexture": "images/voxel_texture.ppm",
+                "sElevation": "images/voxel_height.pgm",
+                "fHorizon": 40.0
             }
         }
     },
     "events": [
+        {
+            "at": 0.0,
+            "on": "display/text",
+            "do": "enable"
+        },
         {
             "at": 0.0,
             "on": "routine/lines",
@@ -101,6 +156,11 @@
             }
         },
         {
+            "at": 0.0,
+            "on": "display/default",
+            "do": "enable"
+        },
+        {
             "at": 5.0,
             "on": "routine/pulse",
             "do": "enable"
@@ -134,6 +194,21 @@
             }
         },
 
+        {
+            "at": 18.5,
+            "on": "display/text",
+            "do": "enable"
+        },
+
+        {
+            "at": 18.5,
+            "on": "display/text",
+            "do": "update",
+            "aParameters": {
+                "iBGColour": 0,
+                "iFGColour": 40
+            }
+        },
 
         {
             "at": 18.5,
@@ -169,10 +244,25 @@
 
         {
             "at": 20.5,
+            "on": "display/text",
+            "do": "update",
+            "aParameters": {
+                "iBGColour": 0,
+                "iFGColour": 15
+            }
+        },
+
+        {
+            "at": 20.5,
             "on": "routine/static",
             "do": "enable"
         },
 
+        {
+            "at": 20.75,
+            "on": "display/default",
+            "do": "enable"
+        },
         {
             "at": 20.75,
             "on": "routine/static",
@@ -231,6 +321,11 @@
 
         {
             "at": 29.75,
+            "on": "display/text",
+            "do": "enable"
+        },
+        {
+            "at": 29.75,
             "on": "routine/pulse",
             "do": "disable"
         },
@@ -244,8 +339,223 @@
             "on": "routine/static",
             "do": "enable"
         },
+
         {
-            "at": 30.1,
+            "at": 30.0,
+            "on": "display/rgbtext",
+            "do": "enable"
+        },
+
+        {
+            "at": 30.0,
+            "on": "routine/loader",
+            "do": "enable"
+        },
+        {
+            "at": 31.0,
+            "on": "routine/loader",
+            "do": "update",
+            "aParameters": {
+                "iState" : 1
+            }
+        },
+
+        {
+            "at": 33.0,
+            "on": "routine/loader",
+            "do": "update",
+            "aParameters": {
+                "iState" : 2
+            }
+        },
+
+        {
+            "at": 33.1,
+            "on": "routine/loader",
+            "do": "update",
+            "aParameters": {
+                "iState" : 0
+            }
+        },
+
+        {
+            "at": 35.0,
+            "on": "routine/loader",
+            "do": "update",
+            "aParameters": {
+                "iState" : 1
+            }
+        },
+
+        {
+            "at": 37.0,
+            "on": "routine/loader",
+            "do": "update",
+            "aParameters": {
+                "iState" : 2
+            }
+        },
+
+        {
+            "at": 40.0,
+            "on": "routine/doughnut",
+            "do": "enable"
+        },
+
+        {
+            "at": 43.5,
+            "on": "routine/loader",
+            "do": "disable"
+        },
+
+        {
+            "at": 43.75,
+            "on": "routine/doughnut",
+            "do": "disable"
+        },
+
+        {
+            "at": 43.75,
+            "on": "display/hires",
+            "do": "enable"
+        },
+
+        {
+            "at": 43.75,
+            "on": "routine/trails",
+            "do": "update",
+            "aParameters": {
+                "iStrength": 1
+            }
+        },
+
+        {
+            "at": 43.75,
+            "on": "routine/logo",
+            "do": "enable"
+        },
+
+        {
+            "at": 44.0,
+            "on": "routine/fire",
+            "do": "enable"
+        },
+
+
+        {
+            "at": 51.0,
+            "on": "routine/fire",
+            "do": "update",
+            "aParameters": {
+                "fPhase1Base": 180.0,
+                "fPhase1Amp":  16.0
+            }
+        },
+
+        {
+            "at": 52.0,
+            "on": "routine/fire",
+            "do": "update",
+            "aParameters": {
+                "fPhase1Amp":  0.0,
+                "fPhase2Amp":  0.0,
+                "fPhase1Base": 0.0,
+                "fPhase2Base": 0.0
+            }
+        },
+
+        {
+            "at": 54.75,
+            "on": "routine/fire",
+            "do": "disable"
+        },
+        {
+            "at": 54.75,
+            "on": "routine/logo",
+            "do": "disable"
+        },
+        {
+            "at": 54.75,
+            "on": "display/text",
+            "do": "enable"
+        },
+        {
+            "at": 54.75,
+            "on": "routine/static",
+            "do": "enable"
+        },
+
+        {
+            "at": 55.0,
+            "on": "display/hires",
+            "do": "enable"
+        },
+
+        {
+            "at": 55.0,
+            "on": "routine/trails",
+            "do": "disable"
+        },
+
+        {
+            "at": 55.0,
+            "on": "routine/voxel",
+            "do": "enable"
+        },
+
+        {
+            "at": 58.0,
+            "on": "routine/trails",
+            "do": "enable"
+        },
+
+        {
+            "at": 67.5,
+            "on": "routine/trails",
+            "do": "update",
+            "aParameters": {
+                "iStrength": 2
+            }
+        },
+
+        {
+            "at": 67.5,
+            "on": "routine/voxel",
+            "do": "update",
+            "aParameters": {
+                "fLODScale": 0.0001
+            }
+        },
+
+        {
+            "at": 68.0,
+            "on": "routine/logo",
+            "do": "enable"
+        },
+
+        {
+            "at": 72.0,
+            "on": "routine/trails",
+            "do": "disable"
+        },
+
+        {
+            "at": 72.0,
+            "on": "routine/voxel",
+            "do": "disable"
+        },
+
+        {
+            "at": 72.0,
+            "on": "routine/logo",
+            "do": "update",
+            "aParameters": {
+                "iMode": 0
+            }
+        },
+
+        {
+            "at": 72.5,
             "do": "end"
         }
     ]

@@ -151,8 +151,7 @@ class Toroid extends Base {
      */
     public function render(int $iFrameNumber, float $fTimeIndex) : self {
         $iDrawMode = $this->iDrawMask & $this->oParameters->iDrawMode;
-
-        if ($iDrawMode && $this->canRender($iFrameNumber, $fTimeIndex)) {
+        if ($iDrawMode) {
 
             if ($iDrawMode & self::MASK_NEEDS_PIX_BUFFER) {
                 $this->oPixelBuffer = $this->oDisplay->getPixels();

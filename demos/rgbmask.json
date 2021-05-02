@@ -41,7 +41,7 @@
             "on": "display/default",
             "do": "update",
             "aParameters": {
-                "sMask":"0000FF"
+                "sMaskRGB":"0000FF"
             }
         },
         {
@@ -49,7 +49,7 @@
             "on": "display/default",
             "do": "update",
             "aParameters": {
-                "sMask":"FF0000"
+                "sMaskRGB":"FF0000"
             }
         },
         {
@@ -57,7 +57,7 @@
             "on": "display/default",
             "do": "update",
             "aParameters": {
-                "sMask":"FF00FF"
+                "sMaskRGB":"FF00FF"
             }
         },
         {
@@ -65,7 +65,7 @@
             "on": "display/default",
             "do": "update",
             "aParameters": {
-                "sMask":"00FF00"
+                "sMaskRGB":"00FF00"
             }
         },
         {
@@ -73,7 +73,7 @@
             "on": "display/default",
             "do": "update",
             "aParameters": {
-                "sMask":"00FFFF"
+                "sMaskRGB":"00FFFF"
             }
         },
         {
@@ -81,7 +81,7 @@
             "on": "display/default",
             "do": "update",
             "aParameters": {
-                "sMask":"FFFF00"
+                "sMaskRGB":"FFFF00"
             }
         },
         {
@@ -89,7 +89,7 @@
             "on": "display/default",
             "do": "update",
             "aParameters": {
-                "sMask":"FFFFFF"
+                "sMaskRGB":"FFFFFF"
             }
         },
 
@@ -98,7 +98,7 @@
             "on": "display/default",
             "do": "update",
             "aParameters": {
-                "sMask":"FCFCFC"
+                "sMaskRGB":"FCFCFC"
             }
         },
 
@@ -107,7 +107,7 @@
             "on": "display/default",
             "do": "update",
             "aParameters": {
-                "sMask":"F0F0F0"
+                "sMaskRGB":"F0F0F0"
             }
         },
 
@@ -116,7 +116,7 @@
             "on": "display/default",
             "do": "update",
             "aParameters": {
-                "sMask":"C0C0C0"
+                "sMaskRGB":"C0C0C0"
             }
         },
 
@@ -125,7 +125,7 @@
             "on": "display/default",
             "do": "update",
             "aParameters": {
-                "sMask":"808080"
+                "sMaskRGB":"808080"
             }
         },
 
@@ -134,7 +134,7 @@
             "on": "display/default",
             "do": "update",
             "aParameters": {
-                "sMask":"FFFFFF"
+                "sMaskRGB":"FFFFFF"
             }
         },
 

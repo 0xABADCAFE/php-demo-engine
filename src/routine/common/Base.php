@@ -108,7 +108,7 @@ abstract class Base implements PDE\IRoutine {
      * @param  float $fTimeIndex
      * @return bool
      */
-    protected function canRender(int $iFrameNumber, float $fTimeIndex) : bool {
+    public function canRender(int $iFrameNumber, float $fTimeIndex) : bool {
         $bWasEnabled   = $this->bEnabled;
         $bStillEnabled = $bWasEnabled && (
             $this->fUntil > 0.0 ?

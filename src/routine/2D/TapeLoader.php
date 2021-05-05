@@ -34,7 +34,10 @@ class TapeLoader extends Base {
         'sLoadRGB2' => 'D7D722',
         'iState'    => 0,
         'iHBorder'  => 5,
-        'iVBorder'  => 10
+        'iVBorder'  => 10,
+        'sMessage'  => "",
+        'iMessageX' => 0,
+        'iMessageY' => 4
     ];
 
     const NEED_FORMAT = PDE\Display\IPixelled::FORMAT_RGB_ASCII_RGB;
@@ -54,6 +57,8 @@ class TapeLoader extends Base {
     ;
 
     private float $fLastIdle  = 0.0;
+
+    private int $iRandBits;
 
     /**
      * @inheritDoc
@@ -80,6 +85,11 @@ class TapeLoader extends Base {
             default:
                 $this->renderIdle($iFrameNumber, $fTimeIndex);
                 break;
+        }
+        if (!empty($this->oParameters->sMessage)) {
+            $iX = $this->oParameters->iMessageX + $this->oParameters->iVBorder;
+            $iY = $this->oParameters->iMessageY + $this->oParameters->iHBorder;
+            $this->oDisplay->writeTextSpan($this->oParameters->sMessage, $iX, $iY);
         }
         return $this;
     }
@@ -213,12 +223,19 @@ class TapeLoader extends Base {
             chr(0x80),
             chr(0x84)
         ];
+
         // Generate a random 64-bit integer. We will switch between the upper and lower half block based on each
-        // successove bit.
-        $iRand      = mt_rand()<<24^mt_rand();
+        // successove bit. The range of mt_rand is only 31 bits, so we use three calls.
+
+        // PHP 8 in JIT mode forgets this local variable immediately for some reason so assign as a member.
+        $this->iRandBits = mt_rand() << 33  // Upper
+                         | mt_rand()        // Lower
+                         ^ mt_rand() << 16; // Gap coverage
+
         for ($y = 0; $y < $iHeight; ++$y) {
+
             // Choose the upper or lower half block based on the y'th bit (modulo 64 to avoid overflows)
-            $sChar = $aChars[0 != ($iRand & (1 << ($y & 63)))];
+            $sChar = $aChars[0 != ($this->iRandBits & (1 << ($y & 63)))];
             if ($y < $this->oParameters->iHBorder || $y >= $iHeight - $this->oParameters->iHBorder) {
                 // This part handles top and bottom
                 for ($x = 0; $x < $iWidth; ++$x) {

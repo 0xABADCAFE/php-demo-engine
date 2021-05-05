@@ -37,7 +37,7 @@ trait TAsynchronous {
     /**
      * @implements IDisplay::waitForFrame()
      */
-    public function waitForFrame() : self {
+    public function waitForFrame() : PDE\IDisplay {
         //return $this;
         $this->sendRawMessage(IAsynchronous::MESSAGE_WAIT_FOR_FRAME);
 

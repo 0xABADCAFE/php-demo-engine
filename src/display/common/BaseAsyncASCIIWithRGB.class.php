@@ -47,7 +47,12 @@ abstract class BaseAsyncASCIIWithRGB extends Base implements IPixelled, IASCIIAr
         'sMaskRGB'     => 'FFFFFF'
     ];
 
-    use TASCIIArt, TPixelled, TInstrumented, TAsynchronous;
+    use
+        TASCIIArt,
+        TPixelled,
+        TInstrumented,
+        TAsynchronous
+    ;
 
     protected array $aLineBreaks = [];
 
@@ -60,11 +65,13 @@ abstract class BaseAsyncASCIIWithRGB extends Base implements IPixelled, IASCIIAr
         $aLineBreaks   = range(0, $iWidth * $iHeight, $iWidth);
         unset($aLineBreaks[0]);
         $this->aLineBreaks = array_fill_keys($aLineBreaks, "\n");
+        $this->iBGColour   = 0;
+        $this->iFGColour   = 0xFFFFFF;
 
         $this->initFixedColours();
         $this->initAsyncProcess();
         $this->initASCIIBuffer($iWidth, $iHeight);
-        $this->initPixelBuffer($iWidth, $iHeight, static::PIXEL_FORMAT);
+        $this->initPixelBuffer($iWidth, $iHeight, static::PIXEL_FORMAT, $this->getDefaultPixelValue());
         $this->reset();
     }
 
@@ -137,6 +144,7 @@ abstract class BaseAsyncASCIIWithRGB extends Base implements IPixelled, IASCIIAr
         if ($iColour != $this->iFGColour) {
             $this->iFGColour = $iColour;
             $this->sendSetForegroundColour($iColour);
+            $this->setDefaultPixelValue($this->getDefaultPixelValue());
         }
         return $this;
     }
@@ -153,6 +161,7 @@ abstract class BaseAsyncASCIIWithRGB extends Base implements IPixelled, IASCIIAr
         if ($iColour != $this->iBGColour) {
             $this->iBGColour = $iColour;
             $this->sendSetBackgroundColour($iColour);
+            $this->setDefaultPixelValue($this->getDefaultPixelValue());
         }
         return $this;
     }
@@ -252,11 +261,13 @@ abstract class BaseAsyncASCIIWithRGB extends Base implements IPixelled, IASCIIAr
      * Prepare the pixel array before submission to the asynchronous process. This is split out
      * so that it can be overridden.
      */
-    protected function preparePixels() {
+    protected function preparePixels() : void {
         $j = 0;
         foreach ($this->oPixels as $i => $iRGB) {
             $j += (int)isset($this->aLineBreaks[$i]);
             $this->oPixels[$i] = ord($this->sRawBuffer[$j++]) << 24 | $iRGB;
         }
     }
+
+    protected abstract function getDefaultPixelValue() : int;
 }

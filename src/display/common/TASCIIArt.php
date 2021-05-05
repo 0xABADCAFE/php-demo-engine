@@ -28,8 +28,9 @@ use ABadCafe\PDE;
  */
 trait TASCIIArt {
 
-    private int
-        $iMaxLuma  = IASCIIArt::DEF_MAX_LUMA,
+    private int $iMaxLuma  = IASCIIArt::DEF_MAX_LUMA;
+
+    protected int
         $iFGColour = IASCIIArt::DEF_FG_COLOUR,
         $iBGColour = IASCIIArt::DEF_BG_COLOUR
     ;
@@ -160,5 +161,111 @@ trait TASCIIArt {
             $this->iMaxLuma   = $iLength - 1;
         }
         return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function writeTextBounded(string $sText, int $iX, int $iY, int $iMaxX = 0, $iMaxY = 0) : self {
+        if (
+            empty($sText)         || // nothing to render
+            $iX >= $this->iWidth  || // completely off right
+            $iY >= $this->iHeight    // completely off bottom
+        ) {
+            return $this;
+        }
+
+        // Determine boundary
+        $iMaxX = ($iMaxX < 1) ?
+            $this->iWidth :
+            min($iMaxX, $this->iWidth);
+        $iMaxY = ($iMaxY < 1) ?
+            $this->iHeight :
+            min($iMaxY, $this->iHeight);
+
+        if ($iX > $iMaxX || $iY > $iMaxY) {
+            return $this;
+        }
+
+        $aStrings = explode("\n", $sText);
+
+        if (count($aStrings) + $iY < 0) {
+            return $this; // Completely off the top
+        }
+
+        // Deal with negative Y coordinate
+        if ($iY < 0) {
+            $aStrings    = array_slice($aStrings, -$iY);
+            $iY          = 0;
+        }
+
+        foreach ($aStrings as $sString) {
+            if ($iY > $iMaxY) {
+                break;
+            }
+            $this->writeRightClippedSpan($sString, $iX, $iY++, $iMaxX);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function writeTextSpan(string $sText, int $iX, int $iY, int $iMaxX = 0) : self {
+
+        $iMaxX = ($iMaxX < 1) ?
+            $this->iWidth :
+            min($iMaxX, $this->iWidth);
+
+        // Sanity check
+        if (
+            $iY <  0              ||
+            $iY >= $this->iHeight ||
+            $iX >  $iMaxX         ||
+            empty($sText)
+        ) {
+            return $this;
+        }
+        // Restrict to 1 line
+        $iEnd  = strpos($sText, "\n");
+        $sText = ($iEnd === false) ? $sText : substr($sText, 0, $iEnd);
+        if (empty($sText)) {
+            return $this;
+        }
+        $this->writeRightClippedSpan($sText, $iX, $iY, $iMaxX);
+        return $this;
+    }
+
+    /**
+     * Writes a right clipped span of text. Assumes $iY is in range.
+     *
+     * @param string $sText
+     * @param int    $iX
+     * @param int    $iY
+     * @param int    $iMaxX
+     */
+    private function writeRightClippedSpan(string $sText, int $iX, int $iY, $iMaxX) {
+
+        // Handle negative X by chopping off the left
+        if ($iX < 0) {
+            $sText = substr($sText, -$iX);
+            $iX    = 0;
+        }
+        if (empty($sText)) {
+            return $this;
+        }
+
+        $iLength = strlen($sText);
+        if ($iX + $iLength > $iMaxX) {
+            $iLength = $iMaxX - $iX;
+        }
+
+        $iDstIndex = $iY * $this->getCharacterWidth() + $iX;
+        $iSrcIndex = 0;
+        while ($iLength--) {
+            $this->sRawBuffer[$iDstIndex++] = $sText[$iSrcIndex++];
+        }
+
     }
 }

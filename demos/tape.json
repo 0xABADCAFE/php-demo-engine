@@ -47,7 +47,8 @@
             "on": "routine/loader",
             "do": "update",
             "aParameters": {
-                "iState" : 2
+                "iState" : 2,
+                "sMessage": "Program: PDE"
             }
         },
 
@@ -79,7 +80,7 @@
         },
 
         {
-            "at": 10.0,
+            "at": 20.0,
             "do": "end"
         }
     ]

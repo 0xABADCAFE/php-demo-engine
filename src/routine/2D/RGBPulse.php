@@ -62,7 +62,8 @@ class RGBPulse extends Base {
                 $iRGB = (($y * $fTScale1) & 0xFF) << 8;
                 $iRGB |= (($x * $fTScale2) & 0xFF) << 16;
                 $iRGB |= (($iWidth - $x) * $fTScale3) & 0xFF;
-                $oPixels[$i++] = $iRGB;
+                $oPixels[$i] = ($oPixels[$i] & 0xFFFFFF000000) | $iRGB;
+                ++$i;
             }
         }
         return $this;

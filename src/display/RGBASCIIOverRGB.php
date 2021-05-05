@@ -48,7 +48,14 @@ class RGBASCIIOverRGB extends BaseAsyncASCIIWithRGB {
     /**
      * @inheritDoc
      */
-    protected function preparePixels() {
+    protected function getDefaultPixelValue() : int {
+        return $this->iBGColour | $this->iFGColour << 24;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    protected function preparePixels() : void {
         $j = 0;
         $oPixels    = $this->getPixels();
         $sRawBuffer = $this->getCharacterBuffer();
@@ -106,7 +113,7 @@ class RGBASCIIOverRGB extends BaseAsyncASCIIWithRGB {
                 case 3:
                     // Foreground RGB changes
                     $sRawBuffer .= sprintf(
-                        IANSIControl::ATTR_BG_RGB_TPL,
+                        IANSIControl::ATTR_FG_RGB_TPL,
                         $iForeRGB >> 16,
                         ($iForeRGB >> 8) & 0xFF,
                         ($iForeRGB & 0xFF)

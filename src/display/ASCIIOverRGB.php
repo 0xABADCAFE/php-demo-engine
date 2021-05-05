@@ -35,4 +35,8 @@ class ASCIIOverRGB extends BaseAsyncASCIIWithRGB {
         DATA_FORMAT   = self::DATA_FORMAT_32,          // Data transfer size
         PIXEL_FORMAT  = self::FORMAT_ASCII_RGB
     ;
+
+    protected function getDefaultPixelValue() : int {
+        return $this->iBGColour;
+    }
 }

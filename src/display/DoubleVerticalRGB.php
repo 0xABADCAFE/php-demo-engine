@@ -80,7 +80,7 @@ class DoubleVerticalRGB extends Base implements IPixelled, IAsynchronous {
 
         // Initialise the subprocess now as it only needs access to the properties evaluated to now.
         $this->initAsyncProcess();
-        $this->initPixelBuffer($iWidth, $iHeight, self::FORMAT_RGB);
+        $this->initPixelBuffer($iWidth, $iHeight, self::FORMAT_RGB, 0);
         $this->reset();
     }
 

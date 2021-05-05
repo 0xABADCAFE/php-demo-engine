@@ -28,8 +28,9 @@ use ABadCafe\PDE;
  */
 trait TASCIIArt {
 
-    private int
-        $iMaxLuma  = IASCIIArt::DEF_MAX_LUMA,
+    private int $iMaxLuma  = IASCIIArt::DEF_MAX_LUMA;
+
+    protected int
         $iFGColour = IASCIIArt::DEF_FG_COLOUR,
         $iBGColour = IASCIIArt::DEF_BG_COLOUR
     ;

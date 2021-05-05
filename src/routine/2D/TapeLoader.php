@@ -36,7 +36,7 @@ class TapeLoader extends Base {
         'iHBorder'  => 5,
         'iVBorder'  => 10,
         'sMessage'  => "",
-        'iMessageX' => 0,
+        'iMessageX' => 2,
         'iMessageY' => 4
     ];
 
@@ -53,7 +53,7 @@ class TapeLoader extends Base {
         $iSyncRGB2  = 0x0022D7D7,
         $iLoadRGB1  = 0x002222D7,
         $iLoadRGB2  = 0x00D7D722,
-        $iLastRGB   = 0
+        $iLastRGB   = 0xFF000000
     ;
 
     private float $fLastIdle  = 0.0;
@@ -64,10 +64,10 @@ class TapeLoader extends Base {
      * @inheritDoc
      */
     public function setDisplay(PDE\IDisplay $oDisplay) : self {
-        $this->bCanRender   =
+        $this->bCanRender =
             ($oDisplay instanceof PDE\Display\IPixelled) &&
             (($oDisplay->getFormat() & self::NEED_FORMAT) == self::NEED_FORMAT);
-        $this->oDisplay     = $oDisplay;
+        $this->oDisplay = $oDisplay;
         return $this;
     }
 

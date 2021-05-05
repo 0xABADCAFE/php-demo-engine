@@ -68,31 +68,39 @@ class RGBPersistence extends Base {
         $oPixels = $this->oDisplay->getPixels();
         $oLast   = $this->oLastBuffer;
 
+        $iHalfMask =  0x7F7F7F;
+        $iQrtrMask =  0x3F3F3F;
+
+        if ($this->oDisplay->getFormat() & PDE\Graphics\IDrawMode::FG_RGB) {
+            $iHalfMask |= $iHalfMask << 24;
+            $iQrtrMask |= $iQrtrMask << 24;
+        }
+
         // Dosage!
         switch ($this->oParameters->iStrength) {
             case 2:
                 // 75% previous / 25% current
                 foreach ($oLast as $i => $iRGB) {
-                    $iHalfRGB    = ($iRGB >> 1)        & 0x7F7F7F;
-                    $iQrtrRGB    = ($iHalfRGB >> 1)    & 0x3F3F3F;
-                    $iLastRGB    = ($oPixels[$i] >> 2) & 0x3F3F3F;
+                    $iHalfRGB    = ($iRGB >> 1)        & $iHalfMask;
+                    $iQrtrRGB    = ($iHalfRGB >> 1)    & $iQrtrMask;
+                    $iLastRGB    = ($oPixels[$i] >> 2) & $iQrtrMask;
                     $oLast[$i]   = $oPixels[$i] = $iHalfRGB + $iQrtrRGB + $iLastRGB;
                 }
                 break;
             case 1:
                 // 50% previous / 50% current
                 foreach ($oPixels as $i => $iRGB) {
-                    $iHalfRGB    = ($iRGB >> 1)      & 0x7F7F7F;
-                    $iLastRGB    = ($oLast[$i] >> 1) & 0x7F7F7F;
+                    $iHalfRGB    = ($iRGB >> 1)      & $iHalfMask;
+                    $iLastRGB    = ($oLast[$i] >> 1) & $iHalfMask;
                     $oLast[$i]   = $oPixels[$i] = $iHalfRGB + $iLastRGB;
                 }
                 break;
             default:
                 // 25% previous / 75% current
                 foreach ($oPixels as $i => $iRGB) {
-                    $iHalfRGB    = ($iRGB >> 1)      & 0x7F7F7F;
-                    $iQrtrRGB    = ($iHalfRGB >> 1)  & 0x3F3F3F;
-                    $iLastRGB    = ($oLast[$i] >> 2) & 0x3F3F3F;
+                    $iHalfRGB    = ($iRGB >> 1)      & $iHalfMask;
+                    $iQrtrRGB    = ($iHalfRGB >> 1)  & $iQrtrMask;
+                    $iLastRGB    = ($oLast[$i] >> 2) & $iQrtrMask;
                     $oLast[$i]   = $oPixels[$i] = $iHalfRGB + $iQrtrRGB + $iLastRGB;
                 }
                 break;

@@ -85,6 +85,7 @@ class Context {
             $this->oDisplay->clear();
             $this->runRoutines($iFrameNumber, $fTimeIndex);
             $this->oDisplay->redraw();
+
             $fTimeIndex = $this->oRateLimiter->limit();
             $iFrameNumber++;
         }

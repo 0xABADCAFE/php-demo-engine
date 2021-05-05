@@ -75,7 +75,7 @@ abstract class Base implements PDE\IDisplay {
     /**
      * @inheritDoc
      */
-    public function waitForFrame() : self {
+    public function waitForFrame() : PDE\IDisplay {
         return $this;
     }
 

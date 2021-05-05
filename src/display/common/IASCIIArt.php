@@ -103,6 +103,32 @@ interface IASCIIArt {
     public function getCharacterWidth() : int;
 
     /**
+     * Render a string of text starting at a given x/y coordinate. An optional max X and Y can be passed
+     * to define a bounding box, otherwise the edges of the display are used. Text that exceeds the width will
+     * be clipped.
+     *
+     * @param  string $sText
+     * @param  int    $iX
+     * @param  int    $iY
+     * @param  int    $iMaxX - If < 1, the maximum X ordinate of the display is used
+     * @param  int    $iMaxY - If < 1, the maximum Y ordinate of the display is used
+     * @return self
+     */
+    public function writeTextBounded(string $sText, int $iX, int $iY, int $iMaxX = 0, $iMaxY = 0) : self;
+
+    /**
+     * Simple text render. Does not support new lines, all text after a new line is discarded. Negative coordinates
+     * and overflow are handled.
+     *
+     * @param  string $sText
+     * @param  int    $iX
+     * @param  int    $iY
+     * @param  int    $iMaxX - If < 1, the maximum X ordinate of the display is used
+     * @return self
+     */
+    public function writeTextSpan(string $sText, int $iX, int $iY, int $iMaxX = 0) : self;
+
+    /**
      * Get the raw display buffer, aka 1337 mode, lol. String is returned by refrence so that modifying it has the
      * desired effect.
      *

@@ -72,7 +72,7 @@ class PlainASCII extends Base implements IASCIIArt {
     }
 
     public function __destruct() {
-        echo IANSIControl::ATTR_RESET . IANSIControl::CRSR_ON, "\n";
+        echo IANSIControl::ATTR_RESET . IANSIControl::CRSR_ON . "\n";
         $this->reportRedraw();
     }
 

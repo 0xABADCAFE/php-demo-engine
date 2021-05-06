@@ -80,7 +80,7 @@ abstract class BaseAsyncASCIIWithRGB extends Base implements IPixelled, IASCIIAr
      */
     public function __destruct() {
         $this->closeSocket(self::ID_PARENT);
-        echo IANSIControl::CRSR_ON, "\n";
+        echo IANSIControl::CRSR_ON;
         $this->reportRedraw();
     }
 

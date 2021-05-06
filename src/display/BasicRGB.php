@@ -53,7 +53,7 @@ class BasicRGB extends Base implements IPixelled {
     }
 
     public function __destruct() {
-        echo IANSIControl::CRSR_ON, "\n";
+        echo IANSIControl::CRSR_ON;
         $this->reportRedraw();
     }
 

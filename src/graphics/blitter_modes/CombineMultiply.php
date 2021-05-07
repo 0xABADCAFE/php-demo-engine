@@ -26,13 +26,35 @@ use ABadCafe\PDE\Graphics\IPixelBuffer;
  */
 class CombineMultiply implements IMode {
 
-    static string $sProducts = '';
+    public function fill(
+        IPixelBuffer $oTarget,
+        int $iValue,
+        int $iTargetX,
+        int $iTargetY,
+        int $iWidth,
+        int $iHeight
+    ) {
+        $iTargetW = $oTarget->getWidth();
+        $iOffset  = $iTargetW * $iTargetY + $iTargetX;
+        $iSpan    = $iTargetW - $iWidth;
+        $oTarget  = $oTarget->getPixels();
 
-//     public function __construct() {
-//         if (empty(self::$sProducts)) {
-//             self::buildProducts();
-//         }
-//     }
+        $iSourceR = ($iValue >> 16) & 0xFF;
+        $iSourceG = ($iValue >> 8)  & 0xFF;
+        $iSourceB = ($iValue & 0xFF);
+
+        while ($iHeight--) {
+            $i = $iWidth;
+            while ($i--) {
+                $iTarget = $oTarget[$iOffset];
+                $iRed    = ($iSourceR * (($iTarget >> 16) & 0xFF)) >> 8;
+                $iGreen  = ($iSourceG * (($iTarget >> 8)  & 0xFF)) >> 8;
+                $iBlue   = ($iSourceB * ($iTarget & 0xFF)) >> 8;
+                $oTarget[$iOffset++] = ($iRed << 16) | ($iGreen << 8) | $iBlue;
+            }
+            $iOffset += $iSpan;
+        }
+    }
 
     /**
      * @inheritDoc
@@ -51,34 +73,29 @@ class CombineMultiply implements IMode {
         $iTargetW = $oTarget->getWidth();
         $oSource  = $oSource->getPixels();
         $oTarget  = $oTarget->getPixels();
+
+        $iSourceIndex = $iSourceY * $iSourceW + $iSourceX;
+        $iTargetIndex = $iTargetY * $iTargetW + $iTargetX;
+        $iSourceSpan  = $iSourceW - $iWidth;
+        $iTargetSpan  = $iTargetW - $iWidth;
+
         while ($iHeight--) {
-            $iPixels      = $iWidth;
-            $iSourceIndex = $iSourceX + $iSourceY++ * $iSourceW;
-            $iTargetIndex = $iTargetX + $iTargetY++ * $iTargetW;
-            while ($iPixels--) {
-                $iSource = $oSource[$iSourceIndex++];
-                $iTarget = $oTarget[$iTargetIndex];
-
-                //$iBlue  = ord(self::$sProducts[(($iSource & 0xFF) << 8)     | ($iTarget & 0xFF)]);
-                //$iGreen = ord(self::$sProducts[($iSource & 0xFF00)          | (($iTarget & 0xFF00) >> 8)]);
-                //$iRed   = ord(self::$sProducts[(($iSource & 0xFF0000) >> 8) | (($iTarget & 0xFF0000) >> 16)]);
-
-                $iRed   = ((($iSource >> 16) & 0xFF) * (($iTarget >> 16) & 0xFF)) >> 8;
-                $iGreen = ((($iSource >> 8)  & 0xFF) * (($iTarget >> 8)  & 0xFF)) >> 8;
-                $iBlue  = ((($iSource & 0xFF) * ($iTarget & 0xFF))) >> 8;
-
-                $oTarget[$iTargetIndex++] = ($iRed << 16) | ($iGreen << 8) | $iBlue;
+            $i     = $iWidth;
+            $iMask = 0xFFFFFF;
+            while ($i--) {
+                $iSource  = $oSource[$iSourceIndex++];
+                $iTarget  = $oTarget[$iTargetIndex];
+                $iProduct = 0;
+                if (($iSource & $iMask) && ($iTarget & $iMask)) {
+                    $iRed    = ((($iSource >> 16) & 0xFF) * (($iTarget >> 16) & 0xFF)) >> 8;
+                    $iGreen  = ((($iSource >> 8)  & 0xFF) * (($iTarget >> 8)  & 0xFF)) >> 8;
+                    $iBlue   = ((($iSource & 0xFF) * ($iTarget & 0xFF))) >> 8;
+                    $iProduct = ($iRed << 16) | ($iGreen << 8) | $iBlue;
+                }
+                $oTarget[$iTargetIndex++] = $iProduct;
             }
+            $iSourceIndex += $iSourceSpan;
+            $iTargetIndex += $iTargetSpan;
         }
     }
-
-//     private static function buildProducts() {
-//         self::$sProducts = str_repeat(' ', 65536);
-//         $iIndex = 0;
-//         for ($i1 = 0; $i1 < 256; ++$i1) {
-//             for ($i2 = 0; $i2 < 256; ++$i2) {
-//                 self::$sProducts[$iIndex++] = chr( ($i1 * $i2) >> 8 );
-//             }
-//         }
-//     }
 }

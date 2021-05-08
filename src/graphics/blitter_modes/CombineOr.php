@@ -29,6 +29,30 @@ class CombineOr implements IMode {
     /**
      * @inheritDoc
      */
+    public function fill(
+        IPixelBuffer $oTarget,
+        int $iValue,
+        int $iTargetX,
+        int $iTargetY,
+        int $iWidth,
+        int $iHeight
+    ) {
+        $iTargetW = $oTarget->getWidth();
+        $iOffset  = $iTargetW * $iTargetY + $iTargetX;
+        $iSpan    = $iTargetW - $iWidth;
+        $oTarget  = $oTarget->getPixels();
+        while ($iHeight--) {
+            $i = $iWidth;
+            while ($i--) {
+                $oTarget[$iOffset++] |= $iValue;
+            }
+            $iOffset += $iSpan;
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function copy(
         IPixelBuffer $oSource,
         IPixelBuffer $oTarget,
@@ -43,13 +67,18 @@ class CombineOr implements IMode {
         $iTargetW = $oTarget->getWidth();
         $oSource  = $oSource->getPixels();
         $oTarget  = $oTarget->getPixels();
+        $iSourceIndex = $iSourceY * $iSourceW + $iSourceX;
+        $iTargetIndex = $iTargetY * $iTargetW + $iTargetX;
+        $iSourceSpan  = $iSourceW - $iWidth;
+        $iTargetSpan  = $iTargetW - $iWidth;
+
         while ($iHeight--) {
-            $iPixels      = $iWidth;
-            $iSourceIndex = $iSourceX + $iSourceY++ * $iSourceW;
-            $iTargetIndex = $iTargetX + $iTargetY++ * $iTargetW;
-            while ($iPixels--) {
+            $i = $iWidth;
+            while ($i--) {
                 $oTarget[$iTargetIndex++] |= $oSource[$iSourceIndex++];
             }
+            $iSourceIndex += $iSourceSpan;
+            $iTargetIndex += $iTargetSpan;
         }
     }
 }

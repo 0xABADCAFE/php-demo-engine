@@ -119,6 +119,56 @@ class Blitter {
     }
 
     /**
+     * Fills a rectangular area with a solid value
+     *
+     * @param  int $iValue
+     * @param  int $iTargetX,
+     * @param  int $iTargetY,
+     * @param  int $iWidth,
+     * @param  int $iHeight
+     * @return self
+     */
+    public function fill(
+        int $iValue,
+        int $iTargetX, int $iTargetY,
+        int $iWidth,   int $iHeight
+
+    ) : self {
+        if (!$this->oTarget) {
+            throw new \Exception();
+        }
+        $iTargetW = $this->oTarget->getWidth();
+        $iTargetH = $this->oTarget->getHeight();
+
+        // Check for totally out of bounds cases that we can just early out
+        if (
+            $iWidth < 1 || $iHeight < 1  ||
+            $iTargetX >= $iTargetW ||
+            $iTargetY >= $iTargetH
+        ) {
+            return $this;
+        }
+
+        // Crop to the Target
+        if (!($oCropped = $this->cropRectangleToArea(
+            $iTargetX, $iTargetY,
+            $iWidth,   $iHeight,
+            $iTargetW, $iTargetH
+        ))) {
+            return $this;
+        }
+
+        self::$aModes[$this->iMode]->fill(
+            $this->oTarget,
+            $iValue,
+            $oCropped->iRectX, $oCropped->iRectY,
+            $oCropped->iRectW, $oCropped->iRectH
+        );
+
+        return $this;
+    }
+
+    /**
      * Perform a copy. This handles all the necessary cropping and other checks, then delegates the final
      * operation to the IMode implementation directed by the current mode.
      *

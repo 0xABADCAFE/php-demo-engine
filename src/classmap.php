@@ -48,6 +48,7 @@ const CLASS_MAP = [
   'ABadCafe\\PDE\\Routine\\StaticNoise' => '/routine/2D/StaticNoise.php',
   'ABadCafe\\PDE\\Routine\\Toroid' => '/routine/3D/Toroid.php',
   'ABadCafe\\PDE\\Routine\\Voxel' => '/routine/3D/Voxel.php',
+  'ABadCafe\\PDE\\Routine\\Tunnel' => '/routine/3D/Tunnel.php',
   'ABadCafe\\PDE\\Routine\\IResourceLoader' => '/routine/common/IResourceLoader.php',
   'ABadCafe\\PDE\\Routine\\TResourceLoader' => '/routine/common/TResourceLoader.php',
   'ABadCafe\\PDE\\Routine\\Base' => '/routine/common/Base.php',

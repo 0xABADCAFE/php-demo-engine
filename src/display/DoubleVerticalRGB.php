@@ -89,7 +89,7 @@ class DoubleVerticalRGB extends Base implements IPixelled, IAsynchronous {
      */
     public function __destruct() {
         $this->closeSocket(1);
-        echo IANSIControl::CRSR_ON, "\n";
+        echo IANSIControl::CRSR_ON;
         $this->reportRedraw();
     }
 

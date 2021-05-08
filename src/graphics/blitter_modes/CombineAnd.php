@@ -29,6 +29,30 @@ class CombineAnd implements IMode {
     /**
      * @inheritDoc
      */
+    public function fill(
+        IPixelBuffer $oTarget,
+        int $iValue,
+        int $iTargetX,
+        int $iTargetY,
+        int $iWidth,
+        int $iHeight
+    ) {
+        $iTargetW = $oTarget->getWidth();
+        $iOffset  = $iTargetW * $iTargetY + $iTargetX;
+        $iSpan    = $iTargetW - $iWidth;
+        $oTarget  = $oTarget->getPixels();
+        while ($iHeight--) {
+            $i = $iWidth;
+            while ($i--) {
+                $oTarget[$iOffset++] &= $iValue;
+            }
+            $iOffset += $iSpan;
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function copy(
         IPixelBuffer $oSource,
         IPixelBuffer $oTarget,

@@ -45,7 +45,7 @@ abstract class Base implements PDE\IDisplay {
      * Make sure we restore the cursor
      */
     public function __destruct() {
-        echo IANSIControl::CRSR_ON, "\n";
+        echo IANSIControl::CRSR_ON;
     }
 
     /**

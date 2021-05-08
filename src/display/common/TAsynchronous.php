@@ -231,6 +231,10 @@ trait TAsynchronous {
      * it decodes and prints it.
      */
     private function runSubprocess() {
+        // In the unlikely event we run as root, bang up our priority
+        if (0 === posix_getuid()) {
+            proc_nice(-19);
+        }
         $this->closeSocket(IAsynchronous::ID_PARENT);
         $this->subprocessRenderLoop();
         $this->closeSocket(IAsynchronous::ID_CHILD);

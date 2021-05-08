@@ -40,6 +40,7 @@ class Factory {
         '2D/TapeLoader'     => TapeLoader::class,
         '3D/Toroid'         => Toroid::class,
         '3D/Voxel'          => Voxel::class,
+        '3D/Tunnel'         => Tunnel::class,
     ];
 
     private static ?self $oInstance = null;

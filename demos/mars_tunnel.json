@@ -1,0 +1,57 @@
+{
+    "displays": {
+        "default": {
+            "sType": "DoubleVerticalRGB",
+            "iWidth": 160,
+            "iHeight": 100,
+            "iMaxFPS": 30
+        }
+    },
+    "routines": {
+        "tunnel": {
+            "sType": "3D/Tunnel",
+            "iPriority": 1,
+            "aParameters": {
+                "sTexPath": "images/voxel_texture.ppm",
+                "iTexDim": 8,
+                "fLenRatio": 10.0,
+                "fLimitSqrt": 120.0,
+                "fDepthFactor": 48.0,
+                "fVPanLimit": 0.5,
+                "fVPanHLimit": 0.3
+            }
+        },
+        "trails": {
+            "sType":  "2D/RGBPersistence",
+            "iPriority": 2,
+            "aParameters": {
+                "iStrength": 1
+            }
+        }
+    },
+    "events": [
+        {
+            "at": 0.0,
+            "on": "display/default",
+            "do": "update",
+            "aParameters": {
+                "sMaskRGB":"FC0000"
+            }
+        },
+        {
+            "at": 0.0,
+            "on": "routine/tunnel",
+            "do": "enable"
+        },
+        {
+            "at": 0.0,
+            "on": "routine/trails",
+            "do": "enable"
+        },
+
+        {
+            "at": 20.0,
+            "do": "end"
+        }
+    ]
+}

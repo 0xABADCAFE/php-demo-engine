@@ -40,26 +40,37 @@ class Raytrace extends Base {
     ;
 
     const DEFAULT_PARAMETERS = [
-        'iMode'         => self::MODE_RECORD,
-        'iWidth'        => 100,
-        'iHeight'       => 100,
-        'iPosX'         => 0,
-        'iPosY'         => 0,
-        'fImageScale'   => 1.6,
-        'sAmbientRGB'   => 'FFFFFF', // Ambient light colour
-        'fAmbientLevel' => 0.05098,  // Ambient light level
-        'sSkyRGB'       => '7F99FF',
-        'sFloorRGB1'    => 'FF5555',
-        'sFloorRGB2'    => 'FFFFFF',
-        'iMaxRays'      => 8,
-        'fBrightness'   => 1.098,
-        'aCameraDir'    => [-6.0,-16.0, 0.0 ],
-        'aFocalPoint'   => [17.0, 16.0, 8.0 ],
-        'fDepthOfField' => 20.0,
-        'fScaleDOF'     => 16.0,
-        'aSpheres'      => [
-            [ 8.0, 5.0, 4.0, 8.0 ],
-            [15.0, 5.0, 4.0, 8.0 ]
+        'iMode'          => self::MODE_RECORD,
+        'iMaxFrames'     => self::MAX_FRAMES,
+        'iWidth'         => 100,
+        'iHeight'        => 100,
+        'iPosX'          => 0,
+        'iPosY'          => 0,
+        'fImageScale'    => 1.6,
+        'sAmbientRGB'    => 'FFFFFF', // Ambient light colour
+        'fAmbientBright' => 0.05098,  // Ambient light level
+        'sSkyRGB'        => '7F99FF',
+        'fSkyBright'     => 0.005,
+        'sFloorRGB1'     => 'FF5555',
+        'sFloorRGB2'     => 'FFFFFF',
+        'fFloorBright'   => 0.01176,
+        'fFloorScale'    => 0.1,
+        'fMirrorAlbedo'  => 0.75,
+        'fSpecularPower' => 20.0,
+        'iMaxRays'       => 8,
+        'fBrightness'    => 1.098,
+        'aCameraDir'     => [-6.0,-16.0, 0.0 ],
+        'aFocalPoint'    => [17.0, 16.0, 8.0 ],
+        'fDepthOfField'  => 20.0,
+        'fScaleDOF'      => 16.0,
+        'aLight'         => [9.9, 11.0, 20.0],
+        'aSpheres'       => [
+            [ 8.0, 5.0, 4.0, 8.0 ], // Coordinate, Radius
+            [15.0, 5.0, 4.0, 8.0 ]  // Coordinate, Radius
+        ],
+        'aAnimation' => [
+            [3.0, 8.0, 0.0],        // Base Z, Max Z, Phase
+            [3.0, 8.0, 0.25]        // Base Z, Max Z, Phase
         ]
     ];
 
@@ -68,7 +79,9 @@ class Raytrace extends Base {
 
     private Graphics\Blitter $oBlitter;
 
-    private array $aObjects = [];
+    private array $aSpheres = [];
+    private array $aRadii = [];
+
     private Vec3F
         $vCameraDirection,
         $vCameraForward,
@@ -103,25 +116,15 @@ class Raytrace extends Base {
         $this->vBlack           = new Vec3F(0.0, 0.0, 0.0);
 
         parent::__construct($oDisplay, $aParameters);
-        $i = self::MAX_FRAMES;
 
         $this->oBlitter = new Graphics\Blitter();
-        while ($i--) {
-            $this->aFrames[] = new PDE\Graphics\Image($this->oParameters->iWidth, $this->oParameters->iHeight);
-        }
 
-        $this->vFocalPoint      = new Vec3F(17.0, 16.0, 8.0);
-
-        $this->vLight           = new Vec3F(9.9, 11.0, 20.0);
-        $this->vAmbientRGB      = new Vec3F(13.0, 13.0, 13.0);
-        $this->vFloorRGB1       = new Vec3F(3.0, 1.0, 1.0);
-        $this->vFloorRGB2       = new Vec3F(3.0, 3.0, 3.0);
-
-        $this->vSkyRGB          = new Vec3F(0.5, 0.6, 1.0);
-        $this->aObjects[]       = new Vec3F(8.0, 5.0, 4.0);
-        $this->aObjects[]       = new Vec3F(15.0, 5.0, 4.0);
-        $this->fInvRM           = 0.25 / (float)mt_getrandmax();
+        $this->fInvRM = 0.25 / (float)mt_getrandmax();
         $this->initCamera();
+        $this->initLights();
+        $this->initObjects();
+        $this->initMaterials();
+        $this->initBuffers();
     }
 
     /**
@@ -157,6 +160,176 @@ class Raytrace extends Base {
      */
     protected function parameterChange() {
         $this->initCamera();
+        $this->initLights();
+        $this->initObjects();
+        $this->initMaterials();
+    }
+
+    /**
+     * Initialise the camera properties.
+     */
+    private function initCamera() {
+
+        $this->vCameraDirection = new Vec3F(
+            $this->oParameters->aCameraDir[0],
+            $this->oParameters->aCameraDir[1],
+            $this->oParameters->aCameraDir[2]
+        );
+
+        $this->vFocalPoint = new Vec3F(
+            $this->oParameters->aFocalPoint[0],
+            $this->oParameters->aFocalPoint[1],
+            $this->oParameters->aFocalPoint[2]
+        );
+
+        $iWidth  = $this->oParameters->iWidth;
+
+        $fImageScale = $this->oParameters->fImageScale / $iWidth;
+
+        // camera direction vectors
+        $this->vCameraForward = $this->vCameraDirection
+            ->iNormalise();
+
+        $this->vCameraUp = $this->vNormalUp
+            ->iCross($this->vCameraForward)
+            ->normalise()
+            ->scale($fImageScale);
+
+        $this->vCameraRight = $this->vCameraForward
+            ->iCross($this->vCameraUp)
+            ->normalise()
+            ->scale($fImageScale);
+
+        $this->vEyeOffset = $this->vCameraUp
+            ->iAdd($this->vCameraRight)
+            ->scale(-0.5 * $iWidth)
+            ->add($this->vCameraForward);
+    }
+
+    /**
+     * Initialise light source
+     */
+    private function initLights() {
+        $this->vLight = new Vec3F(
+            $this->oParameters->aLight[0],
+            $this->oParameters->aLight[1],
+            $this->oParameters->aLight[2]
+        );
+    }
+
+    /**
+     * Initialise material properties
+     */
+    private function initMaterials() {
+        $this->vAmbientRGB = $this->hexRGBToVec3F($this->oParameters->sAmbientRGB)
+            ->scale($this->oParameters->fAmbientBright);
+
+        $this->vFloorRGB1 = $this->hexRGBToVec3F($this->oParameters->sFloorRGB1)
+            ->scale($this->oParameters->fFloorBright);
+
+        $this->vFloorRGB2 = $this->hexRGBToVec3F($this->oParameters->sFloorRGB2)
+            ->scale($this->oParameters->fFloorBright);
+
+        $this->vSkyRGB    = $this->hexRGBToVec3F($this->oParameters->sSkyRGB)
+            ->scale($this->oParameters->fSkyBright);
+    }
+
+    private function hexRGBToVec3F(string $sColourRGB) : Vec3F {
+        $iRGB = (int)base_convert($sColourRGB, 16, 10);
+        return new Vec3F(
+            (float)($iRGB >> 16),
+            (float)(($iRGB >> 8) & 0xFF),
+            (float)($iRGB & 0xFF)
+        );
+    }
+
+    /**
+     * Initialise objects
+     */
+    private function initObjects() {
+        $this->aSpheres = [];
+        $this->aRadii   = [];
+        foreach ($this->oParameters->aSpheres as $aSphere) {
+            $this->aSpheres[] = new Vec3F(
+                $aSphere[0], $aSphere[1], $aSphere[2]
+            );
+            $this->aRadii[] = $aSphere[3];
+        }
+    }
+
+    private function initBuffers() {
+        $i = $this->oParameters->iMaxFrames;
+        while ($i--) {
+            $this->aFrames[] = new PDE\Graphics\Image($this->oParameters->iWidth, $this->oParameters->iHeight);
+        }
+    }
+
+    /**
+     * Render the scene
+     */
+    private function renderScene() {
+        $iWidth      = $this->oParameters->iWidth;
+        $iHeight     = $this->oParameters->iHeight;
+        $fImageScale = $this->oParameters->fImageScale / $iWidth;
+        $fStep       = M_PI / $this->oParameters->iMaxFrames;
+        foreach ($this->aSpheres as $iIndex => $vSpherePos) {
+            $aAnimation = $this->oParameters->aAnimation[$iIndex];
+            $vSpherePos->fZ = $aAnimation[0] + $aAnimation[1] * abs(cos(
+                $this->fSimulationTime + M_PI * $aAnimation[2]
+            ));
+        }
+
+        $this->fSimulationTime += $fStep;
+        $fDepthOfField = $this->oParameters->fDepthOfField;
+        $fScaleDOF     = $this->oParameters->fScaleDOF;
+        $iMaxRays      = $this->oParameters->iMaxRays;
+        $fRGBScale     = $this->oParameters->fBrightness * 255.0 / $iMaxRays;
+        $oPixels       = $this->aFrames[0]->getPixels();
+        $iPixel        = 0;
+        for ($iPixelY = $iHeight; $iPixelY--;) {
+            for ($iPixelX = $iWidth; $iPixelX--;) {
+
+                // Use a vector for the pixel. The values here are in the range 0.0 - 255.0 rather than the 0.0 - 1.0
+                $vPixel = $this->vBlack->clone();
+                $iRays  = $iMaxRays;
+                while ($iRays--) {
+
+                    // Random delta to be added for depth of field effects
+                    $vDelta = $this->vCameraUp
+                        ->iScale((($this->fInvRM * mt_rand()) - 0.5) * $fDepthOfField)
+                        ->add(
+                            $this->vCameraRight
+                                ->iScale((($this->fInvRM * mt_rand()) - 0.5) * $fDepthOfField)
+                        );
+
+                    // Accumulate the sample result into the current pixel
+                    $vPixel->add(
+                        $this->sample(
+                            $this->vFocalPoint->iAdd($vDelta),
+                            $this->vCameraUp
+                                ->iScale(($this->fInvRM * mt_rand()) + $iPixelX)
+                                ->add(
+                                    $this->vCameraRight
+                                        ->iScale(($this->fInvRM * mt_rand()) + $iPixelY)
+                                        ->add($this->vEyeOffset)
+                                )
+                                ->scale($fScaleDOF)
+                                ->sub($vDelta)
+                                ->normalise()
+                        )
+                    );
+                }
+                $vPixel
+                    ->scale($fRGBScale)
+                    ->add($this->vAmbientRGB);
+
+                // Convert to integers and push out to ppm outpu stream
+                $oPixels[$iPixel++] =
+                    min($vPixel->fX, 255) << 16 |
+                    min($vPixel->fY, 255) << 8  |
+                    (int)min($vPixel->fZ, 255);
+            }
+        }
     }
 
     /**
@@ -170,7 +343,7 @@ class Raytrace extends Base {
      */
     private function trace(Vec3F $vOrigin, Vec3F $vDirection, ?float &$fTraceDistance, ?Vec3F &$vNormal) : int {
 
-        $fTraceDistance = 100;
+        $fTraceDistance = 1000.0;
 
         // Assume trace hits nothing
         $iMaterial = self::MAT_SKY;
@@ -183,10 +356,10 @@ class Raytrace extends Base {
             $iMaterial = self::MAT_FLOOR;
         }
 
-        foreach ($this->aObjects as $vObject) {
-            $vPoint    = $vOrigin->iSub($vObject);
+        foreach ($this->aSpheres as $iIndex => $vSpherePos) {
+            $vPoint    = $vOrigin->iSub($vSpherePos);
             $fDot      = $vPoint->dot($vDirection);
-            $fEye      = $vPoint->dot($vPoint) - 8.0;
+            $fEye      = $vPoint->dot($vPoint) - $this->aRadii[$iIndex];
             $fIntrSqrd = $fDot * $fDot - $fEye;
 
             if ($fIntrSqrd > 0.0) {
@@ -216,7 +389,7 @@ class Raytrace extends Base {
      */
     function sample(Vec3F $vOrigin, Vec3F $vDirection) : Vec3F {
 
-        if (++$this->iRecursion > 3) {
+        if (++$this->iRecursion > 4) {
             --$this->iRecursion;
             return $this->vBlack;
         }
@@ -256,11 +429,11 @@ class Raytrace extends Base {
 
         // Hit the floor plane
         if ($iMaterial === 1) {
-            $vIntersect->scale(0.2);
+            $vIntersect->scale($this->oParameters->fFloorScale);
             --$this->iRecursion;
             return (
                 // Compute check colour based on the position
-                (int) (ceil($vIntersect->fX * 0.5) + ceil($vIntersect->fY * 0.5)) & 1 ?
+                (int) (ceil($vIntersect->fX) + ceil($vIntersect->fY)) & 1 ?
                 $this->vFloorRGB1 :
                 $this->vFloorRGB2   // white
             )->iScale($fLambertian * 0.2 + 0.1);
@@ -268,11 +441,12 @@ class Raytrace extends Base {
         }
 
         // Hit a sphere? Bounce it
-        $vRGB = $this->sample($vIntersect, $vHalfVector)->iScale(0.75);
+        $vRGB = $this->sample($vIntersect, $vHalfVector)
+            ->iScale($this->oParameters->fMirrorAlbedo);
 
         if ($fLambertian > 0) {
             // Compute the specular highlight power
-            $fSpecular = pow($vLight->dot($vHalfVector), 99.0);
+            $fSpecular = pow($vLight->dot($vHalfVector), $this->oParameters->fSpecularPower);
             $vRGB->fX += $fSpecular;
             $vRGB->fY += $fSpecular;
             $vRGB->fZ += $fSpecular;
@@ -282,112 +456,7 @@ class Raytrace extends Base {
         return $vRGB;
     }
 
-    /**
-     * Render the scene
-     */
-    private function renderScene() {
-        $mark = microtime(true);
-        $iWidth  = $this->oParameters->iWidth;
-        $iHeight = $this->oParameters->iHeight;
-
-        $fImageScale = 1.6 / $iWidth;
-
-        $fStep   = M_PI / 32.0;
-
-        $this->aObjects[0]->fZ = 4 + 8.0 * abs(cos($this->fSimulationTime));
-        $this->aObjects[1]->fZ = 4 + 8.0 * abs(cos($this->fSimulationTime + M_PI / 4.0));
-        $this->fSimulationTime += $fStep;
-
-        $oPixels = $this->aFrames[0]->getPixels();
-        $iPixel  = 0;
-        $fDepthOfField = $this->oParameters->fDepthOfField;
-        $fScaleDOF     = $this->oParameters->fScaleDOF;
-
-        $iMaxRays      = $this->oParameters->iMaxRays;
-        $fRGBScale     = $this->oParameters->fBrightness * 255.0 / $iMaxRays;
-
-        for ($iPixelY = $iHeight; $iPixelY--;) {
-            for ($iPixelX = $iWidth; $iPixelX--;) {
-
-                // Use a vector for the pixel. The values here are in the range 0.0 - 255.0 rather than the 0.0 - 1.0
-                $vPixel = $this->vBlack->clone();
-                $iRays  = $iMaxRays;
-                while ($iRays--) {
-
-                    // Random delta to be added for depth of field effects
-                    $vDelta = $this->vCameraUp
-                        ->iScale((($this->fInvRM * mt_rand()) - 0.5) * $fDepthOfField)
-                        ->add(
-                            $this->vCameraRight
-                                ->iScale((($this->fInvRM * mt_rand()) - 0.5) * $fDepthOfField)
-                        );
 
 
-                    // Accumulate the sample result into the current pixel
-                    $vPixel->add(
-                        $this->sample(
-                            $this->vFocalPoint->iAdd($vDelta),
-                            $this->vCameraUp
-                                ->iScale(($this->fInvRM * mt_rand()) + $iPixelX)
-                                ->add(
-                                    $this->vCameraRight
-                                        ->iScale(($this->fInvRM * mt_rand()) + $iPixelY)
-                                        ->add($this->vEyeOffset)
-                                )
-                                ->scale($fScaleDOF)
-                                ->sub($vDelta)
-                                ->normalise()
-                        )
-                    );
-                }
-                $vPixel
-                    ->scale($fRGBScale)
-                    ->add($this->vAmbientRGB);
 
-                // Convert to integers and push out to ppm outpu stream
-                $oPixels[$iPixel++] =
-                    min($vPixel->fX, 255) << 16 |
-                    min($vPixel->fY, 255) << 8  |
-                    (int)min($vPixel->fZ, 255);
-            }
-        }
-    }
-
-    private function initCamera() {
-
-        $this->vCameraDirection = new Vec3F(
-            $this->oParameters->aCameraDir[0],
-            $this->oParameters->aCameraDir[1],
-            $this->oParameters->aCameraDir[2]
-        );
-
-        $this->vFocalPoint = new Vec3F(
-            $this->oParameters->aFocalPoint[0],
-            $this->oParameters->aFocalPoint[1],
-            $this->oParameters->aFocalPoint[2]
-        );
-
-        $iWidth  = $this->oParameters->iWidth;
-
-        $fImageScale = $this->oParameters->fImageScale / $iWidth;
-
-        // camera direction vectors
-        $this->vCameraForward = $this->vCameraDirection
-            ->iNormalise();
-
-        $this->vCameraUp = $this->vNormalUp
-            ->iCross($this->vCameraForward)
-            ->normalise()
-            ->scale($fImageScale);
-
-        $this->vCameraRight = $this->vCameraForward
-            ->iCross($this->vCameraUp)
-            ->normalise()
-            ->scale($fImageScale);
-
-        $this->vEyeOffset = $this->vCameraUp
-            ->iAdd($this->vCameraRight)
-            ->scale(-0.5 * $iWidth)
-            ->add($this->vCameraForward);
-    }
 }

@@ -1,0 +1,29 @@
+{
+    "displays": {
+        "default": {
+            "sType": "DoubleVerticalRGB",
+            "iWidth": 160,
+            "iHeight": 100,
+            "iMaxFPS": 30
+        }
+    },
+    "routines": {
+        "trace": {
+            "sType": "3D/Raytrace",
+            "iPriority": 0,
+            "aParameters": {
+            }
+        }
+    },
+    "events": [
+        {
+            "at": 0.0,
+            "on": "routine/trace",
+            "do": "enable"
+        },
+        {
+            "at": 2.0,
+            "do": "end"
+        }
+    ]
+}

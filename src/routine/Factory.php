@@ -41,6 +41,7 @@ class Factory {
         '3D/Toroid'         => Toroid::class,
         '3D/Voxel'          => Voxel::class,
         '3D/Tunnel'         => Tunnel::class,
+        '3D/Raytrace'       => Raytrace::class,
     ];
 
     private static ?self $oInstance = null;

@@ -257,8 +257,12 @@ class Raytrace extends Base {
         }
     }
 
+    /**
+     * Initialise draw buffer
+     */
     private function initBuffers() {
-        $i = $this->oParameters->iMaxFrames;
+        // TODO - once asynchronous record mode is working, use a buffer per frame.
+        $i = 1;//$this->oParameters->iMaxFrames;
         while ($i--) {
             $this->aFrames[] = new PDE\Graphics\Image($this->oParameters->iWidth, $this->oParameters->iHeight);
         }
@@ -455,8 +459,5 @@ class Raytrace extends Base {
         --$this->iRecursion;
         return $vRGB;
     }
-
-
-
 
 }

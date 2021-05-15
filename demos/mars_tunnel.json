@@ -35,7 +35,7 @@
             "on": "display/default",
             "do": "update",
             "aParameters": {
-                "sMaskRGB":"FC0000"
+                "sMaskRGB":"F80000"
             }
         },
         {
@@ -50,7 +50,7 @@
         },
 
         {
-            "at": 20.0,
+            "at": 10.0,
             "do": "end"
         }
     ]

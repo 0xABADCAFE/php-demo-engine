@@ -25,21 +25,20 @@ use ABadCafe\PDE;
 use \SPLFixedArray;
 
 /**
- * Colour pulsating effect based on simple interpolation. Requires an IPixelled display.
+ * Random plasma fire effect. Burns upwards from the lower extent of the display.
  */
 class RGBFire extends Base {
 
-    // TODO - extract parameters
     const DEFAULT_PARAMETERS = [
-        'fPhase1Rate' => 1.0,
+        'fPhase1Rate' => 1.0,    // Wax and wane is controlled by two interfering sine waves
         'fPhase1Amp'  => 32.0,
         'fPhase1Base' => 64.0,
         'fPhase2Rate' => 1.1,
         'fPhase2Amp'  => 56.0,
         'fPhase2Base' => 200.0,
         'fPhaseScale' => 6.28,
-        'fDecayScale' => 0.6,
-        'fMixRatio'   => 10.0
+        'fDecayScale' => 0.6,    // Heat loss rate
+        'fMixRatio'   => 10.0    // Persistence effect, ratio of new value to existing value.
     ];
 
     private array $aPalettePoints = [

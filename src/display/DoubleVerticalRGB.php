@@ -193,6 +193,7 @@ class DoubleVerticalRGB extends Base implements IPixelled, IAsynchronous {
                 $iChanged  = (int)($iForeRGB != $iBackRGB)          | // Foreground and background differ
                              (int)($iForeRGB != $iLastForeRGB) << 1 | // Foreground has changed
                              (int)($iBackRGB != $iLastBackRGB) << 2;  // Background has changed
+
                 $sTemplate = $aTemplates[$iChanged];
 
                 switch ($iChanged) {
@@ -201,7 +202,7 @@ class DoubleVerticalRGB extends Base implements IPixelled, IAsynchronous {
                         // No RGB changes
                         $sRawBuffer .= $sTemplate;
                         break;
-                    case 2:
+                    //case 2: // glitcy
                     case 4:
                     case 5:
                         // Background RGB changes only
@@ -213,6 +214,7 @@ class DoubleVerticalRGB extends Base implements IPixelled, IAsynchronous {
                         );
                         break;
                     case 3:
+
                         // Foreground RGB changes
                         $sRawBuffer .= sprintf(
                             $sTemplate,
@@ -234,6 +236,16 @@ class DoubleVerticalRGB extends Base implements IPixelled, IAsynchronous {
                             ($iBackRGB & 0xFF)
                         );
                         break;
+                    default:
+                        $sRawBuffer .= sprintf(
+                            $aTemplates[7],
+                            $iForeRGB >> 16,
+                            ($iForeRGB >> 8) & 0xFF,
+                            ($iForeRGB & 0xFF),
+                            $iBackRGB >> 16,
+                            ($iBackRGB >> 8) & 0xFF,
+                            ($iBackRGB & 0xFF)
+                        );
                 }
                 $iLastForeRGB = $iForeRGB;
                 $iLastBackRGB = $iBackRGB;
@@ -243,7 +255,7 @@ class DoubleVerticalRGB extends Base implements IPixelled, IAsynchronous {
             $sRawBuffer .= "\n";
         }
         ob_start(null, 0);
-        echo $sRawBuffer;
+        echo $sRawBuffer . IANSIControl::ATTR_RESET;
         ob_end_flush();
         $this->endRedraw();
     }

@@ -16,8 +16,8 @@ $oLFO = new Audio\Signal\Oscillator\LFO(
 );
 
 $oModulator = new Audio\Signal\Oscillator\Sound(
-    new Audio\Signal\Waveform\Saw,
-    220.0
+    new Audio\Signal\Waveform\Sine,
+    220.0 * (2.0 ** (4/12))
 );
 
 $oModulator->setPitchModulator($oLFO);
@@ -26,14 +26,14 @@ $oModulator->setEnvelope(
         0.0,
         [
             [0.9, 2.0],
-            [0.0, 4.0]
+            [0.1, 4.0]
         ]
     )
 );
 
 $oCarrier = new Audio\Signal\Oscillator\Sound(
-    new Audio\Signal\Waveform\Saw,
-    440.0
+    new Audio\Signal\Waveform\Sine,
+    220.0
 );
 
 $oCarrier->setPhaseModulator($oModulator);

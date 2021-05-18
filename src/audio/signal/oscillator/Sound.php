@@ -42,6 +42,11 @@ class Sound extends Base {
 
     protected ?Audio\Signal\IEnvelope $oEnvelope = null;
 
+    protected float
+        $fPhaseModulationIndex = 1.0,
+        $fLevelModulationIndex = 1.0
+    ;
+
     /**
      * @inheritDoc
      */
@@ -82,6 +87,17 @@ class Sound extends Base {
     }
 
     /**
+     *  Sets the overal Phase Modulation strength.
+     *
+     * @param  float $fModulationIndex
+     * @return self
+     */
+    public function setPhaseModulationIndex(float $fModulationIndex) : self {
+        $this->fPhaseModulationIndex = $fModulationIndex;
+        return $this;
+    }
+
+    /**
      * Set an amplitude modulator stream to use. This is intended for tremelo type effects and there is a separate
      * facility for setting envelopes.
      *
@@ -92,6 +108,17 @@ class Sound extends Base {
      */
     public function setLevelModulator(?Audio\Signal\IStream $oModulator) : self {
         $this->oLevelModulator = $oModulator;
+        return $this;
+    }
+
+    /**
+     *  Sets the overal Phase Modulation strength.
+     *
+     * @param  float $fModulationIndex
+     * @return self
+     */
+    public function setLevelModulationIndex(float $fModulationIndex) : self {
+        $this->fLevelModulationIndex = $fModulationIndex;
         return $this;
     }
 
@@ -139,15 +166,18 @@ class Sound extends Base {
             // phase modulation is normalised, such that 1.0 is a complete full cycle of our waveform.
             // We simply multiply the shift by our Waveform's period value to get this.
             $oPhaseShifts = $this->oPhaseModulator->emit($this->iLastIndex);
+            $fPeriod = $this->fPhaseModulationIndex * $this->fWaveformPeriod;
             for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
-                $this->oWaveformInput[$i] += $this->fWaveformPeriod * $oPhaseShifts[$i];
+                $this->oWaveformInput[$i] += $fPeriod * $oPhaseShifts[$i];
             }
         }
 
         $this->oLastOutput = $this->oWaveform->map($this->oWaveformInput);
 
         if ($this->oLevelModulator) {
-            $this->oLastOutput->modulateWith($this->oLevelModulator->emit($this->iLastIndex));
+            $oLevel = clone $this->oLevelModulator->emit($this->iLastIndex);
+            $oLevel->scaleBy($this->fLevelModulationIndex);
+            $this->oLastOutput->modulateWith($oLevel);
         }
 
         if ($this->oEnvelope) {

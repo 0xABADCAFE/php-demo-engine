@@ -18,28 +18,39 @@
 
 declare(strict_types=1);
 
-namespace ABadCafe\PDE;
+namespace ABadCafe\PDE\Audio\Signal\Waveform;
+use ABadCafe\PDE\Audio\Signal;
 
 /**
- * If you aren't using 7.4.15 no dice. Lower versions have buggy covariance.
+ * Triangle
+ *
+ * Triangle implementation of IWaveform
+ *
+ * @see https://github.com/0xABADCAFE/random-proto-synth
  */
-if (PHP_VERSION_ID < 70415) {
-    throw new \RuntimeException("Requires at least PHP 7.4.15");
-}
+class Triangle implements Signal\IWaveform {
 
-/**
- * Basic classmap autoloader
- */
-require_once 'classmap.php';
-spl_autoload_register(function(string $str_class) {
-    if (isset(CLASS_MAP[$str_class])) {
-        require_once __DIR__ . CLASS_MAP[$str_class];
+    const F_PERIOD = 2.0;
+
+    /**
+     * @inheritDoc
+     */
+    public function getPeriod() : float {
+        return self::F_PERIOD;
     }
-});
 
-/**
- * Debugging output
- */
-function dprintf(string $sTemplate, ...$aVarArgs) {
-    fprintf(STDERR, $sTemplate, ...$aVarArgs);
+    /**
+     * @inheritDoc
+     */
+    public function map(Signal\Packet $oInput) : Signal\Packet {
+        $oOutput = clone $oInput;
+        $fHalf   = 0.5;
+        foreach ($oInput as $i => $fTime) {
+            $fTime      -= $fHalf;
+            $fFloor      = floor($fTime);
+            $fScale      = (int)$fFloor & 1 ? 2.0 : -2.0;
+            $oOutput[$i] = $fScale * ($fTime - $fFloor - $fHalf);
+        }
+        return $oOutput;
+    }
 }

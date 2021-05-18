@@ -18,28 +18,14 @@
 
 declare(strict_types=1);
 
-namespace ABadCafe\PDE;
+namespace ABadCafe\PDE\Audio;
 
-/**
- * If you aren't using 7.4.15 no dice. Lower versions have buggy covariance.
- */
-if (PHP_VERSION_ID < 70415) {
-    throw new \RuntimeException("Requires at least PHP 7.4.15");
-}
+/***/
+interface IConfig {
 
-/**
- * Basic classmap autoloader
- */
-require_once 'classmap.php';
-spl_autoload_register(function(string $str_class) {
-    if (isset(CLASS_MAP[$str_class])) {
-        require_once __DIR__ . CLASS_MAP[$str_class];
-    }
-});
-
-/**
- * Debugging output
- */
-function dprintf(string $sTemplate, ...$aVarArgs) {
-    fprintf(STDERR, $sTemplate, ...$aVarArgs);
+    const
+        PROCESS_RATE  = 44100,
+        PACKET_SIZE   = 128,
+        SAMPLE_PERIOD = 1.0 / self::PROCESS_RATE
+    ;
 }

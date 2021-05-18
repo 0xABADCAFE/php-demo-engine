@@ -18,28 +18,41 @@
 
 declare(strict_types=1);
 
-namespace ABadCafe\PDE;
+namespace ABadCafe\PDE\Audio\Signal\Waveform;
+use ABadCafe\PDE\Audio\Signal;
 
 /**
- * If you aren't using 7.4.15 no dice. Lower versions have buggy covariance.
+ * WhiteNoise
+ *
+ * @see https://github.com/0xABADCAFE/random-proto-synth
  */
-if (PHP_VERSION_ID < 70415) {
-    throw new \RuntimeException("Requires at least PHP 7.4.15");
-}
+class WhiteNoise implements Signal\IWaveform {
 
-/**
- * Basic classmap autoloader
- */
-require_once 'classmap.php';
-spl_autoload_register(function(string $str_class) {
-    if (isset(CLASS_MAP[$str_class])) {
-        require_once __DIR__ . CLASS_MAP[$str_class];
+    const
+        F_PERIOD = 1.0
+    ;
+
+    private float $fScale = 0.0;
+
+    public function __construct() {
+        $this->fScale = 2.0 / (float)mt_getrandmax();
     }
-});
 
-/**
- * Debugging output
- */
-function dprintf(string $sTemplate, ...$aVarArgs) {
-    fprintf(STDERR, $sTemplate, ...$aVarArgs);
+    /**
+     * @inheritDoc
+     */
+    public function getPeriod() : float {
+        return self::F_PERIOD;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function map(Signal\Packet $oInput) : Signal\Packet {
+        $oOutput = clone $oInput;
+        foreach ($oInput as $i => $fTime) {
+            $oOutput[$i] = $this->fScale * mt_rand() - 1.0;
+        }
+        return $oOutput;
+    }
 }

@@ -18,28 +18,38 @@
 
 declare(strict_types=1);
 
-namespace ABadCafe\PDE;
+namespace ABadCafe\PDE\Audio\Signal;
+
+use ABadCafe\PDE\Audio;
 
 /**
- * If you aren't using 7.4.15 no dice. Lower versions have buggy covariance.
+ * IWaveform
+ *
+ * @see https://github.com/0xABADCAFE/random-proto-synth
  */
-if (PHP_VERSION_ID < 70415) {
-    throw new \RuntimeException("Requires at least PHP 7.4.15");
-}
+interface IWaveform {
 
-/**
- * Basic classmap autoloader
- */
-require_once 'classmap.php';
-spl_autoload_register(function(string $str_class) {
-    if (isset(CLASS_MAP[$str_class])) {
-        require_once __DIR__ . CLASS_MAP[$str_class];
-    }
-});
+    const
+        SINE     = 0,
+        TRIANGLE = 1,
+        SAW      = 2,
+        SQUARE   = 3,
+        WHITE    = 4
+    ;
 
-/**
- * Debugging output
- */
-function dprintf(string $sTemplate, ...$aVarArgs) {
-    fprintf(STDERR, $sTemplate, ...$aVarArgs);
+    /**
+     * Returns the period of this function, i.e. the numeric interval after which it's output cycles.
+     *
+     * @return float
+     */
+    public function getPeriod() : float;
+
+    /**
+     * Calculate a Packets worth of output values for a Packets worth of input values
+     *
+     * @param Packet $oInput
+     * @return Packet
+     *
+     */
+    public function map(Packet $oInput) : Packet;
 }

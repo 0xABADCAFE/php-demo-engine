@@ -20,12 +20,34 @@ declare(strict_types=1);
 
 namespace ABadCafe\PDE\Audio;
 
-/***/
-interface IConfig {
+/**
+ * IPCMOutput
+ *
+ */
+interface IPCMOutput {
 
     const
-        PROCESS_RATE  = 44100,
-        PACKET_SIZE   = 256,
-        SAMPLE_PERIOD = 1.0 / self::PROCESS_RATE
+        SCALE       = 32767.0,
+        MIN_LEVEL   = -32767,
+        MAX_LEVEL   = 32767
     ;
+
+    /**
+     * Open the output stream. Throws an exception if it is not possible to open aplay for output.
+     *
+     * @throws \Exception
+     */
+    public function open();
+
+    /**
+     * Write a signal packet. This involves scaling, quantising values and limiting them before writing.
+     *
+     * @param Signal\Packet $oPacket
+     */
+    public function write(Signal\Packet $oPacket);
+
+    /**
+     * Close down the output handle and subprocess.
+     */
+    public function close();
 }

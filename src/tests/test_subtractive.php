@@ -7,10 +7,10 @@ namespace ABadCafe\PDE;
 
 require_once '../PDE.php';
 
-echo "PHP Demo Engine: Subractive Synthesis test\n";
+echo "PHP Demo Engine: Subtractive Synthesis test\n";
 
 
-$oPCMOut     = new Audio\PCMOutput;
+$oPCMOut     = new Audio\Output\APlay;
 $oPitchDecay = new Audio\Signal\Envelope\DecayPulse(24.0, 1.0);
 $oModulator  = new Audio\Signal\Oscillator\Sound(
     new Audio\Signal\Waveform\Triangle,

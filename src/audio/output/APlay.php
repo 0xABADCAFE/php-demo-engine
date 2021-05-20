@@ -18,21 +18,18 @@
 
 declare(strict_types=1);
 
-namespace ABadCafe\PDE\Audio;
-
+namespace ABadCafe\PDE\Audio\Output;
+use ABadCafe\PDE\Audio;
 use function ABadCafe\PDE\dprintf;
 
 /**
- * PCMOutput
+ * APlay
  *
  * Simple pipe wrapper for aplay
  */
-class PCMOutput {
+class APlay implements Audio\IPCMOutput {
 
     const
-        SCALE       = 32767.0,
-        MIN_LEVEL   = -32767,
-        MAX_LEVEL   = 32767,
         BUFFER_SIZE = 128,
         FORMAT      = 'S16_LE'
     ;
@@ -61,7 +58,7 @@ class PCMOutput {
      * Constructor
      */
     public function __construct() {
-        $this->aOutputBuffer = array_fill(0, IConfig::PACKET_SIZE, 0);
+        $this->aOutputBuffer = array_fill(0, Audio\IConfig::PACKET_SIZE, 0);
     }
 
     /**
@@ -80,7 +77,7 @@ class PCMOutput {
         $sCommand = sprintf(
             'aplay -c1 -f %s -r%d --buffer-size=%d -',
             self::FORMAT,
-            IConfig::PROCESS_RATE,
+            Audio\IConfig::PROCESS_RATE,
             self::BUFFER_SIZE
         );
 
@@ -101,9 +98,9 @@ class PCMOutput {
      *
      * @param Signal\Packet $oPacket
      */
-    public function write(Signal\Packet $oPacket) {
+    public function write(Audio\Signal\Packet $oPacket) {
         // Quantize and clamp
-        for ($i = 0; $i < IConfig::PACKET_SIZE; ++$i) {
+        for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
             $iValue = (int)(self::SCALE * $oPacket[$i]);
             $this->aOutputBuffer[$i] = ($iValue < self::MIN_LEVEL) ?
                 self::MIN_LEVEL : (

@@ -11,7 +11,7 @@ $oEnvelope = new Audio\Signal\Envelope\Shape(
     0.0,
     [
         [0.2, 0.01],
-        [0.0, 0.5]
+        [0.0, 0.75]
     ]
 );
 
@@ -39,6 +39,7 @@ $aWaveforms = [
     'Triangle' => new Audio\Signal\Waveform\Triangle(),
     'Sawtooth' => new Audio\Signal\Waveform\Saw(),
     'Square'   => new Audio\Signal\Waveform\Square(),
+    'Pulse'    => new Audio\Signal\Waveform\Pulse()
 //    'Noise'    => new Audio\Signal\Waveform\WhiteNoise()
 ];
 
@@ -57,7 +58,7 @@ $aNotes = [
 echo "PHP Demo Engine: Basic Oscillator test\n";
 
 // Open the audio
-$oPCMOut = new Audio\PCMOutput;
+$oPCMOut = new Audio\Output\Wav('oscillators.wav');
 $oPCMOut->open();
 
 foreach ($aWaveforms as $sName => $oWaveform) {
@@ -71,7 +72,7 @@ foreach ($aWaveforms as $sName => $oWaveform) {
         $oOscillator->setFrequency($fFrequency);
 
         // Chuck out the audio
-        $iPackets = 150;
+        $iPackets = 100;
         while ($iPackets--) {
             $oPCMOut->write($oOscillator->emit());
         }

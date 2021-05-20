@@ -93,10 +93,11 @@ abstract class Base implements Audio\Signal\IOscillator {
         if ($this->oWaveform = $oWaveform) {
             $this->fWaveformPeriod = $oWaveform->getPeriod();
             $this->fTimeStep       = $this->fWaveformPeriod * Audio\IConfig::SAMPLE_PERIOD;
+            $this->fScaleVal = $this->fTimeStep * $this->fFrequency;
         } else {
             $this->fWaveformPeriod = 1.0;
             $this->fTimeStep       = $this->fWaveformPeriod * Audio\IConfig::SAMPLE_PERIOD;
-            $this->oLastOutput     = Packet::create(); // silence
+            $this->oLastOutput     = Audio\Signal\Packet::create(); // silence
         }
         return $this;
     }
@@ -105,6 +106,7 @@ abstract class Base implements Audio\Signal\IOscillator {
      * @inheritDoc
      */
     public function setFrequency(float $fFrequency) : self {
+        $fLastFrequency = $this->fCurrentFrequency;
         $this->fCurrentFrequency =
         $this->fFrequency        = ($fFrequency < static::MIN_FREQUENCY) ?
             static::MIN_FREQUENCY : (
@@ -112,6 +114,10 @@ abstract class Base implements Audio\Signal\IOscillator {
                     static::MAX_FREQUENCY :
                     $fFrequency
             );
+
+//         $fTime = $this->fTimeStep * $this->iSamplePosition;
+//         $this->fPhaseCorrection   += $fTime * ($fLastFrequency - $this->fFrequency);
+
         $this->fScaleVal = $this->fTimeStep * $this->fFrequency;
         return $this;
     }

@@ -32,19 +32,19 @@ class DecayPulse implements Audio\Signal\IEnvelope {
 
     use Audio\Signal\TPacketIndexAware;
 
-    private Audio\Signal\Packet $oOutputPacket;
+    protected Audio\Signal\Packet $oOutputPacket;
 
-    private float
+    protected float
         $fInitial,          // User supplied initial level. Used value depends on key scaling (if any)
         $fHalfLife,         // User supplied half-life. Used value depends on key scaling (if any)
         $fCurrent,
         $fDecayPerSample    // Calculated decay, per sample.
     ;
 
-    private int $iSamplePosition = 0;
+    protected int $iSamplePosition = 0;
 
     // TODO - consider note maps for these
-    private float
+    protected float
         $fTimeScale  = 1.0,
         $fLevelScale = 1.0
     ;
@@ -101,7 +101,7 @@ class DecayPulse implements Audio\Signal\IEnvelope {
     /**
      * Recalculate the internal values
      */
-    private function recalculate() {
+    protected function recalculate() {
 
         // First the easiest calculation which is the initial level to use.
         $this->fCurrent = $this->fInitial * $this->fLevelScale;

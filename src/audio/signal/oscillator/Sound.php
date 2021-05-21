@@ -56,6 +56,7 @@ class Sound extends Base {
         $this->oPhaseModulator && $this->oPhaseModulator->reset();
         $this->oLevelModulator && $this->oLevelModulator->reset();
         $this->oEnvelope       && $this->oEnvelope->reset();
+        return $this;
     }
 
     /**

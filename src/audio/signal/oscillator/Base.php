@@ -74,6 +74,7 @@ abstract class Base implements Audio\Signal\IOscillator {
         $this->oPitchShift      = null;
         $this->fCurrentFreqency = $this->fFrequency;
         $this->fPhaseCorrection = 0;
+        return $this;
     }
 
     /**
@@ -90,11 +91,13 @@ abstract class Base implements Audio\Signal\IOscillator {
      * @inheritDoc
      */
     public function setWaveform(?Audio\Signal\IWaveform $oWaveform) : self {
-        if ($this->oWaveform = $oWaveform) {
+        if ($oWaveform) {
+            $this->oWaveform       = clone $oWaveform;
             $this->fWaveformPeriod = $oWaveform->getPeriod();
             $this->fTimeStep       = $this->fWaveformPeriod * Audio\IConfig::SAMPLE_PERIOD;
             $this->fScaleVal = $this->fTimeStep * $this->fFrequency;
         } else {
+            $this->oWaveform       = null;
             $this->fWaveformPeriod = 1.0;
             $this->fTimeStep       = $this->fWaveformPeriod * Audio\IConfig::SAMPLE_PERIOD;
             $this->oLastOutput     = Audio\Signal\Packet::create(); // silence

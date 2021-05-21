@@ -68,6 +68,7 @@ class APlay implements Audio\IPCMOutput {
         $this->close();
     }
 
+
     /**
      * Open the output stream. Throws an exception if it is not possible to open aplay for output.
      *
@@ -89,8 +90,7 @@ class APlay implements Audio\IPCMOutput {
         } else {
             dprintf("aplay: %s\n", $sCommand);
         }
-        // push a little silence
-        fwrite($this->aPipes[0], pack('v*', ...$this->aOutputBuffer));
+        $this->pushSilence();
     }
 
     /**
@@ -117,6 +117,7 @@ class APlay implements Audio\IPCMOutput {
      */
     public function close() {
         if ($this->rOutput) {
+            $this->pushSilence();
             proc_close($this->rOutput);
             foreach ($this->aPipes as $rPipe) {
                 if (is_resource($rPipe)) {
@@ -127,4 +128,12 @@ class APlay implements Audio\IPCMOutput {
             $this->aPipes  = [];
         }
     }
+
+    protected function pushSilence() {
+        $aOutputBuffer = array_fill(0, Audio\IConfig::PACKET_SIZE, 0);
+        for ($i = 0; $i < 10; ++$i) {
+            fwrite($this->aPipes[0], pack('v*', ...$aOutputBuffer));
+        }
+    }
+
 }

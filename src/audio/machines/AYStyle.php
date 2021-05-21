@@ -20,12 +20,6 @@ declare(strict_types=1);
 
 namespace ABadCafe\PDE\Audio;
 
-/***/
-interface IConfig {
+class AYStyle {
 
-    const
-        PROCESS_RATE  = 44100,
-        PACKET_SIZE   = 128,
-        SAMPLE_PERIOD = 1.0 / self::PROCESS_RATE
-    ;
 }

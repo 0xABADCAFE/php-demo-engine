@@ -28,6 +28,20 @@ use ABadCafe\PDE\Audio;
 interface IOscillator extends IStream {
 
     /**
+     * Enable the oscillator.
+     *
+     * @return self
+     */
+    public function enable() : self;
+
+    /**
+     * Disable the oscillator: emit() Will return silence packets until enabled.
+     *
+     * @return self
+     */
+    public function disable() : self;
+
+    /**
      * Set the waveform to use. Passing null disables the oscillator (emits silence).
      *
      * @param  IWaveform|null $oWaveform

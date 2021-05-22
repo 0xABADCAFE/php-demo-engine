@@ -19,6 +19,7 @@
 declare(strict_types=1);
 
 namespace ABadCafe\PDE\Audio\Machine;
+use ABadCafe\PDE\Audio;
 
 /**
  * ChipTune
@@ -54,8 +55,54 @@ class ChipTune implements Audio\IMachine {
         $fDefaultMixLevel   = 1.0 / $this->iPolyphony;
         for ($i = 0; $i < $this->iPolyphony; ++$i) {
             $this->aVoices[$i] = $this->createInitialVoice();
-            $this->oMixer->addStream('voice_' . $i, $this->oVoices[$i], $fDefaultMixLevel);
+            $this->oMixer->addStream('voice_' . $i, $this->aVoices[$i], $fDefaultMixLevel);
         }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function noteOn(string $sNoteName, int $iVelocity, int $iChannel) : self {
+        if (isset($this->aVoices[$iChannel])) {
+            $fFrequency = Audio\Note::getFrequency($sNoteName);
+            $this->aVoices[$iChannel]
+                ->reset()
+                ->enable()
+                ->setFrequency($fFrequency);
+        }
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function noteOff(int $iChannel) : self {
+        if (isset($this->aVoices[$iChannel])) {
+            $this->aVoices[$iChannel]->disable();
+        }
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getPosition() : int {
+        return $this->oMixer->getPosition();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function reset() : self {
+        $this->oMixer->reset();
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function emit(?int $iIndex = null) : Audio\Signal\Packet {
+        return $this->oMixer->emit($iIndex);
     }
 
     /**
@@ -64,16 +111,14 @@ class ChipTune implements Audio\IMachine {
      * @param  int  $iChannelMask
      * @param  int  $iWaveform
      * @return self
-     * @throws OutOfBoundsException
      */
     public function setChannelWaveform(int $iChannelMask, int $iWaveform) : self {
-        if (!isset(self::$aWaveforms[$iWaveform])) {
-            throw new \OutOfBoundsException();
-        }
-        $oWaveform = self::$aWaveforms[$iWaveform];
-        $aVoices   = $this->getSelectedVoices($iChannelMask);
-        foreach ($aVoices as $oVoice) {
-            $oVoice->setWaveform($oWaveform);
+        if (isset(self::$aWaveforms[$iWaveform])) {
+            $oWaveform = self::$aWaveforms[$iWaveform];
+            $aVoices   = $this->getSelectedVoices($iChannelMask);
+            foreach ($aVoices as $oVoice) {
+                $oVoice->setWaveform($oWaveform);
+            }
         }
         return $this;
     }
@@ -142,16 +187,20 @@ class ChipTune implements Audio\IMachine {
      * Create an initial voice for a channel. Defaults to a triangle waveform with a small 4Hz vibrato.
      */
     private function createInitialVoice() : Audio\Signal\Oscillator\Sound {
-        $oOscillator = new Audio\Signal\Oscillator\Sound(Audio\Signal\Waveform\Triangle());
+        $oOscillator = new Audio\Signal\Oscillator\Sound(new Audio\Signal\Waveform\Triangle());
         $oOscillator->setPitchModulator(
-            new Audio\Signal\Waveform\Sine(),
-            4.0,
-            0.1
+            new Audio\Signal\Oscillator\LFO(
+                new Audio\Signal\Waveform\Sine(),
+                4.0,
+                0.1
+            )
         );
         $oOscillator->setLevelModulator(
-            new Audio\Signal\Waveform\Sine(),
-            4.0,
-            0.0
+            new Audio\Signal\Oscillator\LFO(
+                new Audio\Signal\Waveform\Sine(),
+                4.0,
+                0.0
+            )
         );
         $oOscillator->setEnvelope(
             new Audio\Signal\Envelope\Shape( // TODO - define an adjustable ASDR

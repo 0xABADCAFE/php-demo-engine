@@ -44,6 +44,8 @@ abstract class Base implements Audio\Signal\IOscillator {
         $fScaleVal         = 0.0
     ;
 
+    protected bool $bEnabled = true;
+
     protected int $iSamplePosition = 0;
 
     public function __construct(
@@ -70,8 +72,6 @@ abstract class Base implements Audio\Signal\IOscillator {
      */
     public function reset() : self {
         $this->iSamplePosition  = 0;
-        $this->oPhaseShift      = null;
-        $this->oPitchShift      = null;
         $this->fCurrentFreqency = $this->fFrequency;
         $this->fPhaseCorrection = 0;
         return $this;
@@ -81,10 +81,20 @@ abstract class Base implements Audio\Signal\IOscillator {
      * @inheritDoc
      */
     public function emit(?int $iIndex = null) : Audio\Signal\Packet {
-        if (null === $this->oWaveform || $this->useLast($iIndex)) {
+        if (!$this->bEnabled || null === $this->oWaveform || $this->useLast($iIndex)) {
             return $this->oLastOutput;
         }
         return $this->emitNew();
+    }
+
+    public function enable() : self {
+        $this->bEnabled = true;
+        return $this;
+    }
+
+    public function disable() : self {
+        $this->bEnabled = false;
+        $this->oLastOutput = Audio\Signal\Packet::create();
     }
 
     /**

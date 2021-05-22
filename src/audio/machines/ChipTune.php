@@ -154,7 +154,7 @@ class ChipTune implements Audio\IMachine {
             0.0
         );
         $oOscillator->setEnvelope(
-            new Audio\Signal\Envelope\Shape( // todo - define an adjustable ASDR
+            new Audio\Signal\Envelope\Shape( // TODO - define an adjustable ASDR
                 0.0,
                 [
                     [1.0, 0.01],

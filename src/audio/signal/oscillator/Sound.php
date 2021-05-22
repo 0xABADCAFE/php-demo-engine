@@ -65,11 +65,18 @@ class Sound extends Base {
      *
      * Passing null removes all pitch modulation.
      *
-     * @param Audio\Signal\IStream $oModulator
+     * @param Audio\Signal\IStream|null $oModulator
      */
     public function setPitchModulator(?Audio\Signal\IStream $oModulator) : self {
         $this->oPitchModulator = $oModulator;
         return $this;
+    }
+
+    /**
+     * @return Audio\Signal\IStream|null
+     */
+    public function getPitchModulator() : ?Audio\Signal\IStream {
+        return $this->oPitchModulator;
     }
 
     /**
@@ -79,12 +86,19 @@ class Sound extends Base {
      *
      * Passing null removes all phase modulation.
      *
-     * @param  Audio\Signal\IStream $oModulator
+     * @param  Audio\Signal\IStream|null $oModulator
      * @return self
      */
     public function setPhaseModulator(?Audio\Signal\IStream $oModulator) : self {
         $this->oPhaseModulator = $oModulator;
         return $this;
+    }
+
+    /**
+     * @return Audio\Signal\IStream|null
+     */
+    public function getPhaseModulator() : ?Audio\Signal\IStream {
+        return $this->oPhaseModulator;
     }
 
     /**
@@ -96,6 +110,13 @@ class Sound extends Base {
     public function setPhaseModulationIndex(float $fModulationIndex) : self {
         $this->fPhaseModulationIndex = $fModulationIndex;
         return $this;
+    }
+
+    /**
+     * @return float
+     */
+    public function getPhaseModulationIndex() : float {
+        return $this->fPhaseModulationIndex;
     }
 
     /**
@@ -113,6 +134,13 @@ class Sound extends Base {
     }
 
     /**
+     * @return Audio\Signal\IStream|null
+     */
+    public function getLevelModulator() : ?Audio\Signal\IStream {
+        return $this->oLevelModulator;
+    }
+
+    /**
      *  Sets the overal Phase Modulation strength.
      *
      * @param  float $fModulationIndex
@@ -124,14 +152,28 @@ class Sound extends Base {
     }
 
     /**
+     * @return float
+     */
+    public function getLevelModulationIndex() : float {
+        return $this->fLevelModulationIndex;
+    }
+
+    /**
      * Set the specific output envelope to use.
      *
-     * @param  ?Audio\Signal\IEnvelope $oEnvelope
+     * @param  Audio\Signal\IEnvelope|null $oEnvelope
      * @return self
      */
     public function setEnvelope(?Audio\Signal\IEnvelope $oEnvelope) : self {
         $this->oEnvelope = $oEnvelope;
         return $this;
+    }
+
+    /**
+     * @return Audio\Signal\IEnvelope|null
+     */
+    public function getEnvelope() : ?Audio\Signal\IEnvelope {
+        return $this->oEnvelope;
     }
 
     /**

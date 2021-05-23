@@ -48,6 +48,13 @@ class LFO extends Base {
         $this->fDepth = $fDepth;
     }
 
+    /**
+     * Set the depth.
+     */
+    public function setDepth(float $fDepth) : self {
+        $this->fDepth = $fDepth;
+        return $this;
+    }
 
     /**
      * Calculates a new audio packet

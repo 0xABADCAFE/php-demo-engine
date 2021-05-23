@@ -24,7 +24,7 @@ namespace ABadCafe\PDE\Audio;
 interface IConfig {
 
     const
-        PROCESS_RATE  = 44100,
+        PROCESS_RATE  = 48000,
         PACKET_SIZE   = 128,
         SAMPLE_PERIOD = 1.0 / self::PROCESS_RATE
     ;

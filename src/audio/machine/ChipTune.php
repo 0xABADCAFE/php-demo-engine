@@ -32,8 +32,9 @@ class ChipTune implements Audio\IMachine {
     const
         SINE     = 0,
         TRIANGLE = 1,
-        SQUARE   = 2,
-        PULSE    = 3
+        SAW      = 2,
+        SQUARE   = 3,
+        PULSE    = 4
     ;
 
     private static array $aWaveforms = [];
@@ -65,6 +66,7 @@ class ChipTune implements Audio\IMachine {
     public function noteOn(string $sNoteName, int $iVelocity, int $iChannel) : self {
         if (isset($this->aVoices[$iChannel])) {
             $fFrequency = Audio\Note::getFrequency($sNoteName);
+
             $this->aVoices[$iChannel]
                 ->reset()
                 ->enable()
@@ -196,7 +198,7 @@ class ChipTune implements Audio\IMachine {
             )
         );
         $oOscillator->setLevelModulator(
-            new Audio\Signal\Oscillator\LFO(
+            new Audio\Signal\Oscillator\LFOZeroToOne(
                 new Audio\Signal\Waveform\Sine(),
                 4.0,
                 0.0
@@ -212,6 +214,7 @@ class ChipTune implements Audio\IMachine {
                 ]
             )
         );
+        $oOscillator->disable();
         return $oOscillator;
     }
 
@@ -229,6 +232,7 @@ class ChipTune implements Audio\IMachine {
                 if ($iChannelMask & (1 << $iChannel)) {
                     $aResult[$iChannel] = $this->aVoices[$iChannel];
                 }
+                --$iChannel;
             }
         }
         return $aResult;
@@ -239,6 +243,7 @@ class ChipTune implements Audio\IMachine {
             self::$aWaveforms = [
                 self::SINE     => new Audio\Signal\Waveform\Sine(),
                 self::TRIANGLE => new Audio\Signal\Waveform\Triangle(),
+                self::SAW      => new Audio\Signal\Waveform\Saw(),
                 self::SQUARE   => new Audio\Signal\Waveform\Square(),
                 self::PULSE    => new Audio\Signal\Waveform\Pulse(),
             ];

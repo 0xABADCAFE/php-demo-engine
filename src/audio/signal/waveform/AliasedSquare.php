@@ -22,13 +22,14 @@ namespace ABadCafe\PDE\Audio\Signal\Waveform;
 use ABadCafe\PDE\Audio\Signal;
 
 /**
- * Triangle
+ * AliasedSquare
  *
- * Triangle implementation of IWaveform
+ * Square implementation of IWaveform. Does not attempt to peform anti aliasing on the output. Faster for low frequencies
+ * and interestingly noisy for higher frequencies.
  *
  * @see https://github.com/0xABADCAFE/random-proto-synth
  */
-class Triangle implements Signal\IWaveform {
+class AliasedSquare implements Signal\IWaveform {
 
     /**
      * Waveform period (interval after which it repeats).
@@ -47,12 +48,8 @@ class Triangle implements Signal\IWaveform {
      */
     public function map(Signal\Packet $oInput) : Signal\Packet {
         $oOutput = clone $oInput;
-        $fHalf   = 0.5;
         foreach ($oInput as $i => $fTime) {
-            $fTime      -= $fHalf;
-            $fFloor      = floor($fTime);
-            $fScale      = (int)$fFloor & 1 ? 2.0 : -2.0;
-            $oOutput[$i] = $fScale * ($fTime - $fFloor - $fHalf);
+            $oOutput[$i] = (int)floor($fTime) & 1 ? -1.0 : 1.0;
         }
         return $oOutput;
     }

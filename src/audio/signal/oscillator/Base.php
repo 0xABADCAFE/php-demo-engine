@@ -95,6 +95,7 @@ abstract class Base implements Audio\Signal\IOscillator {
     public function disable() : self {
         $this->bEnabled = false;
         $this->oLastOutput = Audio\Signal\Packet::create();
+        return $this;
     }
 
     /**

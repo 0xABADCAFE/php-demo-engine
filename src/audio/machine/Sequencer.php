@@ -21,6 +21,8 @@ declare(strict_types=1);
 namespace ABadCafe\PDE\Audio\Machine;
 use ABadCafe\PDE\Audio;
 
+use function ABadCafe\PDE\dprintf;
+
 /**
  * Sequencer
  */
@@ -102,17 +104,28 @@ class Sequencer {
     /**
      * PROTOTYPE CODE
      */
-    public function play(Audio\IPCMOutput $oOutput, int $iPackets = 10000) {
+    public function play(Audio\IPCMOutput $oOutput, int $iMaxLines = 128) {
         $fBeatsPerSecond = $this->iBPM / 60.0;
         $fLinesPerSecond = $fBeatsPerSecond * $this->iLPB;
+
+        dprintf(
+            "Starting sequence: %d PBM (%.2f Lines/sec)\n",
+            $this->iBPM,
+            $fLinesPerSecond
+        );
 
         $oMixer = new Audio\Signal\FixedMixer();
         foreach ($this->aMachines as $sMachineName => $oMachine) {
             $oMixer->addStream($sMachineName, $oMachine, 1.0);
+            dprintf(
+                "\tAdding stream %s for %s...\n",
+                $sMachineName,
+                get_class($oMachine)
+            );
         }
         $fSecondScale = 1.0 / Audio\IConfig::PROCESS_RATE;
         $iLastLineNumber = -1;
-        while ($iPackets--) {
+        while ($iLastLineNumber < $iMaxLines) {
             $iSamplePosition = $oMixer->getPosition();
             $fCurrentTime    = $fSecondScale * $iSamplePosition;
             $iLineNumber     = (int)floor($fCurrentTime * $fLinesPerSecond);
@@ -134,6 +147,12 @@ class Sequencer {
             $oRow = $oPattern->getLine($iLineNumber);
             foreach ($oRow as $iChannel => $oEvent) {
                 if ($oEvent instanceof Audio\Sequence\NoteOn) {
+                    dprintf("\tLn:%4d Mc:%5s Ch:%2d Ev:NoteOn %s\n",
+                        $iLineNumber,
+                        $sMachineName,
+                        $iChannel,
+                        $oEvent->sNote
+                    );
                     $oMachine->noteOn(
                         $oEvent->sNote,
                         $oEvent->iVelocity,

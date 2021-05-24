@@ -48,6 +48,6 @@ $oSequencer
 $oPCMOut = new Audio\Output\APlay();
 $oPCMOut->open();
 
-$oSequencer->play($oPCMOut, 10000);
+$oSequencer->play($oPCMOut);
 
 $oPCMOut->close();

@@ -6,8 +6,9 @@ namespace ABadCafe\PDE;
 
 require_once '../PDE.php';
 
-$oChipMachine = new Audio\Machine\ChipTune(4);
+$oChipMachine = new Audio\Machine\ChipTune(3);
 
+$oChipMachine->setChannelWaveform(1, Audio\Machine\ChipTune::SAW);
 
 $oChipPattern = new Audio\Sequence\Pattern(4, 64);
 $oChipPattern->addEvent(new Audio\Sequence\NoteOn('C2'), 0, 0, 4);
@@ -44,7 +45,7 @@ $oSequencer
     ->addPattern('drum', $oDrumPattern);
 
 // Open the audio
-$oPCMOut = new Audio\Output\Wav('seq.wav');
+$oPCMOut = new Audio\Output\APlay();
 $oPCMOut->open();
 
 $oSequencer->play($oPCMOut, 10000);

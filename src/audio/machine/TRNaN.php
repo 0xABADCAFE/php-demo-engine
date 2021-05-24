@@ -22,10 +22,9 @@ namespace ABadCafe\PDE\Audio\Machine;
 use ABadCafe\PDE\Audio;
 
 /**
- * ChipTune
+ * TRNaN
  *
- * Simple multichannel chip tune machine. Each channel has a basic oscillator with it's own waveform, vibrato, tremelo
- * and envelope settings.
+ * Basic drum machine (so far only a kick lol)
  */
 class TRNaN implements Audio\IMachine {
 

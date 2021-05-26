@@ -181,7 +181,7 @@ class ChipTune implements Audio\IMachine {
     public function setVoiceMaskEnvelope(int $iVoiceMask, Audio\Signal\IEnvelope $oEnvelope) : self {
         $aVoices = $this->getSelectedVoices($iVoiceMask);
         foreach ($aVoices as $oVoice) {
-            $oVoice->getStream()->setEnvelope($oEnvelope);
+            $oVoice->getStream()->setEnvelope(clone $oEnvelope);
         }
         return $this;
     }

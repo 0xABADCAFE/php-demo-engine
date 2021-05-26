@@ -117,7 +117,7 @@ class TRNaN implements Audio\IMachine {
      */
     private function initSnare() : Audio\Signal\IStream {
 
-        $fRatio = 349.0 / 185.0;
+        $fRatio = 329.0 / 185.0;
         $fBase  = 180.0;
 
         $oNoise = new Audio\Signal\Oscillator\Sound(
@@ -133,18 +133,18 @@ class TRNaN implements Audio\IMachine {
             $fBase * $fRatio
         );
 
-        $oOscillator1->setPhaseModulator($oNoise)->setPhaseModulationIndex(0.2);
+        $oOscillator1->setPhaseModulator($oNoise)->setPhaseModulationIndex(0.15);
         $oOscillator2->setPhaseModulator($oNoise)->setPhaseModulationIndex(0.05);
 
         $oMixer = new Audio\Signal\FixedMixer();
         $oMixer
             ->addInputStream('l', $oOscillator1, 0.8)
-            ->addInputStream('h', $oOscillator2, 0.6)
+            ->addInputStream('h', $oOscillator2, 0.8)
             ->addInputStream('n', $oNoise, 0.5);
 
         $oFilter = new Audio\Signal\Filter\LowPass(
             $oMixer,
-            0.5,
+            0.55,
             0.25
         );
 
@@ -152,12 +152,12 @@ class TRNaN implements Audio\IMachine {
             0.8,
             [
                 [0.05, 0.125],
-                [0.0, 0.1]
+                [0.0, 0.15]
             ]
         );
         $oVCA = new Audio\Signal\Modulator($oFilter, $oVolumeEnv);
 
-        $oAutoMute = new Audio\Signal\AutoMuteAfter($oVCA, 0.225);
+        $oAutoMute = new Audio\Signal\AutoMuteAfter($oVCA, 0.275);
 
         return $oAutoMute->disable();
     }
@@ -222,7 +222,7 @@ class TRNaN implements Audio\IMachine {
     private function initCowbell() : Audio\Signal\IStream {
         $oEnvelope = new Audio\Signal\Envelope\Shape(
             0.2, [
-                [0.45, 0.001],
+                [0.33, 0.001],
                 [0.03, 0.1],
                 [0.0, 0.5]
             ]

@@ -49,6 +49,8 @@ class DecayPulse implements Audio\Signal\IEnvelope {
         $fLevelScale = 1.0
     ;
 
+    private bool $bChanged = false;
+
     /**
      * Constructor
      *
@@ -78,7 +80,7 @@ class DecayPulse implements Audio\Signal\IEnvelope {
      */
     public function reset() : self {
         $this->iSamplePosition = 0;
-        $this->recalculate();
+        $this->bChanged        = true;
         return $this;
     }
 
@@ -94,6 +96,9 @@ class DecayPulse implements Audio\Signal\IEnvelope {
         if ($this->useLast($iIndex)) {
             return $this->oOutputPacket;
         }
+        if ($this->bChanged) {
+            $this->recalculateDecay();
+        }
         for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
             $this->fCurrent *= $this->fDecayPerSample;
             $this->oOutputPacket[$i] = $this->fCurrent;
@@ -102,10 +107,18 @@ class DecayPulse implements Audio\Signal\IEnvelope {
         return $this->oOutputPacket;
     }
 
+    public function setHalfLife(float $fHalfLife) : self {
+        if ($fHalfLife != $this->fHalfLife) {
+            $this->fHalfLife = $fHalfLife;
+            $this->bChanged  = true;
+        }
+        return $this;
+    }
+
     /**
      * Recalculate the internal values
      */
-    protected function recalculate() {
+    protected function recalculateDecay() {
 
         // First the easiest calculation which is the initial level to use.
         $this->fCurrent = $this->fInitial * $this->fLevelScale;
@@ -116,6 +129,8 @@ class DecayPulse implements Audio\Signal\IEnvelope {
 
         // Now calculate the required decay per sample required to reach half intensity after that many samples.
         $this->fDecayPerSample = 0.5 * 2 ** (($iHalfLifeInSamples - 1) / $iHalfLifeInSamples);
+
+        $this->bChanged = false;
     }
 
 }

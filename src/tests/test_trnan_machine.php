@@ -25,7 +25,7 @@ $oSequencer
 ;
 
 // Open the audio
-$oPCMOut = new Audio\Output\Wav('trnan.wav');
+$oPCMOut = new Audio\Output\APlay();
 $oPCMOut->open();
 
 $fMark = microtime(true);

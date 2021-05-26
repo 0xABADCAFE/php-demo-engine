@@ -104,7 +104,7 @@ class Sequencer {
     /**
      * PROTOTYPE CODE
      */
-    public function play(Audio\IPCMOutput $oOutput, int $iMaxLines = 128) {
+    public function play(Audio\IPCMOutput $oOutput, int $iMaxLines = 128, $fGain = 1.0) {
         $fBeatsPerSecond = $this->iBPM / 60.0;
         $fLinesPerSecond = $fBeatsPerSecond * $this->iLPB;
 
@@ -113,8 +113,7 @@ class Sequencer {
             $this->iBPM,
             $fLinesPerSecond
         );
-
-        $oMixer = new Audio\Signal\FixedMixer();
+        $oMixer = new Audio\Signal\FixedMixer($fGain);
         foreach ($this->aMachines as $sMachineName => $oMachine) {
             $oMixer->addInputStream($sMachineName, $oMachine, 1.0);
             dprintf(
@@ -147,7 +146,7 @@ class Sequencer {
             $oRow = $oPattern->getLine($iLineNumber);
             foreach ($oRow as $iChannel => $oEvent) {
                 if ($oEvent instanceof Audio\Sequence\NoteOn) {
-                    dprintf("\tLn:%4d Mc:%5s Ch:%2d Ev:NoteOn %s                 \r",
+                    dprintf("\tLn:%4d Mc:%5s Ch:%2d Ev:NoteOn %s\n",
                         $iLineNumber,
                         $sMachineName,
                         $iChannel,

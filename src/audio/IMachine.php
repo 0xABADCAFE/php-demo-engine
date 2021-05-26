@@ -31,21 +31,69 @@ interface IMachine extends Signal\IStream {
     ;
 
     /**
-     * Start a note on the specified channel. Does nothing if the channel is out of range.
+     * Returns the voice count, i.e. how polyphonic the machine is.
      *
-     * @param  string $sNoteName
-     * @param  int    $iVelocity
-     * @param  int    $iChannel
-     * @return self
+     * @return int
      */
-    public function noteOn(string $sNoteName, int $iVelocity, int $iChannel) : self;
+    public function getNumVoices() : int;
 
     /**
-     * Stops a note on the specified channel. Does nothing if the channel is out of range.
+     * Get the level for a specific voice number. Returns zero if the voice number is out of range.
      *
-     * @param  int    $iChannel
+     * @param  int $iVoiceNumber
+     * @return float
+     */
+    public function getVoiceLevel(int $iVoiceNumber) : float;
+
+    /**
+     * Set the level for a specific voice number. Does not care if the voice number is out of range.
+     *
+     * @param  int   $iVoiceNumber
+     * @param  float $fVolume
      * @return self
      */
-    public function noteOff(int $iChannel) : self;
+    public function setVoiceLevel(int $iVoiceNumber, float $fVolume) : self;
+
+    /**
+     * Get the overall output level for the machine.
+     *
+     * @return float
+     */
+    public function getOutputLevel() : float;
+
+    /**
+     * Set the overall output level for the machine.
+     *
+     * @param  float $fVolume
+     * @return self
+     */
+    public function setOutputLevel(float $fVolume) : self;
+
+    /**
+     * Start a note on the specified voice. Does nothing if the voice number is out of range.
+     *
+     * @param  int    $iVoiceNumber
+     * @param  string $sNoteName
+     * @return self
+     */
+    public function setVoiceNote(int $iVoiceNumber, string $sNoteName) : self;
+
+    /**
+     * Starts the specified voice playing. Does nothing if the voice number is out of range.
+     *
+     * @param  int    $iVoiceNumber
+     * @return self
+     */
+    public function startVoice(int $iVoiceNumber) : self;
+
+    /**
+     * Stops the specified voice playing. Does nothing if the voice number is out of range.
+     *
+     * @param  int    $iVoiceNumber
+     * @return self
+     */
+    public function stopVoice(int $iVoiceNumber) : self;
+
+
 }
 

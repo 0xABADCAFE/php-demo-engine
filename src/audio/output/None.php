@@ -18,28 +18,38 @@
 
 declare(strict_types=1);
 
-namespace ABadCafe\PDE\Audio\Signal;
-
+namespace ABadCafe\PDE\Audio\Output;
 use ABadCafe\PDE\Audio;
+use function ABadCafe\PDE\dprintf;
 
 /**
- * @see https://github.com/0xABADCAFE/random-proto-synth
+ * None
+ *
+ * Used for benchmarking everything else
  */
-interface IOscillator extends IStream {
+class None implements Audio\IPCMOutput {
 
     /**
-     * Set the waveform to use. Passing null disables the oscillator (emits silence).
+     * Open the output stream. Throws an exception if it is not possible to open aplay for output.
      *
-     * @param  IWaveform|null $oWaveform
-     * @return self
+     * @throws \Exception
      */
-    public function setWaveform(?IWaveform $oWaveform) : self;
+    public function open() {
+    }
 
     /**
-     * Set the baseline frequency to emit.
+     * Write a signal packet. This involves scaling, quantising values and limiting them before writing.
      *
-     * @param  float $fFrequency
-     * @return self
+     * @param Signal\Packet $oPacket
      */
-    public function setFrequency(float $fFrequency) : self;
+    public function write(Audio\Signal\Packet $oPacket) {
+
+    }
+
+    /**
+     * Close down the output handle and subprocess.
+     */
+    public function close() {
+
+    }
 }

@@ -24,10 +24,12 @@ use ABadCafe\PDE\Audio;
 /**
  * ChipTune
  *
- * Simple multichannel chip tune machine. Each channel has a basic oscillator with it's own waveform, vibrato, tremelo
+ * Simple multivoice chip tune machine. Each voice has a basic oscillator with it's own waveform, vibrato, tremelo
  * and envelope settings.
  */
 class ChipTune implements Audio\IMachine {
+
+    use TPolyphonicMachine;
 
     const
         SINE     = 0,
@@ -37,40 +39,52 @@ class ChipTune implements Audio\IMachine {
         PULSE    = 4
     ;
 
+    const LEVEL_ADJUST = [
+        self::SINE     => 1.0,
+        self::TRIANGLE => 0.9,
+        self::SAW      => 0.33,
+        self::SQUARE   => 0.25,
+        self::PULSE    => 0.25
+    ];
+
     private static array $aWaveforms = [];
-    private int          $iPolyphony;
-    private int          $iChannelMask;
+    private int          $iVoiceMask;
     private array        $aVoices = [];
-    private Audio\Signal\FixedMixer $oMixer;
 
     /**
      * Constructor. Sets the default polyphony level and allocates the various parts.
      *
-     * @param int $iPolyphony
+     * @param int $iNumVoices
      */
-    public function __construct(int $iPolyphony) {
+    public function __construct(int $iNumVoices) {
         self::initShared();
-        $this->iPolyphony   = max(min($iPolyphony, self::MAX_POLYPHONY), self::MIN_POLYPHONY);
-        $this->iChannelMask = (1 << $this->iPolyphony) - 1;
-        $this->oMixer       = new Audio\Signal\FixedMixer;
-        $fDefaultMixLevel   = 1.0 / $this->iPolyphony;
-        for ($i = 0; $i < $this->iPolyphony; ++$i) {
-            $this->aVoices[$i] = $this->createInitialVoice();
-            $this->oMixer->addStream('voice_' . $i, $this->aVoices[$i], $fDefaultMixLevel);
+        $this->initPolyphony($iNumVoices);
+        $this->iVoiceMask = (1 << $this->iNumVoices) - 1;
+        for ($i = 0; $i < $this->iNumVoices; ++$i) {
+            $this->aVoices[$i] = $oVoice = $this->createInitialVoice();
+            $this->setVoiceSource($i, $oVoice);
         }
     }
 
     /**
      * @inheritDoc
      */
-    public function noteOn(string $sNoteName, int $iVelocity, int $iChannel) : self {
-        if (isset($this->aVoices[$iChannel])) {
+    public function setVoiceNote(int $iVoiceNumber, string $sNoteName) : self {
+        if (isset($this->aVoices[$iVoiceNumber])) {
             $fFrequency = Audio\Note::getFrequency($sNoteName);
+            $this->aVoices[$iVoiceNumber]->getStream()->setFrequency($fFrequency);
+        }
+        return $this;
+    }
 
-            $this->aVoices[$iChannel]
+    /**
+     * @inheritDoc
+     */
+    public function startVoice(int $iVoiceNumber) : self {
+        if (isset($this->aVoices[$iVoiceNumber])) {
+            $this->aVoices[$iVoiceNumber]
                 ->reset()
-                ->enable()
-                ->setFrequency($fFrequency);
+                ->enable();
         }
         return $this;
     }
@@ -78,118 +92,107 @@ class ChipTune implements Audio\IMachine {
     /**
      * @inheritDoc
      */
-    public function noteOff(int $iChannel) : self {
-        if (isset($this->aVoices[$iChannel])) {
-            $this->aVoices[$iChannel]->disable();
+    public function stopVoice(int $iVoiceNumber) : self {
+        if (isset($this->aVoices[$iVoiceNumber])) {
+            $this->aVoices[$iVoiceNumber]->disable();
         }
         return $this;
     }
 
     /**
-     * @inheritDoc
-     */
-    public function getPosition() : int {
-        return $this->oMixer->getPosition();
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function reset() : self {
-        $this->oMixer->reset();
-        return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function emit(?int $iIndex = null) : Audio\Signal\Packet {
-        return $this->oMixer->emit($iIndex);
-    }
-
-    /**
-     * Set the waveform type to use for a set of channels.
+     * Set the waveform type to use for a set of voices.
      *
-     * @param  int  $iChannelMask
+     * @param  int  $iVoiceMask
      * @param  int  $iWaveform
      * @return self
      */
-    public function setChannelWaveform(int $iChannelMask, int $iWaveform) : self {
+    public function setVoiceMaskWaveform(int $iVoiceMask, int $iWaveform) : self {
         if (isset(self::$aWaveforms[$iWaveform])) {
             $oWaveform = self::$aWaveforms[$iWaveform];
-            $aVoices   = $this->getSelectedVoices($iChannelMask);
+            $aVoices   = $this->getSelectedVoices($iVoiceMask);
             foreach ($aVoices as $oVoice) {
-                $oVoice->setWaveform($oWaveform);
+                $oVoice->setLevel(self::LEVEL_ADJUST[$iWaveform]);
+                $oVoice->getStream()->setWaveform($oWaveform);
             }
         }
         return $this;
     }
 
     /**
-     * Set the vibrato rate, in Hertz, to use for a set of channels.
+     * Set the vibrato rate, in Hertz, to use for a set of voices.
      *
-     * @param  int   $iChannelMask
+     * @param  int   $iVoiceMask
      * @param  float $fRateHz
      * @return self
      */
-    public function setChannelVibratoRate(int $iChannelMask, float $fRateHz) : self {
-        $aVoices = $this->getSelectedVoices($iChannelMask);
+    public function setVoiceMaskVibratoRate(int $iVoiceMask, float $fRateHz) : self {
+        $aVoices = $this->getSelectedVoices($iVoiceMask);
         foreach ($aVoices as $oVoice) {
-            $oVoice->getPitchModulator()->setFrequency($fRateHz);
+            $oVoice->getStream()->getPitchModulator()->setFrequency($fRateHz);
         }
         return $this;
     }
 
     /**
-     * Set the vibrato depth, in semitones, to use for a set of channels.
+     * Set the vibrato depth, in semitones, to use for a set of voices.
      *
-     * @param  int   $iChannelMask
+     * @param  int   $iVoiceMask
      * @param  float $fRateHz
      * @return self
      */
-    public function setChannelVibratoDepth(int $iChannelMask, float $fDepth) : self {
-        $aVoices = $this->getSelectedVoices($iChannelMask);
+    public function setVoiceMaskVibratoDepth(int $iVoiceMask, float $fDepth) : self {
+        $aVoices = $this->getSelectedVoices($iVoiceMask);
         foreach ($aVoices as $oVoice) {
-            $oVoice->getPitchModulator()->setDepth($fDepth);
+            $oVoice->getStream()->getPitchModulator()->setDepth($fDepth);
         }
         return $this;
     }
 
     /**
-     * Set the tremelo rate, in Hertz, to use for a set of channels.
+     * Set the tremelo rate, in Hertz, to use for a set of voices.
      *
-     * @param  int   $iChannelMask
+     * @param  int   $iVoiceMask
      * @param  float $fRateHz
      * @return self
      */
-    public function setChannelTremeloRate(int $iChannelMask, float $fRateHz) : self {
-        $aVoices = $this->getSelectedVoices($iChannelMask);
+    public function setVoiceMaskTremeloRate(int $iVoiceMask, float $fRateHz) : self {
+        $aVoices = $this->getSelectedVoices($iVoiceMask);
         foreach ($aVoices as $oVoice) {
-            $oVoice->getLevelModulator()->setFrequency($fRateHz);
+            $oVoice->getStream()->getLevelModulator()->setFrequency($fRateHz);
         }
         return $this;
     }
 
     /**
-     * Set the tremelo depth, in semitones, to use for a set of channels.
+     * Set the tremelo depth, in semitones, to use for a set of voices.
      *
-     * @param  int   $iChannelMask
+     * @param  int   $iVoiceMask
      * @param  float $fRateHz
      * @return self
      */
-    public function setChannelTremeloDepth(int $iChannelMask, float $fDepth) : self {
-        $aVoices = $this->getSelectedVoices($iChannelMask);
+    public function setVoiceMaskTremeloDepth(int $iVoiceMask, float $fDepth) : self {
+        $aVoices = $this->getSelectedVoices($iVoiceMask);
         foreach ($aVoices as $oVoice) {
-            $oVoice->getPitchModulator()->setDepth($fDepth);
+            $oVoice->getStream()->getPitchModulator()->setDepth($fDepth);
+        }
+        return $this;
+    }
+
+    public function setVoiceMaskEnvelope(int $iVoiceMask, Audio\Signal\IEnvelope $oEnvelope) : self {
+        $aVoices = $this->getSelectedVoices($iVoiceMask);
+        foreach ($aVoices as $oVoice) {
+            $oVoice->getStream()->setEnvelope($oEnvelope);
         }
         return $this;
     }
 
     /**
-     * Create an initial voice for a channel. Defaults to a triangle waveform with a small 4Hz vibrato.
+     * Create an initial voice for a voice. Defaults to a triangle waveform with a small 4Hz vibrato.
      */
-    private function createInitialVoice() : Audio\Signal\Oscillator\Sound {
-        $oOscillator = new Audio\Signal\Oscillator\Sound(new Audio\Signal\Waveform\Triangle());
+    private function createInitialVoice() : Audio\Signal\IStream {
+        $iDefaultWaveform = self::TRIANGLE;
+
+        $oOscillator = new Audio\Signal\Oscillator\Sound(self::$aWaveforms[$iDefaultWaveform]);
         $oOscillator->setPitchModulator(
             new Audio\Signal\Oscillator\LFO(
                 new Audio\Signal\Waveform\Sine(),
@@ -205,7 +208,7 @@ class ChipTune implements Audio\IMachine {
             )
         );
         $oOscillator->setEnvelope(
-            new Audio\Signal\Envelope\Shape( // TODO - define an adjustable ASDR
+            new Audio\Signal\Envelope\Shape(
                 0.0,
                 [
                     [1.0, 0.01],
@@ -214,25 +217,26 @@ class ChipTune implements Audio\IMachine {
                 ]
             )
         );
-        $oOscillator->disable();
-        return $oOscillator;
+        $oLevelAdjust = new Audio\Signal\LevelAdjust($oOscillator, self::LEVEL_ADJUST[$iDefaultWaveform]);
+        $oLevelAdjust->disable();
+        return $oLevelAdjust;
     }
 
     /**
-     * Returns an array of the selected voices implied by a channel mask.
+     * Returns an array of the selected voices implied by a voice mask.
      *
-     * @param  int $iChannelMask
+     * @param  int $iVoiceMask
      * @return Audio\Signal\Oscillator\Sound[]
      */
-    private function getSelectedVoices(int $iChannelMask) : array {
+    private function getSelectedVoices(int $iVoiceMask) : array {
         $aResult = [];
-        if ($iChannelMask & $this->iChannelMask) {
-            $iChannel = $this->iPolyphony - 1;
-            while ($iChannel >= 0) {
-                if ($iChannelMask & (1 << $iChannel)) {
-                    $aResult[$iChannel] = $this->aVoices[$iChannel];
+        if ($iVoiceMask & $this->iVoiceMask) {
+            $iVoice = $this->iNumVoices - 1;
+            while ($iVoice >= 0) {
+                if ($iVoiceMask & (1 << $iVoice)) {
+                    $aResult[$iVoice] = $this->aVoices[$iVoice];
                 }
-                --$iChannel;
+                --$iVoice;
             }
         }
         return $aResult;

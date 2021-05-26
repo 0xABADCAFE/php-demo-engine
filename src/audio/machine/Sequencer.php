@@ -116,7 +116,7 @@ class Sequencer {
 
         $oMixer = new Audio\Signal\FixedMixer();
         foreach ($this->aMachines as $sMachineName => $oMachine) {
-            $oMixer->addStream($sMachineName, $oMachine, 1.0);
+            $oMixer->addInputStream($sMachineName, $oMachine, 1.0);
             dprintf(
                 "\tAdding stream %s for %s...\n",
                 $sMachineName,
@@ -147,17 +147,16 @@ class Sequencer {
             $oRow = $oPattern->getLine($iLineNumber);
             foreach ($oRow as $iChannel => $oEvent) {
                 if ($oEvent instanceof Audio\Sequence\NoteOn) {
-                    dprintf("\tLn:%4d Mc:%5s Ch:%2d Ev:NoteOn %s\n",
+                    dprintf("\tLn:%4d Mc:%5s Ch:%2d Ev:NoteOn %s                 \r",
                         $iLineNumber,
                         $sMachineName,
                         $iChannel,
                         $oEvent->sNote
                     );
-                    $oMachine->noteOn(
-                        $oEvent->sNote,
-                        $oEvent->iVelocity,
-                        $iChannel
-                    );
+
+                    $oMachine
+                        ->setVoiceNote($iChannel, $oEvent->sNote)
+                        ->startVoice($iChannel);
                 }
             }
         }

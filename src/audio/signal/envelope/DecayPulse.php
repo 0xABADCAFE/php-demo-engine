@@ -30,7 +30,7 @@ use ABadCafe\PDE\Audio;
  */
 class DecayPulse implements Audio\Signal\IEnvelope {
 
-    use Audio\Signal\TPacketIndexAware;
+    use Audio\Signal\TPacketIndexAware, Audio\Signal\TStream;
 
     protected Audio\Signal\Packet $oOutputPacket;
 
@@ -59,6 +59,7 @@ class DecayPulse implements Audio\Signal\IEnvelope {
         float $fInitial,
         float $fHalfLife
     ) {
+        self::initStreamTrait();
         $this->oOutputPacket  = Audio\Signal\Packet::create();
         $this->fInitial       = $fInitial;
         $this->fHalfLife      = $fHalfLife;
@@ -87,6 +88,9 @@ class DecayPulse implements Audio\Signal\IEnvelope {
      * @return Signal\Control\Packet
      */
     public function emit(?int $iIndex = null) : Audio\Signal\Packet {
+        if (!$this->bEnabled) {
+            return $this->emitSilence();
+        }
         if ($this->useLast($iIndex)) {
             return $this->oOutputPacket;
         }

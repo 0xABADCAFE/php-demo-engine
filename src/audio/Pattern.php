@@ -27,7 +27,7 @@ class Event {
 }
 
 /**
- * Simplie note on event
+ * Simple note on event
  */
 class NoteOn extends Event {
     public string $sNote;
@@ -39,6 +39,9 @@ class NoteOn extends Event {
     }
 }
 
+class NoteOff extends Event {
+
+}
 
 /**
  * Basic Pattern block
@@ -76,7 +79,9 @@ class Pattern {
         return $this->iNumLines;
     }
 
-
+    /**
+     * Return the enumerated line
+     */
     public function getLine(int $iLineNumber) : SPLFixedArray {
         return $this->oRows[$iLineNumber];
     }

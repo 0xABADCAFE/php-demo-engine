@@ -8,9 +8,18 @@ require_once '../PDE.php';
 
 $oChipMachine = new Audio\Machine\ChipTune(3);
 
-$oChipMachine->setChannelWaveform(1, Audio\Machine\ChipTune::SAW);
+$oChipMachine
+    ->setVoiceMaskWaveform(1, Audio\Machine\ChipTune::SQUARE)
+    ->setVoiceMaskWaveform(6, Audio\Machine\ChipTune::TRIANGLE)
+    ->setVoiceMaskEnvelope(1, new Audio\Signal\Envelope\DecayPulse(0.75, 0.1))
+    ->setVoiceMaskEnvelope(6, new Audio\Signal\Envelope\Shape(0.0, [[1.0, 0.5], [0.5, 1.0]]))
+    ->setVoiceLevel(0, 1.25)
+    ->setVoiceLevel(1, 0.33)
+    ->setVoiceLevel(2, 0.33)
+    ->setOutputLevel(0.8)
+;
 
-$oChipPattern = new Audio\Sequence\Pattern(4, 64);
+$oChipPattern = new Audio\Sequence\Pattern(3, 64);
 $oChipPattern->addEvent(new Audio\Sequence\NoteOn('C2'), 0, 0, 4);
 $oChipPattern->addEvent(new Audio\Sequence\NoteOn('C3'), 0, 2, 4);
 $oChipPattern->addEvent(new Audio\Sequence\NoteOn('C3'), 0, 3, 4);
@@ -33,9 +42,17 @@ $oChipPattern->addEvent(new Audio\Sequence\NoteOn('C4'), 2, 48);
 $oChipPattern->addEvent(new Audio\Sequence\NoteOn('G4'), 1, 60);
 
 $oDrumMachine = new Audio\Machine\TRNaN();
-$oDrumPattern = new Audio\Sequence\Pattern(1, 32);
+$oDrumPattern = new Audio\Sequence\Pattern(6, 32);
 $oDrumPattern->addEvent(new Audio\Sequence\NoteOn('C2'), 0, 0, 4);
 $oDrumPattern->addEvent(new Audio\Sequence\NoteOn('C2'), 0, 29);
+$oDrumPattern->addEvent(new Audio\Sequence\NoteOn('C2'), 2, 0, 4);
+$oDrumPattern->addEvent(new Audio\Sequence\NoteOn('C2'), 2, 1, 4);
+$oDrumPattern->addEvent(new Audio\Sequence\NoteOn('C2'), 3, 2, 4);
+$oDrumPattern->addEvent(new Audio\Sequence\NoteOn('C2'), 1, 4, 8);
+$oDrumPattern->addEvent(new Audio\Sequence\NoteOn('C2'), 1, 31, 32);
+$oDrumPattern->addEvent(new Audio\Sequence\NoteOn('C2'), 4, 15, 32);
+
+$oDrumPattern->addEvent(new Audio\Sequence\NoteOn('C2'), 5, 10, 16);
 
 $oSequencer = new Audio\Machine\Sequencer();
 $oSequencer
@@ -43,11 +60,16 @@ $oSequencer
     ->addMachine('drum', $oDrumMachine)
     ->addPattern('chip', $oChipPattern)
     ->addPattern('drum', $oDrumPattern);
+;
 
 // Open the audio
-$oPCMOut = new Audio\Output\APlay();
+$oPCMOut = new Audio\Output\Wav('machine.wav');
 $oPCMOut->open();
 
+$fMark = microtime(true);
 $oSequencer->play($oPCMOut);
+$fElapsed = microtime(true) - $fMark;
 
 $oPCMOut->close();
+
+printf("\nElapsed time %.3f seconds\n", $fElapsed);

@@ -23,23 +23,43 @@ namespace ABadCafe\PDE\Audio\Signal;
 use ABadCafe\PDE\Audio;
 
 /**
- * @see https://github.com/0xABADCAFE/random-proto-synth
+ * TStream
  */
-interface IOscillator extends IStream {
+trait TStream {
+
+    private static ?Packet $oSilence;
+
+    protected bool $bEnabled = true;
+
+    protected static function initStreamTrait() {
+        self::$oSilence = Packet::create();
+    }
+
+    protected function emitSilence() : Packet {
+        return self::$oSilence;
+    }
 
     /**
-     * Set the waveform to use. Passing null disables the oscillator (emits silence).
-     *
-     * @param  IWaveform|null $oWaveform
-     * @return self
+     * Enable a stream.
      */
-    public function setWaveform(?IWaveform $oWaveform) : self;
+    public function enable() : IStream {
+        $this->bEnabled = true;
+        return $this;
+    }
 
     /**
-     * Set the baseline frequency to emit.
-     *
-     * @param  float $fFrequency
-     * @return self
+     * Disable a stream. A disabled stream will emit silence packets if invoked.
      */
-    public function setFrequency(float $fFrequency) : self;
+    public function disable() : IStream {
+        $this->bEnabled = false;
+        return $this;
+    }
+
+    /**
+     * Check if a stream is enabled.
+     */
+    public function isEnabled() : bool {
+        return $this->bEnabled;
+    }
+
 }

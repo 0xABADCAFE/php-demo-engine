@@ -47,6 +47,9 @@ class DecayPulseSoft extends DecayPulse {
      * @return Signal\Control\Packet
      */
     public function emit(?int $iIndex = null) : Audio\Signal\Packet {
+        if (!$this->bEnabled) {
+            return $this->emitSilence();
+        }
         if ($this->useLast($iIndex)) {
             return $this->oOutputPacket;
         }

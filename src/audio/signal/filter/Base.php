@@ -35,19 +35,19 @@ abstract class Base implements Audio\Signal\IFilter {
         F_SCALE_MAX_Q  = 4.0 // The original goes to 50, but it's way OTT.
     ;
 
-    use Audio\Signal\TPacketIndexAware;
+    use Audio\Signal\TPacketIndexAware, Audio\Signal\TStream;
 
     protected Audio\Signal\Packet  $oLastOutputPacket;
 
     /** Main input */
-    protected Audio\Signal\IStream $oInput;
+    protected Audio\Signal\IStream $oInputStream;
 
     protected int $iPosition = 0;
 
     /** Optional controls for cutoff and resonance */
     protected ?Audio\Signal\IStream
-        $oCutoffEnvelope     = null,
-        $oResonanceEnvelope  = null
+        $oCutoffControl      = null,
+        $oResonanceControl   = null
     ;
 
     /** Filter properties */
@@ -84,6 +84,7 @@ abstract class Base implements Audio\Signal\IFilter {
         ?Audio\Signal\IStream $oCutoffControl    = null,
         ?Audio\Signal\IStream $oResonanceControl = null
     ) {
+        self::initStreamTrait();
         $this->oInputStream      = $oInputStream;
         $this->oLastOutputPacket = Audio\Signal\Packet::create();
         $this->oCutoffControl    = $oCutoffControl;
@@ -107,7 +108,7 @@ abstract class Base implements Audio\Signal\IFilter {
         $this->iPosition  = 0;
         $this->iLastIndex = 0;
         $this->oLastOutputPacket->fillWith(0.0);
-        $this->oFilterControl    && $this->oFilterControl->reset();
+        $this->oCutoffControl    && $this->oCutoffControl->reset();
         $this->oResonanceControl && $this->oResonanceControl->reset();
         $this->oInputStream->reset();
         return $this;
@@ -117,6 +118,9 @@ abstract class Base implements Audio\Signal\IFilter {
      * @inheritDoc
      */
     public function emit(?int $iIndex = null) : Audio\Signal\Packet {
+        if (!$this->bEnabled) {
+            return $this->emitSilence();
+        }
         if ($this->useLast($iIndex)) {
             return $this->oLastOutputPacket;
         }

@@ -27,7 +27,7 @@ use ABadCafe\PDE\Audio;
  */
 abstract class Base implements Audio\Signal\IOscillator {
 
-    use Audio\Signal\TPacketIndexAware;
+    use Audio\Signal\TPacketIndexAware, Audio\Signal\TStream;
 
     protected ?Audio\Signal\IWaveform $oWaveform = null;
 
@@ -44,8 +44,6 @@ abstract class Base implements Audio\Signal\IOscillator {
         $fScaleVal         = 0.0
     ;
 
-    protected bool $bEnabled = true;
-
     protected int $iSamplePosition = 0;
 
     public function __construct(
@@ -53,6 +51,7 @@ abstract class Base implements Audio\Signal\IOscillator {
         float $fFrequency = 0.0,
         float $fPhase     = 0.0
     ) {
+        self::initStreamTrait();
         $fFrequency = $fFrequency <= 0.0 ? static::DEF_FREQUENCY : $fFrequency;
         $this->oWaveformInput = Audio\Signal\Packet::create();
         $this->oLastOutput    = Audio\Signal\Packet::create();
@@ -81,22 +80,15 @@ abstract class Base implements Audio\Signal\IOscillator {
      * @inheritDoc
      */
     public function emit(?int $iIndex = null) : Audio\Signal\Packet {
-        if (!$this->bEnabled || null === $this->oWaveform || $this->useLast($iIndex)) {
+        if (!$this->bEnabled || null === $this->oWaveform) {
+            return $this->emitSilence();
+        }
+        if ($this->useLast($iIndex)) {
             return $this->oLastOutput;
         }
         return $this->emitNew();
     }
 
-    public function enable() : self {
-        $this->bEnabled = true;
-        return $this;
-    }
-
-    public function disable() : self {
-        $this->bEnabled = false;
-        $this->oLastOutput = Audio\Signal\Packet::create();
-        return $this;
-    }
 
     /**
      * @inheritDoc
@@ -111,7 +103,6 @@ abstract class Base implements Audio\Signal\IOscillator {
             $this->oWaveform       = null;
             $this->fWaveformPeriod = 1.0;
             $this->fTimeStep       = $this->fWaveformPeriod * Audio\IConfig::SAMPLE_PERIOD;
-            $this->oLastOutput     = Audio\Signal\Packet::create(); // silence
         }
         return $this;
     }

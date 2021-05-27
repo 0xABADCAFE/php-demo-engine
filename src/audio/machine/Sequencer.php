@@ -140,21 +140,24 @@ class Sequencer {
      * PROTOTYPE CODE
      */
     private function processLine(int $iLineNumber) {
+        $fVelocityScale = 1.0/127.0;
         foreach ($this->aMachines as $sMachineName => $oMachine) {
             $oPattern = $this->aPatterns[$sMachineName][0];
             $iLineNumber %= $oPattern->getLength();
             $oRow = $oPattern->getLine($iLineNumber);
             foreach ($oRow as $iChannel => $oEvent) {
                 if ($oEvent instanceof Audio\Sequence\NoteOn) {
-                    dprintf("\tLn:%4d Mc:%5s Ch:%2d Ev:NoteOn %s\n",
+                    dprintf("\tLn:%4d Mc:%5s Ch:%2d Ev:NoteOn %s V:%d\n",
                         $iLineNumber,
                         $sMachineName,
                         $iChannel,
-                        $oEvent->sNote
+                        $oEvent->sNote,
+                        $oEvent->iVelocity
                     );
 
                     $oMachine
                         ->setVoiceNote($iChannel, $oEvent->sNote)
+                        ->setVoiceLevel($iChannel, $fVelocityScale * $oEvent->iVelocity)
                         ->startVoice($iChannel);
                 }
             }

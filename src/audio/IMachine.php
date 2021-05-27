@@ -94,6 +94,20 @@ interface IMachine extends Signal\IStream {
      */
     public function stopVoice(int $iVoiceNumber) : self;
 
+    /**
+     * Set an Insert to use on the machine output. This could be a compressor, EQ, etc. Setting null removes any
+     * existing insert.
+     *
+     * @param  Signal\IInsert|null $oInsert
+     * @return self
+     */
+    public function setInsert(?Signal\IInsert $oInsert) : self;
 
+    /**
+     * Get the currently assigned Insert, if any.
+     *
+     * @return Signal\IInsert|null
+     */
+    public function getInsert() : ?Signal\IInsert;
 }
 

@@ -93,11 +93,11 @@ class TRNaN implements Audio\IMachine {
         );
 
         $oPitchEnv = new Audio\Signal\Envelope\DecayPulse(
-            20.0,
+            18.0,
             0.07
         );
         $oVolumeEnv = new Audio\Signal\Envelope\DecayPulse(
-            0.9,
+            0.7,
             0.2
         );
         $oOscillator
@@ -110,54 +110,42 @@ class TRNaN implements Audio\IMachine {
     }
 
     /**
-     * Create the initial snare drum sound. This is a pair of triangle oscillators and a noise source mixed and
-     * fed through a decay envelope controlled VCA.
+     * Create the initial snare drum sound.
      *
      * @return Audio\Signal\IStream
      */
     private function initSnare() : Audio\Signal\IStream {
 
-        $fRatio = 329.0 / 185.0;
-        $fBase  = 180.0;
+        $fRatio = 339.0 / 185.0;
+        $fBase  = 170.0;
 
         $oNoise = new Audio\Signal\Oscillator\Sound(
             new Audio\Signal\Waveform\WhiteNoise
         );
 
         $oOscillator1 = new Audio\Signal\Oscillator\Sound(
-            new Audio\Signal\Waveform\Square,
+            new Audio\Signal\Waveform\Sine,
             $fBase
         );
         $oOscillator2 = new Audio\Signal\Oscillator\Sound(
-            new Audio\Signal\Waveform\Triangle,
+            new Audio\Signal\Waveform\Sine,
             $fBase * $fRatio
         );
 
-        $oOscillator1->setPhaseModulator($oNoise)->setPhaseModulationIndex(0.15);
-        $oOscillator2->setPhaseModulator($oNoise)->setPhaseModulationIndex(0.05);
-
         $oMixer = new Audio\Signal\FixedMixer();
         $oMixer
-            ->addInputStream('l', $oOscillator1, 0.8)
-            ->addInputStream('h', $oOscillator2, 0.8)
-            ->addInputStream('n', $oNoise, 0.5);
+            ->addInputStream('l', $oOscillator1, 0.9)
+            ->addInputStream('h', $oOscillator2, 0.3)
+            ->addInputStream('n', $oNoise, 1.0);
 
-        $oFilter = new Audio\Signal\Filter\LowPass(
-            $oMixer,
-            0.55,
-            0.25
-        );
 
-        $oVolumeEnv = new Audio\Signal\Envelope\Shape(
+        $oVolumeEnv = new Audio\Signal\Envelope\DecayPulse(
             0.8,
-            [
-                [0.05, 0.125],
-                [0.0, 0.15]
-            ]
+            0.025
         );
-        $oVCA = new Audio\Signal\Modulator($oFilter, $oVolumeEnv);
+        $oVCA = new Audio\Signal\Modulator($oMixer, $oVolumeEnv);
 
-        $oAutoMute = new Audio\Signal\AutoMuteAfter($oVCA, 0.275);
+        $oAutoMute = new Audio\Signal\AutoMuteAfter($oVCA, 0.3);
 
         return $oAutoMute->disable();
     }
@@ -255,9 +243,7 @@ class TRNaN implements Audio\IMachine {
             0.052,
             0.65
         );
-
         $oAutoMute = new Audio\Signal\AutoMuteAfter($oFilter, 0.6);
-
         return $oAutoMute->disable();
     }
 

@@ -32,8 +32,10 @@ trait TPolyphonicMachine {
 
     protected int $iNumVoices = 1;
 
+    private   Audio\Signal\IStream $oOutput;
+
     protected Audio\Signal\FixedMixer $oMixer;
-    protected ?Audio\Signal\IStream   $oInsert = null;
+    protected ?Audio\Signal\IInsert   $oInsert = null;
     protected float
         $fOutScale = 1.0,
         $fOutLevel = 1.0
@@ -48,6 +50,7 @@ trait TPolyphonicMachine {
         self::initStreamTrait();
         $this->iNumVoices = max(min($iNumVoices, Audio\IMachine::MAX_POLYPHONY), Audio\IMachine::MIN_POLYPHONY);
         $this->fOutScale  = $this->fOutLevel / $this->iNumVoices;
+        $this->oOutput    =
         $this->oMixer     = new Audio\Signal\FixedMixer();
         $this->setOutputLevel($this->fOutLevel);
     }
@@ -105,14 +108,14 @@ trait TPolyphonicMachine {
      * @inheritDoc
      */
     public function getPosition() : int {
-        return $this->oMixer->getPosition();
+        return $this->Output->getPosition();
     }
 
     /**
      * @inheritDoc
      */
     public function reset() : Audio\Signal\IStream {
-        $this->oMixer->reset();
+        $this->oOutput->reset();
         return $this;
     }
 
@@ -120,12 +123,19 @@ trait TPolyphonicMachine {
      * @inheritDoc
      */
     public function emit(?int $iIndex = null) : Audio\Signal\Packet {
-        return $this->oInsert ? $this->oInsert->emit($iIndex) : $this->oMixer->emit($iIndex);
+        return $this->oOutput->emit($iIndex);
     }
 
-    public function setInsert(?Audio\Signal\IStream $oInsert = null) : self {
+    public function getInsert() : ?Audio\Signal\IInsert  {
+        return $this->oInsert;
+    }
+
+    public function setInsert(?Audio\Signal\IInsert $oInsert = null) : self {
         if ($this->oInsert = $oInsert) {
-            $oInsert->setStream($this->oMixer);
+            $oInsert->setInputStream($this->oMixer);
+            $this->oOutput = $oInsert;
+        } else {
+            $this->oOutput = $this->oMixer;
         }
         return $this;
     }

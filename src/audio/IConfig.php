@@ -25,7 +25,8 @@ interface IConfig {
 
     const
         PROCESS_RATE  = 48000,
-        PACKET_SIZE   = 128,
-        SAMPLE_PERIOD = 1.0 / self::PROCESS_RATE
+        PACKET_SIZE   = 256,
+        SAMPLE_PERIOD = 1.0 / self::PROCESS_RATE,
+        PACKET_PERIOD = self::PACKET_SIZE / self::PROCESS_RATE
     ;
 }

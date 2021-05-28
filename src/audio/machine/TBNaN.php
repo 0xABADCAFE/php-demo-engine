@@ -167,7 +167,7 @@ class TBNaN implements Audio\IMachine {
 
     private function initFilter() {
         $this->oFEG = new Audio\Signal\Envelope\DecayPulse(
-            0.75,
+            0.33,
             0.05
         );
         $this->oFilter = new Audio\Signal\Filter\LowPass(

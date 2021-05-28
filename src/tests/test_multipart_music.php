@@ -21,18 +21,18 @@ $oBassPattern->addEvent(new Audio\Sequence\NoteOn('A#2', 70), 0, 64 + 7, 8);
 $oDrumMachine = new Audio\Machine\TRNaN();
 $oDrumMachine->setOutputLevel(0.75);
 $oDrumPattern = new Audio\Sequence\Pattern(6, 512);
-$oDrumPattern->addEvent(new Audio\Sequence\NoteOn('C2'), 0, 0, 4);
-$oDrumPattern->addEvent(new Audio\Sequence\NoteOn('C2', 75), 0, 32 + 29, 32);
-$oDrumPattern->addEvent(new Audio\Sequence\NoteOn('C2'), 3, 2, 4);
-$oDrumPattern->addEvent(new Audio\Sequence\NoteOn('C2', 60), 2, 64 + 1, 4);
-$oDrumPattern->addEvent(new Audio\Sequence\NoteOn('C2', 30), 2, 64 + 3, 4);
-$oDrumPattern->addEvent(new Audio\Sequence\NoteOn('C2'), 5, 32 + 4, 8);
-$oDrumPattern->addEvent(new Audio\Sequence\NoteOn('C2'), 5, 32 + 31, 32);
-$oDrumPattern->addEvent(new Audio\Sequence\NoteOn('C2', 80), 1, 60, 64);
-$oDrumPattern->addEvent(new Audio\Sequence\NoteOn('C2', 70), 1, 61, 64);
-$oDrumPattern->addEvent(new Audio\Sequence\NoteOn('C2'), 4, 63);
+$oDrumPattern->addEvent(new Audio\Sequence\NoteOn('A4'), 0, 0, 4);
+$oDrumPattern->addEvent(new Audio\Sequence\NoteOn('A4', 75), 0, 32 + 29, 32);
+$oDrumPattern->addEvent(new Audio\Sequence\NoteOn('A4'), 3, 2, 4);
+$oDrumPattern->addEvent(new Audio\Sequence\NoteOn('A4', 60), 2, 64 + 1, 4);
+$oDrumPattern->addEvent(new Audio\Sequence\NoteOn('A4', 30), 2, 64 + 3, 4);
+$oDrumPattern->addEvent(new Audio\Sequence\NoteOn('A4'), 5, 32 + 4, 8);
+$oDrumPattern->addEvent(new Audio\Sequence\NoteOn('A4'), 5, 32 + 31, 32);
+$oDrumPattern->addEvent(new Audio\Sequence\NoteOn('A4', 80), 1, 60, 64);
+$oDrumPattern->addEvent(new Audio\Sequence\NoteOn('A4', 70), 1, 61, 64);
+$oDrumPattern->addEvent(new Audio\Sequence\NoteOn('A4'), 4, 63);
 
-//$oDrumPattern->addEvent(new Audio\Sequence\NoteOn('C2'), 4, 127);
+//$oDrumPattern->addEvent(new Audio\Sequence\NoteOn('A4'), 4, 127);
 
 
 $oChipMachine = new Audio\Machine\ChipTune(4);
@@ -50,14 +50,14 @@ $oChipMachine->setVoiceMaskEnvelope(12, new Audio\Signal\Envelope\Shape(
     0.0,
     [
         [0.3, 4],
-        [0.0, 12]
+        [0.0, 10]
     ]
 ));
 
 $oChipMachine->setVoiceMaskVibratoDepth(15, 0.1);
 
 $oChipPattern->addEvent(new Audio\Sequence\NoteOn('Eb4'), 0, 128 + 0, 128);
-$oChipPattern->addEvent(new Audio\Sequence\NoteOn('E4'),  1, 128 +32, 128);
+$oChipPattern->addEvent(new Audio\Sequence\NoteOn('E4'),  1, 128 +36, 128);
 $oChipPattern->addEvent(new Audio\Sequence\NoteOn('C3'),  2, 128 + 8, 128);
 $oChipPattern->addEvent(new Audio\Sequence\NoteOn('G3'),  3, 128 + 0, 128);
 $oSequencer = new Audio\Machine\Sequencer();
@@ -77,7 +77,7 @@ $oPCMOut->open();
 
 $fMark = microtime(true);
 
-$oSequencer->play($oPCMOut, 512, 4.0);
+$oSequencer->play($oPCMOut, 512, 5.0);
 
 $fElapsed = microtime(true) - $fMark;
 

@@ -85,9 +85,7 @@ class DecayPulse implements Audio\Signal\IEnvelope {
     }
 
     /**
-     * Emit the next signal Packet.
-     *
-     * @return Signal\Control\Packet
+     * @inheritDoc
      */
     public function emit(?int $iIndex = null) : Audio\Signal\Packet {
         if (!$this->bEnabled) {
@@ -107,6 +105,26 @@ class DecayPulse implements Audio\Signal\IEnvelope {
         return $this->oOutputPacket;
     }
 
+    /**
+     * Set the initial value
+     *
+     * @param  float $fInitial
+     * @return self
+     */
+    public function setInitial(float $fInitial) : self {
+        if ($fInitial != $this->fInitial) {
+            $this->fInitial = $fInitial;
+            $this->bChanged = true;
+        }
+        return $this;
+    }
+
+    /**
+     * Set the decay half life.
+     *
+     * @param  float $fInitial
+     * @return self
+     */
     public function setHalfLife(float $fHalfLife) : self {
         if ($fHalfLife != $this->fHalfLife) {
             $this->fHalfLife = $fHalfLife;

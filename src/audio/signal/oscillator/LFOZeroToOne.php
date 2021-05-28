@@ -23,50 +23,18 @@ namespace ABadCafe\PDE\Audio\Signal\Oscillator;
 use ABadCafe\PDE\Audio;
 
 /**
- * Basic LFO, operating in -1.0 to 1.0 range (depending on waveform)
+ * LFO operating in range 0.0 - 1.0
  */
-class LFO extends Base {
+class LFOZeroToOne extends LFO {
 
-    const
-        MIN_FREQUENCY = 1/60.0,
-        DEF_FREQUENCY = 2.0,
-        MAX_FREQUENCY = 64.0
-    ;
-
-    protected float
-        $fDepth = 0.5,
-        $fBias  = 0.0
-    ;
-
-    public function __construct(
-        ?Audio\Signal\IWaveform $oWaveform = null,
-        float $fFrequency = self::DEF_FREQUENCY,
-        float $fDepth     = 0.5
-    ) {
-        parent::__construct($oWaveform, $fFrequency, 0.0);
-        $this->fDepth = $fDepth;
-    }
-
-    /**
-     * Set the depth.
-     */
-    public function setDepth(float $fDepth) : self {
-        $this->fDepth = $fDepth;
-        return $this;
-    }
-
-    /**
-     * Calculates a new audio packet
-     *
-     * @return Signal\Audio\Packet;
-     */
     protected function emitNew() : Audio\Signal\Packet {
         for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
             $this->oWaveformInput[$i] = $this->fScaleVal * $this->iSamplePosition++;
         }
         return $this->oLastOutput = $this->oWaveform
             ->map($this->oWaveformInput)
-            ->scaleBy($this->fDepth);
+            ->scaleBy(0.5 * $this->fDepth)
+            ->biasBy(0.5);
         ;
     }
 }

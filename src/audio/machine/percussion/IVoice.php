@@ -18,42 +18,43 @@
 
 declare(strict_types=1);
 
-namespace ABadCafe\PDE\Audio\Signal\Waveform;
-use ABadCafe\PDE\Audio\Signal;
+namespace ABadCafe\PDE\Audio\Machine\Percussion;
+use ABadCafe\PDE\Audio;
 
 /**
- * Triangle
+ * IVoice
  *
- * Triangle implementation of IWaveform
- *
- * @see https://github.com/0xABADCAFE/random-proto-synth
+ * Common interface for percussive voice generators. These contain black box circuit implementations that have their
+ * own interpretations of note number and velocity.
  */
-class Triangle implements Signal\IWaveform {
+interface IVoice {
 
     /**
-     * Waveform period (interval after which it repeats).
+     * Set the note name. This can be interpreted in various ways by the implementor, it doesn't just have to be about
+     * pitch.
+     *
+     * @param  string $sNote : @see Audio\Note
+     * @return self
      */
-    const PERIOD = 2.0;
+    public function setNote(string $sNote) : self;
 
     /**
-     * @inheritDoc
+     * Set the velocity. This can be interpreted in various ways by the implementor, it doesn't just have to be about
+     * volume. Velocity range is nominally in the range 0 - 127.
+     *
+     * @param  int $iVelocity
+     * @return self
      */
-    public function getPeriod() : float {
-        return self::PERIOD;
-    }
+    public function setVelocity(int $iVelocity) : self;
 
     /**
-     * @inheritDoc
+     * Get the output stream.
+     *
+     * @return Audio\Signal\IStream
      */
-    public function map(Signal\Packet $oInput) : Signal\Packet {
-        $oOutput = clone $oInput;
-        $fHalf   = 0.5;
-        foreach ($oInput as $i => $fTime) {
-            $fTime      -= $fHalf;
-            $fFloor      = floor($fTime);
-            $fScale      = (int)$fFloor & 1 ? 2.0 : -2.0;
-            $oOutput[$i] = $fScale * ($fTime - $fFloor - $fHalf);
-        }
-        return $oOutput;
-    }
+    public function getOutputStream() : Audio\Signal\IStream;
+
 }
+
+
+

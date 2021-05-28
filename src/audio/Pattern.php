@@ -27,14 +27,21 @@ class Event {
 }
 
 /**
- * Simplie note on event
+ * Simple note on event
  */
 class NoteOn extends Event {
-    public string $sNote      = 'C-3';
-    public float  $fIntensity = 0.75;
-    public int    $iTicks     = 0;    // forever
+    public string $sNote;
+    public int    $iVelocity;
+
+    public function __construct(string $sNote, int $iVelocity = 100) {
+        $this->sNote     = $sNote;
+        $this->iVelocity = $iVelocity;
+    }
 }
 
+class NoteOff extends Event {
+
+}
 
 /**
  * Basic Pattern block
@@ -58,14 +65,23 @@ class Pattern {
         }
     }
 
+    /**
+     * Number of channels in this pattern
+     */
     public function getNumChannels() : int {
         return $this->iChannels;
     }
 
+    /**
+     * Length of the pattern in lines
+     */
     public function getLength() : int {
         return $this->iNumLines;
     }
 
+    /**
+     * Return the enumerated line
+     */
     public function getLine(int $iLineNumber) : SPLFixedArray {
         return $this->oRows[$iLineNumber];
     }

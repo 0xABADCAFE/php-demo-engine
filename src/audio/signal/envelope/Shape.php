@@ -25,7 +25,7 @@ use ABadCafe\PDE\Audio;
 
 class Shape implements Audio\Signal\IEnvelope {
 
-    use Audio\Signal\TPacketIndexAware;
+    use Audio\Signal\TPacketIndexAware, Audio\Signal\TStream;
 
     const
         MIN_TIME = 0.0001,
@@ -76,6 +76,7 @@ class Shape implements Audio\Signal\IEnvelope {
      *
      */
     public function __construct(float $fInitial = 0, array $aPoints = []) {
+        self::initStreamTrait();
         $this->aPoints[0][0] = $fInitial;
         foreach ($aPoints as $aPoint) {
             if (!is_array($aPoint) || count($aPoint) != 2) {
@@ -108,11 +109,12 @@ class Shape implements Audio\Signal\IEnvelope {
     }
 
     public function emit(?int $iIndex = null) : Audio\Signal\Packet {
-
+        if (!$this->bEnabled) {
+            return $this->emitSilence();
+        }
         if ($this->useLast($iIndex)) {
             return $this->oOutputPacket;
         }
-
         $iLength = Audio\IConfig::PACKET_SIZE;
 
         // If we are at the end of the envelope, just return the final packet

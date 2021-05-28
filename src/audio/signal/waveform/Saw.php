@@ -28,9 +28,7 @@ use ABadCafe\PDE\Audio\Signal;
  *
  * @see https://github.com/0xABADCAFE/random-proto-synth
  */
-class Saw implements Signal\IWaveform {
-
-    const F_PERIOD = 1.0;
+class Saw extends AliasedSaw {
 
     private float
         $fPrev1 = 0.0,
@@ -38,13 +36,6 @@ class Saw implements Signal\IWaveform {
         $fPrev3 = 0.0,
         $fPrev4 = 0.0
     ;
-
-    /**
-     * @inheritDoc
-     */
-    public function getPeriod() : float {
-        return self::F_PERIOD;
-    }
 
     /**
      * @inheritDoc

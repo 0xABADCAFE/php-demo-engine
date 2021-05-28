@@ -30,13 +30,16 @@ use ABadCafe\PDE\Audio\Signal;
  */
 class Sine implements Signal\IWaveform {
 
-    const F_PERIOD = 2.0 * M_PI;
+    /**
+     * Waveform period (interval after which it repeats).
+     */
+    const PERIOD = 2.0 * M_PI;
 
     /**
      * @inheritDoc
      */
     public function getPeriod() : float {
-        return self::F_PERIOD;
+        return self::PERIOD;
     }
 
     /**

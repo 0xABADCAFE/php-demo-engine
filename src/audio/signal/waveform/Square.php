@@ -28,11 +28,7 @@ use ABadCafe\PDE\Audio\Signal;
  *
  * @see https://github.com/0xABADCAFE/random-proto-synth
  */
-class Square implements Signal\IWaveform {
-
-    const
-        F_PERIOD  = 2.0
-    ;
+class Square extends AliasedSquare {
 
     private float
         $fPrev1 = 0.0,
@@ -40,13 +36,6 @@ class Square implements Signal\IWaveform {
         $fPrev3 = 0.0,
         $fPrev4 = 0.0
     ;
-
-    /**
-     * @inheritDoc
-     */
-    public function getPeriod() : float {
-        return self::F_PERIOD;
-    }
 
     /**
      * @inheritDoc

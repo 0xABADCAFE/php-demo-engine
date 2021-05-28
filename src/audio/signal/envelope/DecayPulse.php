@@ -30,7 +30,7 @@ use ABadCafe\PDE\Audio;
  */
 class DecayPulse implements Audio\Signal\IEnvelope {
 
-    use Audio\Signal\TPacketIndexAware;
+    use Audio\Signal\TPacketIndexAware, Audio\Signal\TStream;
 
     protected Audio\Signal\Packet $oOutputPacket;
 
@@ -49,6 +49,8 @@ class DecayPulse implements Audio\Signal\IEnvelope {
         $fLevelScale = 1.0
     ;
 
+    private bool $bChanged = false;
+
     /**
      * Constructor
      *
@@ -59,6 +61,7 @@ class DecayPulse implements Audio\Signal\IEnvelope {
         float $fInitial,
         float $fHalfLife
     ) {
+        self::initStreamTrait();
         $this->oOutputPacket  = Audio\Signal\Packet::create();
         $this->fInitial       = $fInitial;
         $this->fHalfLife      = $fHalfLife;
@@ -77,18 +80,22 @@ class DecayPulse implements Audio\Signal\IEnvelope {
      */
     public function reset() : self {
         $this->iSamplePosition = 0;
-        $this->recalculate();
+        $this->bChanged        = true;
         return $this;
     }
 
     /**
-     * Emit the next signal Packet.
-     *
-     * @return Signal\Control\Packet
+     * @inheritDoc
      */
     public function emit(?int $iIndex = null) : Audio\Signal\Packet {
+        if (!$this->bEnabled) {
+            return $this->emitSilence();
+        }
         if ($this->useLast($iIndex)) {
             return $this->oOutputPacket;
+        }
+        if ($this->bChanged) {
+            $this->recalculateDecay();
         }
         for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
             $this->fCurrent *= $this->fDecayPerSample;
@@ -99,9 +106,37 @@ class DecayPulse implements Audio\Signal\IEnvelope {
     }
 
     /**
+     * Set the initial value
+     *
+     * @param  float $fInitial
+     * @return self
+     */
+    public function setInitial(float $fInitial) : self {
+        if ($fInitial != $this->fInitial) {
+            $this->fInitial = $fInitial;
+            $this->bChanged = true;
+        }
+        return $this;
+    }
+
+    /**
+     * Set the decay half life.
+     *
+     * @param  float $fInitial
+     * @return self
+     */
+    public function setHalfLife(float $fHalfLife) : self {
+        if ($fHalfLife != $this->fHalfLife) {
+            $this->fHalfLife = $fHalfLife;
+            $this->bChanged  = true;
+        }
+        return $this;
+    }
+
+    /**
      * Recalculate the internal values
      */
-    protected function recalculate() {
+    protected function recalculateDecay() {
 
         // First the easiest calculation which is the initial level to use.
         $this->fCurrent = $this->fInitial * $this->fLevelScale;
@@ -112,6 +147,8 @@ class DecayPulse implements Audio\Signal\IEnvelope {
 
         // Now calculate the required decay per sample required to reach half intensity after that many samples.
         $this->fDecayPerSample = 0.5 * 2 ** (($iHalfLifeInSamples - 1) / $iHalfLifeInSamples);
+
+        $this->bChanged = false;
     }
 
 }

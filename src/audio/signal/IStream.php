@@ -31,6 +31,21 @@ use ABadCafe\PDE\Audio;
 interface IStream {
 
     /**
+     * Enable a stream.
+     */
+    public function enable() : self;
+
+    /**
+     * Disable a stream. A disabled stream will emit silence packets if invoked.
+     */
+    public function disable() : self;
+
+    /**
+     * Check if a stream is enabled.
+     */
+    public function isEnabled() : bool;
+
+    /**
      * Get the current stream position
      *
      * @return int

@@ -30,7 +30,7 @@ use function ABadCafe\PDE\dprintf;
 class APlay implements Audio\IPCMOutput {
 
     const
-        BUFFER_SIZE = 128,
+        BUFFER_SIZE = 1024,
         FORMAT      = 'S16_LE'
     ;
 
@@ -76,10 +76,10 @@ class APlay implements Audio\IPCMOutput {
      */
     public function open() {
         $sCommand = sprintf(
-            'aplay -c1 -f %s -r%d --buffer-size=%d -',
+            'aplay -c1 -f %s -r%d -',
             self::FORMAT,
-            Audio\IConfig::PROCESS_RATE,
-            self::BUFFER_SIZE
+            Audio\IConfig::PROCESS_RATE
+            //self::BUFFER_SIZE
         );
 
         if (

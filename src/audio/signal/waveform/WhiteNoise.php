@@ -29,7 +29,14 @@ use ABadCafe\PDE\Audio;
 class WhiteNoise implements Audio\Signal\IWaveform {
 
     const
-        F_PERIOD   = 1.0,
+        /**
+         * Waveform period (interval after which it repeats). This is technically meaningless for noise.
+         */
+        PERIOD     = 1.0,
+
+        /**
+         * Generation of new random values goes through a floating point conversion step.
+         */
         RAND_SCALE = 1.0/65536.0
     ;
 
@@ -53,7 +60,7 @@ class WhiteNoise implements Audio\Signal\IWaveform {
      * @inheritDoc
      */
     public function getPeriod() : float {
-        return self::F_PERIOD;
+        return self::PERIOD;
     }
 
     /**
@@ -61,10 +68,11 @@ class WhiteNoise implements Audio\Signal\IWaveform {
      */
     public function map(Audio\Signal\Packet $oInput) : Audio\Signal\Packet {
         $fRandom = self::RAND_SCALE * mt_rand();
+        $iMask   = 0x7FFFFFFF;
         $oOutput = clone $oInput;
         for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
             // Update the random buffer and output buffer as we go
-            self::$oRandom[$i] = $iRandom = (self::$oRandom[$i] * $fRandom) & 0x7FFFFFFF;
+            self::$oRandom[$i] = $iRandom = (self::$oRandom[$i] * $fRandom) & $iMask;
             $oOutput[$i] = ($iRandom * self::$fNormalise) - 1.0;
         }
         return $oOutput;

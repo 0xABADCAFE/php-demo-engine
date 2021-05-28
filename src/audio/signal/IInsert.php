@@ -23,23 +23,40 @@ namespace ABadCafe\PDE\Audio\Signal;
 use ABadCafe\PDE\Audio;
 
 /**
- * @see https://github.com/0xABADCAFE/random-proto-synth
+ * IInsert
+ *
+ * Interface for stream insertion classes. These consume a stream and apply some form of insertion effect.
  */
-interface IOscillator extends IStream {
+interface IInsert extends IStream {
 
     /**
-     * Set the waveform to use. Passing null disables the oscillator (emits silence).
+     * Obtain the InputStream for this Insert. Returns null if not set yet.
      *
-     * @param  IWaveform|null $oWaveform
-     * @return self
+     * @return IStream|null
      */
-    public function setWaveform(?IWaveform $oWaveform) : self;
+    public function getInputStream() : ?IStream;
 
     /**
-     * Set the baseline frequency to emit.
+     * Set the InputStream for this Insert. Until an input stream is set, the insert is disable()d.
      *
-     * @param  float $fFrequency
+     * @param  IStream|null $oInputStream
      * @return self
      */
-    public function setFrequency(float $fFrequency) : self;
+    public function setInputStream(?IStream $oInputStream) : self;
+
+    /**
+     * Get the dry signal level for this Insert.
+     *
+     * @return float
+     */
+    public function getDryLevel() : float;
+
+    /**
+     * Set the dry signal level for this Insert. Should be in the range 0.0 ... 1.0 but this is not a strict requirement.
+     * Values over 1 serve as amplification, values lower than one attenuation. Negative values invert the sign.
+     *
+     * @param  float $fDryLevel
+     * @return self
+     */
+    public function setDryLevel(float $fDryLevel) : self;
 }

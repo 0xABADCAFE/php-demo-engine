@@ -28,29 +28,14 @@ use ABadCafe\PDE\Audio\Signal;
  *
  * @see https://github.com/0xABADCAFE/random-proto-synth
  */
-class Pulse implements Signal\IWaveform {
-
-    const F_PERIOD = 1.0;
+class Pulse extends AliasedPulse {
 
     private float
         $fPrev1 = 0.0,
         $fPrev2 = 0.0,
         $fPrev3 = 0.0,
-        $fPrev4 = 0.0,
-        $fThreshold = 0.25
+        $fPrev4 = 0.0
     ;
-
-
-    public function __construct(float $fThreshold = 0.25) {
-        $this->fThreshold = $fThreshold;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getPeriod() : float {
-        return self::F_PERIOD;
-    }
 
     /**
      * @inheritDoc
@@ -64,17 +49,36 @@ class Pulse implements Signal\IWaveform {
         $fPrev3  = $this->fPrev3;
         $fPrev4  = $this->fPrev4;
 
-        foreach ($oInput as $i => $fTime) {
-            $fSample = ((ceil($fTime) - $fTime) > $this->fThreshold) ? 1.0 : -1.0;
-            $oOutput[$i] = 0.1 * (
-                $fSample + $fPrev4 +
-                2.0 * ($fPrev1 + $fPrev3)
-                + 4.0 * $fPrev2
-            );
-            $fPrev4 = $fPrev3;
-            $fPrev3 = $fPrev2;
-            $fPrev2 = $fPrev1;
-            $fPrev1 = $fSample;
+        if ($this->oWidthModulator) {
+            $oWidth = $this->oWidthModulator
+                ->emit()
+                ->scaleBy(0.5 * $this->fPulseWidth)
+                ->biasBy(0.5);
+            foreach ($oInput as $i => $fTime) {
+                $fSample = ((ceil($fTime) - $fTime) > $oWidth[$i]) ? 1.0 : -1.0;
+                $oOutput[$i] = 0.1 * (
+                    $fSample + $fPrev4 +
+                    2.0 * ($fPrev1 + $fPrev3)
+                    + 4.0 * $fPrev2
+                );
+                $fPrev4 = $fPrev3;
+                $fPrev3 = $fPrev2;
+                $fPrev2 = $fPrev1;
+                $fPrev1 = $fSample;
+            }
+        } else {
+            foreach ($oInput as $i => $fTime) {
+                $fSample = ((ceil($fTime) - $fTime) > $this->fPulseWidth) ? 1.0 : -1.0;
+                $oOutput[$i] = 0.1 * (
+                    $fSample + $fPrev4 +
+                    2.0 * ($fPrev1 + $fPrev3)
+                    + 4.0 * $fPrev2
+                );
+                $fPrev4 = $fPrev3;
+                $fPrev3 = $fPrev2;
+                $fPrev2 = $fPrev1;
+                $fPrev1 = $fSample;
+            }
         }
 
         $this->fPrev1 = $fPrev1;

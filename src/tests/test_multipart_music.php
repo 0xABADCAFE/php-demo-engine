@@ -26,17 +26,17 @@ $oDrumPattern->addEvent(new Audio\Sequence\NoteOn('A4', 75), 0, 32 + 29, 32);
 $oDrumPattern->addEvent(new Audio\Sequence\NoteOn('A4'), 3, 2, 4);
 $oDrumPattern->addEvent(new Audio\Sequence\NoteOn('A4', 60), 2, 64 + 1, 4);
 $oDrumPattern->addEvent(new Audio\Sequence\NoteOn('A4', 30), 2, 64 + 3, 4);
-$oDrumPattern->addEvent(new Audio\Sequence\NoteOn('A4'), 5, 32 + 4, 8);
+$oDrumPattern->addEvent(new Audio\Sequence\NoteOn('B2'), 5, 32 + 4, 8);
 $oDrumPattern->addEvent(new Audio\Sequence\NoteOn('A4'), 5, 32 + 31, 32);
-$oDrumPattern->addEvent(new Audio\Sequence\NoteOn('A4', 80), 1, 60, 64);
-$oDrumPattern->addEvent(new Audio\Sequence\NoteOn('A4', 70), 1, 61, 64);
+$oDrumPattern->addEvent(new Audio\Sequence\NoteOn('A4', 70), 1, 60, 64);
+$oDrumPattern->addEvent(new Audio\Sequence\NoteOn('A4', 50), 1, 61, 64);
 $oDrumPattern->addEvent(new Audio\Sequence\NoteOn('A4'), 4, 63);
 
 //$oDrumPattern->addEvent(new Audio\Sequence\NoteOn('A4'), 4, 127);
 
 
 $oChipMachine = new Audio\Machine\ChipTune(4);
-$oChipMachine->setInsert(new Audio\Signal\Insert\DelayLoop(null, 555, -0.75, 1.0, 0.3));
+$oChipMachine->setInsert(new Audio\Signal\Insert\DelayLoop(null, 575, -0.75, 0.8, 0.2));
 $oChipPattern = new Audio\Sequence\Pattern(4, 256);
 $oChipMachine->setVoiceMaskWaveform(15, Audio\Machine\ChipTune::SAW);
 $oChipMachine->setVoiceMaskEnvelope(3, new Audio\Signal\Envelope\Shape(
@@ -72,12 +72,12 @@ $oSequencer
 ;
 
 // Open the audio
-$oPCMOut = new Audio\Output\APlay();
+$oPCMOut = Audio\Output\Piped::create();
 $oPCMOut->open();
 
 $fMark = microtime(true);
 
-$oSequencer->play($oPCMOut, 512, 5.0);
+$oSequencer->play($oPCMOut, 256, 6.0);
 
 $fElapsed = microtime(true) - $fMark;
 

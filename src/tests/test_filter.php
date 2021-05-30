@@ -26,7 +26,7 @@ $aFilters = [
 $oSilence = Audio\Signal\Packet::create();
 
 // Open the audio
-$oPCMOut = new Audio\Output\APlay();
+$oPCMOut = Audio\Output\Piped::create();
 $oPCMOut->open();
 
 foreach ($aFilters as $sName => $oFilter) {

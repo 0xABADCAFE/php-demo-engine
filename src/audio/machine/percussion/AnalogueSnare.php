@@ -26,36 +26,40 @@ use ABadCafe\PDE\Audio;
  */
 class AnalogueSnare implements IVoice {
 
-    const DEF_RATIO = 339.0 / 185.0;
+    const
+        DEF_RATIO   = 339.0 / 185.0,
+        CENTRE_FREQ = 170.0,
+        SEMI_SCALE  = 0.25 * Audio\Note::FACTOR_PER_SEMI
+    ;
 
-    const OCTAVE = [
-         0 => [],
-         1 => [],
-         2 => [],
-         3 => [],
-         4 => [],
-         5 => [],
-         6 => [],
-         7 => [],
-         8 => [],
-         9 => [],
-        10 => [],
-    ];
-
-    const SEMITONE = [
-         0 => [],
-         1 => [],
-         2 => [],
-         3 => [],
-         4 => [],
-         5 => [],
-         6 => [],
-         7 => [],
-         8 => [],
-         9 => [],
-        10 => [],
-        11 => [],
-    ];
+//     const OCTAVE = [
+//          0 => [],
+//          1 => [],
+//          2 => [],
+//          3 => [],
+//          4 => [],
+//          5 => [],
+//          6 => [],
+//          7 => [],
+//          8 => [],
+//          9 => [],
+//         10 => [],
+//     ];
+//
+//     const SEMITONE = [
+//          0 => [],
+//          1 => [],
+//          2 => [],
+//          3 => [],
+//          4 => [],
+//          5 => [],
+//          6 => [],
+//          7 => [],
+//          8 => [],
+//          9 => [],
+//         10 => [],
+//         11 => [],
+//     ];
 
     private Audio\Signal\IOscillator $oNoise, $oOscillator1, $oOscillator2;
     private Audio\Signal\IEnvelope   $oVolumeEnv;
@@ -95,14 +99,15 @@ class AnalogueSnare implements IVoice {
         $this->oAutoMute->disable();
     }
 
-
     /**
      * @inheritDoc
      */
     public function setNote(string $sNote) : self {
-        $iNoteNumber = Audio\Note::getNumber($sNote);
-        $iSemitone   = $iNoteNumber % Audio\Note::SEMIS_PER_OCTAVE;
-        $iOctave     = (int)($iNoteNumber / Audio\Note::SEMIS_PER_OCTAVE);
+        $iNoteNumber = Audio\Note::getNumber($sNote) - Audio\Note::CENTRE_REFERENCE;
+        $fNote       = self::SEMI_SCALE * $iNoteNumber;
+        $fBase       = self::CENTRE_FREQ * 2.0 ** $fNote;
+        $this->oOscillator1->setFrequency($fBase);
+        $this->oOscillator2->setFrequency($fBase * self::DEF_RATIO);
         return $this;
     }
 

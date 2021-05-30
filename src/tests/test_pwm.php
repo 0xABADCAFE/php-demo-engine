@@ -33,7 +33,7 @@ $oFilter = new Audio\Signal\Filter\LowPass(
 );
 
 // Open the audio
-$oPCMOut = new Audio\Output\APlay();
+$oPCMOut = Audio\Output\Piped::create();
 $oPCMOut->open();
 
 // Chuck out the audio

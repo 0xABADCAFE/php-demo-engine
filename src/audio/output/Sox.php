@@ -22,22 +22,20 @@ namespace ABadCafe\PDE\Audio\Output;
 use ABadCafe\PDE\Audio;
 
 /**
- * APlay
+ * Sox
  *
- * Simple pipe wrapper for aplay
+ * Simple pipe wrapper for sox play
  */
-class APlay extends Piped {
-
-    const FORMAT = 'S16_LE';
+class Sox extends Piped {
 
     /**
      * @inheritDoc
      */
     protected function createOutputCommand() : string {
         return sprintf(
-            'aplay -c1 -f %s -r%d -',
-            self::FORMAT,
-            Audio\IConfig::PROCESS_RATE
+            'play -t raw -b 16 -c 1 -e signed --endian=little -r %d --buffer %d -',
+            Audio\IConfig::PROCESS_RATE,
+            self::BUFFER_SIZE
         );
     }
 }

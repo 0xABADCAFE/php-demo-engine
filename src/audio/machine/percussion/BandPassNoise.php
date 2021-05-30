@@ -24,7 +24,7 @@ use ABadCafe\PDE\Audio;
 /**
  * BandPassNoise
  *
- * Base class for sounds that simply use bandpass filtered noise
+ * Base class for sounds that simply use bandpass filtered noise, e.g. High Hats and claps
  */
 abstract class BandPassNoise implements IVoice {
 

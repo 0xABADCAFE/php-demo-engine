@@ -67,7 +67,7 @@ $oMixer
 echo "PHP Demo Engine: Basic Oscillator test\n";
 
 // Open the audio
-$oPCMOut = new Audio\Output\APlay();
+$oPCMOut = Audio\Output\Piped::create();
 $oPCMOut->open();
 
 foreach ($aWaveforms as $sName => $oWaveform) {

@@ -63,7 +63,7 @@ $oSequencer
 ;
 
 // Open the audio
-$oPCMOut = new Audio\Output\APlay();
+$oPCMOut = Audio\Output\Piped::create();
 $oPCMOut->open();
 
 $fMark = microtime(true);

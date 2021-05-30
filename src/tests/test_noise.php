@@ -13,7 +13,7 @@ $oOscillator = new Audio\Signal\Oscillator\Sound(
 
 // Open the audio
 $oPCMOut1 = new Audio\Output\Wav('noise.wav');
-$oPCMOut2 = new Audio\Output\APlay();
+$oPCMOut2 = Audio\Output\Piped::create();
 $oPCMOut1->open();
 $oPCMOut2->open();
 // Chuck out the audio

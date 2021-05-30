@@ -39,7 +39,7 @@ printf(
 $sClass = SOUNDS[$sSound];
 
 // Open the audio
-$oPCMOut = new Audio\Output\APlay();
+$oPCMOut = Audio\Output\Piped::create();
 $oPCMOut->open();
 
 $oDrum  = new $sClass;

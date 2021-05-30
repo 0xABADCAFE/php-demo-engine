@@ -64,7 +64,7 @@ $oMixer
     //->addStream('p3', $oOsc6, 0.2);
 ;
 
-$oPCMOut  = new Audio\Output\APlay;
+$oPCMOut  = Audio\Output\Piped::create();
 $oPCMOut->open();
 
 $iPackets = 1000;

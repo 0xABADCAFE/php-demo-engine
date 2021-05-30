@@ -54,6 +54,7 @@ class TBNaN implements Audio\IMachine {
         $this->initOscillator();
         $this->initFilter();
         $this->setVoiceSource($this->oFilter, 0.125);
+        $this->oVoice->disable();
     }
 
     /**

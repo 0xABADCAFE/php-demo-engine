@@ -26,6 +26,14 @@ class Event {
 
 }
 
+class SetNote extends Event {
+    public string $sNote;
+    public function __construct(string $sNote) {
+        $this->sNote = $sNote;
+    }
+}
+
+
 /**
  * Simple note on event
  */
@@ -42,6 +50,7 @@ class NoteOn extends Event {
 class NoteOff extends Event {
 
 }
+
 
 /**
  * Basic Pattern block

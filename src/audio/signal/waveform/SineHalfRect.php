@@ -18,33 +18,40 @@
 
 declare(strict_types=1);
 
-namespace ABadCafe\PDE\Audio\Signal;
-
-use ABadCafe\PDE\Audio;
+namespace ABadCafe\PDE\Audio\Signal\Waveform;
+use ABadCafe\PDE\Audio\Signal;
 
 /**
+ * SineHalfRect
+ *
+ * Sinewave implementation of IWaveform
+ *
  * @see https://github.com/0xABADCAFE/random-proto-synth
  */
-interface IEnvelope extends IStream {
-
-    const MIN_TIME_SCALE = 0.01;
+class SineHalfRect implements Signal\IWaveform {
 
     /**
-     * Set a scaling factor for envelope timing. A smaller value results in a faster envelope. Use to simlulate the
-     * effects of higher notes decaying faster, etc. This should be set whenever we start a new note.
-     *
-     * @param  float $fTimeScale
-     * @return self
+     * Waveform period (interval after which it repeats).
      */
-    public function setTimeScale(float $fTimeScale) : self;
+    const PERIOD = M_PI;
 
     /**
-     * Set a scaling factor for envelope levels. A smaller value results in a quieter envelope. Use to simlulate the
-     * effects of higher notes having lower overall energy, or higher velocities having greater, etc. This should be
-     * set whenever we start a new note.
-     *
-     * @param  float $fTimeScale
-     * @return self
+     * @inheritDoc
      */
-    public function setLevelScale(float $fLevelScale) : self;
+    public function getPeriod() : float {
+        return self::PERIOD;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function map(Signal\Packet $oInput) : Signal\Packet {
+        $oOutput = clone $oInput;
+        foreach ($oInput as $i => $fTime) {
+            $fRect = sin($fTime);
+            $fRect < 0.0 && $fRect = 0.0;
+            $oOutput[$i] = 2.0 * $fRect - 1.0;
+        }
+        return $oOutput;
+    }
 }

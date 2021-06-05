@@ -40,7 +40,10 @@ class Sound extends Base {
         $oLevelModulator = null
     ;
 
-    protected ?Audio\Signal\IEnvelope $oEnvelope = null;
+    protected ?Audio\Signal\IEnvelope
+        $oLevelEnvelope       = null,
+        $oPitchEnvelope  = null
+    ;
 
     protected float
         $fPhaseModulationIndex = 1.0,
@@ -55,7 +58,8 @@ class Sound extends Base {
         $this->oPitchModulator && $this->oPitchModulator->reset();
         $this->oPhaseModulator && $this->oPhaseModulator->reset();
         $this->oLevelModulator && $this->oLevelModulator->reset();
-        $this->oEnvelope       && $this->oEnvelope->reset();
+        $this->oLevelEnvelope  && $this->oLevelEnvelope->reset();
+        $this->oPitchEnvelope  && $this->oPitchEnvelope->reset();
         return $this;
     }
 
@@ -164,16 +168,34 @@ class Sound extends Base {
      * @param  Audio\Signal\IEnvelope|null $oEnvelope
      * @return self
      */
-    public function setEnvelope(?Audio\Signal\IEnvelope $oEnvelope) : self {
-        $this->oEnvelope = $oEnvelope;
+    public function setLevelEnvelope(?Audio\Signal\IEnvelope $oEnvelope) : self {
+        $this->oLevelEnvelope = $oEnvelope;
         return $this;
     }
 
     /**
      * @return Audio\Signal\IEnvelope|null
      */
-    public function getEnvelope() : ?Audio\Signal\IEnvelope {
-        return $this->oEnvelope;
+    public function getLevelEnvelope() : ?Audio\Signal\IEnvelope {
+        return $this->oLevelEnvelope;
+    }
+
+    /**
+     * Set the specific pitch envelope to use.
+     *
+     * @param  Audio\Signal\IEnvelope|null $oEnvelope
+     * @return self
+     */
+    public function setPitchEnvelope(?Audio\Signal\IEnvelope $oEnvelope) : self {
+        $this->oPitchEnvelope = $oEnvelope;
+        return $this;
+    }
+
+    /**
+     * @return Audio\Signal\IEnvelope|null
+     */
+    public function getPitchEnvelope() : ?Audio\Signal\IEnvelope {
+        return $this->oPitchEnvelope;
     }
 
     /**
@@ -183,8 +205,11 @@ class Sound extends Base {
      */
     protected function emitNew() : Audio\Signal\Packet {
 
-        if ($this->oPitchModulator) {
-            $oPitchShifts = $this->oPitchModulator->emit($this->iLastIndex);
+        if ($this->oPitchModulator || $this->oPitchEnvelope) {
+            $oPitchShifts = Audio\Signal\Packet::create();
+
+            $this->oPitchModulator && $oPitchShifts->sumWith($this->oPitchModulator->emit($this->iLastIndex));
+            $this->oPitchEnvelope  && $oPitchShifts->sumWith($this->oPitchEnvelope->emit($this->iLastIndex));
 
             // Every sample point has a new frequency, but we can't just use the instantaneous Waveform value for
             // that as it would be the value that the function has if it was always at that frequency.
@@ -223,8 +248,8 @@ class Sound extends Base {
             $this->oLastOutput->modulateWith($oLevel);
         }
 
-        if ($this->oEnvelope) {
-            $this->oLastOutput->modulateWith($this->oEnvelope->emit($this->iLastIndex));
+        if ($this->oLevelEnvelope) {
+            $this->oLastOutput->modulateWith($this->oLevelEnvelope->emit($this->iLastIndex));
         }
 
         return $this->oLastOutput;

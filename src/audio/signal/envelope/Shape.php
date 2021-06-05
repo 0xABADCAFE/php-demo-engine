@@ -23,7 +23,7 @@ use ABadCafe\PDE\Audio;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-class Shape implements Audio\Signal\IEnvelope {
+class Shape extends Base {
 
     use Audio\Signal\TPacketIndexAware, Audio\Signal\TStream;
 
@@ -50,10 +50,7 @@ class Shape implements Audio\Signal\IEnvelope {
         $aProcessIndexes = []
     ;
 
-    private int
-        $iSamplePosition = 0, // Current Sample Position
-        $iLastPosition   = 0    // Used to early out and return the fixed packet
-    ;
+    private int $iLastPosition   = 0;    // Used to early out and return the fixed packet
 
     private float
         $fGradient = 0, // Current Interpolant Gradient
@@ -61,12 +58,6 @@ class Shape implements Audio\Signal\IEnvelope {
     ;
 
     private int $iXOffset = 0; //  Current Interpolant X Offset
-
-    // TODO - consider note maps for these
-    private float
-        $fTimeScale  = 1.0,
-        $fLevelScale = 1.0
-    ;
 
     /**
      * Constructor. Accepts an initial output level and an optional array of level/time pairs
@@ -77,7 +68,21 @@ class Shape implements Audio\Signal\IEnvelope {
      */
     public function __construct(float $fInitial = 0, array $aPoints = []) {
         self::initStreamTrait();
-        $this->aPoints[0][0] = $fInitial;
+        $this->oOutputPacket = Audio\Signal\Packet::create();
+        $this->oFinalPacket  = Audio\Signal\Packet::create();
+        $this->setShape($fInitial, $aPoints);
+    }
+
+    /**
+     * Specify a new shape.
+     *
+     * @param float      $fInitial
+     * @param float[2][] $aPoints
+     */
+    public function setShape(float $fInitial, array $aPoints) : self {
+        $this->aPoints = [
+            0 => [$fInitial, 0]
+        ];
         foreach ($aPoints as $aPoint) {
             if (!is_array($aPoint) || count($aPoint) != 2) {
                 throw new \Exception();
@@ -87,33 +92,22 @@ class Shape implements Audio\Signal\IEnvelope {
                 min(max((float)$aPoint[1], self::MIN_TIME), self::MAX_TIME)
             ];
         }
-        $this->oOutputPacket = Audio\Signal\Packet::create();
-        $this->oFinalPacket  = Audio\Signal\Packet::create();
-        $this->reset();
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function getPosition() : int {
-        return $this->iSamplePosition;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function reset() : Audio\Signal\IStream {
-        $this->iSamplePosition = 0;
-        $this->recalculate();
+        $this->bParameterChanged = true;
         return $this;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function emit(?int $iIndex = null) : Audio\Signal\Packet {
         if (!$this->bEnabled) {
             return $this->emitSilence();
         }
         if ($this->useLast($iIndex)) {
             return $this->oOutputPacket;
+        }
+        if ($this->bParameterChanged) {
+            $this->recalculate();
         }
         $iLength = Audio\IConfig::PACKET_SIZE;
 
@@ -123,12 +117,12 @@ class Shape implements Audio\Signal\IEnvelope {
             return clone $this->oFinalPacket;
         }
 
-        for ($i = 0; $i < $iLength; $i++) {
+        for ($i = 0; $i < $iLength; ++$i) {
             // If the sample position hits a process index position, we need to recalculate our interpolants
             if (isset($this->aProcessIndexes[$this->iSamplePosition])) {
                 $this->updateInterpolants();
             }
-            $this->oOutputPacket[$i] = $this->fYOffset + (++$this->iSamplePosition - $this->iXOffset)*$this->fGradient;
+            $this->oOutputPacket[$i] = $this->fYOffset + (++$this->iSamplePosition - $this->iXOffset) * $this->fGradient;
         }
         return $this->oOutputPacket;
     }
@@ -162,6 +156,8 @@ class Shape implements Audio\Signal\IEnvelope {
 
         $this->iLastPosition = $oLastPoint->iStart;
         $this->oFinalPacket->fillWith($oLastPoint->fLevel);
+
+        $this->bParameterChanged = false;
     }
 
     /**

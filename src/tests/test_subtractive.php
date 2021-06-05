@@ -22,7 +22,7 @@ $oCarrier = new Audio\Signal\Oscillator\Sound(
 );
 
 $oModulator
-    ->setEnvelope(
+    ->setLevelEnvelope(
         new Audio\Signal\Envelope\Shape(
             0.0,
             [
@@ -34,7 +34,7 @@ $oModulator
 
 $oCarrier
     ->setPhaseModulator($oModulator)
-    ->setEnvelope(
+    ->setLevelEnvelope(
         new Audio\Signal\Envelope\Shape(
             0.0,
             [

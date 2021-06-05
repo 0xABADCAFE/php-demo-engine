@@ -29,7 +29,7 @@ $oOsc1 = new Audio\Signal\Oscillator\Sound(
 
 // Attach the envelope and vibrato
 $oOsc1
-    ->setEnvelope($oEnvelope)
+    ->setLevelEnvelope($oEnvelope)
     ->setPitchModulator($oLFO);
 
 $oOsc2 = clone $oOsc1;

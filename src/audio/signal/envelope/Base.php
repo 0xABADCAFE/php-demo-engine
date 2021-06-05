@@ -21,44 +21,52 @@ declare(strict_types=1);
 namespace ABadCafe\PDE\Audio\Signal\Envelope;
 use ABadCafe\PDE\Audio;
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 /**
- * DecayPulse
- *
- * Calculates the continuous Signal\Packet stream for an envelope defined by an exponential decay curve.
+ * Base class for envelopes
  */
-class DecayPulseSoft extends DecayPulse {
+abstract class Base implements Audio\Signal\IEnvelope {
 
-    // TODO - consider note maps for these
-    protected float $fPrevious   = 0.0;
+    protected int   $iSamplePosition   = 0;
+    protected bool  $bParameterChanged = false;
+    protected float $fTimeScale        = 1.0, $fLevelScale = 1.0;
+
+    /**
+     * @inheritDoc
+     */
+    public function setTimeScale(float $fTimeScale) : self {
+        $fTimeScale = max($fTimeScale, self::MIN_TIME_SCALE);
+        if ($fTimeScale != $this->fTimeScale) {
+            $this->fTimeScale = $fTimeScale;
+            $this->bParameterChanged = true;
+        }
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setLevelScale(float $fLevelScale) : self {
+        if ($fLevelScale != $this->fLevelScale) {
+            $this->fLevelScale = $fLevelScale;
+            $this->bParameterChanged = true;
+        }
+        return $this;
+    }
 
     /**
      * @inheritDoc
      */
     public function reset() : self {
-        parent::reset();
+        $this->iSamplePosition   = 0;
+        $this->bParameterChanged = true;
         return $this;
     }
 
     /**
-     * Emit the next signal Packet.
-     *
-     * @return Signal\Control\Packet
+     * @inheritDoc
      */
-    public function emit(?int $iIndex = null) : Audio\Signal\Packet {
-        if (!$this->bEnabled) {
-            return $this->emitSilence();
-        }
-        if ($this->useLast($iIndex)) {
-            return $this->oOutputPacket;
-        }
-        for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
-            $this->fCurrent *= $this->fDecayPerSample;
-            $this->oOutputPacket[$i] = $this->fPrevious = 0.5 * ($this->fCurrent + $this->fPrevious);
-        }
-        $this->iSamplePosition += Audio\IConfig::PACKET_SIZE;
-        return $this->oOutputPacket;
+    public function getPosition() : int {
+        return $this->iSamplePosition;
     }
-}
 
+}

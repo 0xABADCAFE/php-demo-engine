@@ -22,7 +22,9 @@ namespace ABadCafe\PDE\Audio;
 
 use \OutOfBoundsException;
 
-/***/
+/**
+ * Note
+ */
 class Note {
 
     const

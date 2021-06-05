@@ -88,9 +88,9 @@ class AnalogueCowbell implements IVoice {
             new Audio\Signal\Waveform\AliasedPulse(0.27),
             $fBase * self::DEF_RATIO
         );
-        $this->oOscillator1->setEnvelope($this->oEnvelope);
+        $this->oOscillator1->setLevelEnvelope($this->oEnvelope);
         $this->oOscillator2
-            ->setEnvelope($this->oEnvelope)
+            ->setLevelEnvelope($this->oEnvelope)
             ->setPhaseModulator($this->oOscillator1)
             ->setPhaseModulationIndex(0.165)
         ;

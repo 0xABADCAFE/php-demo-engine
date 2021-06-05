@@ -108,19 +108,19 @@ class Sequencer {
         $fBeatsPerSecond = $this->iBPM / 60.0;
         $fLinesPerSecond = $fBeatsPerSecond * $this->iLPB;
 
-        dprintf(
-            "Starting sequence: %d PBM (%.2f Lines/sec)\n",
-            $this->iBPM,
-            $fLinesPerSecond
-        );
+//         dprintf(
+//             "Starting sequence: %d PBM (%.2f Lines/sec)\n",
+//             $this->iBPM,
+//             $fLinesPerSecond
+//         );
         $oMixer = new Audio\Signal\FixedMixer($fGain);
         foreach ($this->aMachines as $sMachineName => $oMachine) {
             $oMixer->addInputStream($sMachineName, $oMachine, 1.0);
-            dprintf(
-                "\tAdding stream %s for %s...\n",
-                $sMachineName,
-                get_class($oMachine)
-            );
+//             dprintf(
+//                 "\tAdding stream %s for %s...\n",
+//                 $sMachineName,
+//                 get_class($oMachine)
+//             );
         }
         $fSecondScale = 1.0 / Audio\IConfig::PROCESS_RATE;
         $iLastLineNumber = -1;
@@ -147,18 +147,24 @@ class Sequencer {
             $oRow = $oPattern->getLine($iLineNumber);
             foreach ($oRow as $iChannel => $oEvent) {
                 if ($oEvent instanceof Audio\Sequence\NoteOn) {
-                    dprintf("\tLn:%4d Mc:%5s Ch:%2d Ev:NoteOn %s V:%d\n",
-                        $iLineNumber,
-                        $sMachineName,
-                        $iChannel,
-                        $oEvent->sNote,
-                        $oEvent->iVelocity
-                    );
+//                     dprintf("\tLn:%4d Mc:%5s Ch:%2d Ev:NoteOn %s V:%d\n",
+//                         $iLineNumber,
+//                         $sMachineName,
+//                         $iChannel,
+//                         $oEvent->sNote,
+//                         $oEvent->iVelocity
+//                     );
 
                     $oMachine
                         ->setVoiceNote($iChannel, $oEvent->sNote)
                         ->setVoiceLevel($iChannel, $fVelocityScale * $oEvent->iVelocity)
                         ->startVoice($iChannel);
+                } else if ($oEvent instanceof Audio\Sequence\SetNote) {
+                    $oMachine
+                        ->setVoiceNote($iChannel, $oEvent->sNote);
+                } else if ($oEvent instanceof Audio\Sequence\NoteOff) {
+                    $oMachine
+                        ->stopVoice($iChannel);
                 }
             }
         }

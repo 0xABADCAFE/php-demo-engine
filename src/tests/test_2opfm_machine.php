@@ -24,7 +24,7 @@ $oFMMarimba
     ->setOutputLevel(0.3);
 ;
 
-$oFMPad = new Audio\Machine\TwoOpFM(4);
+$oFMPad = new Audio\Machine\TwoOpFM(5);
 $oFMPad
     ->setModulatorWaveform(Audio\Signal\IWaveform::SINE_HALF_RECT)
     ->setModulatorRatio(2.001)
@@ -49,19 +49,19 @@ $oFMPad
         )
     )
     ->setCarrierMix(0.5)
-    ->setOutputLevel(0.06);
+    ->setOutputLevel(0.05);
 ;
 
 $oDrumMachine = new Audio\Machine\TRNaN();
 $oDrumMachine->setOutputLevel(1.25);
-$oDrumPattern = new Audio\Sequence\Pattern(6, 64);
-$oDrumPattern->addEvent(new Audio\Sequence\NoteOn('A4'), 0, 0, 4);
-$oDrumPattern->addEvent(new Audio\Sequence\NoteOn('A4'), 3, 2, 4);
-$oDrumPattern->addEvent(new Audio\Sequence\NoteOn('A4'), 5, 25, 32);
+$oDrumPattern = new Audio\Sequence\Pattern(6, 256);
+$oDrumPattern->addEvent(new Audio\Sequence\NoteOn('A4'), 0, 32, 4);
+$oDrumPattern->addEvent(new Audio\Sequence\NoteOn('A4'), 3, 64+2, 4);
+$oDrumPattern->addEvent(new Audio\Sequence\NoteOn('A4'), 5, 64+25, 32);
 
-$oDrumPattern->addEvent(new Audio\Sequence\NoteOn('A4', 60), 2, 1, 4);
-$oDrumPattern->addEvent(new Audio\Sequence\NoteOn('A4', 30), 2, 3, 4);
-$oDrumPattern->addEvent(new Audio\Sequence\NoteOn('B2'), 5, 4, 8);
+$oDrumPattern->addEvent(new Audio\Sequence\NoteOn('A4', 60), 2, 64+1, 4);
+$oDrumPattern->addEvent(new Audio\Sequence\NoteOn('A4', 30), 2, 64+3, 4);
+$oDrumPattern->addEvent(new Audio\Sequence\NoteOn('B2'), 5, 96 + 4, 8);
 $oDrumPattern->addEvent(new Audio\Sequence\NoteOn('A4'), 5, 32 + 31, 32);
 $oDrumPattern->addEvent(new Audio\Sequence\NoteOn('A4', 70), 1, 60);
 $oDrumPattern->addEvent(new Audio\Sequence\NoteOn('A4', 50), 1, 61);
@@ -132,29 +132,35 @@ $oMarimbaPattern->addEvent(new Audio\Sequence\NoteOn('A#3', 38), 0, 63, 64);
 
 $oFMMarimba->setInsert(new Audio\Signal\Insert\DelayLoop(null, 370.0, 0.5));
 
-$oFMPadPattern = new Audio\Sequence\Pattern(4, 64);
-$oFMPadPattern->addEvent(new Audio\Sequence\NoteOn('C2'), 0, 0);
-$oFMPadPattern->addEvent(new Audio\Sequence\SetNote('F1'), 0, 32);
-$oFMPadPattern->addEvent(new Audio\Sequence\NoteOn('E3'), 1, 1);
-$oFMPadPattern->addEvent(new Audio\Sequence\SetNote('D#3'), 1, 32);
-$oFMPadPattern->addEvent(new Audio\Sequence\NoteOn('G3'), 2, 2);
-$oFMPadPattern->addEvent(new Audio\Sequence\NoteOn('C3'), 3, 3);
-$oFMPadPattern->addEvent(new Audio\Sequence\SetNote('A#3'), 3, 32);
+$oFMPadPattern = new Audio\Sequence\Pattern(5, 256);
+$oFMPadPattern->addEvent(new Audio\Sequence\NoteOn('C2'), 0, 64 + 0, 64);
+$oFMPadPattern->addEvent(new Audio\Sequence\SetNote('F1'), 0, 64 + 32, 64);
+$oFMPadPattern->addEvent(new Audio\Sequence\NoteOn('E3'), 1, 128 + 1, 64);
+$oFMPadPattern->addEvent(new Audio\Sequence\SetNote('D#3'), 1, 128 + 32, 64);
+$oFMPadPattern->addEvent(new Audio\Sequence\NoteOn('G3'), 2, 128 + 2, 64);
+$oFMPadPattern->addEvent(new Audio\Sequence\NoteOn('C3'), 3, 128 + 3, 64);
+$oFMPadPattern->addEvent(new Audio\Sequence\SetNote('A#3'), 3, 128 + 32, 64);
+$oFMPadPattern->addEvent(new Audio\Sequence\NoteOn('C4'), 4, 128+64 + 0, 64);
+$oFMPadPattern->addEvent(new Audio\Sequence\NoteOn('D#4'), 4, 128+64 + 32, 64);
+
+$oFMPad->setInsert(new Audio\Signal\Insert\DelayLoop(null, 250.0, 0.5));
+
 
 $oSequencer = new Audio\Machine\Sequencer();
 $oSequencer
     ->setTempo(120)
-    ->addMachine('marimba', $oFMMarimba)
-    ->addPattern('marimba', $oMarimbaPattern)
-    ->addMachine('pad', $oFMPad)
-    ->addPattern('pad', $oFMPadPattern)
     ->addMachine('drum', $oDrumMachine)
     ->addPattern('drum', $oDrumPattern)
+    ->addMachine('pad', $oFMPad)
+    ->addPattern('pad', $oFMPadPattern)
+    ->addMachine('marimba', $oFMMarimba)
+    ->addPattern('marimba', $oMarimbaPattern)
+
 ;
 
 // Open the audio
-//$oPCMOut = Audio\Output\Piped::create();
-$oPCMOut = new Audio\Output\Wav('test_fm.wav');
+$oPCMOut = Audio\Output\Piped::create();
+//$oPCMOut = new Audio\Output\Wav('test_fm.wav');
 $oPCMOut->open();
 
 $fMark = microtime(true);

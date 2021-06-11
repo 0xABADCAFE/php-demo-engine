@@ -21,13 +21,13 @@ $oFMMarimba
     ->setCarrierLevelEnvelope(
         new Audio\Signal\Envelope\DecayPulse(1.0, 0.1)
     )
-    ->setOutputLevel(0.3);
+    ->setOutputLevel(0.35)
 ;
 
 $oFMPad = new Audio\Machine\TwoOpFM(5);
 $oFMPad
-    ->setModulatorWaveform(Audio\Signal\IWaveform::SINE_HALF_RECT)
-    ->setModulatorRatio(2.001)
+    ->setModulatorWaveform(Audio\Signal\IWaveform::SINE, Audio\Signal\Waveform\Rectifier::FULL_RECT_P)
+    ->setModulatorRatio(1.001)
     ->setModulatorLevelEnvelope(
         new Audio\Signal\Envelope\Shape(
             0.0, [
@@ -39,7 +39,7 @@ $oFMPad
     ->setModulationIndex(0.5)
     ->setModulatorMix(0.2)
     ->setCarrierWaveform(Audio\Signal\IWaveform::SINE)
-    ->setCarrierRatio(3.999)
+    ->setCarrierRatio(1.999)
     ->setCarrierLevelEnvelope(
         new Audio\Signal\Envelope\Shape(
             0.0, [
@@ -49,7 +49,10 @@ $oFMPad
         )
     )
     ->setCarrierMix(0.5)
-    ->setOutputLevel(0.05);
+    ->setOutputLevel(0.1)
+    ->setPitchLFODepth(0.06)
+    ->setPitchLFORate(4.5)
+    ->enablePitchLFO(true, true)
 ;
 
 $oDrumMachine = new Audio\Machine\TRNaN();
@@ -141,7 +144,7 @@ $oFMPadPattern->addEvent(new Audio\Sequence\NoteOn('G3'), 2, 128 + 2, 64);
 $oFMPadPattern->addEvent(new Audio\Sequence\NoteOn('C3'), 3, 128 + 3, 64);
 $oFMPadPattern->addEvent(new Audio\Sequence\SetNote('A#3'), 3, 128 + 32, 64);
 $oFMPadPattern->addEvent(new Audio\Sequence\NoteOn('C4'), 4, 128+64 + 0, 64);
-$oFMPadPattern->addEvent(new Audio\Sequence\NoteOn('D#4'), 4, 128+64 + 32, 64);
+$oFMPadPattern->addEvent(new Audio\Sequence\SetNote('D#4'), 4, 128+64 + 32, 64);
 
 $oFMPad->setInsert(new Audio\Signal\Insert\DelayLoop(null, 250.0, 0.5));
 
@@ -165,7 +168,7 @@ $oPCMOut->open();
 
 $fMark = microtime(true);
 
-$oSequencer->play($oPCMOut, 256, 4);
+$oSequencer->play($oPCMOut, 512, 4);
 
 $fElapsed = microtime(true) - $fMark;
 

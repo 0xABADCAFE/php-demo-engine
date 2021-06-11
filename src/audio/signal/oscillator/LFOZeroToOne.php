@@ -27,6 +27,9 @@ use ABadCafe\PDE\Audio;
  */
 class LFOZeroToOne extends LFO {
 
+    /**
+     * @inheritDoc
+     */
     protected function emitNew() : Audio\Signal\Packet {
         for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
             $this->oWaveformInput[$i] = $this->fScaleVal * $this->iSamplePosition++;

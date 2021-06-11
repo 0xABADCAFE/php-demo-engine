@@ -24,13 +24,13 @@ use ABadCafe\PDE\Audio;
 /**
  * TwoOpFM
  *
- * A fixed algorithm 2-operator FM synthesiser:
+ * A simple fixed algorithm 2-operator FM synthesiser:
  *
  *   Modulator -+-> (mod index) -> Carrier -> (carrier mix) -+
  *              |                                            +-> Output
  *              +---------------------------> (mod mix) -----+
  *
- * Modulator and carrier have independent Volume and Pitch envelopes and LFOs.
+ * Modulator and carrier have independent Volume and Pitch envelopes. There are shared pitch and volume LFOs.
  */
 class TwoOpFM implements Audio\IMachine {
 
@@ -41,28 +41,30 @@ class TwoOpFM implements Audio\IMachine {
 
     use TPolyphonicMachine;
 
+    /**
+     * @var Audio\Signal\IWaveform[] $aWaveforms
+     */
     private static array $aWaveforms = [];
 
     private array
         /**
-         * @param Audio\Signal\IOScillator[] $aModulator
+         * @var Audio\Signal\IOScillator[] $aModulator
          */
         $aModulator    = [], // One per voice
 
         /**
-         * @param Audio\Signal\IOScillator[] $aCarrier
+         * @var Audio\Signal\IOScillator[] $aCarrier
          */
         $aCarrier      = [],  // One per voice
 
         /**
-         * @param Audio\Signal\FixedMixer[] $aVoice
+         * @var Audio\Signal\FixedMixer[] $aVoice
          */
         $aVoice        = [],
 
         /**
-         * @param float[] $aBaseFreq
+         * @var float[] $aBaseFreq
          */
-
         $aBaseFreq     = []
     ;
 
@@ -73,11 +75,9 @@ class TwoOpFM implements Audio\IMachine {
         $oCarrierPitchEnv    = null
     ;
 
-    private ?Audio\Signal\Oscillator\LFO
-        $oModulatorPitchLFO  = null,
-        $oModulatorLevelLFO  = null,
-        $oCarrierPitchLFO    = null,
-        $oCarrierLevelLFO    = null
+    private Audio\Signal\Oscillator\LFO
+        $oPitchLFO,
+        $oLevelLFO
     ;
 
     private float
@@ -88,6 +88,11 @@ class TwoOpFM implements Audio\IMachine {
         $fCarrierMix      = 1.0  // Carrier to output mix level
     ;
 
+    /**
+     * Constructor
+     *
+     * @param int $iNumVoices
+     */
     public function __construct(int $iNumVoices) {
         self::initShared();
         $this->initPolyphony($iNumVoices);
@@ -118,22 +123,142 @@ class TwoOpFM implements Audio\IMachine {
             $this->aBaseFreq[$i]  = Audio\Note::CENTRE_FREQUENCY;
             $this->setVoiceSource($i, $oMixer, $fMixLevel);
         }
+
+        $this->oPitchLFO = new Audio\Signal\Oscillator\LFO(self::$aWaveforms[Audio\Signal\IWaveform::SINE]);
+        $this->oLevelLFO = new Audio\Signal\Oscillator\LFOOneToZero(self::$aWaveforms[Audio\Signal\IWaveform::SINE]);
     }
 
     /**
-     * Set the waveform type for the modulator oscillator
+     * Set the (enumerated) Pitch LFO waveform shape
+     *
+     * @param  int $iWaveform
+     * @return self
      */
-    public function setModulatorWaveform(int $iWaveform) : self {
+    public function setPitchLFOWaveform(int $iWaveform) : self {
+        if (isset(self::$aWaveforms[$iWaveform])) {
+            $this->oPitchLFO->setWaveform(self::$aWaveforms[$iWaveform]);
+        }
+        return $this;
+    }
+
+    /**
+     * Set the depth of the Pitch LFO, in semitones.
+     *
+     * @param  float $fDepth
+     * @return self
+     */
+    public function setPitchLFODepth(float $fDepth) : self {
+        $this->oPitchLFO->setDepth($fDepth);
+        return $this;
+    }
+
+    /**
+     * Set the rate of the Pitch LFO, in Hz.
+     *
+     * @param  float $fDepth
+     * @return self
+     */
+    public function setPitchLFORate(float $fRate) : self {
+        $this->oPitchLFO->setFrequency($fRate);
+        return $this;
+    }
+
+    /**
+     * Set the (enumerated) Level LFO waveform shape
+     *
+     * @param  int $iWaveform
+     * @return self
+     */
+    public function setLevelLFOWaveform(int $iWaveform) {
+        if (isset(self::$aWaveforms[$iWaveform])) {
+            $this->oLevelLFO->setWaveform(self::$aWaveforms[$iWaveform]);
+        }
+        return $this;
+    }
+
+    /**
+     * Set the depth of the Level LFO, i.e. how strongly the LFO attenuates. A value of 1.0 attenuates to silence.
+     *
+     * @param  float $fDepth
+     * @return self
+     */
+    public function setLevelLFODepth(float $fDepth) : self {
+        $this->oLevelLFO->setDepth($fDepth);
+        return $this;
+    }
+
+    /**
+     * Set the rate of the Level LFO, in Hz.
+     *
+     * @param  float $fDepth
+     * @return self
+     */
+    public function setLevelLFORate(float $fRate) : self {
+        $this->oLevelLFO->setFrequency($fRate);
+        return $this;
+    }
+
+    /**
+     * Enable the Pitch LFO, separately for Modulator and Carrier.
+     *
+     * @param  bool $bModulator
+     * @param  bool $bCarrier
+     * @return self
+     */
+    public function enablePitchLFO(bool $bModulator, bool $bCarrier) : self {
+        $oModulatorLFO = $bModulator ? $this->oPitchLFO : null;
+        $oCarrierLFO   = $bCarrier   ? $this->oPitchLFO : null;
+        for ($i = 0; $i < $this->iNumVoices; ++$i) {
+            $this->aModulator[$i]->setPitchModulator($oModulatorLFO);
+            $this->aCarrier[$i]->setPitchModulator($oCarrierLFO);
+        }
+        return $this;
+    }
+
+    /**
+     * Enable the Level LFO, separately for Modulator and Carrier.
+     *
+     * @param  bool $bModulator
+     * @param  bool $bCarrier
+     * @return self
+     */
+    public function enableLevelLFO(bool $bModulator, bool $bCarrier) : self {
+        $oModulatorLFO = $bModulator ? $this->oLevelLFO : null;
+        $oCarrierLFO   = $bCarrier   ? $this->oLevelLFO : null;
+        for ($i = 0; $i < $this->iNumVoices; ++$i) {
+            $this->aModulator[$i]->setLevelModulator($oModulatorLFO);
+            $this->aCarrier[$i]->setLevelModulator($oCarrierLFO);
+        }
+        return $this;
+    }
+
+    /**
+     * Set the enumerated waveform type for the modulator oscillator. Additionally one of the standard waveform
+     * rectifiers can be applied.
+     *
+     * @param  int $iWaveform
+     * @param  int $iModifier
+     * @return self
+     */
+    public function setModulatorWaveform(int $iWaveform, int $iModifier = Audio\Signal\Waveform\Rectifier::NONE) : self {
         if (isset(self::$aWaveforms[$iWaveform])) {
             foreach ($this->aModulator as $oModulator) {
-                $oModulator->setWaveform(self::$aWaveforms[$iWaveform]);
+                $oModulator->setWaveform(
+                    Audio\Signal\Waveform\Rectifier::createStandard(
+                        self::$aWaveforms[$iWaveform],
+                        $iModifier
+                    )
+                );
             }
         }
         return $this;
     }
 
     /**
-     * Set the modulator frequency multiplier as an absolute.
+     * Set the modulator frequency multiplier as an absolute ratio.
+     *
+     * @param  float $fRatio
+     * @return self
      */
     public function setModulatorRatio(float $fRatio) : self {
         $this->fModulatorRatio = min(max($fRatio, self::MIN_RATIO), self::MAX_RATIO);
@@ -195,12 +320,22 @@ class TwoOpFM implements Audio\IMachine {
     }
 
     /**
-     * Set the waveform type for the carrier oscillator.
+     * Set the enumerated waveform type for the modulator oscillator. Additionally one of the standard waveform
+     * rectifiers can be applied.
+     *
+     * @param  int $iWaveform
+     * @param  int $iModifier
+     * @return self
      */
-    public function setCarrierWaveform(int $iWaveform) : self {
+    public function setCarrierWaveform(int $iWaveform, int $iModifier = Audio\Signal\Waveform\Rectifier::NONE) : self {
         if (isset(self::$aWaveforms[$iWaveform])) {
             foreach ($this->aCarrier as $oCarrier) {
-                $oCarrier->setWaveform(self::$aWaveforms[$iWaveform]);
+                $oCarrier->setWaveform(
+                    Audio\Signal\Waveform\Rectifier::createStandard(
+                        self::$aWaveforms[$iWaveform],
+                        $iModifier
+                    )
+                );
             }
         }
         return $this;
@@ -293,12 +428,10 @@ class TwoOpFM implements Audio\IMachine {
     private static function initShared() {
         if (empty(self::$aWaveforms)) {
             self::$aWaveforms = [
-                Audio\Signal\IWaveform::SINE           => new Audio\Signal\Waveform\Sine(),
-                Audio\Signal\IWaveform::TRIANGLE       => new Audio\Signal\Waveform\Triangle(),
-                Audio\Signal\IWaveform::SAW            => new Audio\Signal\Waveform\Saw(),
-                Audio\Signal\IWaveform::SQUARE         => new Audio\Signal\Waveform\Square(),
-                Audio\Signal\IWaveform::SINE_HALF_RECT => new Audio\Signal\Waveform\SineHalfRect(),
-                Audio\Signal\IWaveform::SINE_FULL_RECT => new Audio\Signal\Waveform\SineFullRect()
+                Audio\Signal\IWaveform::SINE     => new Audio\Signal\Waveform\Sine(),
+                Audio\Signal\IWaveform::TRIANGLE => new Audio\Signal\Waveform\Triangle(),
+                Audio\Signal\IWaveform::SAW      => new Audio\Signal\Waveform\Saw(),
+                Audio\Signal\IWaveform::SQUARE   => new Audio\Signal\Waveform\Square()
             ];
         }
     }

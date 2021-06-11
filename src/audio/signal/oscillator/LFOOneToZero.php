@@ -18,38 +18,27 @@
 
 declare(strict_types=1);
 
-namespace ABadCafe\PDE\Audio\Signal\Waveform;
-use ABadCafe\PDE\Audio\Signal;
+namespace ABadCafe\PDE\Audio\Signal\Oscillator;
+
+use ABadCafe\PDE\Audio;
 
 /**
- * SineFullRect
- *
- * Sinewave implementation of IWaveform
- *
- * @see https://github.com/0xABADCAFE/random-proto-synth
+ * LFO that has a flat output of 1.0 which increasingly oscillates towards zero as the depth is increased
  */
-class SineFullRect implements Signal\IWaveform {
-
-    /**
-     * Waveform period (interval after which it repeats).
-     */
-    const PERIOD = M_PI;
+class LFOOneToZero extends LFO {
 
     /**
      * @inheritDoc
      */
-    public function getPeriod() : float {
-        return self::PERIOD;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function map(Signal\Packet $oInput) : Signal\Packet {
-        $oOutput = clone $oInput;
-        foreach ($oInput as $i => $fTime) {
-            $oOutput[$i] = 2.0 * abs(sin($fTime)) - 1.0;
+    protected function emitNew() : Audio\Signal\Packet {
+        for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
+            $this->oWaveformInput[$i] = $this->fScaleVal * $this->iSamplePosition++;
         }
-        return $oOutput;
+        return $this->oLastOutput = $this->oWaveform
+            ->map($this->oWaveformInput)
+            ->scaleBy(0.5 * $this->fDepth)
+            ->biasBy(1.0 - $this->fDepth);
+        ;
     }
 }
+

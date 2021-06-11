@@ -31,7 +31,6 @@ use ABadCafe\PDE\Audio\Signal;
  */
 class AliasedPulse implements Signal\IWaveform {
 
-
     const
         /**
          * Waveform period (interval after which it repeats).

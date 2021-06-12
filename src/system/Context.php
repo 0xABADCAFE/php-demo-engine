@@ -81,6 +81,8 @@ class Context {
     public function run() {
         $iFrameNumber   = 0;
         $fTimeIndex     = 0.0;
+        //$oAudioProcess  = new PDE\Audio\Player();
+        //$oAudioProcess->start();
         while ($this->handleEvents($iFrameNumber, $fTimeIndex)) {
             $this->oDisplay->clear();
             $this->runRoutines($iFrameNumber, $fTimeIndex);

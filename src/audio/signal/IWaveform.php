@@ -30,11 +30,16 @@ use ABadCafe\PDE\Audio;
 interface IWaveform {
 
     const
-        SINE     = 0,
-        TRIANGLE = 1,
-        SAW      = 2,
-        SQUARE   = 3,
-        WHITE    = 4
+        // Basic waveforms
+        SINE               = 0,
+        TRIANGLE           = 1,
+        SAW                = 2,
+        SQUARE             = 3,
+        NOISE              = 4,
+
+        // Waveform variants
+        SINE_HALF_RECT     = 5, // Half rectified sine wave, adjusted to -1.0 ... 1.0 range
+        SINE_FULL_RECT     = 6  // Fully rectified sine wave, adjusted to -1.0 ... 1.0 range
     ;
 
     /**

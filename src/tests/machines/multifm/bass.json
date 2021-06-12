@@ -1,0 +1,50 @@
+{
+    "type": "multifm",
+    "name": "bass",
+    "voices": 4,
+    "operators": [
+        {
+            "name": "carrier",
+            "waveform": 1,
+            "ratio": 1,
+            "outputmix": 0.75,
+            "levelenv": {
+                "type": "decay",
+                "initial": 1.0,
+                "halflife": 0.25
+            },
+            "modulators": [
+                {
+                    "source": 1,
+                    "index": 0.5
+                },
+                {
+                    "source": 2,
+                    "index": 0.5
+                }
+            ]
+        },
+        {
+            "name": "modulator1",
+            "waveform": 1,
+            "ratio": 1,
+            "outputmix": 0.15,
+            "levelenv": {
+                "type": "decay",
+                "initial": 1.0,
+                "halflife": 0.025
+            }
+        },
+        {
+            "name": "modulator2",
+            "waveform": 0,
+            "ratio": 0.25,
+            "outputmix": 0.15,
+            "levelenv": {
+                "type": "decay",
+                "initial": 1.0,
+                "halflife": 0.25
+            }
+        }
+    ]
+}

@@ -12,7 +12,8 @@ const SOUNDS = [
     'hhclosed' => Audio\Machine\Percussion\AnalogueHHClosed::class,
     'hhopen'   => Audio\Machine\Percussion\AnalogueHHOpen::class,
     'clap'     => Audio\Machine\Percussion\AnalogueClap::class,
-    'cowbell'  => Audio\Machine\Percussion\AnalogueCowbell::class
+    'cowbell'  => Audio\Machine\Percussion\AnalogueCowbell::class,
+    'tom'      => Audio\Machine\Percussion\AnalogueTom::class,
 ];
 
 $sSound = strtolower($_SERVER['argv'][1] ?? 'kick');

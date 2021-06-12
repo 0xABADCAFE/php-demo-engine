@@ -31,20 +31,12 @@ class ChipTune implements Audio\IMachine {
 
     use TPolyphonicMachine;
 
-    const
-        SINE     = 0,
-        TRIANGLE = 1,
-        SAW      = 2,
-        SQUARE   = 3,
-        PULSE    = 4
-    ;
-
     const LEVEL_ADJUST = [
-        self::SINE     => 1.0,
-        self::TRIANGLE => 0.9,
-        self::SAW      => 0.33,
-        self::SQUARE   => 0.25,
-        self::PULSE    => 0.25
+        Audio\Signal\IWaveform::SINE     => 1.0,
+        Audio\Signal\IWaveform::TRIANGLE => 0.9,
+        Audio\Signal\IWaveform::SAW      => 0.33,
+        Audio\Signal\IWaveform::SQUARE   => 0.25,
+        Audio\Signal\IWaveform::PULSE    => 0.25
     ];
 
     private static array $aWaveforms = [];
@@ -181,7 +173,7 @@ class ChipTune implements Audio\IMachine {
     public function setVoiceMaskEnvelope(int $iVoiceMask, Audio\Signal\IEnvelope $oEnvelope) : self {
         $aVoices = $this->getSelectedVoices($iVoiceMask);
         foreach ($aVoices as $oVoice) {
-            $oVoice->getStream()->setEnvelope(clone $oEnvelope);
+            $oVoice->getStream()->setLevelEnvelope(clone $oEnvelope);
         }
         return $this;
     }
@@ -207,7 +199,7 @@ class ChipTune implements Audio\IMachine {
                 0.0
             )
         );
-        $oOscillator->setEnvelope(
+        $oOscillator->setLevelEnvelope(
             new Audio\Signal\Envelope\Shape(
                 0.0,
                 [
@@ -245,11 +237,11 @@ class ChipTune implements Audio\IMachine {
     private static function initShared() {
         if (empty(self::$aWaveforms)) {
             self::$aWaveforms = [
-                self::SINE     => new Audio\Signal\Waveform\Sine(),
-                self::TRIANGLE => new Audio\Signal\Waveform\Triangle(),
-                self::SAW      => new Audio\Signal\Waveform\Saw(),
-                self::SQUARE   => new Audio\Signal\Waveform\Square(),
-                self::PULSE    => new Audio\Signal\Waveform\Pulse(),
+                Audio\Signal\IWaveform::SINE     => new Audio\Signal\Waveform\Sine(),
+                Audio\Signal\IWaveform::TRIANGLE => new Audio\Signal\Waveform\Triangle(),
+                Audio\Signal\IWaveform::SAW      => new Audio\Signal\Waveform\Saw(),
+                Audio\Signal\IWaveform::SQUARE   => new Audio\Signal\Waveform\Square(),
+                Audio\Signal\IWaveform::PULSE    => new Audio\Signal\Waveform\Pulse(),
             ];
         }
     }

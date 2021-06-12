@@ -18,27 +18,21 @@
 
 declare(strict_types=1);
 
-namespace ABadCafe\PDE\Audio\Signal\Oscillator;
-
-use ABadCafe\PDE\Audio;
+namespace ABadCafe\PDE\Audio;
 
 /**
- * LFO operating in range 0.0 - 1.0
+ * IFactory
+ *
+ * Utility interface for creating an audio component from a definition object, e.g. something deserealised from JSON.
  */
-class LFOZeroToOne extends LFO {
+trait TFactory {
 
-    /**
-     * @inheritDoc
-     */
-    protected function emitNew() : Audio\Signal\Packet {
-        for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
-            $this->oWaveformInput[$i] = $this->fScaleVal * $this->iSamplePosition++;
+    private static ?self $oInstance = null;
+
+    public static function get() : self {
+        if (null === self::$oInstance) {
+            self::$oInstance = new self;
         }
-        return $this->oLastOutput = $this->oWaveform
-            ->map($this->oWaveformInput)
-            ->scaleBy(0.5 * $this->fDepth)
-            ->biasBy(0.5);
-        ;
+        return self::$oInstance;
     }
 }
-

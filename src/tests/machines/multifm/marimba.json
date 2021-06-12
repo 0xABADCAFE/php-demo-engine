@@ -1,0 +1,35 @@
+{
+    "type": "multifm",
+    "name": "marimba",
+    "voices": 4,
+    "operators": [
+        {
+            "name": "carrier",
+            "waveform": 0,
+            "ratio": 1.99,
+            "outputmix": 0.75,
+            "levelenv": {
+                "type": "decay",
+                "initial": 1.0,
+                "halflife": 0.1
+            },
+            "modulators": [
+                {
+                    "source": 1,
+                    "index": 0.2
+                }
+            ]
+        },
+        {
+            "name": "modulator",
+            "waveform": 1,
+            "ratio": 7.01,
+            "outputmix": 0.15,
+            "levelenv": {
+                "type": "decay",
+                "initial": 1.0,
+                "halflife": 0.015
+            }
+        }
+    ]
+}

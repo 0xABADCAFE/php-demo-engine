@@ -34,7 +34,8 @@ class TRNaN implements Audio\IMachine {
         HH_CLOSED = 2,
         HH_OPEN   = 3,
         COWBELL   = 4,
-        CLAP      = 5
+        CLAP      = 5,
+        TOM       = 6
     ;
 
     /**
@@ -50,13 +51,14 @@ class TRNaN implements Audio\IMachine {
     private $aVoices = [];
 
     public function __construct() {
-        $this->initPolyphony(6);
+        $this->initPolyphony(7);
         $this->aVoices[self::KICK]      = new Percussion\AnalogueKick();
         $this->aVoices[self::SNARE]     = new Percussion\AnalogueSnare();
         $this->aVoices[self::HH_CLOSED] = new Percussion\AnalogueHHClosed();
         $this->aVoices[self::HH_OPEN]   = new Percussion\AnalogueHHOpen();
         $this->aVoices[self::COWBELL]   = new Percussion\AnalogueCowbell();
         $this->aVoices[self::CLAP]      = new Percussion\AnalogueClap();
+        $this->aVoices[self::TOM]       = new Percussion\AnalogueTom();
         for ($i = 0; $i < $this->iNumVoices; ++$i) {
             $this->setVoiceSource($i, $this->aVoices[$i]->getOutputStream());
         }

@@ -18,33 +18,22 @@
 
 declare(strict_types=1);
 
-namespace ABadCafe\PDE\Audio\Signal;
-
-use ABadCafe\PDE\Audio;
+namespace ABadCafe\PDE\Audio;
 
 /**
- * @see https://github.com/0xABADCAFE/random-proto-synth
+ * IFactory
+ *
+ * Utility interface for creating an audio component from a definition object, e.g. something deserealised from JSON.
  */
-interface IEnvelope extends IStream {
-
-    const MIN_TIME_SCALE = 0.01;
+interface IFactory {
 
     /**
-     * Set a scaling factor for envelope timing. A smaller value results in a faster envelope. Use to simlulate the
-     * effects of higher notes decaying faster, etc. This should be set whenever we start a new note.
+     * Main factory method. Implementors should use covariance to constrain their return types to the expected
+     * product interface. May throw if the definition is not parseable.
      *
-     * @param  float $fTimeScale
-     * @return self
+     * @param  object $oDefinition
+     * @return object
+     * @throws \RuntimeException
      */
-    public function setTimeScale(float $fTimeScale) : self;
-
-    /**
-     * Set a scaling factor for envelope levels. A smaller value results in a quieter envelope. Use to simlulate the
-     * effects of higher notes having lower overall energy, or higher velocities having greater, etc. This should be
-     * set whenever we start a new note.
-     *
-     * @param  float $fTimeScale
-     * @return self
-     */
-    public function setLevelScale(float $fLevelScale) : self;
+    public function createFrom(object $oDefinition) : object;
 }

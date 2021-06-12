@@ -18,27 +18,33 @@
 
 declare(strict_types=1);
 
-namespace ABadCafe\PDE\Audio\Signal\Oscillator;
-
-use ABadCafe\PDE\Audio;
+namespace ABadCafe\PDE\System;
 
 /**
- * LFO operating in range 0.0 - 1.0
+ * IAsynchronous
+ *
+ * Messaging properties for Asynchronous Processes
  */
-class LFOZeroToOne extends LFO {
+interface IAsynchronous {
 
-    /**
-     * @inheritDoc
-     */
-    protected function emitNew() : Audio\Signal\Packet {
-        for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
-            $this->oWaveformInput[$i] = $this->fScaleVal * $this->iSamplePosition++;
-        }
-        return $this->oLastOutput = $this->oWaveform
-            ->map($this->oWaveformInput)
-            ->scaleBy(0.5 * $this->fDepth)
-            ->biasBy(0.5);
-        ;
-    }
+    const
+        ID_PARENT = 1,
+        ID_CHILD  = 0,
+
+        MAX_RETRIES = 3,
+        RETRY_PAUSE = 100,
+
+        /**
+         * Header structure
+         *
+         * uint32[4] { magic, command, size, magic^command^size }
+         */
+        HEADER_SIZE            = 16,
+        HEADER_OFFSET_MAGIC    = 0,
+        HEADER_OFFSET_COMMAND  = 1,
+        HEADER_OFFSET_SIZE     = 2,
+        HEADER_OFFSET_CHECK    = 3,
+        HEADER_MAGIC           = 0xABADCAFE
+    ;
+
 }
-

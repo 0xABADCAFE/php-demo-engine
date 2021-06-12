@@ -28,16 +28,10 @@ use ABadCafe\PDE\Audio;
  */
 class TBNaN implements Audio\IMachine {
 
-    const
-        PULSE  = 0,
-        SQUARE = 1,
-        SAW    = 2
-    ;
-
     const LEVEL_ADJUST = [
-        self::SAW      => 0.33,
-        self::SQUARE   => 0.25,
-        self::PULSE    => 0.25
+        Audio\Signal\IWaveform::SAW      => 0.33,
+        Audio\Signal\IWaveform::SQUARE   => 0.25,
+        Audio\Signal\IWaveform::PULSE    => 0.25
     ];
 
     use TMonophonicMachine;
@@ -150,9 +144,9 @@ class TBNaN implements Audio\IMachine {
             0.9
         );
         $this->aWaveforms = [
-            self::SAW    => new Audio\Signal\Waveform\Saw(),
-            self::SQUARE => new Audio\Signal\Waveform\Square(),
-            self::PULSE  => new Audio\Signal\Waveform\Pulse(0.25),
+            Audio\Signal\IWaveform::SAW    => new Audio\Signal\Waveform\Saw(),
+            Audio\Signal\IWaveform::SQUARE => new Audio\Signal\Waveform\Square(),
+            Audio\Signal\IWaveform::PULSE  => new Audio\Signal\Waveform\Pulse(0.25),
         ];
         $this->aWaveforms[self::PULSE]->setPulsewidthModulator($this->oPWM);
     }
@@ -163,7 +157,7 @@ class TBNaN implements Audio\IMachine {
             0.07
         );
         $this->oOscillator = new Audio\Signal\Oscillator\Sound($this->aWaveforms[self::PULSE]);
-        $this->oOscillator->setEnvelope($this->oAEG);
+        $this->oOscillator->setLevelEnvelope($this->oAEG);
     }
 
     private function initFilter() {

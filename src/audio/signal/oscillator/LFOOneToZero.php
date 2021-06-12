@@ -18,33 +18,27 @@
 
 declare(strict_types=1);
 
-namespace ABadCafe\PDE\Audio\Signal;
+namespace ABadCafe\PDE\Audio\Signal\Oscillator;
 
 use ABadCafe\PDE\Audio;
 
 /**
- * @see https://github.com/0xABADCAFE/random-proto-synth
+ * LFO that has a flat output of 1.0 which increasingly oscillates towards zero as the depth is increased
  */
-interface IEnvelope extends IStream {
-
-    const MIN_TIME_SCALE = 0.01;
+class LFOOneToZero extends LFO {
 
     /**
-     * Set a scaling factor for envelope timing. A smaller value results in a faster envelope. Use to simlulate the
-     * effects of higher notes decaying faster, etc. This should be set whenever we start a new note.
-     *
-     * @param  float $fTimeScale
-     * @return self
+     * @inheritDoc
      */
-    public function setTimeScale(float $fTimeScale) : self;
-
-    /**
-     * Set a scaling factor for envelope levels. A smaller value results in a quieter envelope. Use to simlulate the
-     * effects of higher notes having lower overall energy, or higher velocities having greater, etc. This should be
-     * set whenever we start a new note.
-     *
-     * @param  float $fTimeScale
-     * @return self
-     */
-    public function setLevelScale(float $fLevelScale) : self;
+    protected function emitNew() : Audio\Signal\Packet {
+        for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
+            $this->oWaveformInput[$i] = $this->fScaleVal * $this->iSamplePosition++;
+        }
+        return $this->oLastOutput = $this->oWaveform
+            ->map($this->oWaveformInput)
+            ->scaleBy(0.5 * $this->fDepth)
+            ->biasBy(1.0 - $this->fDepth);
+        ;
+    }
 }
+

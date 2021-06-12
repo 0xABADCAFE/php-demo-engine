@@ -37,7 +37,8 @@ A bit of fun. An ASCII/ANSI terminal display with stackable routines, sequenced 
 
 ### Notes
 * Audio is still in development. 
-* 
+* Some terminals will render RGB colours truncated to 256, e.g. xterm and termux.
+* Conversion of pixel data to terminal output can consume significant CPU time and is generally offloaded to a sub process.
 
 ## Usage
 

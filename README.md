@@ -18,7 +18,11 @@
 ```
 # PDE: The Pointless|Portable|PHP Demo Engine
 
-A bit of fun. A very simple ASCII Display with some routines.
+A bit of fun. An ASCII/ANSI terminal display with stackable routines, sequenced and controlled from a simple text file.
+
+## Examples
+[![First Demo](https://img.youtube.com/vi/koEwVBM4a3U/0.jpg)](https://www.youtube.com/watch?v=koEwVBM4a3U) [![Raytracing](https://img.youtube.com/vi/0NdSchCaqlU/0.jpg)](https://www.youtube.com/watch?v=0NdSchCaqlU)
+[![Tunnels](https://img.youtube.com/vi/77Ize7KSG1Y/0.jpg)](https://www.youtube.com/watch?v=77Ize7KSG1Y) [![Audio](https://img.youtube.com/vi/flUID_2WPm8/0.jpg)](https://www.youtube.com/watch?v=flUID_2WPm8)
 
 ## Requirements
 
@@ -26,8 +30,14 @@ A bit of fun. A very simple ASCII Display with some routines.
     * Lower versions of 7.4 may work but 7.4.3 is know not to due to buggy covariant return support.
 * A terminal that supports arbitrary RGB ANSI escape sequences and UTF8 blockmode characters.
     * To check if your terminal is likely to work, download the [test card](./docs/testcard.txt) textfile, cat it in your termimal anc compare it to the expected reference output [image](./docs/testcard.png).
+* APlay or Sox Play installed for audio output.
+    * APlay is usually installed by default on most Linux distributions. For MacOS, sox play is probably your only option.  
 * A sense of humour.
 * A disregard for best practise and standards.
+
+### Notes
+* Audio is still in development. 
+* 
 
 ## Usage
 

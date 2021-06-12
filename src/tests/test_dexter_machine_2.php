@@ -6,30 +6,15 @@ namespace ABadCafe\PDE;
 
 require_once '../PDE.php';
 
-$oDexter = new Audio\Machine\DeXter(4, 2);
+$sPatch = $_SERVER['argv'][1] ?? 'marimba';
 
-$oDexter
-    ->aliasOperator(1, 'modulator')
-    ->aliasOperator(0, 'carrier')
+$sPath   = sprintf('machines/multifm/%s.json', $sPatch);
+$oPatch  = json_decode(file_get_contents($sPath));
 
-    ->selectOperatorName('modulator')
-        ->setWaveform(Audio\Signal\IWaveform::TRIANGLE)
-        ->setRatio(7.01)
-        ->setLevelEnvelope(
-            new Audio\Signal\Envelope\DecayPulse(1.0, 0.015) // slower decay
-        )
-        ->setOutputMixLevel(0.15) // Slight contribution to overall output
+$oDexter = Audio\Machine\Factory::get()
+    ->createFrom($oPatch);
 
-    ->selectOperatorName('carrier')
-        ->setRatio(1.99)
-        ->setLevelEnvelope(
-            new Audio\Signal\Envelope\DecayPulse(1.0, 0.1)
-        )
-        ->setModulation(1, 0.2)   // Bar modulation
-        ->setOutputMixLevel(0.75) // Drop contribution to output to compensate for op 1
-;
-
-$oDexter->setInsert(new Audio\Signal\Insert\DelayLoop(null, 370.0, 0.5));
+//$oDexter->setInsert(new Audio\Signal\Insert\DelayLoop(null, 370.0, 0.5));
 
 
 $oPattern = new Audio\Sequence\Pattern(6, 64);
@@ -95,8 +80,6 @@ $oPattern->addEvent(new Audio\Sequence\NoteOn('F3', 44), 2, 61, 64);
 $oPattern->addEvent(new Audio\Sequence\NoteOn('A#3', 40), 3, 62, 64);
 $oPattern->addEvent(new Audio\Sequence\NoteOn('A#3', 38), 0, 63, 64);
 
-
-
 $oSequencer = new Audio\Machine\Sequencer();
 $oSequencer
     ->setTempo(120)
@@ -112,7 +95,7 @@ $oPCMOut->open();
 
 $fMark = microtime(true);
 
-$oSequencer->play($oPCMOut, 128, 1);
+$oSequencer->play($oPCMOut, 128, 4);
 
 $fElapsed = microtime(true) - $fMark;
 

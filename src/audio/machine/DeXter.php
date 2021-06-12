@@ -56,10 +56,6 @@ class DeXter implements Audio\IMachine {
          */
         $aBaseFreq     = [],
 
-        // One each per Operator
-        $aLevelLFO     = [],
-        $aPitchLFO     = [],
-
         /**
          * @var FM\Operator[][] - first index is operator number, second is voice
          */
@@ -71,7 +67,6 @@ class DeXter implements Audio\IMachine {
     private int  $iNumOperators;
 
     private ?int $iUsingOperator = null;
-
 
     /**
      * Constructor
@@ -86,16 +81,6 @@ class DeXter implements Audio\IMachine {
 
         $this->iNumOperators = max(min($iNumOperators, self::MAX_OPERATORS), self::MIN_OPERATORS);
         $this->aOperators    = array_fill(0, $this->iNumOperators, array_fill(0, $this->iNumVoices, []));
-
-        for ($i = 0; $i < $this->iNumOperators; ++$i) {
-            $this->aPitchLFO[$i] = new Audio\Signal\Oscillator\LFO(
-                self::$aWaveforms[Audio\Signal\IWaveform::SINE]
-            );
-            $this->aLevelLFO[$i] = new Audio\Signal\Oscillator\LFOOneToZero(
-                self::$aWaveforms[Audio\Signal\IWaveform::SINE]
-            );
-            $this->aOperatorNames['Op' . $i] = $i;
-        }
 
         for ($i = 0; $i < $this->iNumVoices; ++$i) {
             $this->aBaseFreq[$i] = Audio\Note::CENTRE_FREQUENCY;
@@ -113,6 +98,13 @@ class DeXter implements Audio\IMachine {
         }
     }
 
+    /**
+     * Set a custom alias for an operator number.
+     *
+     * @param  int    $iOperator
+     * @param  string $sName
+     * @return self
+     */
     public function aliasOperator(int $iOperator, string $sName) : self {
         if (!empty($sName) && isset($this->aOperators[$iOperator])) {
             $this->aOperatorNames[$sName] = $iOperator;
@@ -131,25 +123,45 @@ class DeXter implements Audio\IMachine {
         return $this;
     }
 
+    /**
+     * Select the aliased operator to modify
+     *
+     * @param  int $iOperator
+     * @return self
+     */
     public function selectOperatorName(string $sName) {
         $this->iUsingOperator = $this->aOperatorNames[$sName] ?? null;
         return $this;
     }
 
     /**
-     * Select the waveform for the operator
+     * Select a standard enumerated waveform for the operator
      *
      * @param  int $iWaveform
      * @param  int $iModifier
      * @return self
      */
-
-    public function setWaveform(int $iWaveform, int $iModifier = Audio\Signal\Waveform\Rectifier::NONE) : self {
+    public function setEnumeratedWaveform(int $iWaveform, int $iModifier = Audio\Signal\Waveform\Rectifier::NONE) : self {
         if (null !== $this->iUsingOperator && isset(self::$aWaveforms[$iWaveform])) {
             $oWaveform = Audio\Signal\Waveform\Rectifier::createStandard(
                 self::$aWaveforms[$iWaveform],
                 $iModifier
             );
+            foreach ($this->aOperators[$this->iUsingOperator] as $iVoice => $oOperator) {
+                $oOperator->setWaveform($oWaveform);
+            }
+        }
+        return $this;
+    }
+
+    /**
+     * Set a custom waveform for the operator
+     *
+     * @param  Audio\Signal\IWaveform $oWaveform
+     * @return self
+     */
+    public function setWaveform(Audio\Signal\IWaveform $oWaveform) : self {
+        if (null !== $this->iUsingOperator) {
             foreach ($this->aOperators[$this->iUsingOperator] as $iVoice => $oOperator) {
                 $oOperator->setWaveform($oWaveform);
             }
@@ -271,9 +283,11 @@ class DeXter implements Audio\IMachine {
      * @param  float $fLevel
      * @return self
      */
-    public function setPitchLFOLevel($fLevel) : self {
+    public function setPitchLFODepth($fDepth) : self {
         if (null !== $this->iUsingOperator) {
-            $this->aPitchLFO[$this->iUsingOperator]->setLevel($fLevel);
+            foreach ($this->aOperators[$this->iUsingOperator] as $iVoice => $oOperator) {
+                $oOperator->setPitchLFODepth($fDepth);
+            }
         }
         return $this;
     }
@@ -284,7 +298,9 @@ class DeXter implements Audio\IMachine {
      */
     public function setPitchLFORate($fRate) : self {
         if (null !== $this->iUsingOperator) {
-            $this->aPitchLFO[$this->iUsingOperator]->setRate($fRate);
+            foreach ($this->aOperators[$this->iUsingOperator] as $iVoice => $oOperator) {
+                $oOperator->setPitchLFORate($fRate);
+            }
         }
         return $this;
     }
@@ -295,7 +311,7 @@ class DeXter implements Audio\IMachine {
     public function enablePitchLFO() : self {
         if (null !== $this->iUsingOperator) {
             foreach ($this->aOperators[$this->iUsingOperator] as $iVoice => $oOperator) {
-                $oOperator->setPitchModulator($this->aPitchlLFO[$this->iUsingOperator]);
+                $oOperator->enablePitchLFO();
             }
         }
 
@@ -308,7 +324,7 @@ class DeXter implements Audio\IMachine {
     public function disablePitchLFO() : self {
         if (null !== $this->iUsingOperator) {
             foreach ($this->aOperators[$this->iUsingOperator] as $iVoice => $oOperator) {
-                $oOperator->setPitchModulator(null);
+                $oOperator->disablePitchLFO();
             }
         }
         return $this;
@@ -318,9 +334,11 @@ class DeXter implements Audio\IMachine {
      * @param  float $fLevel
      * @return self
      */
-    public function setLevelLFOLevel($fLevel) : self {
+    public function setLevelLFODepth($fDepth) : self {
         if (null !== $this->iUsingOperator) {
-            $this->aLevelLFO[$this->iUsingOperator]->setLevel($fLevel);
+            foreach ($this->aOperators[$this->iUsingOperator] as $iVoice => $oOperator) {
+                $oOperator->setLevelLFODepth($fDepth);
+            }
         }
         return $this;
     }
@@ -331,7 +349,9 @@ class DeXter implements Audio\IMachine {
      */
     public function setLevelLFORate($fRate) : self {
         if (null !== $this->iUsingOperator) {
-            $this->aLevelLFO[$this->iUsingOperator]->setRate($fRate);
+            foreach ($this->aOperators[$this->iUsingOperator] as $iVoice => $oOperator) {
+                $oOperator->setLevelLFORate($fRate);
+            }
         }
         return $this;
     }
@@ -342,7 +362,7 @@ class DeXter implements Audio\IMachine {
     public function enableLevelLFO() : self {
         if (null !== $this->iUsingOperator) {
             foreach ($this->aOperators[$this->iUsingOperator] as $iVoice => $oOperator) {
-                $oOperator->setLevelModulator($this->aLevelLFO[$this->iUsingOperator]);
+                $oOperator->enableLevelLFO();
             }
         }
 
@@ -355,7 +375,7 @@ class DeXter implements Audio\IMachine {
     public function disableLevelLFO() : self {
         if (null !== $this->iUsingOperator) {
             foreach ($this->aOperators[$this->iUsingOperator] as $iVoice => $oOperator) {
-                $oOperator->setLevelModulator(null);
+                $oOperator->disableLevelLFO();
             }
         }
         return $this;
@@ -405,7 +425,8 @@ class DeXter implements Audio\IMachine {
                 Audio\Signal\IWaveform::SINE     => new Audio\Signal\Waveform\Sine(),
                 Audio\Signal\IWaveform::TRIANGLE => new Audio\Signal\Waveform\Triangle(),
                 Audio\Signal\IWaveform::SAW      => new Audio\Signal\Waveform\Saw(),
-                Audio\Signal\IWaveform::SQUARE   => new Audio\Signal\Waveform\Square()
+                Audio\Signal\IWaveform::SQUARE   => new Audio\Signal\Waveform\Square(),
+                Audio\Signal\IWaveform::NOISE    => new Audio\Signal\Waveform\WhiteNoise()
             ];
         }
     }

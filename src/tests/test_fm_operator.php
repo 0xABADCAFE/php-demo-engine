@@ -27,8 +27,6 @@ $oModOperator2
     ->addModulator($oModOperator1, 0.5);
 
 $oOutputOperator = new Audio\Machine\FM\Operator;
-$oOutputOperator
-    ->setOutputLevel(0.5);
 
 $oOutputOperator
     ->addModulator($oModOperator1, 0.5)
@@ -43,7 +41,7 @@ $oPCMOut->open();
 
 $iPackets = 3000;
 while($iPackets--) {
-    $oPCMOut->write($oOutputOperator->emit());
+    $oPCMOut->write($oOutputOperator->emit()->scaleBy(0.25));
 }
 
 $oPCMOut->close();

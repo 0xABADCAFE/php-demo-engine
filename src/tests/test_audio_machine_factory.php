@@ -24,7 +24,7 @@ const MACHINES = [
 
     '{"type":"multifm", "operators":[{"levelenv": {"type": "decay", "halflife": 0.2, "initial": 0.75}}, {"pitchenv": {"type": "decay", "halflife": 0.2, "initial": 0.75, "target": 0.25}}]}',
 
-    '{"type":"multifm", "operators":[{"modulators":[{"source": 1, "index": 0.75}]}, {}]}',
+    '{"type":"multifm", "operators":[{}, {"modulators":[{"source": 0, "index": 0.75}]}]}',
 ];
 
 

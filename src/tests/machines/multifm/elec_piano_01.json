@@ -4,45 +4,45 @@
     "voices": 4,
     "operators": [
         {
-            "name": "modulator1",
-            "waveform": "triangle",
-            "ratio": 1,
+            "name": "tine",
+            "waveform": "sine",
+            "ratio": 19.001,
+            "outputmix": 0.0,
+            "levelenv": {
+                "type": "decay",
+                "initial": 1.0,
+                "halflife": 0.075
+            }
+        },
+        {
+            "name": "bar",
+            "waveform": "sine",
+            "ratio": 1.995,
             "outputmix": 0.15,
             "levelenv": {
                 "type": "decay",
                 "initial": 1.0,
-                "halflife": 0.05
+                "halflife": 0.75
             }
         },
         {
-            "name": "modulator2",
+            "name": "body",
             "waveform": "sine",
-            "ratio": 0.25,
-            "outputmix": 0.15,
+            "ratio": 1.005,
+            "outputmix": 0.5,
             "levelenv": {
                 "type": "decay",
                 "initial": 1.0,
-                "halflife": 0.2
-            }
-        },
-        {
-            "name": "carrier",
-            "waveform": "sine",
-            "ratio": 0.25,
-            "outputmix": 0.75,
-            "levelenv": {
-                "type": "decay",
-                "initial": 1.0,
-                "halflife": 0.25
+                "halflife": 1.0
             },
             "modulators": [
                 {
-                    "source": "modulator1",
-                    "index": 0.5
+                    "source": "tine",
+                    "index": 0.05
                 },
                 {
-                    "source": "modulator2",
-                    "index": 0.5
+                    "source": "bar",
+                    "index": 0.1
                 }
             ]
         }

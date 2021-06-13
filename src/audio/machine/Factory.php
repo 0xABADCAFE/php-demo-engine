@@ -79,17 +79,24 @@ class Factory implements Audio\IFactory {
 
         $oDexter    = new DeXter($iPolyphony, $iNumOperators);
 
+        $aOperatorNames = [];
+
         $iOperator  = 0;
         foreach ($oDefinition->operators as $oOperatorDefinition) {
-            $this->configureMultiFMOperator($oDexter, $iOperator++, $oOperatorDefinition);
+            $this->configureMultiFMOperator($oDexter, $iOperator++, $oOperatorDefinition, $aOperatorNames);
         }
 
         return $oDexter;
     }
 
-    private function configureMultiFMOperator(DeXter $oDexter, int $iOperator, object $oDefinition) {
+    private function configureMultiFMOperator(DeXter $oDexter, int $iOperator, object $oDefinition, array& $aOperatorNames) {
         $oDexter->selectOperator($iOperator);
         echo "\t\tConfiguring operator ", $iOperator, "...\n";
+        if (!isset($oDefinition->name)) {
+            $aOperatorNames[(string)$iOperator] = $iOperator;
+        } else {
+            $aOperatorNames[(string)$oDefinition->name] = $iOperator;
+        }
         if (isset($oDefinition->waveform)) {
             if (is_object($oDefinition->waveform)) {
                 $oWaveform = Audio\Signal\Waveform\Factory::get()->createFrom($oDefinition->waveform);
@@ -181,10 +188,10 @@ class Factory implements Audio\IFactory {
             echo "\t\t\tConfuguring modulators...\n";
             foreach ($oDefinition->modulators as $oModulator) {
                 if (is_object($oModulator) && isset($oModulator->source) && isset($oModulator->index)) {
-                    $iSource = (int)$oModulator->source;
+                    $sSource = (string)$oModulator->source;
                     $fIndex  = (float)$oModulator->index;
-                    $oDexter->setModulation($iSource, $fIndex);
-                    echo "\t\t\t\tAdding modulation from operator ", $iSource, " at level ", $fIndex, ".\n";
+                    $oDexter->setModulation($aOperatorNames[$sSource], $fIndex);
+                    echo "\t\t\t\tAdding modulation from operator ", $sSource, " at level ", $fIndex, ".\n";
                 }
             }
         }

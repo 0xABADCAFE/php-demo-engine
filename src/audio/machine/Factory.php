@@ -31,6 +31,27 @@ class Factory implements Audio\IFactory {
         'multifm'    => 'createMultiOperatorFM',
     ];
 
+    const WAVEFORM_NAMES = [
+        'sine'       => Audio\Signal\IWaveform::SINE,
+        'triangle'   => Audio\Signal\IWaveform::TRIANGLE,
+        'saw'        => Audio\Signal\IWaveform::SAW,
+        'square'     => Audio\Signal\IWaveform::SQUARE,
+        'pulse'      => Audio\Signal\IWaveform::PULSE,
+        'noise'      => Audio\Signal\IWaveform::NOISE,
+    ];
+
+    const MODIFIER_NAMES = [
+        'none'                => Audio\Signal\Waveform\Rectifier::NONE,
+        'halfwave_pos'        => Audio\Signal\Waveform\Rectifier::HALF_RECT_P,
+        'halfwave_pos_scaled' => Audio\Signal\Waveform\Rectifier::HALF_RECT_P_FS,
+        'halfwave_neg'        => Audio\Signal\Waveform\Rectifier::HALF_RECT_N,
+        'halfwave_neg_scaled' => Audio\Signal\Waveform\Rectifier::HALF_RECT_N_FS,
+        'fullwave_pos'        => Audio\Signal\Waveform\Rectifier::FULL_RECT_P,
+        'fullwave_pos_scaled' => Audio\Signal\Waveform\Rectifier::FULL_RECT_P_FS,
+        'fullwave_neg'        => Audio\Signal\Waveform\Rectifier::FULL_RECT_N,
+        'fullwave_neg_scaled' => Audio\Signal\Waveform\Rectifier::FULL_RECT_N_FS
+    ];
+
     /**
      * @inheritDoc
      */
@@ -74,9 +95,19 @@ class Factory implements Audio\IFactory {
                 $oWaveform = Audio\Signal\Waveform\Factory::get()->createFrom($oDefinition->waveform);
                 $oDexter->setWaveform($oWaveform);
                 echo "\t\t\tSet custom waveform [", get_class($oWaveform), "].\n";
-            } else {
-                $iWaveform = (int)$oDefinition->waveform;
-                $iModifier = (int)($oDefinition->modifier ?? Audio\Signal\Waveform\Rectifier::NONE);
+            } else if (
+                is_string($oDefinition->waveform) &&
+                isset(self::WAVEFORM_NAMES[$oDefinition->waveform])
+            ) {
+                $iWaveform = self::WAVEFORM_NAMES[$oDefinition->waveform];
+                $iModifier = Audio\Signal\Waveform\Rectifier::NONE;
+                if (
+                    isset($oDefinition->modifier) &&
+                    is_string($oDefinition->modifier) &&
+                    isset(self::MODIFIER_NAMES[$oDefinition->modifier])
+                ) {
+                    $iModifier = self::MODIFIER_NAMES[$oDefinition->modifier];
+                }
                 $oDexter->setEnumeratedWaveform($iWaveform, $iModifier);
                 echo "\t\t\tSet standard waveform #", $iWaveform, ":", $iModifier, ".\n";
             }

@@ -5,7 +5,7 @@
     "operators": [
         {
             "name": "carrier",
-            "waveform": 0,
+            "waveform": "sine",
             "ratio": 1.99,
             "outputmix": 0.75,
             "levelenv": {
@@ -22,7 +22,7 @@
         },
         {
             "name": "modulator",
-            "waveform": 1,
+            "waveform": "triangle",
             "ratio": 7.01,
             "outputmix": 0.15,
             "levelenv": {

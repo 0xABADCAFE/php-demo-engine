@@ -5,8 +5,8 @@
     "operators": [
         {
             "name": "carrier",
-            "waveform": 1,
-            "ratio": 1,
+            "waveform": "sine",
+            "ratio": 0.25,
             "outputmix": 0.75,
             "levelenv": {
                 "type": "decay",
@@ -26,24 +26,24 @@
         },
         {
             "name": "modulator1",
-            "waveform": 1,
+            "waveform": "triangle",
             "ratio": 1,
             "outputmix": 0.15,
             "levelenv": {
                 "type": "decay",
                 "initial": 1.0,
-                "halflife": 0.025
+                "halflife": 0.05
             }
         },
         {
             "name": "modulator2",
-            "waveform": 0,
+            "waveform": "sine",
             "ratio": 0.25,
             "outputmix": 0.15,
             "levelenv": {
                 "type": "decay",
                 "initial": 1.0,
-                "halflife": 0.25
+                "halflife": 0.2
             }
         }
     ]

@@ -13,8 +13,8 @@ echo "Testing Audio Machine Factory...\n";
 
 const MACHINES = [
     '{"type":"multifm", "operators":[{}, {}]}',
-    '{"type":"multifm", "operators":[{"waveform":1}, {"waveform":2, "modifier":1}]}',
-    '{"type":"multifm", "operators":[{"waveform": {"type": "rectifier", "waveform": {"type": "sine"}, "minLevel": -0.5, "maxLevel": 0.5, "fold": true }}, {"waveform":2, "modifier":1}]}',
+    '{"type":"multifm", "operators":[{"waveform": "triangle"}, {"waveform": "saw", "modifier":"halfwave_pos"}]}',
+    '{"type":"multifm", "operators":[{"waveform": {"type": "rectifier", "waveform": {"type": "sine"}, "minLevel": -0.5, "maxLevel": 0.5, "fold": true }}, {"waveform": "saw", "modifier": "halfwave_pos"}]}',
 
 
     '{"type":"multifm", "operators":[{"ratio":1.5}, {"semitones": 3}]}',

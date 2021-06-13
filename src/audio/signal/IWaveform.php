@@ -35,11 +35,8 @@ interface IWaveform {
         TRIANGLE           = 1,
         SAW                = 2,
         SQUARE             = 3,
-        NOISE              = 4,
-
-        // Waveform variants
-        SINE_HALF_RECT     = 5, // Half rectified sine wave, adjusted to -1.0 ... 1.0 range
-        SINE_FULL_RECT     = 6  // Fully rectified sine wave, adjusted to -1.0 ... 1.0 range
+        PULSE              = 4,
+        NOISE              = 5
     ;
 
     /**

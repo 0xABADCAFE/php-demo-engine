@@ -9,6 +9,32 @@ require_once '../PDE.php';
 $iTests   = 0;
 $iSuccess = 0;
 
+echo "Testing ControlCurve Factory...\n";
+const CONTROLCURVES = [
+    '{"type": "flat", "fixed": 0.25}',
+    '{"type": "linear" }',
+    '{"type": "linear", "minoutput": 0.25 }',
+    '{"type": "linear", "minoutput": 0.25, "maxoutput": 0.75 }',
+    '{"type": "linear", "minoutput": 0.25, "maxoutput": 0.75, "mininput": 16.0, "maxinput": 32.0 }',
+    '{"type": "gamma" }',
+    '{"type": "gamma", "gamma": 1.00001 }',
+    '{"type": "gamma", "gamma": 0.5 }',
+    '{"type": "gamma", "gamma": 2.0 }',
+];
+
+foreach (CONTROLCURVES as $sDefinition) {
+    ++$iTests;
+    try {
+        $oProduct = Audio\ControlCurve\Factory::get()->createFrom(json_decode($sDefinition));
+        ++$iSuccess;
+    } catch (\Throwable $oError) {
+        echo "\tCaught ", get_class($oError), " testing ", $sDefinition, ", ", $oError->getMessage(), "\n";
+    }
+}
+
+printf("\tTests %d, Successes %d\n", $iTests, $iSuccess);
+
+
 echo "Testing Waveform Factory...\n";
 const WAVEFORMS = [
     '{"type": "sine"}',

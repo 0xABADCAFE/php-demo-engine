@@ -11,15 +11,15 @@ $iSuccess = 0;
 
 echo "Testing ControlCurve Factory...\n";
 const CONTROLCURVES = [
-    '{"type": "flat", "fixed": 0.25}',
-    '{"type": "linear" }',
-    '{"type": "linear", "minoutput": 0.25 }',
-    '{"type": "linear", "minoutput": 0.25, "maxoutput": 0.75 }',
-    '{"type": "linear", "minoutput": 0.25, "maxoutput": 0.75, "mininput": 16.0, "maxinput": 32.0 }',
-    '{"type": "gamma" }',
-    '{"type": "gamma", "gamma": 1.00001 }',
-    '{"type": "gamma", "gamma": 0.5 }',
-    '{"type": "gamma", "gamma": 2.0 }',
+    '{"sType": "Flat", "fFixed": 0.25}',
+    '{"sType": "Linear" }',
+    '{"sType": "Linear", "fMinOutput": 0.25 }',
+    '{"sType": "Linear", "fMinOutput": 0.25, "fMaxOutput": 0.75 }',
+    '{"sType": "Linear", "fMinOutput": 0.25, "fMaxOutput": 0.75, "fMinInput": 16.0, "fMaxInput": 32.0 }',
+    '{"sType": "Gamma" }',
+    '{"sType": "Gamma", "fGamma": 1.00001 }',
+    '{"sType": "Gamma", "fGamma": 0.5 }',
+    '{"sType": "Gamma", "fGamma": 2.0 }',
 ];
 
 foreach (CONTROLCURVES as $sDefinition) {
@@ -37,21 +37,21 @@ printf("\tTests %d, Successes %d\n", $iTests, $iSuccess);
 
 echo "Testing Waveform Factory...\n";
 const WAVEFORMS = [
-    '{"type": "sine"}',
-    '{"type": "triangle"}',
-    '{"type": "saw"}',
-    '{"type": "square"}',
-    '{"type": "pulse"}',
-    '{"type": "noise"}',
-    '{"type": "saw", "aliased": false}',
-    '{"type": "square", "aliased": false}',
-    '{"type": "pulse",  "aliased": false}',
-    '{"type": "saw", "aliased": true}',
-    '{"type": "square", "aliased": true}',
-    '{"type": "pulse",  "aliased": true}',
-    '{"type": "rectifier", "waveform": {"type": "sine"} }',
-    '{"type": "rectifier", "waveform": {"type": "sine"}, "preset": 2 }',
-    '{"type": "rectifier", "waveform": {"type": "sine"}, "minLevel": -0.5, "maxLevel": 0.5, "fold": true }'
+    '{"sType": "Sine"}',
+    '{"sType": "Triangle"}',
+    '{"sType": "Saw"}',
+    '{"sType": "Square"}',
+    '{"sType": "Pulse"}',
+    '{"sType": "Noise"}',
+    '{"sType": "Saw", "bAliased": false}',
+    '{"sType": "Square", "bAliased": false}',
+    '{"sType": "Pulse",  "bAliased": false}',
+    '{"sType": "Saw", "bAliased": true}',
+    '{"sType": "Square", "bAliased": true}',
+    '{"sType": "Pulse",  "bAliased": true}',
+    '{"sType": "Rectifier", "Waveform": {"sType": "Sine"} }',
+    '{"sType": "Rectifier", "Waveform": {"sType": "Sine"}, "iPreset": 2 }',
+    '{"sType": "Rectifier", "Waveform": {"sType": "Sine"}, "fMinLevel": -0.5, "fMaxLevel": 0.5, "bFold": true }'
 ];
 
 foreach (WAVEFORMS as $sDefinition) {
@@ -68,10 +68,10 @@ printf("\tTests %d, Successes %d\n", $iTests, $iSuccess);
 
 echo "Testing Oscillator Factory...\n";
 const OSCILLATORS = [
-    '{"type": "lfo", "waveform":%s}',
-    '{"type": "lfo1to0", "waveform":%s}',
-    '{"type": "lfo0to1", "waveform":%s}',
-    '{"type": "audio", "waveform":%s}'
+    '{"sType": "LFO", "Waveform":%s}',
+    '{"sType": "LFOOneToZero", "Waveform":%s}',
+    '{"sType": "LFOZeroToOne", "Waveform":%s}',
+    '{"sType": "Audio", "Waveform":%s}'
 ];
 
 foreach (OSCILLATORS as $sDefinition) {
@@ -102,14 +102,14 @@ printf("\tTests %d, Successes %d\n", $iTests, $iSuccess);
 echo "Testing Envelope Factory...\n";
 
 const ENVELOPES = [
-    '{"type": "decay"}',
-    '{"type": "decay", "initial": 0.5}',
-    '{"type": "decay", "halflife": 0.1}',
-    '{"type": "decay", "halflife": 0.2, "initial": 0.75}',
-    '{"type": "decay", "halflife": 0.3, "target": 0.5}',
-    '{"type": "decay", "halflife": 1.5, "initial": 12, "target": 8}',
-    '{"type": "shape", "points": [[1.0, 5.0]]}',
-    '{"type": "shape", "initial": 0.5, "points": [[1.0, 5.0], [0.0, 10.0]]}',
+    '{"sType": "Decay"}',
+    '{"sType": "Decay", "fInitial": 0.5}',
+    '{"sType": "Decay", "fHalfLife": 0.1}',
+    '{"sType": "Decay", "fHalfLife": 0.2, "fInitial": 0.75}',
+    '{"sType": "Decay", "fHalfLife": 0.3, "fTarget": 0.5}',
+    '{"sType": "Decay", "fHalfLife": 1.5, "fInitial": 12, "fTarget": 8}',
+    '{"sType": "Shape", "aPoints": [[1.0, 5.0]]}',
+    '{"sType": "Shape", "fInitial": 0.5, "aPoints": [[1.0, 5.0], [0.0, 10.0]]}',
 ];
 
 foreach (ENVELOPES as $sDefinition) {

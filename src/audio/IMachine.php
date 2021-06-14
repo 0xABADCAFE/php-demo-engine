@@ -79,6 +79,16 @@ interface IMachine extends Signal\IStream {
     public function setVoiceNote(int $iVoiceNumber, string $sNoteName) : self;
 
     /**
+     * Set the velocity of the voice. This is in the MIDI range 0 - 127 and can be mapped to various parameters
+     * based on Control Curves. Does nothing if the voice number is out of range.
+     *
+     * @param  int  $iVoiceNumber
+     * @param  int  $iVelocity
+     * @return self
+     */
+    public function setVoiceVelocity(int $iVoiceNumber, int $iVelocity) : self;
+
+    /**
      * Starts the specified voice playing. Does nothing if the voice number is out of range.
      *
      * @param  int    $iVoiceNumber

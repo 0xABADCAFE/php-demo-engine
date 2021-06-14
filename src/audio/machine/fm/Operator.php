@@ -69,6 +69,26 @@ class Operator implements Audio\Signal\IOscillator {
     ;
 
     /**
+     * Velocity control curves
+     */
+    private ?Audio\IControlCurve
+        $oLevelIntensityVelocityCurve = null,
+        $oLevelRateVelocityCurve      = null,
+        $oPitchIntensityVelocityCurve = null,
+        $oPitchRateVelocityCurve      = null
+    ;
+
+    /**
+     * Key scale control curves
+     */
+    private ?Audio\IControlCurve
+        $oLevelIntensityKeyScaleCurve = null,
+        $oLevelRateKeyScaleCurve      = null,
+        $oPitchIntensityKeyScaleCurve = null,
+        $oPitchRateKeyScaleCurve      = null
+    ;
+
+    /**
      * @var Operator[] $aModulators
      */
     private array $aModulators = [];
@@ -336,6 +356,8 @@ class Operator implements Audio\Signal\IOscillator {
         return $this;
     }
 
+
+
     /**
      * Set the pitch envelope to use. Passing null removes any current envelope.
      *
@@ -379,11 +401,71 @@ class Operator implements Audio\Signal\IOscillator {
         $this->oModulation->removeInputStream($oModulator->sUniqueID);
     }
 
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // VELOCITY DYNAMICS
+
+    public function setLevelIntensityVelocityCurve(?Audio\IControlCurve $oCurve) : self {
+        $this->oLevelIntensityVelocityCurve = $oCurve;
+        return $this;
+    }
+
+    public function setLevelRateVelocityCurve(?Audio\IControlCurve $oCurve) : self {
+        $this->oLevelRateVelocityCurve = $oCurve;
+        return $this;
+    }
+
+    public function setPitchIntensityVelocityCurve(?Audio\IControlCurve $oCurve) : self {
+        $this->oPitchIntensityVelocityCurve = $oCurve;
+        return $this;
+    }
+
+    public function setPitchRateVelocityCurve(?Audio\IControlCurve $oCurve) : self {
+        $this->oPitchRateVelocityCurve = $oCurve;
+        return $this;
+    }
+
+    public function setVelocity(int $iVelocity) : self {
+        $fCurveInput = (float)$iVelocity;
+
+        if ($oEnvelope = $this->oOscillator->getLevelEnvelope()) {
+            $fLevelScale = 1.0;
+            $fTimeScale  = 1.0;
+            if ($this->oLevelIntensityVelocityCurve) {
+                $fLevelScale *= $this->oLevelIntensityVelocityCurve->map($fCurveInput);
+            }
+            if ($this->oLevelRateVelocityCurve) {
+                $fTimeScale *= $this->oLevelRateVelocityCurve->map($fCurveInput);
+            }
+            $oEnvelope
+                ->setLevelScale($fLevelScale)
+                ->setTimeScale($fTimeScale)
+            ;
+        }
+        if ($oEnvelope = $this->oOscillator->getPitchEnvelope()) {
+            $fLevelScale = 1.0;
+            $fTimeScale  = 1.0;
+            if ($this->oPitchIntensityVelocityCurve) {
+                $fLevelScale *= $this->oLevelIntensityVelocityCurve->map($fCurveInput);
+            }
+            if ($this->oPitchRateVelocityCurve) {
+                $fTimeScale *= $this->oLevelRateVelocityCurve->map($fCurveInput);
+            }
+            $oEnvelope
+                ->setLevelScale($fLevelScale)
+                ->setTimeScale($fTimeScale)
+            ;
+        }
+        return $this;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
     /**
      * Checks to see if an operator's unique ID is defined anywhere in the modulation tree. If it is, we throw an
      * exception.
      *
-     *
+     * @param string $sUniqueID
      */
     private function check(string $sUniqueID) : void {
         if (isset($this->aModulators[$sUniqueID])) {

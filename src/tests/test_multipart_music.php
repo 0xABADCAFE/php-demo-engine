@@ -38,7 +38,7 @@ $oDrumPattern->addEvent(new Audio\Sequence\NoteOn('A4'), 4, 63);
 $oChipMachine = new Audio\Machine\ChipTune(4);
 $oChipMachine->setInsert(new Audio\Signal\Insert\DelayLoop(null, 575, -0.75, 0.8, 0.2));
 $oChipPattern = new Audio\Sequence\Pattern(4, 256);
-$oChipMachine->setVoiceMaskWaveform(15, Audio\Machine\ChipTune::SAW);
+$oChipMachine->setVoiceMaskWaveform(15, Audio\Signal\IWaveform::SAW);
 $oChipMachine->setVoiceMaskEnvelope(3, new Audio\Signal\Envelope\Shape(
     0.0,
     [

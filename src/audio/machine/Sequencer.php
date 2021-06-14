@@ -157,6 +157,7 @@ class Sequencer {
 
                     $oMachine
                         ->setVoiceNote($iChannel, $oEvent->sNote)
+                        ->setVoiceVelocity($iChannel, $oEvent->iVelocity)
                         ->setVoiceLevel($iChannel, $fVelocityScale * $oEvent->iVelocity)
                         ->startVoice($iChannel);
                 } else if ($oEvent instanceof Audio\Sequence\SetNote) {

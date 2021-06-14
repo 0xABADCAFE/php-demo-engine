@@ -76,6 +76,14 @@ class TRNaN implements Audio\IMachine {
     /**
      * @inheritDoc
      */
+    public function setVoiceVelocity(int $iVoiceNumber, int $iVelocity) : self {
+
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function startVoice(int $iVoiceNumber) : self {
         if (isset(self::MUTE_GROUPS[$iVoiceNumber])) {
             foreach (self::MUTE_GROUPS[$iVoiceNumber] as $iMuteNumber) {

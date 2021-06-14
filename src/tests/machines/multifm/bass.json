@@ -1,48 +1,48 @@
 {
-    "type": "multifm",
-    "name": "bass",
-    "voices": 4,
-    "operators": [
+    "sType": "MultiFM",
+    "sName": "Bass",
+    "iMaxPolyphony": 4,
+    "aOperators": [
         {
-            "name": "modulator1",
-            "waveform": "triangle",
-            "ratio": 1,
-            "outputmix": 0.15,
-            "levelenv": {
-                "type": "decay",
-                "initial": 1.0,
-                "halflife": 0.05
+            "sName": "modulator1",
+            "Waveform": "Sine",
+            "fRatio": 1.0,
+            "fOutputMix": 0.15,
+            "LevelEnv": {
+                "sType": "Decay",
+                "finitial": 1.0,
+                "fHalfLife": 0.02
             }
         },
         {
-            "name": "modulator2",
-            "waveform": "sine",
-            "ratio": 0.25,
-            "outputmix": 0.15,
-            "levelenv": {
-                "type": "decay",
-                "initial": 1.0,
-                "halflife": 0.2
+            "sName": "modulator2",
+            "Waveform": "Triangle",
+            "fRatio": 0.25,
+            "fOutputMix": 0.15,
+            "LevelEnv": {
+                "sType": "Decay",
+                "fInitial": 1.0,
+                "fHalfLife": 0.2
             }
         },
         {
-            "name": "carrier",
-            "waveform": "sine",
-            "ratio": 0.25,
-            "outputmix": 0.75,
-            "levelenv": {
-                "type": "decay",
-                "initial": 1.0,
-                "halflife": 0.25
+            "sName": "carrier",
+            "Waveform": "Triangle",
+            "fRatio": 0.5,
+            "fOutputMix": 0.75,
+            "LevelEnv": {
+                "sType": "Decay",
+                "fInitial": 1.0,
+                "fHalfLife": 0.25
             },
-            "modulators": [
+            "aModulators": [
                 {
-                    "source": "modulator1",
-                    "index": 0.5
+                    "sSource": "modulator1",
+                    "fIndex": 0.5
                 },
                 {
-                    "source": "modulator2",
-                    "index": 0.5
+                    "sSource": "modulator2",
+                    "fIndex": 0.5
                 }
             ]
         }

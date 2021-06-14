@@ -28,18 +28,18 @@ class Factory implements Audio\IFactory {
 
     use Audio\TFactory;
 
-    const STANDARD_KEY = 'envelope';
+    const STANDARD_KEY = 'Envelope';
 
     const PRODUCT_TYPES = [
-        'decay'     => 'createDecay',
-        'shape'     => 'createShape',
+        'Decay'     => 'createDecay',
+        'Shape'     => 'createShape',
     ];
 
     /**
      * @inheritDoc
      */
     public function createFrom(object $oDefinition) : Audio\Signal\IEnvelope {
-        $sType    = strtolower($oDefinition->type ?? '<none>');
+        $sType    = $oDefinition->sType ?? '<none>';
         $sFactory = self::PRODUCT_TYPES[$sType] ?? null;
         if ($sFactory) {
             $cCreator = [$this, $sFactory];
@@ -49,9 +49,9 @@ class Factory implements Audio\IFactory {
     }
 
     private function createDecay(object $oDefinition, string $sType) : Audio\Signal\IEnvelope {
-        $fInitial  = (float)($oDefinition->initial   ?? 1.0);
-        $fTarget   = (float)($oDefinition->target    ?? 0.0);
-        $fHalfLife = (float)($oDefinition->halflife  ?? 1.0);
+        $fInitial  = (float)($oDefinition->fInitial  ?? 1.0);
+        $fTarget   = (float)($oDefinition->fTarget   ?? 0.0);
+        $fHalfLife = (float)($oDefinition->fHalfLife ?? 1.0);
         return new DecayPulse(
             $fInitial,
             $fHalfLife,
@@ -60,12 +60,12 @@ class Factory implements Audio\IFactory {
     }
 
     private function createShape(object $oDefinition, string $sType) : Audio\Signal\IEnvelope {
-        if (!isset($oDefinition->points) || !is_array($oDefinition->points)) {
+        if (!isset($oDefinition->aPoints) || !is_array($oDefinition->aPoints)) {
             throw new \RuntimeException('Shape envelope must have non empty points array');
         }
         return new Shape(
-            (float)($oDefinition->initial ?? 0.0),
-            $oDefinition->points
+            (float)($oDefinition->fInitial ?? 0.0),
+            $oDefinition->aPoints
         );
     }
 }

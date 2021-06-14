@@ -72,6 +72,14 @@ class ChipTune implements Audio\IMachine {
     /**
      * @inheritDoc
      */
+    public function setVoiceVelocity(int $iVoiceNumber, int $iVelocity) : self {
+
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function startVoice(int $iVoiceNumber) : self {
         if (isset($this->aVoices[$iVoiceNumber])) {
             $this->aVoices[$iVoiceNumber]
@@ -182,7 +190,7 @@ class ChipTune implements Audio\IMachine {
      * Create an initial voice for a voice. Defaults to a triangle waveform with a small 4Hz vibrato.
      */
     private function createInitialVoice() : Audio\Signal\IStream {
-        $iDefaultWaveform = self::TRIANGLE;
+        $iDefaultWaveform = Audio\Signal\IWaveform::TRIANGLE;
 
         $oOscillator = new Audio\Signal\Oscillator\Sound(self::$aWaveforms[$iDefaultWaveform]);
         $oOscillator->setPitchModulator(

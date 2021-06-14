@@ -1,33 +1,33 @@
 {
-    "type": "multifm",
-    "name": "marimba",
-    "voices": 4,
-    "operators": [
+    "sType": "MultiFM",
+    "sName": "marimba",
+    "iMaxPolyphony": 4,
+    "aOperators": [
         {
-            "name": "modulator",
-            "waveform": "triangle",
-            "ratio": 7.01,
-            "outputmix": 0.15,
-            "levelenv": {
-                "type": "decay",
-                "initial": 1.0,
-                "halflife": 0.015
+            "sName": "modulator",
+            "Waveform": "Triangle",
+            "fRatio": 7.01,
+            "fOutputMix": 0.15,
+            "LevelEnv": {
+                "sType": "Decay",
+                "fInitial": 1.0,
+                "fHalfLife": 0.015
             }
         },
         {
-            "name": "carrier",
-            "waveform": "sine",
-            "ratio": 1.99,
-            "outputmix": 0.75,
-            "levelenv": {
-                "type": "decay",
-                "initial": 1.0,
-                "halflife": 0.1
+            "sName": "carrier",
+            "Waveform": "Sine",
+            "fRatio": 1.99,
+            "fOutputMix": 0.75,
+            "LevelEnv": {
+                "sType": "Decay",
+                "fInitial": 1.0,
+                "fHalfLife": 0.1
             },
-            "modulators": [
+            "aModulators": [
                 {
-                    "source": "modulator",
-                    "index": 0.2
+                    "sSource": "modulator",
+                    "fIndex": 0.2
                 }
             ]
         }

@@ -29,16 +29,16 @@ class Factory implements Audio\IFactory {
     const STANDARD_KEY = 'curve';
 
     const PRODUCT_TYPES = [
-        'flat'   => 'createFlat',
-        'linear' => 'createRanged',
-        'gamma'  => 'createRanged'
+        'Flat'   => 'createFlat',
+        'Linear' => 'createRanged',
+        'Gamma'  => 'createRanged'
     ];
 
     /**
      * @inheritDoc
      */
     public function createFrom(object $oDefinition) : Audio\IControlCurve {
-        $sType    = strtolower($oDefinition->type ?? '<none>');
+        $sType    = $oDefinition->sType ?? '<none>';
         $sFactory = self::PRODUCT_TYPES[$sType] ?? null;
         if ($sFactory) {
             $cCreator = [$this, $sFactory];
@@ -55,7 +55,7 @@ class Factory implements Audio\IFactory {
      * @return Audio\Signal\IControlCurve
      */
     private function createFlat(object $oDefinition, string $sType) : Audio\IControlCurve {
-        $fValue = (float)($oDefinition->fixed ?? 0.5);
+        $fValue = (float)($oDefinition->fFixed ?? 0.5);
         return new Flat($fValue);
     }
 
@@ -68,24 +68,24 @@ class Factory implements Audio\IFactory {
      * @return Audio\Signal\IControlCurve
      */
     private function createRanged(object $oDefinition, string $sType) : Audio\IControlCurve {
-        $fMinInput  = (float)($oDefinition->mininput ?? Audio\IControlCurve::DEF_RANGE_MIN);
-        $fMaxInput  = (float)($oDefinition->maxinput ?? Audio\IControlCurve::DEF_RANGE_MAX);
-        $fMinOutput = (float)($oDefinition->minoutput ?? 0.0);
-        $fMaxOutput = (float)($oDefinition->maxoutput ?? 1.0);
-        $fGamma     = (float)($oDefinition->gamma ?? 1.0);
+        $fMinInput  = (float)($oDefinition->fMinInput ?? Audio\IControlCurve::DEF_RANGE_MIN);
+        $fMaxInput  = (float)($oDefinition->fMaxInput ?? Audio\IControlCurve::DEF_RANGE_MAX);
+        $fMinOutput = (float)($oDefinition->fMinOutput ?? 0.0);
+        $fMaxOutput = (float)($oDefinition->fMaxOutput ?? 1.0);
+        $fGamma     = (float)($oDefinition->fGamma ?? 1.0);
 
         // Don't create a flat gamma curve.
         if ('gamma' === $sType && abs($fGamma - 1.0) < 0.0001) {
-            $sType = 'linear';
+            $sType = 'Linear';
         }
 
         switch ($sType) {
-            case 'linear':
+            case 'Linear':
                 return new Linear($fMinOutput, $fMaxOutput, $fMinInput, $fMaxInput);
-            case 'gamma':
+            case 'Gamma':
                 return new Gamma($fMinOutput, $fMaxOutput, $fGamma, $fMinInput, $fMaxInput);
         }
-        throw new \RuntimeException('Unknown envelope type ' . $sType);
+        throw new \RuntimeException('Unknown control curve type ' . $sType);
     }
 
 }

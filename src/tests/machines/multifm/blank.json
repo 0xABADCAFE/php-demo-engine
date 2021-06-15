@@ -1,0 +1,20 @@
+{
+    "sType": "MultiFM",
+    "sName": "Blank",
+    "iMaxPolyphony": 4,
+    "aOperators": [
+        {
+            "sName": "modulator",
+            "Waveform": "Sine",
+            "fRatio": 2.0,
+            "fOutputMix": 0.0
+        },
+        {
+            "sName": "carrier",
+            "Waveform": "Sine",
+            "fRatio": 1.0,
+            "fOutputMix": 0.5
+        }
+
+    ]
+}

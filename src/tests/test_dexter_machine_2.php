@@ -89,8 +89,8 @@ $oSequencer
 ;
 
 // Open the audio
-$oPCMOut = Audio\Output\Piped::create();
-//$oPCMOut = new Audio\Output\Wav('test_dexter.wav');
+//$oPCMOut = Audio\Output\Piped::create();
+$oPCMOut = new Audio\Output\Wav('test_dexter.wav');
 $oPCMOut->open();
 
 $fMark = microtime(true);

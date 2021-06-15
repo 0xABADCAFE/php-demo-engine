@@ -76,6 +76,7 @@ const CLASS_MAP = [
   'ABadCafe\\PDE\\Audio\\Signal\\Waveform\\Square' => '/audio/signal/waveform/Square.php',
   'ABadCafe\\PDE\\Audio\\Signal\\Waveform\\Sine' => '/audio/signal/waveform/Sine.php',
   'ABadCafe\\PDE\\Audio\\Signal\\Waveform\\AliasedSquare' => '/audio/signal/waveform/AliasedSquare.php',
+  'ABadCafe\\PDE\\Audio\\Signal\\Waveform\\QuadrantMutator' => '/audio/signal/waveform/QuadrantMutator.php',
   'ABadCafe\\PDE\\Audio\\Signal\\Waveform\\AliasedPulse' => '/audio/signal/waveform/AliasedPulse.php',
   'ABadCafe\\PDE\\Audio\\Signal\\Waveform\\WhiteNoise' => '/audio/signal/waveform/WhiteNoise.php',
   'ABadCafe\\PDE\\Audio\\Signal\\Waveform\\Pulse' => '/audio/signal/waveform/Pulse.php',

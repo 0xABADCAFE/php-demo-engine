@@ -37,7 +37,8 @@ class Factory implements Audio\IFactory {
         'Square'    => 'createSimple',
         'Noise'     => 'createSimple',
         'Pulse'     => 'createPulse',
-        'Rectifier' => 'createRectifier'
+        'Rectifier' => 'createRectifier',
+        'Mutator'   => 'createMutator'
     ];
 
     /**
@@ -73,7 +74,7 @@ class Factory implements Audio\IFactory {
         return $bAliased ? new AliasedPulse() : new Pulse();
     }
 
-    private function createRectifier(object $oDefinition, $sType) {
+    private function createRectifier(object $oDefinition, $sType) : Audio\Signal\IWaveform {
         if (empty($oDefinition->{self::STANDARD_KEY}) || !is_object($oDefinition->{self::STANDARD_KEY})) {
             throw new \RuntimeException('Rectifier requires a waveform');
         }
@@ -96,6 +97,15 @@ class Factory implements Audio\IFactory {
             $bFold,
             $fScale,
             $fBias
+        );
+    }
+
+    private function createMutator(object $oDefinition, $sType) : Audio\Signal\IWaveform {
+        if (empty($oDefinition->{self::STANDARD_KEY}) || !is_object($oDefinition->{self::STANDARD_KEY})) {
+            throw new \RuntimeException('Mutator requires a waveform');
+        }
+        return new QuadrantMutator(
+            $this->createFrom($oDefinition->{self::STANDARD_KEY})
         );
     }
 }

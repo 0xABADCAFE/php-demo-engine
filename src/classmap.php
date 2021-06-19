@@ -98,6 +98,7 @@ const CLASS_MAP = [
   'ABadCafe\\PDE\\Audio\\Output\\None' => '/audio/output/None.php',
   'ABadCafe\\PDE\\Audio\\Output\\APlay' => '/audio/output/APlay.php',
   'ABadCafe\\PDE\\Audio\\Output\\Piped' => '/audio/output/common/Piped.php',
+  'ABadCafe\\PDE\\Audio\\ControlCurve\\Octave' => '/audio/controlcurve/Octave.php',
   'ABadCafe\\PDE\\Audio\\ControlCurve\\Linear' => '/audio/controlcurve/Linear.php',
   'ABadCafe\\PDE\\Audio\\ControlCurve\\Factory' => '/audio/controlcurve/Factory.php',
   'ABadCafe\\PDE\\Audio\\ControlCurve\\Gamma' => '/audio/controlcurve/Gamma.php',

@@ -22,6 +22,11 @@ namespace ABadCafe\PDE\Audio\ControlCurve;
 
 use ABadCafe\PDE\Audio;
 
+/**
+ * Factory
+ *
+ * Constructor for control curves
+ */
 class Factory implements Audio\IFactory {
 
     use Audio\TFactory;
@@ -31,7 +36,8 @@ class Factory implements Audio\IFactory {
     const PRODUCT_TYPES = [
         'Flat'   => 'createFlat',
         'Linear' => 'createRanged',
-        'Gamma'  => 'createRanged'
+        'Gamma'  => 'createRanged',
+        'Octave' => 'createOctave'
     ];
 
     /**
@@ -88,4 +94,18 @@ class Factory implements Audio\IFactory {
         throw new \RuntimeException('Unknown control curve type ' . $sType);
     }
 
+    /**
+     * Create an Octave curve.
+     *
+     * @param  object $oDefinition
+     * @param  string $sType
+     * @return Audio\Signal\IControlCurve
+     */
+    private function createOctave(object $oDefinition, string $sType) : Audio\IControlCurve {
+        $fCentreOutput   = (float)($oDefinition->fCentreOutput ?? 1.0);
+        $fScalePerOctave = (float)($oDefinition->fScalePerOctave ?? 1.0);
+        $fStepsPerOctave = (float)($oDefinition->fStepsPerOctave ?? Audio\Note::SEMIS_PER_OCTAVE);
+        $fCentrePosition = (float)($oDefinition->fCentrePosition ?? Audio\Note::CENTRE_REFERENCE);
+        return new Octave($fCentreOutput, $fScalePerOctave, $fCentrePosition, $fStepsPerOctave);
+    }
 }

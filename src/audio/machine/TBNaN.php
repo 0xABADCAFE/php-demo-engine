@@ -43,6 +43,9 @@ class TBNaN implements Audio\IMachine {
     private Audio\Signal\IFilter          $oFilter;
     private Audio\Signal\IEnvelope        $oFEG, $oAEG;
 
+    /**
+     * Constructor
+     */
     public function __construct() {
         $this->initWaveforms();
         $this->initOscillator();
@@ -159,6 +162,9 @@ class TBNaN implements Audio\IMachine {
         $this->aWaveforms[Audio\Signal\IWaveform::PULSE]->setPulsewidthModulator($this->oPWM);
     }
 
+    /**
+     * Initialise the internal oscillator
+     */
     private function initOscillator() {
         $this->oAEG = new Audio\Signal\Envelope\DecayPulse(
             0.8,
@@ -168,6 +174,9 @@ class TBNaN implements Audio\IMachine {
         $this->oOscillator->setLevelEnvelope($this->oAEG);
     }
 
+    /**
+     * Initialise the internal filter
+     */
     private function initFilter() {
         $this->oFEG = new Audio\Signal\Envelope\DecayPulse(
             0.33,

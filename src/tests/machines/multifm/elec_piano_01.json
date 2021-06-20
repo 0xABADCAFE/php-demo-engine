@@ -37,6 +37,10 @@
                 "sType": "Decay",
                 "fInitial": 1.0,
                 "fHalfLife": 0.75
+            },
+            "PitchLFO": {
+                "fDepth": 0.05,
+                "fRate": 2.0
             }
         },
         {
@@ -56,6 +60,10 @@
                         "fGamma": 1.75
                     }
                 }
+            },
+            "PitchLFO": {
+                "fDepth": 0.05,
+                "fRate": 2.0
             },
             "aModulators": [
                 {

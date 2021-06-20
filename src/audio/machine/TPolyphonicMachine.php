@@ -56,6 +56,8 @@ trait TPolyphonicMachine {
     }
 
     /**
+     * Set the voice source for a given channel.
+     *
      * @param int                  $iVoiceNumber
      * @param Audio\Signal\IStream $oStream
      * @param float                $fLevel
@@ -126,10 +128,16 @@ trait TPolyphonicMachine {
         return $this->oOutput->emit($iIndex);
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getInsert() : ?Audio\Signal\IInsert  {
         return $this->oInsert;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function setInsert(?Audio\Signal\IInsert $oInsert = null) : self {
         if ($this->oInsert = $oInsert) {
             $oInsert->setInputStream($this->oMixer);

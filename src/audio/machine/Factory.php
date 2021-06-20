@@ -20,7 +20,11 @@ declare(strict_types=1);
 
 namespace ABadCafe\PDE\Audio\Machine;
 use ABadCafe\PDE\Audio;
+use function ABadCafe\PDE\dprintf;
 
+/**
+ * Machine factory
+ */
 class Factory implements Audio\IFactory {
 
     use Audio\TFactory;
@@ -63,17 +67,29 @@ class Factory implements Audio\IFactory {
             $cCreator = [$this, $sFactory];
             return $cCreator($oDefinition, $sType);
         }
-        throw new \RuntimeException('Unknown envelope type ' . $sType);
+        throw new \RuntimeException('Unknown machine type ' . $sType);
     }
 
+    /**
+     * Creates the Monophonic Bass Synth
+     *
+     * @param  object $oDefinition
+     * @param  string $sType
+     * @return Audio\IMachine
+     */
     private function createMonoBass(object $oDefinition, string $sType) : Audio\IMachine {
         return new TBNaN;
     }
 
     /**
      * Creates the Multi Operator FM synth
+     *
+     * @param  object $oDefinition
+     * @param  string $sType
+     * @return Audio\IMachine
      */
     private function createMultiOperatorFM(object $oDefinition, string $sType) : Audio\IMachine {
+        dprintf("Creating Multi Operator FM Machine...\n");
         if (!isset($oDefinition->aOperators) || !is_array($oDefinition->aOperators)) {#
             throw new \RuntimeException('Missing operators section for FM synth');
         }
@@ -83,7 +99,11 @@ class Factory implements Audio\IFactory {
         }
         $iPolyphony = (int)($oDefinition->iMaxPolyphony ?? Audio\IMachine::MIN_POLYPHONY);
 
-        echo "\tHave ", $iNumOperators, " operators and max ", $iPolyphony, " note polyphony...\n";
+        dprintf(
+            "\tHave %d operators and maximum %d note polyphony...\n",
+            $iNumOperators,
+            $iPolyphony
+        );
 
         $oDexter = new DeXter($iPolyphony, $iNumOperators);
 
@@ -99,7 +119,12 @@ class Factory implements Audio\IFactory {
 
     private function configureMultiFMOperator(DeXter $oDexter, int $iOperator, object $oDefinition, array& $aOperatorNames) {
         $oDexter->selectOperator($iOperator);
-        echo "\t\tConfiguring operator ", $iOperator, "...\n";
+
+        dprintf(
+            "\t\tConfiguring operator %d...\n",
+            $iOperator
+        );
+
         if (!isset($oDefinition->sName)) {
             $aOperatorNames[(string)$iOperator] = $iOperator;
         } else {
@@ -109,7 +134,12 @@ class Factory implements Audio\IFactory {
             if (is_object($oDefinition->Waveform)) {
                 $oWaveform = Audio\Signal\Waveform\Factory::get()->createFrom($oDefinition->Waveform);
                 $oDexter->setWaveform($oWaveform);
-                echo "\t\t\tSet custom waveform [", get_class($oWaveform), "].\n";
+
+                dprintf(
+                    "\t\t\tSet custom Waveform [%s].\n",
+                    get_class($oWaveform)
+                );
+
             } else if (
                 is_string($oDefinition->Waveform) &&
                 isset(self::WAVEFORM_NAMES[$oDefinition->Waveform])
@@ -124,53 +154,96 @@ class Factory implements Audio\IFactory {
                     $iModifier = self::MODIFIER_NAMES[$oDefinition->sModifier];
                 }
                 $oDexter->setEnumeratedWaveform($iWaveform, $iModifier);
-                echo "\t\t\tSet standard waveform #", $iWaveform, ":", $iModifier, ".\n";
+
+                dprintf(
+                    "\t\t\tSet custom Waveform #%d with modifier #%d.\n",
+                    $iWaveform,
+                    $iModifier
+                );
+
             }
         } else {
-            echo "\t\t\tUsing default waveform.\n";
+            dprintf(
+                "\t\t\tUsing default Waveform.\n"
+            );
         }
 
         // Prefer semitones over absolute ratio
         if (isset($oDefinition->fSemitones)) {
             $oDexter->setRatioSemitones((float)$oDefinition->fSemitones);
-            echo "\t\t\tSet ratio as ", ((float)$oDefinition->fSemitones), " semitones.\n";
+
+            dprintf(
+                "\t\t\tSet ratio as %f semitones.\n",
+                (float)$oDefinition->fSemitones
+            );
+
         } else if (isset($oDefinition->fRatio)) {
             $oDexter->setRatio((float)($oDefinition->fRatio));
-            echo "\t\t\tSet ratio as ", ((float)($oDefinition->fRatio)), " absolute.\n";
+
+            dprintf(
+                "\t\t\tSet ratio as %f absolute.\n",
+                (float)$oDefinition->fRatio
+            );
+
         } else {
-            echo "\t\t\tUsing default ratio.\n";
+            dprintf(
+                "\t\t\tUsing default ratio of 1.0.\n"
+            );
         }
 
         // Output mix level
         if (isset($oDefinition->fOutputMix)) {
             $oDexter->setOutputMixLevel((float)($oDefinition->fOutputMix));
-            echo "\t\t\tSet output mix level to ", ((float)($oDefinition->fOutputMix)), ".\n";
+
+            dprintf(
+                "\t\t\tSet Output Mix level to %f.\n",
+                (float)($oDefinition->fOutputMix)
+            );
+
         } else {
-            echo "\t\t\tUsing default output mix level.\n";
+            dprintf(
+                "\t\t\tUsing default Output Mix level.\n"
+            );
         }
 
         // Level LFO
         if (isset($oDefinition->LevelLFO) && is_object($oDefinition->LevelLFO)) {
+            $fDepth = (float)($oDefinition->LevelLFO->fDepth ?? 0.5);
+            $fRate  = (float)($oDefinition->LevelLFO->fRate ?? Audio\Signal\Oscillator\LFO::DEF_FREQUENCY);
             $oDexter
-                ->setLevelLFODepth((float)($oDefinition->LevelLFO->fDepth ?? 0.5))
-                ->setLevelLFORate((float)($oDefinition->LevelLFO->fRate ?? Audio\Signal\Oscillator\LFO::DEF_FREQUENCY))
+                ->setLevelLFODepth($fDepth)
+                ->setLevelLFORate($fRate)
                 ->enableLevelLFO();
-            echo "\t\t\tConfigured level LFO.\n";
+            dprintf(
+                "\t\t\tConfigured Level LFO [Depth: %.f, Rate: %.f]\n",
+                $fDepth,
+                $fRate
+            );
         } else {
             $oDexter->disableLevelLFO();
-            echo "\t\t\tNo level LFO configured.\n";
+            dprintf(
+                "\t\t\tNo Level LFO defined.\n"
+            );
         }
 
         // Pitch LFO
         if (isset($oDefinition->PitchLFO) && is_object($oDefinition->PitchLFO)) {
+            $fDepth = (float)($oDefinition->PitchLFO->fDepth ?? 0.5);
+            $fRate  = (float)($oDefinition->PitchLFO->fRate ?? Audio\Signal\Oscillator\LFO::DEF_FREQUENCY);
             $oDexter
-                ->setPitchLFODepth((float)($oDefinition->PitchLFO->fDepth ?? 0.5))
-                ->setPitchLFORate((float)($oDefinition->PitchLFO->fRate ?? Audio\Signal\Oscillator\LFO::DEF_FREQUENCY))
+                ->setPitchLFODepth($fDepth)
+                ->setPitchLFORate($fRate)
                 ->enablePitchLFO();
-            echo "\t\t\tConfigured Pitch LFO.\n";
+            dprintf(
+                "\t\t\tConfigured Pitch LFO [Depth: %.f, Rate: %.f]\n",
+                $fDepth,
+                $fRate
+            );
         } else {
             $oDexter->disablePitchLFO();
-            echo "\t\t\tNo pitch LFO configured.\n";
+            dprintf(
+                "\t\t\tNo Pitch LFO defined.\n"
+            );
         }
 
         // Level Envelope
@@ -198,9 +271,14 @@ class Factory implements Audio\IFactory {
                 $oDexter->setLevelRateVelocityCurve($oCurve);
             }
 
-            echo "\t\t\tConfigured level envelope [", get_class($oEnvelope), "].\n";
+            dprintf(
+                "\t\t\tConfigured Level Envelope [%s].\n",
+                get_class($oEnvelope)
+            );
         } else {
-            echo "\t\t\tNo level envelope configured.\n";
+            dprintf(
+                "\t\t\tNo Level Envelope configured.\n"
+            );
         }
 
         // Pitch Envelope
@@ -228,20 +306,31 @@ class Factory implements Audio\IFactory {
                 $oDexter->setLevelRateVelocityCurve($oCurve);
             }
 
-            echo "\t\t\tConfigured pitch envelope [", get_class($oEnvelope), "].\n";
+            dprintf(
+                "\t\t\tConfigured Pitch Envelope [%s].\n",
+                get_class($oEnvelope)
+            );
         } else {
-            echo "\t\t\tNo pitch envelope configured.\n";
+            dprintf(
+                "\t\t\tNo Pitch Envelope configured.\n"
+            );
         }
 
         // Modulation Matrix
         if (!empty($oDefinition->aModulators) && is_array($oDefinition->aModulators)) {
-            echo "\t\t\tConfuguring modulators...\n";
+            dprintf(
+                "\t\t\tConfuguring modulators...\n"
+            );
             foreach ($oDefinition->aModulators as $oModulator) {
                 if (is_object($oModulator) && isset($oModulator->sSource) && isset($oModulator->fIndex)) {
                     $sSource = (string)$oModulator->sSource;
                     $fIndex  = (float)$oModulator->fIndex;
                     $oDexter->setModulation($aOperatorNames[$sSource], $fIndex);
-                    echo "\t\t\t\tAdding modulation from operator ", $sSource, " at level ", $fIndex, ".\n";
+                    dprintf(
+                        "\t\t\t\tAdding modulation from Operator %s at level %.f\n",
+                        $sSource,
+                        $fIndex
+                    );
                 }
             }
         }

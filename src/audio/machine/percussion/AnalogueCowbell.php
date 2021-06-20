@@ -23,6 +23,8 @@ use ABadCafe\PDE\Audio;
 
 /**
  * AnalogueCowbell
+ *
+ * Cowbell made by slightly detuned pulswave generators with a filter and decay envelope.
  */
 class AnalogueCowbell implements IVoice {
 
@@ -31,35 +33,6 @@ class AnalogueCowbell implements IVoice {
         CENTRE_FREQ = 580,
         SEMI_SCALE  = 0.25 * Audio\Note::FACTOR_PER_SEMI
     ;
-
-//     const OCTAVE = [
-//          0 => [],
-//          1 => [],
-//          2 => [],
-//          3 => [],
-//          4 => [],
-//          5 => [],
-//          6 => [],
-//          7 => [],
-//          8 => [],
-//          9 => [],
-//         10 => [],
-//     ];
-//
-//     const SEMITONE = [
-//          0 => [],
-//          1 => [],
-//          2 => [],
-//          3 => [],
-//          4 => [],
-//          5 => [],
-//          6 => [],
-//          7 => [],
-//          8 => [],
-//          9 => [],
-//         10 => [],
-//         11 => [],
-//     ];
 
     private Audio\Signal\IOscillator $oOscillator1, $oOscillator2;
     private Audio\Signal\IEnvelope   $oEnvelope;
@@ -108,7 +81,6 @@ class AnalogueCowbell implements IVoice {
         return $this->oAutoMute->disable();
     }
 
-
     /**
      * @inheritDoc
      */
@@ -136,6 +108,3 @@ class AnalogueCowbell implements IVoice {
     }
 
 }
-
-
-

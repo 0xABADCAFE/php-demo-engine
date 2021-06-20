@@ -24,7 +24,7 @@ use ABadCafe\PDE\Audio;
 /**
  * BandPassNoise
  *
- * Base class for sounds that simply use bandpass filtered noise, e.g. High Hats and claps
+ * Base class for sounds that simply use bandpass filtered noise, e.g. High Hats and claps.
  */
 abstract class BandPassNoise implements IVoice {
 
@@ -55,7 +55,6 @@ abstract class BandPassNoise implements IVoice {
         $this->oAutoMute->disable();
     }
 
-
     /**
      * @inheritDoc
      */
@@ -68,6 +67,3 @@ abstract class BandPassNoise implements IVoice {
      */
     protected abstract function setDefaults();
 }
-
-
-

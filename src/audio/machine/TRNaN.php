@@ -110,7 +110,4 @@ class TRNaN implements Audio\IMachine {
             ->disable();
         return $this;
     }
-
-
 }
-

@@ -23,6 +23,9 @@ use ABadCafe\PDE\Audio;
 
 /**
  * AnalogueTom
+ *
+ * Simple tom sound made from sine wave. More or less the same as the kick but with different pitch range
+ * and dynamics.
  */
 class AnalogueTom implements IVoice {
 
@@ -63,7 +66,6 @@ class AnalogueTom implements IVoice {
         $this->oAutoMute->disable();
     }
 
-
     /**
      * @inheritDoc
      */
@@ -89,8 +91,4 @@ class AnalogueTom implements IVoice {
     public function getOutputStream() : Audio\Signal\IStream {
         return $this->oAutoMute;
     }
-
 }
-
-
-

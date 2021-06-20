@@ -178,6 +178,13 @@ class ChipTune implements Audio\IMachine {
         return $this;
     }
 
+    /**
+     * Set the volume envelope to use dor a set of voices.
+     *
+     * @param  int $iVoiceMask
+     * @param  Audio\Signal\IEnvelope $oEnvelope
+     * @return self
+     */
     public function setVoiceMaskEnvelope(int $iVoiceMask, Audio\Signal\IEnvelope $oEnvelope) : self {
         $aVoices = $this->getSelectedVoices($iVoiceMask);
         foreach ($aVoices as $oVoice) {

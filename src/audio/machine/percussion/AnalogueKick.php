@@ -23,6 +23,8 @@ use ABadCafe\PDE\Audio;
 
 /**
  * AnalogueKick
+ *
+ * Simple Kick made from sine wave with pitch and intensity decay envelope.
  */
 class AnalogueKick implements IVoice {
 

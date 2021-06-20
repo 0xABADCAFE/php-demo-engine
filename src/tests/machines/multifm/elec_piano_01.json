@@ -1,48 +1,78 @@
 {
-    "type": "multifm",
-    "name": "bass",
-    "voices": 4,
-    "operators": [
+    "sType": "MultiFM",
+    "sName": "Electric Piano 01",
+    "iMaxPolyphony": 4,
+    "aOperators": [
         {
-            "name": "tine",
-            "waveform": "sine",
-            "ratio": 19.001,
-            "outputmix": 0.0,
-            "levelenv": {
-                "type": "decay",
-                "initial": 1.0,
-                "halflife": 0.075
+            "sName": "tine",
+            "Waveform": "Sine",
+            "fRatio": 19.001,
+            "fOutputMix": 0.0,
+            "LevelEnv": {
+                "sType": "Decay",
+                "fInitial": 1.0,
+                "fHalfLife": 0.075,
+                "Velocity": {
+                    "Intensity": {
+                        "sType": "Gamma",
+                        "fMinOutput": 0.0,
+                        "fMaxOutput": 2.0,
+                        "fGamma": 2.0
+                    },
+                    "Rate": {
+                        "sType": "Gamma",
+                        "fMinOutput": 1.0,
+                        "fMaxOutput": 2.0,
+                        "fGamma": 1.75
+                    }
+                }
             }
         },
         {
-            "name": "bar",
-            "waveform": "sine",
-            "ratio": 1.995,
-            "outputmix": 0.15,
-            "levelenv": {
-                "type": "decay",
-                "initial": 1.0,
-                "halflife": 0.75
-            }
-        },
-        {
-            "name": "body",
-            "waveform": "sine",
-            "ratio": 1.005,
-            "outputmix": 0.5,
-            "levelenv": {
-                "type": "decay",
-                "initial": 1.0,
-                "halflife": 1.0
+            "sName": "bar",
+            "Waveform": "Sine",
+            "fRatio": 1.995,
+            "fOutputMix": 0.15,
+            "LevelEnv": {
+                "sType": "Decay",
+                "fInitial": 1.0,
+                "fHalfLife": 0.75
             },
-            "modulators": [
+            "PitchLFO": {
+                "fDepth": 0.05,
+                "fRate": 2.0
+            }
+        },
+        {
+            "sName": "body",
+            "Waveform": "Sine",
+            "fRatio": 1.005,
+            "fOutputMix": 0.5,
+            "LevelEnv": {
+                "sType": "Decay",
+                "fInitial": 1.0,
+                "fHalfLife": 1.0,
+                "Velocity": {
+                    "Rate": {
+                        "sType": "Gamma",
+                        "fMinOutput": 0.25,
+                        "fMaxOutput": 1.0,
+                        "fGamma": 1.75
+                    }
+                }
+            },
+            "PitchLFO": {
+                "fDepth": 0.05,
+                "fRate": 2.0
+            },
+            "aModulators": [
                 {
-                    "source": "tine",
-                    "index": 0.05
+                    "sSource": "tine",
+                    "fIndex": 0.05
                 },
                 {
-                    "source": "bar",
-                    "index": 0.1
+                    "sSource": "bar",
+                    "fIndex": 0.1
                 }
             ]
         }

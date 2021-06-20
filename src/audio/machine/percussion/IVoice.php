@@ -53,8 +53,4 @@ interface IVoice {
      * @return Audio\Signal\IStream
      */
     public function getOutputStream() : Audio\Signal\IStream;
-
 }
-
-
-

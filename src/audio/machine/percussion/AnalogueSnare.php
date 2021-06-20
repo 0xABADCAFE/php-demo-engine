@@ -23,6 +23,8 @@ use ABadCafe\PDE\Audio;
 
 /**
  * AnalogueSnare
+ *
+ * Simple snare made from a pair of sine oscillators with shaped noise.
  */
 class AnalogueSnare implements IVoice {
 
@@ -31,35 +33,6 @@ class AnalogueSnare implements IVoice {
         CENTRE_FREQ = 170.0,
         SEMI_SCALE  = 0.25 * Audio\Note::FACTOR_PER_SEMI
     ;
-
-//     const OCTAVE = [
-//          0 => [],
-//          1 => [],
-//          2 => [],
-//          3 => [],
-//          4 => [],
-//          5 => [],
-//          6 => [],
-//          7 => [],
-//          8 => [],
-//          9 => [],
-//         10 => [],
-//     ];
-//
-//     const SEMITONE = [
-//          0 => [],
-//          1 => [],
-//          2 => [],
-//          3 => [],
-//          4 => [],
-//          5 => [],
-//          6 => [],
-//          7 => [],
-//          8 => [],
-//          9 => [],
-//         10 => [],
-//         11 => [],
-//     ];
 
     private Audio\Signal\IOscillator $oNoise, $oOscillator1, $oOscillator2;
     private Audio\Signal\IEnvelope   $oVolumeEnv;
@@ -124,8 +97,4 @@ class AnalogueSnare implements IVoice {
     public function getOutputStream() : Audio\Signal\IStream {
         return $this->oAutoMute;
     }
-
 }
-
-
-

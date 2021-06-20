@@ -29,6 +29,11 @@ trait TFactory {
 
     private static ?self $oInstance = null;
 
+    /**
+     * Audio factories are implemented as singletons.
+     *
+     * @return self
+     */
     public static function get() : self {
         if (null === self::$oInstance) {
             self::$oInstance = new self;

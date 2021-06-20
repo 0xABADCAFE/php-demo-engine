@@ -22,6 +22,11 @@ namespace ABadCafe\PDE\Audio\ControlCurve;
 
 use ABadCafe\PDE\Audio;
 
+/**
+ * Factory
+ *
+ * Builds IControlCurve implementations from raw definition data.
+ */
 class Factory implements Audio\IFactory {
 
     use Audio\TFactory;
@@ -29,22 +34,23 @@ class Factory implements Audio\IFactory {
     const STANDARD_KEY = 'curve';
 
     const PRODUCT_TYPES = [
-        'flat'   => 'createFlat',
-        'linear' => 'createRanged',
-        'gamma'  => 'createRanged'
+        'Flat'   => 'createFlat',
+        'Linear' => 'createRanged',
+        'Gamma'  => 'createRanged',
+        'Octave' => 'createOctave'
     ];
 
     /**
      * @inheritDoc
      */
     public function createFrom(object $oDefinition) : Audio\IControlCurve {
-        $sType    = strtolower($oDefinition->type ?? '<none>');
+        $sType    = $oDefinition->sType ?? '<none>';
         $sFactory = self::PRODUCT_TYPES[$sType] ?? null;
         if ($sFactory) {
             $cCreator = [$this, $sFactory];
             return $cCreator($oDefinition, $sType);
         }
-        throw new \RuntimeException('Unknown envelope type ' . $sType);
+        throw new \RuntimeException('Unknown curve type ' . $sType);
     }
 
     /**
@@ -55,37 +61,58 @@ class Factory implements Audio\IFactory {
      * @return Audio\Signal\IControlCurve
      */
     private function createFlat(object $oDefinition, string $sType) : Audio\IControlCurve {
-        $fValue = (float)($oDefinition->fixed ?? 0.5);
+        $fValue = (float)($oDefinition->fFixed ?? 0.5);
         return new Flat($fValue);
     }
 
     /**
      * Create either the linear or gamma curve, depending on the type and gamma values. Returns a linear
-     * implementation instead of gamma wherever the gamma value is unset ot close to one.
+     * implementation instead of gamma wherever the gamma value is unset ot close to one. If the output
+     * range is insignificant over the input range, returns a Flat implementation.
      *
      * @param  object $oDefinition
      * @param  string $sType
      * @return Audio\Signal\IControlCurve
      */
     private function createRanged(object $oDefinition, string $sType) : Audio\IControlCurve {
-        $fMinInput  = (float)($oDefinition->mininput ?? Audio\IControlCurve::DEF_RANGE_MIN);
-        $fMaxInput  = (float)($oDefinition->maxinput ?? Audio\IControlCurve::DEF_RANGE_MAX);
-        $fMinOutput = (float)($oDefinition->minoutput ?? 0.0);
-        $fMaxOutput = (float)($oDefinition->maxoutput ?? 1.0);
-        $fGamma     = (float)($oDefinition->gamma ?? 1.0);
+        $fMinOutput = (float)($oDefinition->fMinOutput ?? 0.0);
+        $fMaxOutput = (float)($oDefinition->fMaxOutput ?? 1.0);
+
+        // For tiny ranges output ranges, just create a flat output.
+        if (abs($fMaxOutput - $fMinOutput) < 1e-4) {
+            return new Flat(0.5*($fMinOutput + $fMaxOutput));
+        }
+
+        $fMinInput  = (float)($oDefinition->fMinInput ?? Audio\IControlCurve::DEF_RANGE_MIN);
+        $fMaxInput  = (float)($oDefinition->fMaxInput ?? Audio\IControlCurve::DEF_RANGE_MAX);
+        $fGamma     = (float)($oDefinition->fGamma ?? 1.0);
 
         // Don't create a flat gamma curve.
-        if ('gamma' === $sType && abs($fGamma - 1.0) < 0.0001) {
-            $sType = 'linear';
+        if ('Gamma' === $sType && abs($fGamma - 1.0) < 1e-4) {
+            $sType = 'Linear';
         }
 
         switch ($sType) {
-            case 'linear':
+            case 'Linear':
                 return new Linear($fMinOutput, $fMaxOutput, $fMinInput, $fMaxInput);
-            case 'gamma':
+            case 'Gamma':
                 return new Gamma($fMinOutput, $fMaxOutput, $fGamma, $fMinInput, $fMaxInput);
         }
-        throw new \RuntimeException('Unknown envelope type ' . $sType);
+        throw new \RuntimeException('Unknown control curve type ' . $sType);
     }
 
+    /**
+     * Create an Octave curve.
+     *
+     * @param  object $oDefinition
+     * @param  string $sType
+     * @return Audio\Signal\IControlCurve
+     */
+    private function createOctave(object $oDefinition, string $sType) : Audio\IControlCurve {
+        $fCentreOutput   = (float)($oDefinition->fCentreOutput ?? 1.0);
+        $fScalePerOctave = (float)($oDefinition->fScalePerOctave ?? 1.0);
+        $fStepsPerOctave = (float)($oDefinition->fStepsPerOctave ?? Audio\Note::SEMIS_PER_OCTAVE);
+        $fCentrePosition = (float)($oDefinition->fCentrePosition ?? Audio\Note::CENTRE_REFERENCE);
+        return new Octave($fCentreOutput, $fScalePerOctave, $fCentrePosition, $fStepsPerOctave);
+    }
 }

@@ -1,0 +1,79 @@
+{
+    "sType": "MultiFM",
+    "sName": "Recently Bass",
+    "iMaxPolyphony": 4,
+    "aOperators": [
+        {
+            "sName": "modulator0",
+            "Waveform": "Triangle",
+            "fRatio": 1.005,
+            "fOutputMix": 0.0,
+            "LevelEnv": {
+                "sType": "Decay",
+                "finitial": 1.0,
+                "fHalfLife": 0.03,
+                "Velocity": {
+                    "Intensity": {
+                        "sType": "Gamma",
+                        "fMinOutput": 0.00,
+                        "fMaxOutput": 1.0,
+                        "fGamma": 0.8
+                    }
+                }
+            }
+        },
+
+        {
+            "sName": "modulator1",
+            "Waveform": "Sine",
+            "fRatio": 1.999,
+            "fOutputMix": 0.0,
+            "LevelEnv": {
+                "sType": "Decay",
+                "finitial": 1.0,
+                "fHalfLife": 0.02
+            }
+        },
+
+        {
+            "sName": "modulator2",
+            "Waveform": "Sine",
+            "fRatio": 0.25,
+            "fOutputMix": 0.0,
+            "LevelEnv": {
+                "sType": "Decay",
+                "finitial": 1.0,
+                "fHalfLife": 0.2
+            },
+            "aModulators": [
+                {
+                    "sSource": "modulator0",
+                    "fIndex": 0.6
+                },
+                {
+                    "sSource": "modulator1",
+                    "fIndex": 0.4
+                }
+            ]
+        },
+
+        {
+            "sName": "carrier",
+            "Waveform": "Sine",
+            "fRatio": 0.25,
+            "fOutputMix": 0.5,
+            "LevelEnv": {
+                "sType": "Decay",
+                "finitial": 1.0,
+                "fHalfLife": 0.4
+            },
+            "aModulators": [
+                {
+                    "sSource": "modulator2",
+                    "fIndex": 0.5
+                }
+            ]
+        }
+
+    ]
+}

@@ -68,5 +68,4 @@ abstract class Base implements Audio\Signal\IEnvelope {
     public function getPosition() : int {
         return $this->iSamplePosition;
     }
-
 }

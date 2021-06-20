@@ -28,23 +28,24 @@ class Factory implements Audio\IFactory {
 
     use Audio\TFactory;
 
-    const STANDARD_KEY = 'waveform';
+    const STANDARD_KEY = 'Waveform';
 
     const PRODUCT_TYPES = [
-        'sine'      => 'createSimple',
-        'triangle'  => 'createSimple',
-        'saw'       => 'createSimple',
-        'square'    => 'createSimple',
-        'noise'     => 'createSimple',
-        'pulse'     => 'createPulse',
-        'rectifier' => 'createRectifier'
+        'Sine'      => 'createSimple',
+        'Triangle'  => 'createSimple',
+        'Saw'       => 'createSimple',
+        'Square'    => 'createSimple',
+        'Noise'     => 'createSimple',
+        'Pulse'     => 'createPulse',
+        'Rectifier' => 'createRectifier',
+        'Mutator'   => 'createMutator'
     ];
 
     /**
      * @inheritDoc
      */
     public function createFrom(object $oDefinition) : Audio\Signal\IWaveform {
-        $sType    = strtolower($oDefinition->type ?? '<none>');
+        $sType    = $oDefinition->sType ?? '<none>';
         $sFactory = self::PRODUCT_TYPES[$sType] ?? null;
         if ($sFactory) {
             $cCreator = [$this, $sFactory];
@@ -53,41 +54,62 @@ class Factory implements Audio\IFactory {
         throw new \RuntimeException('Unknown waveform type ' . $sType);
     }
 
+    /**
+     * Return one of the basic waveform types.
+     *
+     * @param  object $oDefinition
+     * @param  string $sType
+     * @return Audio\Signal\IWaveform
+     */
     private function createSimple(object $oDefinition, $sType) : Audio\Signal\IWaveform {
-        $bAliased = isset($oDefinition->aliased) && $oDefinition->aliased;
+        $bAliased = isset($oDefinition->bAliased) && $oDefinition->bAliased;
         switch ($sType) {
-            case 'sine':     return new Sine();
-            case 'triangle': return new Triangle();
-            case 'noise':    return new WhiteNoise();
-            case 'saw':      return $bAliased ? new AliasedSaw()    : new Saw();
-            case 'square':   return $bAliased ? new AliasedSquare() : new Square();
+            case 'Sine':     return new Sine();
+            case 'Triangle': return new Triangle();
+            case 'Noise':    return new WhiteNoise();
+            case 'Saw':      return $bAliased ? new AliasedSaw()    : new Saw();
+            case 'Square':   return $bAliased ? new AliasedSquare() : new Square();
         }
         throw new \RuntimeException('Unknown waveform type ' . $sType);
     }
 
+    /**
+     * Return the PWM waveform.
+     *
+     * @param  object $oDefinition
+     * @param  string $sType
+     * @return Audio\Signal\IWaveform
+     */
     private function createPulse(object $oDefinition, $sType) : Audio\Signal\IWaveform {
-        $bAliased = isset($oDefinition->aliased) && $oDefinition->aliased;
+        $bAliased = isset($oDefinition->bAliased) && $oDefinition->bAliased;
 
         // TODO - check for a PWM modulator definition in here
 
         return $bAliased ? new AliasedPulse() : new Pulse();
     }
 
-    private function createRectifier(object $oDefinition, $sType) {
+    /**
+     * Return a Rectifier based waveform.
+     *
+     * @param  object $oDefinition
+     * @param  string $sType
+     * @return Audio\Signal\IWaveform
+     */
+    private function createRectifier(object $oDefinition, $sType) : Audio\Signal\IWaveform {
         if (empty($oDefinition->{self::STANDARD_KEY}) || !is_object($oDefinition->{self::STANDARD_KEY})) {
             throw new \RuntimeException('Rectifier requires a waveform');
         }
 
-        if (!empty($oDefinition->preset)) {
-            $iPreset = (int)$oDefinition->preset;
+        if (!empty($oDefinition->iPreset)) {
+            $iPreset = (int)$oDefinition->iPreset;
             return Rectifier::createStandard($this->createFrom($oDefinition->{self::STANDARD_KEY}), $iPreset);
         }
 
-        $fMinLevel = (float)($oDefinition->minLevel ?? -1.0);
-        $fMaxLevel = (float)($oDefinition->maxLevel ?? 1.0);
-        $fScale    = (float)($oDefinition->scale ?? 1.0);
-        $fBias     = (float)($oDefinition->bias ?? 0.0);
-        $bFold     = (bool)($oDefinition->fold ?? false);
+        $fMinLevel = (float)($oDefinition->fMinLevel ?? -1.0);
+        $fMaxLevel = (float)($oDefinition->fMaxLevel ?? 1.0);
+        $fScale    = (float)($oDefinition->fScale    ?? 1.0);
+        $fBias     = (float)($oDefinition->fBias     ?? 0.0);
+        $bFold     = (bool)($oDefinition->bFold      ?? false);
 
         return new Rectifier(
             $this->createFrom($oDefinition->{self::STANDARD_KEY}),
@@ -96,6 +118,22 @@ class Factory implements Audio\IFactory {
             $bFold,
             $fScale,
             $fBias
+        );
+    }
+
+    /**
+     * Return a Mutator based waveform.
+     *
+     * @param  object $oDefinition
+     * @param  string $sType
+     * @return Audio\Signal\IWaveform
+     */
+    private function createMutator(object $oDefinition, $sType) : Audio\Signal\IWaveform {
+        if (empty($oDefinition->{self::STANDARD_KEY}) || !is_object($oDefinition->{self::STANDARD_KEY})) {
+            throw new \RuntimeException('Mutator requires a waveform');
+        }
+        return new QuadrantMutator(
+            $this->createFrom($oDefinition->{self::STANDARD_KEY})
         );
     }
 }

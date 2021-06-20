@@ -23,9 +23,14 @@ use ABadCafe\PDE\Audio;
 
 /**
  * AnalogueClap
+ *
+ * Handclap made of bandpass filtered, shaped nosie.
  */
 class AnalogueClap extends BandPassNoise {
 
+    /**
+     * Variation by octave
+     */
     const OCTAVE = [
          0 => [1.33, 0.045],
          1 => [1.33, 0.04],
@@ -40,6 +45,9 @@ class AnalogueClap extends BandPassNoise {
         10 => [1.00, 0.0175],
     ];
 
+    /**
+     * Variation by semitone
+     */
     const SEMITONE = [
          0 => [0.06],
          1 => [0.0625],
@@ -54,7 +62,6 @@ class AnalogueClap extends BandPassNoise {
         10 => [0.1],
         11 => [0.12],
     ];
-
 
     /**
      * @inheritDoc
@@ -94,8 +101,4 @@ class AnalogueClap extends BandPassNoise {
         $this->oAutoMute
             ->setDisableAfter(0.175);
     }
-
 }
-
-
-

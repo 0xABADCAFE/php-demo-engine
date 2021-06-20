@@ -75,7 +75,11 @@ abstract class Base implements Audio\Signal\IFilter {
     /**
      * Constructor
      *
-     * @param Signal\Audio\IStream $oInput - audio source
+     * @param Signal\Audio\IStream      $oInputStream - audio source
+     * @param float                     $fFixedCutoff
+     * @param float                     $fFixedResonance
+     * @param Audio\Signal\IStream|null $oCutoffControl
+     * @param Audio\Signal\IStream|null $oResonanceControl
      */
     public function __construct(
         Audio\Signal\IStream  $oInputStream,
@@ -209,11 +213,23 @@ abstract class Base implements Audio\Signal\IFilter {
         }
     }
 
+    /**
+     * Implementor to provide.
+     */
     protected abstract function applyFixedCutoffFixedResonance();
 
+    /**
+     * Implementor to provide.
+     */
     protected abstract function applyVaryingCutoffFixedResonance();
 
+    /**
+     * Implementor to provide.
+     */
     protected abstract function applyFixedCutoffVaryingResonance();
 
+    /**
+     * Implementor to provide.
+     */
     protected abstract function applyVaryingCutoffVaryingResonance();
 }

@@ -212,6 +212,24 @@ class DeXter implements Audio\IMachine {
         return $this;
     }
 
+    public function setLevelIntensityVelocityCurve(?Audio\IControlCurve $oCurve) : self {
+        if (null !== $this->iUsingOperator) {
+            foreach ($this->aOperators[$this->iUsingOperator] as $iVoice => $oOperator) {
+                $oOperator->setLevelIntensityVelocityCurve($oCurve);
+            }
+        }
+        return $this;
+    }
+
+    public function setLevelRateVelocityCurve(?Audio\IControlCurve $oCurve) : self {
+        if (null !== $this->iUsingOperator) {
+            foreach ($this->aOperators[$this->iUsingOperator] as $iVoice => $oOperator) {
+                $oOperator->setLevelRateVelocityCurve($oCurve);
+            }
+        }
+        return $this;
+    }
+
     /**
      * Set the operator pitch envelope
      *
@@ -390,6 +408,19 @@ class DeXter implements Audio\IMachine {
             $aOperators = array_column($this->aOperators, $iVoiceNumber);
             foreach ($aOperators as $oOperator) {
                 $oOperator->setFrequency($fFrequency);
+            }
+        }
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setVoiceVelocity(int $iVoiceNumber, int $iVelocity) : self {
+        if (isset($this->aVoice[$iVoiceNumber])) {
+            $aOperators = array_column($this->aOperators, $iVoiceNumber);
+            foreach ($aOperators as $oOperator) {
+                $oOperator->setVelocity($iVelocity);
             }
         }
         return $this;

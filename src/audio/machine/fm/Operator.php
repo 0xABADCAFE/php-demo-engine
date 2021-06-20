@@ -26,12 +26,14 @@ use ABadCafe\PDE\Audio;
  *
  * Oscillator implementation that provides the fundamentals for an FM Operator:
  *
- *    Waveform         : Injectable dependency
- *    Level Envelope   : Injectable dependency
- *    Pitch Envelope   : Injectable dependency
- *    Level LFO        : Fixed dependency, injectable waveform
- *    Pitch LFO        : Fixed dependency, injectable waveform
- *    Modulator Inputs : Zero to many other Operator instances
+ *    Waveform          : Injectable dependency
+ *    Level Envelope    : Injectable dependency
+ *    Pitch Envelope    : Injectable dependency
+ *    Level LFO         : Fixed dependency, injectable waveform
+ *    Pitch LFO         : Fixed dependency, injectable waveform
+ *    Modulator Inputs  : Zero to many other Operator instances
+ *    Velocity Dynamics : Injectable dependencies
+ *    KeyScale Dynamics : Injectable dependencies
  *
  * The only restriction on modulator input is that an Operator cannot modulate itself, either directly or indirectly.
  * Otherwise, any topology is legal.
@@ -69,6 +71,26 @@ class Operator implements Audio\Signal\IOscillator {
     ;
 
     /**
+     * Velocity control curves
+     */
+    private ?Audio\IControlCurve
+        $oLevelIntensityVelocityCurve = null,
+        $oLevelRateVelocityCurve      = null,
+        $oPitchIntensityVelocityCurve = null,
+        $oPitchRateVelocityCurve      = null
+    ;
+
+    /**
+     * Key scale control curves
+     */
+    private ?Audio\IControlCurve
+        $oLevelIntensityKeyScaleCurve = null,
+        $oLevelRateKeyScaleCurve      = null,
+        $oPitchIntensityKeyScaleCurve = null,
+        $oPitchRateKeyScaleCurve      = null
+    ;
+
+    /**
      * @var Operator[] $aModulators
      */
     private array $aModulators = [];
@@ -80,8 +102,7 @@ class Operator implements Audio\Signal\IOscillator {
     /**
      * Constructor. Initialised with sine wave for the oscillator and each LFO. LFO are not enabled.
      *
-     * @param int   $iWaveform
-     * @param float $fRatio
+     * @param float $fRatio - multiplier of the basic frequency the Operator runs at.
      */
     public function __construct($fRatio = self::DEF_RATIO) {
         $this->sUniqueID = 'op' . (++self::$iNextID);
@@ -351,6 +372,13 @@ class Operator implements Audio\Signal\IOscillator {
 
     // PHASE MODULATION
 
+    /**
+     * The main FM concept.
+     *
+     * @param  self  $oModulator  - must not be this instance.
+     * @param  float $fIndex      - The modulation strength. 1.0 represents one full duty cycle of the oscillator.
+     * @return self
+     */
     public function addModulator(self $oModulator, float $fIndex) : self {
         // This is not how you self modulate
         if ($this === $oModulator) {
@@ -375,15 +403,110 @@ class Operator implements Audio\Signal\IOscillator {
         return $this;
     }
 
+    /**
+     * Remove a modulator
+     *
+     * @param  self $oModulator
+     * @return self
+     */
     public function removeModulator(self $oModulator) : self {
         $this->oModulation->removeInputStream($oModulator->sUniqueID);
     }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    // VELOCITY DYNAMICS
+
+    /**
+     * Set or clear the velocity intensity curve for the level envelope. Passing null clears the curve.
+     *
+     * @param  Audio\IControlCurve|null $oCurve
+     * @return self
+     */
+    public function setLevelIntensityVelocityCurve(?Audio\IControlCurve $oCurve) : self {
+        $this->oLevelIntensityVelocityCurve = $oCurve;
+        return $this;
+    }
+
+    /**
+     * Set or clear the velocity rate curve for the level envelope. Passing null clears the curve.
+     *
+     * @param  Audio\IControlCurve|null $oCurve
+     * @return self
+     */
+    public function setLevelRateVelocityCurve(?Audio\IControlCurve $oCurve) : self {
+        $this->oLevelRateVelocityCurve = $oCurve;
+        return $this;
+    }
+
+    /**
+     * Set or clear the velocity intensity curve for the pitch envelope. Passing null clears the curve.
+     *
+     * @param  Audio\IControlCurve|null $oCurve
+     * @return self
+     */
+    public function setPitchIntensityVelocityCurve(?Audio\IControlCurve $oCurve) : self {
+        $this->oPitchIntensityVelocityCurve = $oCurve;
+        return $this;
+    }
+
+    /**
+     * Set or clear the velocity rate curve for the pitch envelope. Passing null clears the curve.
+     *
+     * @param  Audio\IControlCurve|null $oCurve
+     * @return self
+     */
+    public function setPitchRateVelocityCurve(?Audio\IControlCurve $oCurve) : self {
+        $this->oPitchRateVelocityCurve = $oCurve;
+        return $this;
+    }
+
+    /**
+     * Set the velocity. This will be mapped to various parameters by the contol curves.
+     *
+     * @param  int  $iVelocity
+     * @return self
+     */
+    public function setVelocity(int $iVelocity) : self {
+        $fCurveInput = (float)$iVelocity;
+        if ($oEnvelope = $this->oOscillator->getLevelEnvelope()) {
+            $fLevelScale = 1.0;
+            $fTimeScale  = 1.0;
+            if ($this->oLevelIntensityVelocityCurve) {
+                $fLevelScale *= $this->oLevelIntensityVelocityCurve->map($fCurveInput);
+            }
+            if ($this->oLevelRateVelocityCurve) {
+                $fTimeScale *= $this->oLevelRateVelocityCurve->map($fCurveInput);
+            }
+            $oEnvelope
+                ->setLevelScale($fLevelScale)
+                ->setTimeScale($fTimeScale)
+            ;
+        }
+        if ($oEnvelope = $this->oOscillator->getPitchEnvelope()) {
+            $fLevelScale = 1.0;
+            $fTimeScale  = 1.0;
+            if ($this->oPitchIntensityVelocityCurve) {
+                $fLevelScale *= $this->oLevelIntensityVelocityCurve->map($fCurveInput);
+            }
+            if ($this->oPitchRateVelocityCurve) {
+                $fTimeScale *= $this->oLevelRateVelocityCurve->map($fCurveInput);
+            }
+            $oEnvelope
+                ->setLevelScale($fLevelScale)
+                ->setTimeScale($fTimeScale)
+            ;
+        }
+        return $this;
+    }
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     /**
      * Checks to see if an operator's unique ID is defined anywhere in the modulation tree. If it is, we throw an
      * exception.
      *
-     *
+     * @param string $sUniqueID
      */
     private function check(string $sUniqueID) : void {
         if (isset($this->aModulators[$sUniqueID])) {

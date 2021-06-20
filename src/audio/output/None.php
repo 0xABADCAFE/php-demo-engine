@@ -35,6 +35,7 @@ class None implements Audio\IPCMOutput {
      * @throws \Exception
      */
     public function open() {
+
     }
 
     /**

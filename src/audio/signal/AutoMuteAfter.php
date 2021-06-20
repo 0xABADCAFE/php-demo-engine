@@ -100,5 +100,4 @@ class AutoMuteAfter implements IStream {
             return $this->emitSilence();
         }
     }
-
 }

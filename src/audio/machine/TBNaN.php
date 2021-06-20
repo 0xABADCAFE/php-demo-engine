@@ -43,6 +43,9 @@ class TBNaN implements Audio\IMachine {
     private Audio\Signal\IFilter          $oFilter;
     private Audio\Signal\IEnvelope        $oFEG, $oAEG;
 
+    /**
+     * Constructor
+     */
     public function __construct() {
         $this->initWaveforms();
         $this->initOscillator();
@@ -119,6 +122,14 @@ class TBNaN implements Audio\IMachine {
     /**
      * @inheritDoc
      */
+    public function setVoiceVelocity(int $iVoiceNumber, int $iVelocity) : self {
+
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function startVoice(int $iVoiceNumber) : self {
         $this->oVoice
             ->reset()
@@ -148,18 +159,24 @@ class TBNaN implements Audio\IMachine {
             Audio\Signal\IWaveform::SQUARE => new Audio\Signal\Waveform\Square(),
             Audio\Signal\IWaveform::PULSE  => new Audio\Signal\Waveform\Pulse(0.25),
         ];
-        $this->aWaveforms[self::PULSE]->setPulsewidthModulator($this->oPWM);
+        $this->aWaveforms[Audio\Signal\IWaveform::PULSE]->setPulsewidthModulator($this->oPWM);
     }
 
+    /**
+     * Initialise the internal oscillator
+     */
     private function initOscillator() {
         $this->oAEG = new Audio\Signal\Envelope\DecayPulse(
             0.8,
             0.07
         );
-        $this->oOscillator = new Audio\Signal\Oscillator\Sound($this->aWaveforms[self::PULSE]);
+        $this->oOscillator = new Audio\Signal\Oscillator\Sound($this->aWaveforms[Audio\Signal\IWaveform::PULSE]);
         $this->oOscillator->setLevelEnvelope($this->oAEG);
     }
 
+    /**
+     * Initialise the internal filter
+     */
     private function initFilter() {
         $this->oFEG = new Audio\Signal\Envelope\DecayPulse(
             0.33,

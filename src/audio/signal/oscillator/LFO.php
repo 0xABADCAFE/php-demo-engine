@@ -38,6 +38,13 @@ class LFO extends Base {
         $fBias  = 0.0
     ;
 
+    /**
+     * Constructor
+     *
+     * @param Audio\Signal\IWaveform|null $oWaveform
+     * @param float $fFrequency
+     * @param float $fDepth
+     */
     public function __construct(
         ?Audio\Signal\IWaveform $oWaveform = null,
         float $fFrequency = self::DEF_FREQUENCY,

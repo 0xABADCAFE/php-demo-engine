@@ -405,6 +405,14 @@ class TwoOpFM implements Audio\IMachine {
     /**
      * @inheritDoc
      */
+    public function setVoiceVelocity(int $iVoiceNumber, int $iVelocity) : self {
+
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function startVoice(int $iVoiceNumber) : self {
         if (isset($this->aVoice[$iVoiceNumber])) {
             $this->aVoice[$iVoiceNumber]

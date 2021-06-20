@@ -32,6 +32,14 @@ class Linear implements Audio\IControlCurve {
 
     private float $fOutBase, $fOutRange, $fInBase, $fInScale;
 
+    /**
+     * Constructor
+     *
+     * @param float $fOutMinValue  - the minimum output value for all expected input
+     * @param float $fOutMaxValue  - the maximum output value for all expected input
+     * @param float $fInRangeMin   - the input value at which the output value is $fOutMinValue
+     * @param float $fInRangeMax   - the input value at which the output value is $fOutMaxValue
+     */
     public function __construct(
         float $fOutMinValue,
         float $fOutMaxValue,

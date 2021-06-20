@@ -49,7 +49,7 @@ interface IWaveform {
     /**
      * Calculate a Packets worth of output values for a Packets worth of input values
      *
-     * @param Packet $oInput
+     * @param  Packet $oInput
      * @return Packet
      *
      */

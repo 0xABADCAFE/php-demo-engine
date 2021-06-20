@@ -29,20 +29,20 @@ class Factory implements Audio\IFactory {
 
     use Audio\TFactory;
 
-    const STANDARD_KEY = 'oscillator';
+    const STANDARD_KEY = 'Oscillator';
 
     const PRODUCT_TYPES = [
-        'lfo'       => 'createLFO',
-        'lfo1to0'   => 'createLFO',
-        'lfo0to1'   => 'createLFO',
-        'audio'     => 'createSound',
+        'LFO'          => 'createLFO',
+        'LFOOneToZero' => 'createLFO',
+        'LFOZeroToOne' => 'createLFO',
+        'Audio'        => 'createSound',
     ];
 
     /**
      * @inheritDoc
      */
     public function createFrom(object $oDefinition) : Audio\Signal\IOscillator {
-        $sType    = strtolower($oDefinition->type ?? '<none>');
+        $sType    = $oDefinition->sType ?? '<none>';
         $sFactory = self::PRODUCT_TYPES[$sType] ?? null;
         if ($sFactory) {
             $cCreator = [$this, $sFactory];
@@ -51,10 +51,16 @@ class Factory implements Audio\IFactory {
         throw new \RuntimeException('Unknown oscillator type ' . $sType);
     }
 
+    /**
+     * Create an LFO
+     *
+     * @param  object $oDefinition
+     * @param  string $sType
+     * @return Audio\Signal\IOscillator
+     */
     private function createLFO(object $oDefinition, string $sType) : Audio\Signal\IOscillator {
-        $fDepth = (float)($oDefinition->depth ?? 0.5);
-        $fRate  = (float)($oDefinition->rate  ?? LFO::DEF_FREQUENCY);
-
+        $fDepth      = (float)($oDefinition->fDepth ?? 0.5);
+        $fRate       = (float)($oDefinition->fRate  ?? LFO::DEF_FREQUENCY);
         $oWaveform   = null;
         $sSubNodeKey = Audio\Signal\Waveform\Factory::STANDARD_KEY;
 
@@ -67,14 +73,21 @@ class Factory implements Audio\IFactory {
         }
 
         switch ($sType) {
-            case 'lfo':     return new LFO($oWaveform, $fRate, $fDepth);
-            case 'lfo1to0': return new LFOOneToZero($oWaveform, $fRate, $fDepth);
-            case 'lfo0to1': return new LFOZeroToOne($oWaveform, $fRate, $fDepth);
+            case 'LFO':          return new LFO($oWaveform, $fRate, $fDepth);
+            case 'LFOOneToZero': return new LFOOneToZero($oWaveform, $fRate, $fDepth);
+            case 'LFOZeroToOne': return new LFOZeroToOne($oWaveform, $fRate, $fDepth);
             default:
                 throw new \RuntimeException('Unknown LFO type ' . $sType);
         }
     }
 
+    /**
+     * Create an audio oscillator
+     *
+     * @param  object $oDefinition
+     * @param  string $sType
+     * @return Audio\Signal\IOscillator
+     */
     private function createSound(object $oDefinition, string $sType) :  Audio\Signal\IOscillator  {
         $oWaveform   = null;
         $sSubNodeKey = Audio\Signal\Waveform\Factory::STANDARD_KEY;

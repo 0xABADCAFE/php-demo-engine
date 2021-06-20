@@ -24,7 +24,7 @@ use ABadCafe\PDE\Audio;
 /**
  * TMonophonicMachine
  *
- * Manages the common aspects of single voiced machines
+ * Manages the common aspects of single voiced machines.
  */
 trait TMonophonicMachine {
 
@@ -39,12 +39,22 @@ trait TMonophonicMachine {
         $fVoiceLevel  = 1.0
     ;
 
-    protected function setVoiceSource(Audio\Signal\IStream $oVoice, float $fAttenuation) {
-        $this->fAttenuation = $fAttenuation;
+    /**
+     * Set the source stream for the internal machine voice. The level parameter is normally used to
+     * to attenuate the output.
+     *
+     * @param Audio\Signal\IStream $oVoice
+     * @param float                $fLevel
+     */
+    protected function setVoiceSource(Audio\Signal\IStream $oVoice, float $fLevel) {
+        $this->fAttenuation = $fLevel;
         $this->oOutput =
-        $this->oVoice  = new Audio\Signal\LevelAdjust($oVoice, $this->fAttenuation);
+        $this->oVoice  = new Audio\Signal\LevelAdjust($oVoice, $this->fLevel);
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getNumVoices() : int {
         return 1;
     }
@@ -101,10 +111,16 @@ trait TMonophonicMachine {
         return $this->oOutput->emit($iIndex);
     }
 
+    /**
+     * @inheritDoc
+     */
     public function getInsert() : ?Audio\Signal\IInsert {
         return $this->oInsert;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function setInsert(?Audio\Signal\IInsert $oInsert = null) : self {
         if ($this->oInsert = $oInsert) {
             $oInsert->setInputStream($this->oVoice);

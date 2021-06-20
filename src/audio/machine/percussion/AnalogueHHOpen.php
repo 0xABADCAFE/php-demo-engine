@@ -23,37 +23,10 @@ use ABadCafe\PDE\Audio;
 
 /**
  * AnalogueHHOpen
+ *
+ * Simple open hi-hat made from filtered, shaped noise.
  */
 class AnalogueHHOpen extends BandPassNoise {
-
-//     const OCTAVE = [
-//          0 => [],
-//          1 => [],
-//          2 => [],
-//          3 => [],
-//          4 => [],
-//          5 => [],
-//          6 => [],
-//          7 => [],
-//          8 => [],
-//          9 => [],
-//         10 => [],
-//     ];
-//
-//     const SEMITONE = [
-//          0 => [],
-//          1 => [],
-//          2 => [],
-//          3 => [],
-//          4 => [],
-//          5 => [],
-//          6 => [],
-//          7 => [],
-//          8 => [],
-//          9 => [],
-//         10 => [],
-//         11 => [],
-//     ];
 
     /**
      * @inheritDoc
@@ -85,8 +58,4 @@ class AnalogueHHOpen extends BandPassNoise {
         $this->oAutoMute
             ->setDisableAfter(0.5);
     }
-
 }
-
-
-

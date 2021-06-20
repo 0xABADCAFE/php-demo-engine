@@ -47,7 +47,11 @@ class Rectifier implements Signal\IWaveform {
     private bool             $bFold;
 
     /**
-     * Create one of the standard enumerated rectifier configurations above
+     * Create one of the standard enumerated rectifier configurations above,
+     *
+     * @param  Signal\IWaveform $oSource
+     * @param  int $iModifier
+     * @return self
      */
     public static function createStandard(Signal\IWaveform $oSource, int $iModifier) : Signal\IWaveform {
         switch ($iModifier) {
@@ -137,7 +141,16 @@ class Rectifier implements Signal\IWaveform {
         }
     }
 
-
+    /**
+     * Constructor
+     *
+     * @param Signal\IWaveform $oSource - Initial waveform to rectify
+     * @param float            $fMin    - Low threshold for rectification
+     * @param float            $fMax    - High threshold for rectification
+     * @param bold             $bFold   - Whether or not the waveform should be folded back at the rectification limit
+     * @param float            $fScale  - How much to scale the output by
+     * @param float            fBias    - How much to offset the output by
+     */
     public function __construct(
         Signal\IWaveform $oSource,
         float $fMin,

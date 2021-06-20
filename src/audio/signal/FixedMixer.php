@@ -141,6 +141,7 @@ class FixedMixer implements IStream {
     /**
      * Remove a named stream
      *
+     * @param  string $sInputName
      * @return self
      */
     public function removeInputStream(string $sInputName) : self {

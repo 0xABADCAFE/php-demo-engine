@@ -46,6 +46,13 @@ abstract class Base implements Audio\Signal\IOscillator {
 
     protected int $iSamplePosition = 0;
 
+    /**
+     * Constructor
+     *
+     * @param Audio\Signal\IWaveform|null $oWaveform
+     * @param float                       $fFrequency
+     * @param float                       $fPhase
+     */
     public function __construct(
         ?Audio\Signal\IWaveform $oWaveform = null,
         float $fFrequency = 0.0,
@@ -89,7 +96,6 @@ abstract class Base implements Audio\Signal\IOscillator {
         return $this->emitNew();
     }
 
-
     /**
      * @inheritDoc
      */
@@ -119,16 +125,14 @@ abstract class Base implements Audio\Signal\IOscillator {
                     static::MAX_FREQUENCY :
                     $fFrequency
             );
-
-//         $fTime = $this->fTimeStep * $this->iSamplePosition;
-//         $this->fPhaseCorrection   += $fTime * ($fLastFrequency - $this->fFrequency);
-
         $this->fScaleVal = $this->fTimeStep * $this->fFrequency;
         return $this;
     }
 
     /**
      * Emit a new signal packet.
+     *
+     * @return Audio\Signal\Packet
      */
     protected abstract function emitNew() : Audio\Signal\Packet;
 }

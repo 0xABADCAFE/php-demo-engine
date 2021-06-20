@@ -100,7 +100,7 @@ class Packet extends \SPLFixedArray {
     }
 
     /**
-     * Bias the packet by a given ofset.
+     * Bias the packet by a given offset.
      *
      * @param  float $fValue
      * @return self
@@ -108,6 +108,20 @@ class Packet extends \SPLFixedArray {
     public function biasBy(float $fValue) : self {
         for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
             $this[$i] += $fValue;
+        }
+        return $this;
+    }
+
+    /**
+     * Scale and Bias the packet.
+     *
+     * @param  float $fScale
+     * @param  float $fBias
+     * @return self
+     */
+    public function scaleAndBiasBy(float $fScale, float $fBias) : self {
+        for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
+            $this[$i] = ($this[$i] * $fScale) + $fBias;
         }
         return $this;
     }
@@ -168,6 +182,9 @@ trait TPacketIndexAware {
      * if the index provided is different than the index we last saw, we update it and return false.
      * Finally if the index provided is the same as the last index we saw, we return true as this case
      * indicates we've been asked for the most recent data more than once.
+     *
+     * @param  int|null $iIndex
+     * @return bool
      */
     protected function useLast(?int $iIndex) : bool {
         if (null === $iIndex) {

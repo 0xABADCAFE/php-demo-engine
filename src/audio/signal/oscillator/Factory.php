@@ -51,10 +51,16 @@ class Factory implements Audio\IFactory {
         throw new \RuntimeException('Unknown oscillator type ' . $sType);
     }
 
+    /**
+     * Create an LFO
+     *
+     * @param  object $oDefinition
+     * @param  string $sType
+     * @return Audio\Signal\IOscillator
+     */
     private function createLFO(object $oDefinition, string $sType) : Audio\Signal\IOscillator {
-        $fDepth = (float)($oDefinition->fDepth ?? 0.5);
-        $fRate  = (float)($oDefinition->fRate  ?? LFO::DEF_FREQUENCY);
-
+        $fDepth      = (float)($oDefinition->fDepth ?? 0.5);
+        $fRate       = (float)($oDefinition->fRate  ?? LFO::DEF_FREQUENCY);
         $oWaveform   = null;
         $sSubNodeKey = Audio\Signal\Waveform\Factory::STANDARD_KEY;
 
@@ -75,6 +81,13 @@ class Factory implements Audio\IFactory {
         }
     }
 
+    /**
+     * Create an audio oscillator
+     *
+     * @param  object $oDefinition
+     * @param  string $sType
+     * @return Audio\Signal\IOscillator
+     */
     private function createSound(object $oDefinition, string $sType) :  Audio\Signal\IOscillator  {
         $oWaveform   = null;
         $sSubNodeKey = Audio\Signal\Waveform\Factory::STANDARD_KEY;

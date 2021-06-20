@@ -141,6 +141,5 @@ class DecayPulse extends Base {
 
         $this->bParameterChanged = false;
     }
-
 }
 

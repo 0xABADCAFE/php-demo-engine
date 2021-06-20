@@ -33,6 +33,9 @@ class PacketRelay implements IStream {
 
     private Packet $oPacket;
 
+    /**
+     * Constructor
+     */
     public function __construct() {
         $this->oPacket = Packet::create();
     }
@@ -44,6 +47,10 @@ class PacketRelay implements IStream {
         return $this->iPosition;
     }
 
+    /**
+     * @param  Packet $oPacket
+     * @return self
+     */
     public function setPacket(Packet $oPacket) : self {
         $this->oPacket = $oPacket;
         return $this;

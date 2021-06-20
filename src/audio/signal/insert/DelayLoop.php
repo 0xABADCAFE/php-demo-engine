@@ -25,7 +25,7 @@ use \SPLDoublyLinkedList;
 /**
  * DelayLoop
  *
- *
+ * A delay loop with low pass filter.
  */
 class DelayLoop implements Audio\Signal\IInsert {
 
@@ -45,6 +45,13 @@ class DelayLoop implements Audio\Signal\IInsert {
 
     /**
      * Constructor
+     *
+     * @param Audio\Signal\IStream|null $oStream
+     * @param float $fDelayMs
+     * @param float $fFeedback
+     * @param float $fDryLevel
+     * @param float $fCutoff
+     * @param float $fResonance
      */
     public function __construct(
         ?Audio\Signal\IStream $oStream = null,
@@ -66,7 +73,6 @@ class DelayLoop implements Audio\Signal\IInsert {
             $fCutoff,
             $fResonance
         );
-
         $this->createQueue($fDelayMs);
     }
 
@@ -93,6 +99,10 @@ class DelayLoop implements Audio\Signal\IInsert {
         return $this->fCutoff;
     }
 
+    /**
+     * @param  float
+     * @return self
+     */
     public function setCutoff(float $fCutoff) : self {
         $this->fCutoff = $fCutoff;
         $this->oFilter->setCutoff($fCutoff);
@@ -106,6 +116,10 @@ class DelayLoop implements Audio\Signal\IInsert {
         return $this->fResonance;
     }
 
+    /**
+     * @param  float
+     * @return self
+     */
     public function setResonance(float $fResonance) : self {
         $this->fResonance = $fResonance;
         $this->oFilter->setResonance($fResonance);
@@ -188,11 +202,13 @@ class DelayLoop implements Audio\Signal\IInsert {
 
     /**
      * Create the queue
+     *
+     * @param float $fDelayMs
      */
     public function createQueue(float $fDelayMs) {
         $this->oQueue      = new SPLDoublyLinkedList;
         $fPacketDurationMs = 1000.0 * Audio\IConfig::PACKET_PERIOD;
-        $iMaxPackets = (int)ceil($fDelayMs / $fPacketDurationMs);
+        $iMaxPackets       = (int)ceil($fDelayMs / $fPacketDurationMs);
         for ($i = 0; $i < $iMaxPackets; ++$i) {
             $this->oQueue->add($i, Audio\Signal\Packet::create());
         }

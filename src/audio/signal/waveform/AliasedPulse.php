@@ -51,7 +51,8 @@ class AliasedPulse implements Signal\IWaveform {
     /**
      * Constructor.
      *
-     * @param float $fPulseWidth - how far into the duty cycle the switch happens.
+     * @param float               $fPulseWidth - how far into the duty cycle the switch happens.
+     * @param Signal\IStream|null $oModulator  - optional modulator for pulse width
      */
     public function __construct(float $fPulseWidth = self::DEF_WIDTH, ?Signal\IStream $oModulator = null) {
         $this->setPulsewidth($fPulseWidth);
@@ -60,6 +61,9 @@ class AliasedPulse implements Signal\IWaveform {
 
     /**
      * Set the pulse width. Clamps to MIN_WIDTH/MAX_WIDTH
+     *
+     * @param  float $fPulseWidth
+     * @return self
      */
     public function setPulsewidth(float $fPulseWidth) : self {
         $fPulseWidth > self::MAX_WIDTH && $fPulseWidth = self::MAX_WIDTH;
@@ -71,7 +75,8 @@ class AliasedPulse implements Signal\IWaveform {
     /**
      * Optional pulse width modulator to use. Note that this creates free-running clone of the input.
      *
-     *
+     * @param  Signal\IStream|null $oModulator
+     * @return self
      */
     public function setPulsewidthModulator(?Signal\IStream $oModulator) : self {
         if ($oModulator) {

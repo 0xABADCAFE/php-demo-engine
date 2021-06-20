@@ -24,6 +24,8 @@ use ABadCafe\PDE\Audio;
 /**
  * WhiteNoise
  *
+ * Uses one mt_rand() call per packet to generate a stream of (pseudo) white noise.
+ *
  * @see https://github.com/0xABADCAFE/random-proto-synth
  */
 class WhiteNoise implements Audio\Signal\IWaveform {
@@ -46,6 +48,9 @@ class WhiteNoise implements Audio\Signal\IWaveform {
     private static ?Audio\Signal\Packet $oRandom = null;
     private static float $fNormalise = 0.0;
 
+    /**
+     * Constructor
+     */
     public function __construct() {
         if (null === self::$oRandom) {
             self::$fNormalise = 2.0 / (float)mt_getrandmax();

@@ -48,6 +48,13 @@ class Factory implements Audio\IFactory {
         throw new \RuntimeException('Unknown envelope type ' . $sType);
     }
 
+    /**
+     * Create the decay envelope type
+     *
+     * @param  object $oDefinition
+     * @param  string $sType
+     * @return Audio\Signal\IEnvelope
+     */
     private function createDecay(object $oDefinition, string $sType) : Audio\Signal\IEnvelope {
         $fInitial  = (float)($oDefinition->fInitial  ?? 1.0);
         $fTarget   = (float)($oDefinition->fTarget   ?? 0.0);
@@ -59,6 +66,13 @@ class Factory implements Audio\IFactory {
         );
     }
 
+    /**
+     * Create the shape envelope type
+     *
+     * @param  object $oDefinition
+     * @param  string $sType
+     * @return Audio\Signal\IEnvelope
+     */
     private function createShape(object $oDefinition, string $sType) : Audio\Signal\IEnvelope {
         if (!isset($oDefinition->aPoints) || !is_array($oDefinition->aPoints)) {
             throw new \RuntimeException('Shape envelope must have non empty points array');

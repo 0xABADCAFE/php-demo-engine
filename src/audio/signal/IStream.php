@@ -32,16 +32,22 @@ interface IStream {
 
     /**
      * Enable a stream.
+     *
+     * @return self
      */
     public function enable() : self;
 
     /**
      * Disable a stream. A disabled stream will emit silence packets if invoked.
+     *
+     * @return self
      */
     public function disable() : self;
 
     /**
      * Check if a stream is enabled.
+     *
+     * @return bool
      */
     public function isEnabled() : bool;
 
@@ -55,7 +61,7 @@ interface IStream {
     /**
      * Reset the stream
      *
-     * @return IStream
+     * @return self
      */
     public function reset() : self;
 

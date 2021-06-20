@@ -26,8 +26,8 @@ use \SPLFixedArray;
 /**
  * Octave
  *
- * The standard configuration assumes the input value is a note number but can be configured to any use case.
- *
+ * Output values double at a fixed interval. The standard configuration assumes the input value is a note number but
+ * can be configured to any use case.
  */
 class Octave implements Audio\IControlCurve {
 

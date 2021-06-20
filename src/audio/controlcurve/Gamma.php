@@ -26,11 +26,21 @@ use \SPLFixedArray;
 /**
  * Gamma
  *
+ * Gamma curve passing through the required minimum and maximum output values over the input range.
  */
 class Gamma implements Audio\IControlCurve {
 
     private float $fOutBase, $fOutRange, $fGamma, $fInBase, $fInScale;
 
+    /**
+     * Constructor
+     *
+     * @param float $fOutMinValue  - the minimum output value for all expected input
+     * @param float $fOutMaxValue  - the maximum output value for all expected input
+     * @param float $fGamma        - the curvature, 1.0 is linear.
+     * @param float $fInRangeMin   - the input value at which the output value is $fOutMinValue
+     * @param float $fInRangeMax   - the input value at which the output value is $fOutMaxValue
+     */
     public function __construct(
         float $fOutMinValue,
         float $fOutMaxValue,

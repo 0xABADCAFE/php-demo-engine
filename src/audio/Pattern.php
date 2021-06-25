@@ -68,6 +68,8 @@ class Pattern {
         $iNumLines      = 64
     ;
 
+    private string $sLabel = '';
+
     private array $aChannels;
 
     private SPLFixedArray $oRow;
@@ -78,21 +80,22 @@ class Pattern {
      * @param int $iNumChannels
      * @param int $iNumLines
      */
-    public function __construct(int $iNumChannels, int $iNumLines) {
+    public function __construct(int $iNumChannels, int $iNumLines, string $sLabel = '') {
         $this->iNumChannels = max(1, $iNumChannels);
         $this->iNumLines    = max(1, $iNumLines);
 
         $this->oRow         = new SPLFixedArray($this->iNumChannels);
         $this->aChannels    = array_fill(0, $this->iNumChannels, []);
+        $this->sLabel       = $sLabel;
     }
 
     /**
      * Number of channels in this pattern,
      *
-     * :return int
+     * @return int
      */
     public function getNumChannels() : int {
-        return $this->iChannels;
+        return $this->iNumChannels;
     }
 
     /**
@@ -102,6 +105,10 @@ class Pattern {
      */
     public function getLength() : int {
         return $this->iNumLines;
+    }
+
+    public function getLabel() : string {
+        return $this->sLabel;
     }
 
     /**

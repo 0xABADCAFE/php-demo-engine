@@ -46,7 +46,7 @@ class TRNaN implements Audio\IMachine {
         self::HH_OPEN   => [self::HH_CLOSED]
     ];
 
-    use TPolyphonicMachine;
+    use TPolyphonicMachine, TSimpleVelocity;
 
     private $aVoices = [];
 
@@ -70,14 +70,6 @@ class TRNaN implements Audio\IMachine {
     public function setVoiceNote(int $iVoiceNumber, string $sNoteName) : self {
         isset($this->aVoices[$iVoiceNumber]) &&
         $this->aVoices[$iVoiceNumber]->setNote($sNoteName);
-        return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setVoiceVelocity(int $iVoiceNumber, int $iVelocity) : self {
-
         return $this;
     }
 

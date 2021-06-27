@@ -34,23 +34,24 @@ use function ABadCafe\PDE\dprintf;
  */
 class Sequencer {
     const
-        MIN_TEMPO_BPM         = 32,
-        DEF_TEMPO_BPM         = 120,
-        MAX_TEMPO_BPM         = 240,
-        MIN_BEATS_PER_MEASURE = 3,
-        DEF_BEATS_PER_MEASURE = 4,
-        MAX_BEATS_PER_MEASURE = 7,
-        MIN_LINES_PER_BEAT    = 1,
-        DEF_LINES_PER_BEAT    = 4,
-        MAX_LINES_PER_BEAT    = 32,
-        DEF_PATTERN_LENGTH    = self::DEF_BEATS_PER_MEASURE * self::DEF_LINES_PER_BEAT
+        MIN_TEMPO_BPM            = 32,
+        DEF_TEMPO_BPM            = 120,
+        MAX_TEMPO_BPM            = 240,
+        MIN_BEATS_PER_MEASURE    = 3,
+        DEF_BEATS_PER_MEASURE    = 4,
+        MAX_BEATS_PER_MEASURE    = 16,
+        MIN_LINES_PER_BEAT       = 1,
+        DEF_LINES_PER_BEAT       = 4,
+        MAX_LINES_PER_BEAT       = 32,
+        DEF_PATTERN_LENGTH       = self::DEF_BEATS_PER_MEASURE * self::DEF_LINES_PER_BEAT
     ;
 
     private int
         $iTempoBeatsPerMinute = self::DEF_TEMPO_BPM,
         $iBeatsPerMeasure     = self::DEF_BEATS_PER_MEASURE,
         $iLinesPerBeat        = self::DEF_LINES_PER_BEAT,
-        $iBasePatternLength   = self::DEF_PATTERN_LENGTH
+        $iBasePatternLength   = self::DEF_PATTERN_LENGTH,
+        $iNumMeasures         = 0
     ;
 
     /**
@@ -85,7 +86,16 @@ class Sequencer {
     }
 
     /**
-     * Set the expected beats per measure.s
+     * Get the tempo, in beats per minute.
+     *
+     * @return int
+     */
+    public function getTempo() : int {
+        return $this->iTempoBeatsPerMinute;
+    }
+
+    /**
+     * Set the expected beats per measure.
      *
      * @param  int $iBeatsPerMeasure
      * @return self
@@ -97,6 +107,15 @@ class Sequencer {
         );
         $this->iBasePatternLength = $this->iBeatsPerMeasure * $this->iLinesPerBeat;
         return $this;
+    }
+
+    /**
+     * Get the beats per measure.
+     *
+     * @return int
+     */
+    public function getBeatsPerMeasure() : int {
+        return $this->iBasePatternLength;
     }
 
     /**
@@ -114,6 +133,23 @@ class Sequencer {
         return $this;
     }
 
+    /**
+     * Get the lines per beat.
+     *
+     * @return int
+     */
+    public function getLinesPerBeat() : int {
+        return $this->iLinesPerBeat;
+    }
+
+    /**
+     * Get the total sequence length, in measures.
+     *
+     * @return int
+     */
+    public function getLength() : int {
+        return $this->iNumMeasures;
+    }
 
     /**
      * Add a named Machine. Patterns can be added to the same name which will be assigned to that machine.
@@ -121,6 +157,7 @@ class Sequencer {
      * @param  string         $sMachineName
      * @param  Audio\IMachine $oMachine
      * @return self
+     * @throws LogicException Thrown if the machine name has already been assigned.
      */
     public function addMachine(string $sMachineName, Audio\IMachine $oMachine) : self {
         if (!isset($this->aMachines[$sMachineName])) {
@@ -139,14 +176,16 @@ class Sequencer {
      * Machine has voices and a length of 1 measure by default. Accepts an optional array of measures
      * for the machine in which to slot the newly created pattern.
      *
+     * @todo   Implement pattern length support
+     *
      * @param  string                 $sMachineName - Which machine to create the Pattern for
-     * @param  int                    $iMeasures    - How many measures long the pattern should be
+     * @param  int                    $iMeasures    - How many measures long the pattern should be (currently ignored)
      * @param  int[]|null             $aMeasures    - Which measures in the sequence should use the Pattern
      * @return Audio\Sequence\Pattern
      * @throws OutOfBoundsException   - When the machine name is not recognised
      * @throws RangeException         - When the Pattern length is less than 1 measure
      */
-    public function createPattern(string $sMachineName, int $iMeasures = 1, ?array $aMeasures = null) : Audio\Sequence\Pattern {
+    public function allocatePattern(string $sMachineName, int $iMeasures = 1, ?array $aMeasures = null) : Audio\Sequence\Pattern {
         $this->assertMachineExists($sMachineName);
         if ($iMeasures < 1) {
             throw new RangeException('Pattern length must be at least 1 measure');
@@ -155,7 +194,7 @@ class Sequencer {
         // Create the Pattern.
         $oPattern = new Audio\Sequence\Pattern(
             $this->aMachines[$sMachineName]->getNumVoices(),
-            $this->iBasePatternLength * $iMeasures,
+            $this->iBasePatternLength,// * $iMeasures,
             $sMachineName . '_' . $this->aMachinePatternLabels[$sMachineName]++
         );
 
@@ -163,7 +202,7 @@ class Sequencer {
         $this->addPattern($sMachineName, $oPattern);
 
         if (null !== $aMeasures) {
-            $this->setSequencePositions($sMachineName, $oPattern, $aMeasures);
+            $this->populateMachineSequence($sMachineName, $oPattern, $aMeasures);
         }
 
         return $oPattern;
@@ -172,9 +211,10 @@ class Sequencer {
     /**
      * Set up a sequence of Patterns for a named machine. The sequence is an array of measure positions
      * where the Pattern will be used. Note that the Pattern can be null, in which case, any patterns
-     * in those positions will be cleared. Throws exceptions if the machine name is unrecognised or the
+     * in those positions will be cleared. Throw an exception if the machine name is unrecognised or the
      * Pattern has more channels than the machine has voices. While it is expected that the Pattern will
-     * be reused with the machine it was created for, this is not mandatory and can be played
+     * be reused with the machine it was created for, this is not mandatory and can be played on any machine
+     * that has enough polyphony.
      *
      * @param  string                      $sMachineName - Which machine to insert the patterns for
      * @param  Audio\Sequence\Pattern|null $oPattern     - Pattern to use or null to clear
@@ -183,7 +223,7 @@ class Sequencer {
      * @throws OutOfBoundsException        - When the machine name is not recognised
      * @throws RangeException              - When the pattern has more channels than the Machine has voices.
      */
-    public function setSequencePositions(
+    public function populateMachineSequence(
         string $sMachineName,
         ?Audio\Sequence\Pattern $oPattern,
         array $aMeasures
@@ -201,6 +241,10 @@ class Sequencer {
             }
         );
         if (!empty($aMeasures)) {
+
+            // Keep track of the total sequence length, in measures.
+            $this->iNumMeasures = max($this->iNumMeasures, 1 + max($aMeasures));
+
             $aSequence = &$this->aMachineSequences[$sMachineName];
             if (null === $oPattern) {
                 foreach ($aMeasures as $iPosition) {
@@ -231,6 +275,18 @@ class Sequencer {
         return $this->aMachineSequences[$sMachineName];
     }
 
+
+
+    /**
+     * @param  $sMachineName
+     * @throws OutOfBoundsException
+     */
+    private function assertMachineExists(string $sMachineName) {
+        if (!isset($this->aMachines[$sMachineName])) {
+            throw new OutOfBoundsException('Unrecognised machine name "' . $sMachineName . '"');
+        }
+    }
+
     /**
      * Add a Pattern. Patterns are assigned to a machine name.
      *
@@ -248,12 +304,101 @@ class Sequencer {
     }
 
     /**
-     * @param  $sMachineName
-     * @throws OutOfBoundsException
+     * Play the sequence. By default the entire sequence is played, however, the start measure
+     * and total number of measures to play can be set.
+     *
+     * @param Audio\IPCMOutput $oOutput       - Output stream
+     * @param float            $fGain         - Default is 1.0
+     * @param int              $iStartMeasure - Default is 0, e.g. start at the beginning.
+     * @param int              $iNumMeasures  - Default is 0, e.g. play entire sequence
      */
-    private function assertMachineExists(string $sMachineName) {
-        if (!isset($this->aMachines[$sMachineName])) {
-            throw new OutOfBoundsException('Unrecognised machine name "' . $sMachineName . '"');
+    public function playSequence(
+        Audio\IPCMOutput $oOutput,
+        float $fGain       = 1.0,
+        int $iStartMeasure = 0,
+        int $iNumMeasures  = 0
+    ) : self {
+
+        // Sanity checks
+        if ($iStartMeasure < 0 || $iStartMeasure >= $this->iNumMeasures) {
+            throw new RangeException('Start measure is out of range');
+        }
+        if ($iNumMeasures <= 0) {
+            $iNumMeasures = $this->iNumMeasures;
+        }
+
+        $iLastMeasure = min($iStartMeasure + $iNumMeasures, $this->iNumMeasures);
+
+        $fBeatsPerSecond = $this->iTempoBeatsPerMinute / 60.0;
+        $fLinesPerSecond = $fBeatsPerSecond * $this->iLinesPerBeat;
+        $fSecondScale    = 1.0 / Audio\IConfig::PROCESS_RATE;
+
+        $oMixer = new Audio\Signal\FixedMixer($fGain);
+        foreach ($this->aMachines as $sMachineName => $oMachine) {
+            $oMixer->addInputStream($sMachineName, $oMachine, 1.0);
+        }
+
+        $iLineOffset = 0;
+        for ($iMeasure = $iStartMeasure; $iMeasure < $iLastMeasure; ++$iMeasure) {
+            $aActivePatterns = [];
+            foreach ($this->aMachineSequences as $sMachineName => $aSequence) {
+                if (isset($aSequence[$iMeasure])) {
+                    $oPattern = $aSequence[$iMeasure];
+                    echo "\t", $sMachineName, ": ", $oPattern->getLabel(), "\n";
+                    $aActivePatterns[$sMachineName] = $oPattern;
+                } else {
+                    echo "\t", $sMachineName, ": (no pattern)\n";
+                }
+            }
+
+            $iLastLineNumber = -1;
+            while (true) {
+                $iSamplePosition = $oMixer->getPosition();
+                $fCurrentTime    = $fSecondScale * $iSamplePosition;
+                $iLineNumber     = (int)floor($fCurrentTime * $fLinesPerSecond) - $iLineOffset;
+                if ($iLineNumber !== $iLastLineNumber) {
+                    if ($iLineNumber == $this->iBasePatternLength) {
+                        break;
+                    }
+                    $iLastLineNumber = $iLineNumber;
+                    $this->triggerLine($iLineNumber, $aActivePatterns);
+                }
+                $oOutput->write($oMixer->emit());
+            }
+            $iLineOffset += $this->iBasePatternLength;
+        }
+
+        return $this;
+    }
+
+    /**
+     * Trigger the events on the selected line for the active patterns
+     */
+    private function triggerLine(int $iLineNumber, array $aActivePatterns) {
+        foreach ($aActivePatterns as $sMachineName => $oPattern) {
+            $oMachine = $this->aMachines[$sMachineName];
+            $oRow     = $oPattern->getLine($iLineNumber);
+            foreach ($oRow as $iChannel => $oEvent) {
+                if ($oEvent instanceof Audio\Sequence\NoteOn) {
+//                     dprintf("\tLn:%4d Mc:%5s Ch:%2d Ev:NoteOn %s V:%d\n",
+//                         $iLineNumber,
+//                         $sMachineName,
+//                         $iChannel,
+//                         $oEvent->sNote,
+//                         $oEvent->iVelocity
+//                     );
+                    $oMachine
+                        ->setVoiceNote($iChannel, $oEvent->sNote)
+                        ->setVoiceVelocity($iChannel, $oEvent->iVelocity)
+                        ->startVoice($iChannel);
+                } else if ($oEvent instanceof Audio\Sequence\SetNote) {
+                    $oMachine
+                        ->setVoiceNote($iChannel, $oEvent->sNote);
+                } else if ($oEvent instanceof Audio\Sequence\NoteOff) {
+                    $oMachine
+                        ->stopVoice($iChannel);
+                }
+            }
         }
     }
 

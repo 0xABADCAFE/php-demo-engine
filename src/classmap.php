@@ -105,6 +105,7 @@ const CLASS_MAP = [
   'ABadCafe\\PDE\\Audio\\ControlCurve\\Flat' => '/audio/controlcurve/Flat.php',
   'ABadCafe\\PDE\\Audio\\Machine\\TBNaN' => '/audio/machine/TBNaN.php',
   'ABadCafe\\PDE\\Audio\\Machine\\ChipTune' => '/audio/machine/ChipTune.php',
+  'ABadCafe\\PDE\\Audio\\Machine\\TSimpleVelocity' => '/audio/machine/TSimpleVelocity.php',
   'ABadCafe\\PDE\\Audio\\Machine\\Sequencer' => '/audio/machine/Sequencer.php',
   'ABadCafe\\PDE\\Audio\\Machine\\TwoOpFM' => '/audio/machine/TwoOpFM.php',
   'ABadCafe\\PDE\\Audio\\Machine\\TPolyphonicMachine' => '/audio/machine/TPolyphonicMachine.php',

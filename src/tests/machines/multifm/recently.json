@@ -65,7 +65,14 @@
             "LevelEnv": {
                 "sType": "Decay",
                 "finitial": 1.0,
-                "fHalfLife": 0.4
+                "fHalfLife": 0.4,
+                "Velocity": {
+                    "Intensity": {
+                        "sType": "Linear",
+                        "fMinOutput": 0.0,
+                        "fMaxOutput": 1.0
+                    }
+                }
             },
             "aModulators": [
                 {

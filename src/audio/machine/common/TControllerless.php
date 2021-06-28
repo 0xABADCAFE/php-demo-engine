@@ -22,17 +22,23 @@ namespace ABadCafe\PDE\Audio\Machine;
 use ABadCafe\PDE\Audio;
 
 /**
- * TSimpleVelocity
+ * TControllerless
  *
+ * Empty controllers
  */
-trait TSimpleVelocity {
-
-    protected static $fSimpleVelocityScale = 1.0 / 127.0;
+trait TControllerless {
 
     /**
      * @inheritDoc
      */
-    public function setVoiceVelocity(int $iVoiceNumber, int $iVelocity) : self {
-        return $this->setVoiceLevel($iVoiceNumber, self::$fSimpleVelocityScale * $iVelocity);
+    public function setVoiceControllerValue(int $iVoiceNumber, int $iController, int $iValue) : self {
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function adjustVoiceControllerValue(int $iVoiceNumber, int $iController, int $iDelta) : self {
+        return $this;
     }
 }

@@ -22,36 +22,6 @@ namespace ABadCafe\PDE\Audio\Sequence;
 
 use \SPLFixedArray;
 
-class Event {
-
-}
-
-class SetNote extends Event {
-    public string $sNote;
-    public function __construct(string $sNote) {
-        $this->sNote = $sNote;
-    }
-}
-
-
-/**
- * Simple note on event
- */
-class NoteOn extends Event {
-    public string $sNote;
-    public int    $iVelocity;
-
-    public function __construct(string $sNote, int $iVelocity = 100) {
-        $this->sNote     = $sNote;
-        $this->iVelocity = $iVelocity;
-    }
-}
-
-class NoteOff extends Event {
-
-}
-
-
 /**
  * Pattern
  *
@@ -136,7 +106,7 @@ class Pattern {
      * @return self
      * @throws \OutOfBoundsException
      */
-    public function addEvent(Event $oEvent, int $iChannel, int $iLineNumber, int $iEvery = 0, $iUntil = 0) {
+    public function addEvent(Event $oEvent, int $iChannel, int $iLineNumber, int $iEvery = 0, $iUntil = 0) : self {
         if (
             $iChannel < 0    || $iChannel    >= $this->iNumChannels ||
             $iLineNumber < 0 || $iLineNumber >= $this->iNumLines

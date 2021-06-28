@@ -20,8 +20,10 @@ declare(strict_types=1);
 
 namespace ABadCafe\PDE\Audio\Machine;
 use ABadCafe\PDE\Audio;
+
 use \OutOfBoundsException;
 use \RangeException;
+
 
 use function ABadCafe\PDE\dprintf;
 
@@ -176,25 +178,19 @@ class Sequencer {
      * Machine has voices and a length of 1 measure by default. Accepts an optional array of measures
      * for the machine in which to slot the newly created pattern.
      *
-     * @todo   Implement pattern length support
-     *
      * @param  string                 $sMachineName - Which machine to create the Pattern for
-     * @param  int                    $iMeasures    - How many measures long the pattern should be (currently ignored)
      * @param  int[]|null             $aMeasures    - Which measures in the sequence should use the Pattern
      * @return Audio\Sequence\Pattern
      * @throws OutOfBoundsException   - When the machine name is not recognised
      * @throws RangeException         - When the Pattern length is less than 1 measure
      */
-    public function allocatePattern(string $sMachineName, int $iMeasures = 1, ?array $aMeasures = null) : Audio\Sequence\Pattern {
+    public function allocatePattern(string $sMachineName, ?array $aMeasures = null) : Audio\Sequence\Pattern {
         $this->assertMachineExists($sMachineName);
-        if ($iMeasures < 1) {
-            throw new RangeException('Pattern length must be at least 1 measure');
-        }
 
         // Create the Pattern.
         $oPattern = new Audio\Sequence\Pattern(
             $this->aMachines[$sMachineName]->getNumVoices(),
-            $this->iBasePatternLength,// * $iMeasures,
+            $this->iBasePatternLength,
             $sMachineName . '_' . $this->aMachinePatternLabels[$sMachineName]++
         );
 
@@ -379,98 +375,108 @@ class Sequencer {
             $oMachine = $this->aMachines[$sMachineName];
             $oRow     = $oPattern->getLine($iLineNumber);
             foreach ($oRow as $iChannel => $oEvent) {
-                if ($oEvent instanceof Audio\Sequence\NoteOn) {
-//                     dprintf("\tLn:%4d Mc:%5s Ch:%2d Ev:NoteOn %s V:%d\n",
-//                         $iLineNumber,
-//                         $sMachineName,
-//                         $iChannel,
-//                         $oEvent->sNote,
-//                         $oEvent->iVelocity
-//                     );
-                    $oMachine
-                        ->setVoiceNote($iChannel, $oEvent->sNote)
-                        ->setVoiceVelocity($iChannel, $oEvent->iVelocity)
-                        ->startVoice($iChannel);
-                } else if ($oEvent instanceof Audio\Sequence\SetNote) {
-                    $oMachine
-                        ->setVoiceNote($iChannel, $oEvent->sNote);
-                } else if ($oEvent instanceof Audio\Sequence\NoteOff) {
-                    $oMachine
-                        ->stopVoice($iChannel);
+                if (!$oEvent) {
+                    continue;
+                }
+                switch ($oEvent->iType) {
+                    case Audio\Sequence\Event::NOTE_ON:
+                        dprintf("\tLn:%4d Mc:%5s Ch:%2d Ev:NoteOn %s V:%d\n",
+                            $iLineNumber,
+                            $sMachineName,
+                            $iChannel,
+                            $oEvent->sNote,
+                            $oEvent->iVelocity
+                        );
+
+                        $oMachine
+                            ->setVoiceNote($iChannel, $oEvent->sNote)
+                            ->setVoiceVelocity($iChannel, $oEvent->iVelocity)
+                            ->startVoice($iChannel);
+                        break;
+                    case Audio\Sequence\Event::SET_NOTE:
+                        $oMachine
+                            ->setVoiceNote($iChannel, $oEvent->sNote);
+                        break;
+                    case Audio\Sequence\Event::NOTE_OFF:
+                        $oMachine
+                            ->stopVoice($iChannel);
+                        break;
+                    default:
+                        break;
                 }
             }
         }
     }
 
-    /**
-     * PROTOTYPE CODE
-     */
-    public function play(Audio\IPCMOutput $oOutput, int $iMaxLines = 128, $fGain = 1.0) {
-        $fBeatsPerSecond = $this->iTempoBeatsPerMinute / 60.0;
-        $fLinesPerSecond = $fBeatsPerSecond * $this->iLinesPerBeat;
-
-//         dprintf(
-//             "Starting sequence: %d PBM (%.2f Lines/sec)\n",
-//             $this->iTempoBeatsPerMinute,
-//             $fLinesPerSecond
-//         );
-        $oMixer = new Audio\Signal\FixedMixer($fGain);
-        foreach ($this->aMachines as $sMachineName => $oMachine) {
-            $oMixer->addInputStream($sMachineName, $oMachine, 1.0);
-//             dprintf(
-//                 "\tAdding stream %s for %s...\n",
-//                 $sMachineName,
-//                 get_class($oMachine)
-//             );
-        }
-        $fSecondScale = 1.0 / Audio\IConfig::PROCESS_RATE;
-        $iLastLineNumber = -1;
-        while ($iLastLineNumber < $iMaxLines) {
-            $iSamplePosition = $oMixer->getPosition();
-            $fCurrentTime    = $fSecondScale * $iSamplePosition;
-            $iLineNumber     = (int)floor($fCurrentTime * $fLinesPerSecond);
-            if ($iLineNumber !== $iLastLineNumber) {
-                $iLastLineNumber = $iLineNumber;
-                $this->processLine($iLineNumber);
-            }
-            $oOutput->write($oMixer->emit());
-        }
-    }
-
-    /**
-     * PROTOTYPE CODE
-     */
-    private function processLine(int $iLineNumber) {
-        $fVelocityScale = 1.0/127.0;
-        foreach ($this->aMachines as $sMachineName => $oMachine) {
-            $oPattern = $this->aMachinePatterns[$sMachineName][0];
-            $iLineNumber %= $oPattern->getLength();
-            $oRow = $oPattern->getLine($iLineNumber);
-            foreach ($oRow as $iChannel => $oEvent) {
-                if ($oEvent instanceof Audio\Sequence\NoteOn) {
-//                     dprintf("\tLn:%4d Mc:%5s Ch:%2d Ev:NoteOn %s V:%d\n",
-//                         $iLineNumber,
-//                         $sMachineName,
-//                         $iChannel,
-//                         $oEvent->sNote,
-//                         $oEvent->iVelocity
-//                     );
-
-                    $oMachine
-                        ->setVoiceNote($iChannel, $oEvent->sNote)
-                        ->setVoiceVelocity($iChannel, $oEvent->iVelocity)
-                        ->setVoiceLevel($iChannel, $fVelocityScale * $oEvent->iVelocity)
-                        ->startVoice($iChannel);
-                } else if ($oEvent instanceof Audio\Sequence\SetNote) {
-                    $oMachine
-                        ->setVoiceNote($iChannel, $oEvent->sNote);
-                } else if ($oEvent instanceof Audio\Sequence\NoteOff) {
-                    $oMachine
-                        ->stopVoice($iChannel);
-                }
-            }
-        }
-    }
+//     /**
+//      * PROTOTYPE CODE
+//      */
+//     public function play(Audio\IPCMOutput $oOutput, int $iMaxLines = 128, $fGain = 1.0) {
+//         $fBeatsPerSecond = $this->iTempoBeatsPerMinute / 60.0;
+//         $fLinesPerSecond = $fBeatsPerSecond * $this->iLinesPerBeat;
+//
+// //         dprintf(
+// //             "Starting sequence: %d PBM (%.2f Lines/sec)\n",
+// //             $this->iTempoBeatsPerMinute,
+// //             $fLinesPerSecond
+// //         );
+//         $oMixer = new Audio\Signal\FixedMixer($fGain);
+//         foreach ($this->aMachines as $sMachineName => $oMachine) {
+//             $oMixer->addInputStream($sMachineName, $oMachine, 1.0);
+// //             dprintf(
+// //                 "\tAdding stream %s for %s...\n",
+// //                 $sMachineName,
+// //                 get_class($oMachine)
+// //             );
+//         }
+//         $fSecondScale = 1.0 / Audio\IConfig::PROCESS_RATE;
+//         $iLastLineNumber = -1;
+//         while ($iLastLineNumber < $iMaxLines) {
+//             $iSamplePosition = $oMixer->getPosition();
+//             $fCurrentTime    = $fSecondScale * $iSamplePosition;
+//             $iLineNumber     = (int)floor($fCurrentTime * $fLinesPerSecond);
+//             if ($iLineNumber !== $iLastLineNumber) {
+//                 $iLastLineNumber = $iLineNumber;
+//                 $this->processLine($iLineNumber);
+//             }
+//             $oOutput->write($oMixer->emit());
+//         }
+//     }
+//
+//     /**
+//      * PROTOTYPE CODE
+//      */
+//     private function processLine(int $iLineNumber) {
+//         $fVelocityScale = 1.0/127.0;
+//         foreach ($this->aMachines as $sMachineName => $oMachine) {
+//             $oPattern = $this->aMachinePatterns[$sMachineName][0];
+//             $iLineNumber %= $oPattern->getLength();
+//             $oRow = $oPattern->getLine($iLineNumber);
+//             foreach ($oRow as $iChannel => $oEvent) {
+//                 if ($oEvent instanceof Audio\Sequence\NoteOn) {
+// //                     dprintf("\tLn:%4d Mc:%5s Ch:%2d Ev:NoteOn %s V:%d\n",
+// //                         $iLineNumber,
+// //                         $sMachineName,
+// //                         $iChannel,
+// //                         $oEvent->sNote,
+// //                         $oEvent->iVelocity
+// //                     );
+//
+//                     $oMachine
+//                         ->setVoiceNote($iChannel, $oEvent->sNote)
+//                         ->setVoiceVelocity($iChannel, $oEvent->iVelocity)
+//                         ->setVoiceLevel($iChannel, $fVelocityScale * $oEvent->iVelocity)
+//                         ->startVoice($iChannel);
+//                 } else if ($oEvent instanceof Audio\Sequence\SetNote) {
+//                     $oMachine
+//                         ->setVoiceNote($iChannel, $oEvent->sNote);
+//                 } else if ($oEvent instanceof Audio\Sequence\NoteOff) {
+//                     $oMachine
+//                         ->stopVoice($iChannel);
+//                 }
+//             }
+//         }
+//     }
 
 
 }

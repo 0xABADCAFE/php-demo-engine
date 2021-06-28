@@ -39,7 +39,7 @@ class TwoOpFM implements Audio\IMachine {
         MAX_RATIO = 16.0
     ;
 
-    use TPolyphonicMachine, TSimpleVelocity;
+    use TPolyphonicMachine, TSimpleVelocity, TControllerless;
 
     /**
      * @var Audio\Signal\IWaveform[] $aWaveforms

@@ -34,7 +34,7 @@ class TBNaN implements Audio\IMachine {
         Audio\Signal\IWaveform::PULSE    => 0.25
     ];
 
-    use TMonophonicMachine, TSimpleVelocity;
+    use TMonophonicMachine, TSimpleVelocity, TControllerless;
 
     private array $aWaveforms = [];
 

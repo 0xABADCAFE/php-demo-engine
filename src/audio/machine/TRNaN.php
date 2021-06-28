@@ -46,7 +46,7 @@ class TRNaN implements Audio\IMachine {
         self::HH_OPEN   => [self::HH_CLOSED]
     ];
 
-    use TPolyphonicMachine, TSimpleVelocity;
+    use TPolyphonicMachine, TSimpleVelocity, TControllerless;
 
     private $aVoices = [];
 

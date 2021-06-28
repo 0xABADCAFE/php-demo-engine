@@ -26,7 +26,17 @@ $oFMMarimba
 ;
 $oFMMarimba->setInsert(new Audio\Signal\Insert\DelayLoop(null, 123.0 * 3, 0.6));
 
-$oSequencer->addMachine('marimba', $oFMMarimba);
+$oDrumMachine = new Audio\Machine\TRNaN();
+$oDrumMachine->setOutputLevel(1.25);
+$oBassLine = Audio\Machine\Factory::get()
+    ->createFrom(json_decode(file_get_contents('machines/multifm/recently.json')))
+    ->setOutputLevel(0.35);
+
+$oSequencer
+    ->addMachine('marimba', $oFMMarimba)
+    ->addMachine('drums', $oDrumMachine)
+    ->addMachine('bass', $oBassLine)
+;
 $oSequencer->allocatePattern('marimba', [0, 4, 8, 12])
     ->addEvent(Audio\Sequence\Event::noteOn('C3', 50), 0, 0)
     ->addEvent(Audio\Sequence\Event::noteOn('C3', 30), 1, 2)
@@ -88,6 +98,25 @@ $oSequencer->allocatePattern('marimba', [3, 7, 11, 15])
     ->addEvent(Audio\Sequence\Event::noteOn('A#3', 38), 0, 15)
 ;
 
+$oSequencer->allocatePattern('drums', [2, 3, 8, 9, 12, 13, 16, 17])
+    ->addEvent(Audio\Sequence\Event::noteOn('A4', 100), 0, 0, 4);
+
+$oSequencer->allocatePattern('drums', [4, 5, 6, 7, 10, 11])
+    ->addEvent(Audio\Sequence\Event::noteOn('A4', 100), 0, 0, 4)
+    ->addEvent(Audio\Sequence\Event::noteOn('A4', 60), 2, 1, 4)
+    ->addEvent(Audio\Sequence\Event::noteOn('A4', 50), 3, 2, 4)
+    ->addEvent(Audio\Sequence\Event::noteOn('A4', 30), 2, 3, 4)
+;
+
+$oSequencer->allocatePattern('bass', [4, 5, 6, 7, 8, 9, 12, 13, 16, 17, 18, 19])
+    ->addEvent(Audio\Sequence\Event::noteOn('C3', 60), 0, 2, 4)
+    ->addEvent(Audio\Sequence\Event::noteOff(), 0, 4, 4)
+;
+
+$oSequencer->allocatePattern('bass', [10, 11, 14, 15])
+    ->addEvent(Audio\Sequence\Event::noteOn('F3', 50), 0, 2, 4)
+    ->addEvent(Audio\Sequence\Event::noteOff(), 0, 4, 4)
+;
 
 $oOutput = Audio\Output\Piped::create();
 $oOutput->open();

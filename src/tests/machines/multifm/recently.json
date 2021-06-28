@@ -1,7 +1,7 @@
 {
     "sType": "MultiFM",
     "sName": "Recently Bass",
-    "iMaxPolyphony": 4,
+    "iMaxPolyphony": 1,
     "aOperators": [
         {
             "sName": "modulator0",

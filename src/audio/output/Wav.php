@@ -71,8 +71,8 @@ class Wav implements Audio\IPCMOutput {
      * @param string $sPath
      */
     public function __construct(string $sPath) {
-        $this->sPath = empty($sPath) ? (date('ymdHis') . '.wav') : $sPath;
-        $this->aOutputBuffer = array_fill(0, Audio\IConfig::PACKET_SIZE, 0);
+        $this->sPath = empty($sPath) ? (\date('ymdHis') . '.wav') : $sPath;
+        $this->aOutputBuffer = \array_fill(0, Audio\IConfig::PACKET_SIZE, 0);
     }
 
     /**
@@ -88,7 +88,7 @@ class Wav implements Audio\IPCMOutput {
     public function open() {
         if (
             $this->rOutput ||
-            !($this->rOutput = fopen($this->sPath, 'wb'))
+            !($this->rOutput = \fopen($this->sPath, 'wb'))
         ) {
             throw new \Exception();
         }
@@ -101,7 +101,7 @@ class Wav implements Audio\IPCMOutput {
     public function close() {
         if ($this->rOutput) {
             $this->writeHeader();
-            fclose($this->rOutput);
+            \fclose($this->rOutput);
             $this->rOutput = null;
         }
     }
@@ -127,7 +127,7 @@ class Wav implements Audio\IPCMOutput {
      * Reserve the header storage on opening the file
      */
     private function reserveHeader() {
-        fwrite($this->rOutput, str_repeat('-', self::HEADER_SIZE));
+        fwrite($this->rOutput, \str_repeat('-', self::HEADER_SIZE));
     }
 
     /**
@@ -135,7 +135,7 @@ class Wav implements Audio\IPCMOutput {
      */
     private function writeHeader() {
         $aHeader     = self::M_HEADER;
-        $iFileSize   = ftell($this->rOutput);
+        $iFileSize   = \ftell($this->rOutput);
         $iBlockAlign = ($this->iNumChannels * $this->iBitsPerSample) >> 3;
         $aHeader['iChunkSize']     = $iFileSize - 8;
         $aHeader['iSubChunk2Size'] = $iFileSize - self::HEADER_SIZE;
@@ -144,10 +144,10 @@ class Wav implements Audio\IPCMOutput {
         $aHeader['iByteRate']      = $this->iSampleRate * $iBlockAlign;
         $aHeader['iBlockAlign']    = $iBlockAlign;
         $aHeader['iBitsPerSample'] = $this->iBitsPerSample;
-        rewind($this->rOutput);
-        fwrite(
+        \rewind($this->rOutput);
+        \fwrite(
             $this->rOutput,
-            pack(self::S_HEADER_PACK, ...array_values($aHeader))
+            \pack(self::S_HEADER_PACK, ...\array_values($aHeader))
         );
     }
 }

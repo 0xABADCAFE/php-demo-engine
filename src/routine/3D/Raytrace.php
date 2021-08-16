@@ -235,7 +235,7 @@ class Raytrace extends Base {
     }
 
     private function hexRGBToVec3F(string $sColourRGB) : Vec3F {
-        $iRGB = (int)base_convert($sColourRGB, 16, 10);
+        $iRGB = (int)\base_convert($sColourRGB, 16, 10);
         return new Vec3F(
             (float)($iRGB >> 16),
             (float)(($iRGB >> 8) & 0xFF),
@@ -329,9 +329,9 @@ class Raytrace extends Base {
 
                 // Convert to integers and push out to ppm outpu stream
                 $oPixels[$iPixel++] =
-                    min($vPixel->fX, 255) << 16 |
-                    min($vPixel->fY, 255) << 8  |
-                    (int)min($vPixel->fZ, 255);
+                    \min($vPixel->fX, 255) << 16 |
+                    \min($vPixel->fY, 255) << 8  |
+                    (int)\min($vPixel->fZ, 255);
             }
         }
     }

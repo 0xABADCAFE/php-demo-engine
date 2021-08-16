@@ -34,7 +34,7 @@ class APlay extends Piped {
      * @inheritDoc
      */
     protected function createOutputCommand() : string {
-        return sprintf(
+        return \sprintf(
             'aplay -c1 -f %s -r%d -',
             self::FORMAT,
             Audio\IConfig::PROCESS_RATE

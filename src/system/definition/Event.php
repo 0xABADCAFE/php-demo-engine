@@ -69,7 +69,7 @@ class Event {
         $this->fAtTimeIndex = (float)$oRaw->at;
 
         // What?
-        $this->iAction      = self::DO_ACTIONS[(string)$oRaw->do];
+        $this->iAction = self::DO_ACTIONS[(string)$oRaw->do];
 
         // Whom?
         if (isset($oRaw->on)) {

@@ -115,8 +115,8 @@ class Context {
             );
         }
 
-        $this->oDisplay     = $this->aDisplayInstances[self::DEFAULT_DISPLAY] ?? reset($this->aDisplayInstances);
-        $oDisplayDefinition = $aDisplayDefinitions[self::DEFAULT_DISPLAY]     ?? reset($aDisplayDefinitions);
+        $this->oDisplay     = $this->aDisplayInstances[self::DEFAULT_DISPLAY] ?? \reset($this->aDisplayInstances);
+        $oDisplayDefinition = $aDisplayDefinitions[self::DEFAULT_DISPLAY]     ?? \reset($aDisplayDefinitions);
         $this->oRateLimiter = new RateLimiter\Simple($oDisplayDefinition->iMaxFPS);
     }
 

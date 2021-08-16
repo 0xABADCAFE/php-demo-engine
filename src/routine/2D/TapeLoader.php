@@ -56,9 +56,22 @@ class TapeLoader extends Base {
         $iLastRGB   = 0xFF000000
     ;
 
-    private float $fLastIdle  = 0.0;
+    private float
+        $fLastIdle   = 0.0,
+        $fInvRandMax = 0.0
+    ;
 
     private int $iRandBits;
+
+    /**
+     * Basic constructor
+     *
+     * @implements IRoutine::__construct()
+     */
+    public function __construct(PDE\IDisplay $oDisplay, array $aParameters = []) {
+        parent::__construct($oDisplay, $aParameters);
+        $this->fInvRandMax = 1.0 / (float)\mt_getrandmax();
+    }
 
     /**
      * @inheritDoc
@@ -98,10 +111,10 @@ class TapeLoader extends Base {
      * @inheritDoc
      */
     protected function parameterChange() {
-        $this->iSyncRGB1 = (int)base_convert($this->oParameters->sSyncRGB1, 16, 10) & 0xFFFFFF;
-        $this->iSyncRGB2 = (int)base_convert($this->oParameters->sSyncRGB2, 16, 10) & 0xFFFFFF;
-        $this->iLoadRGB1 = (int)base_convert($this->oParameters->sLoadRGB1, 16, 10) & 0xFFFFFF;
-        $this->iLoadRGB2 = (int)base_convert($this->oParameters->sLoadRGB2, 16, 10) & 0xFFFFFF;
+        $this->iSyncRGB1 = (int)\base_convert($this->oParameters->sSyncRGB1, 16, 10) & 0xFFFFFF;
+        $this->iSyncRGB2 = (int)\base_convert($this->oParameters->sSyncRGB2, 16, 10) & 0xFFFFFF;
+        $this->iLoadRGB1 = (int)\base_convert($this->oParameters->sLoadRGB1, 16, 10) & 0xFFFFFF;
+        $this->iLoadRGB2 = (int)\base_convert($this->oParameters->sLoadRGB2, 16, 10) & 0xFFFFFF;
     }
 
     /**
@@ -111,6 +124,7 @@ class TapeLoader extends Base {
      * @param float $fTimeIndex
      */
     private function renderIdle(int $iFrameNumber, float $fTimeIndex) {
+
         $oPixels    = $this->oDisplay->getPixels();
         $sRawBuffer = &$this->oDisplay->getCharacterBuffer();
         $iWidth     = $this->oDisplay->getWidth();
@@ -119,7 +133,7 @@ class TapeLoader extends Base {
         $iOffset    = 0;
         $iASCIIPos  = 0;
         if ($fTimeIndex > $this->fLastIdle) {
-            $this->fLastIdle = $fTimeIndex + (float)mt_rand() / (float)mt_getrandmax();
+            $this->fLastIdle = $fTimeIndex + (float)\mt_rand() * $this->fInvRandMax;
             $this->iLastRGB  = ($this->iLastRGB == $this->iSyncRGB1) ? $this->iSyncRGB2 : $this->iSyncRGB1;
         }
         $iRGB = $this->iLastRGB;
@@ -166,13 +180,13 @@ class TapeLoader extends Base {
         if (null === $aChars) {
             $aChars = [
                 ' ',
-                chr(0x81),
-                chr(0x82),
-                chr(0x83),
-                chr(0x84),
-                chr(0x85),
-                chr(0x86),
-                chr(0x87),
+                \chr(0x81),
+                \chr(0x82),
+                \chr(0x83),
+                \chr(0x84),
+                \chr(0x85),
+                \chr(0x86),
+                \chr(0x87),
             ];
         }
         $sChar  = $aChars[$iFrameNumber & 0x7];
@@ -185,7 +199,7 @@ class TapeLoader extends Base {
             if ($y < $this->oParameters->iHBorder || $y >= $iHeight - $this->oParameters->iHBorder) {
                 // Top and bottom
                 for ($x = 0; $x < $iWidth; $x++) {
-                    $oPixels[$iOffset + $x] = $iRGB;
+                    $oPixels[$iOffset + $x]      = $iRGB;
                     $sRawBuffer[$iASCIIPos + $x] = $sChar;
                 }
             } else {
@@ -220,17 +234,17 @@ class TapeLoader extends Base {
         $iASCIIPos  = 0;
         $iRGB2      = $this->iLoadRGB1 | ($this->iLoadRGB2 << 24);
         $aChars     = [
-            chr(0x80),
-            chr(0x84)
+            \chr(0x80),
+            \chr(0x84)
         ];
 
         // Generate a random 64-bit integer. We will switch between the upper and lower half block based on each
         // successove bit. The range of mt_rand is only 31 bits, so we use three calls.
 
         // PHP 8 in JIT mode forgets this local variable immediately for some reason so assign as a member.
-        $this->iRandBits = mt_rand() << 33  // Upper
-                         | mt_rand()        // Lower
-                         ^ mt_rand() << 16; // Gap coverage
+        $this->iRandBits = \mt_rand() << 33  // Upper
+                         | \mt_rand()        // Lower
+                         ^ \mt_rand() << 16; // Gap coverage
 
         for ($y = 0; $y < $iHeight; ++$y) {
 

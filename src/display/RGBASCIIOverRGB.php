@@ -61,7 +61,7 @@ class RGBASCIIOverRGB extends BaseAsyncASCIIWithRGB {
         $sRawBuffer = $this->getCharacterBuffer();
         foreach ($oPixels as $i => $iRGBRGB) {
             $j += (int)isset($this->aLineBreaks[$i]);
-            $oPixels[$i] = ord($sRawBuffer[$j++]) << 48 | $iRGBRGB;
+            $oPixels[$i] = \ord($sRawBuffer[$j++]) << 48 | $iRGBRGB;
         }
     }
 
@@ -73,7 +73,7 @@ class RGBASCIIOverRGB extends BaseAsyncASCIIWithRGB {
      * @param string $sInitial  - The first part of the output, e.g. reset the cursor position etc.
      */
     protected function drawFrame(string $sData, string $sInitial) {
-        $aPixels       = unpack(self::DATA_FORMAT_MAP[self::DATA_FORMAT], $sData);
+        $aPixels       = \unpack(self::DATA_FORMAT_MAP[self::DATA_FORMAT], $sData);
         $sRawBuffer    = $sInitial;
         $iLastForeRGB  = 0xFF000000;
         $iLastBackRGB  = 0xFF000000;
@@ -85,7 +85,7 @@ class RGBASCIIOverRGB extends BaseAsyncASCIIWithRGB {
             $iRGBRGB     = $iCRGBRGB & $iRGBWriteMask;
             $iForeRGB    = $iRGBRGB >> 24;
             $iBackRGB    = $iRGBRGB &  0xFFFFFF;
-            $sTextChar   = ICustomChars::MAP[$iCharCode] ?? chr($iCharCode);
+            $sTextChar   = ICustomChars::MAP[$iCharCode] ?? \chr($iCharCode);
             $iChanged    = (int)($iForeRGB != $iBackRGB) |
                            (int)($iForeRGB != $iLastForeRGB) << 1 |
                            (int)($iBackRGB != $iLastBackRGB) << 2;
@@ -103,7 +103,7 @@ class RGBASCIIOverRGB extends BaseAsyncASCIIWithRGB {
                     $sTextChar = ' ';
                 case 5:
                     // Background RGB changes only
-                    $sRawBuffer .= sprintf(
+                    $sRawBuffer .= \sprintf(
                         IANSIControl::ATTR_BG_RGB_TPL,
                         $iBackRGB >> 16,
                         ($iBackRGB >> 8) & 0xFF,
@@ -112,7 +112,7 @@ class RGBASCIIOverRGB extends BaseAsyncASCIIWithRGB {
                     break;
                 case 3:
                     // Foreground RGB changes
-                    $sRawBuffer .= sprintf(
+                    $sRawBuffer .= \sprintf(
                         IANSIControl::ATTR_FG_RGB_TPL,
                         $iForeRGB >> 16,
                         ($iForeRGB >> 8) & 0xFF,
@@ -125,7 +125,7 @@ class RGBASCIIOverRGB extends BaseAsyncASCIIWithRGB {
                     $sTextChar = ' ';
                 case 7:
                     // Background and foreground changes
-                    $sRawBuffer .= sprintf(
+                    $sRawBuffer .= \sprintf(
                         self::ATTR_TEMPLATE,
                         $iForeRGB >> 16,
                         ($iForeRGB >> 8) & 0xFF,
@@ -140,9 +140,9 @@ class RGBASCIIOverRGB extends BaseAsyncASCIIWithRGB {
             $iLastBackRGB = $iBackRGB;
         }
         // Make sure we output the data in one blast to try to mitigate partial redraw.
-        ob_start(null, 0);
+        \ob_start(null, 0);
         echo $sRawBuffer;
-        ob_end_flush();
+        \ob_end_flush();
     }
 
 }

@@ -64,8 +64,8 @@ class PlainASCII extends Base implements IASCIIArt {
         $this->initASCIIBuffer($iWidth, $iHeight);
         if (empty(self::$aBlockMapReplace)) {
             self::$aBlockMapReplace = array_combine(
-                array_map('chr', array_keys(ICustomChars::MAP)),
-                array_values(ICustomChars::MAP)
+                \array_map('\chr', \array_keys(ICustomChars::MAP)),
+                \array_values(ICustomChars::MAP)
             );
         }
         $this->reset();
@@ -91,7 +91,7 @@ class PlainASCII extends Base implements IASCIIArt {
         $this->beginRedraw();
 
         $sRawBuffer = '';
-        $sLength    = strlen($this->sRawBuffer);
+        $sLength    = \strlen($this->sRawBuffer);
         // We can't use str_replace() here due to subsequent search terms matching previous replace terms.
         // Also, this iterates once.
         for ($i = 0; $i < $sLength; ++$i) {
@@ -116,7 +116,7 @@ class PlainASCII extends Base implements IASCIIArt {
             $this->setBackgroundColour($oParameters->iBGColour);
         }
         if (isset($oParameters->sLumaChars)) {
-            $this->setLuminanceCharacters(urldecode($oParameters->sLumaChars));
+            $this->setLuminanceCharacters(\urldecode($oParameters->sLumaChars));
         }
         return $this;
     }

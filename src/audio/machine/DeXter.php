@@ -79,8 +79,8 @@ class DeXter implements Audio\IMachine {
         $this->initPolyphony($iNumVoices);
         $fMixLevel = 0.5 / $this->iNumVoices;
 
-        $this->iNumOperators = max(min($iNumOperators, self::MAX_OPERATORS), self::MIN_OPERATORS);
-        $this->aOperators    = array_fill(0, $this->iNumOperators, array_fill(0, $this->iNumVoices, []));
+        $this->iNumOperators = \max(\min($iNumOperators, self::MAX_OPERATORS), self::MIN_OPERATORS);
+        $this->aOperators    = \array_fill(0, $this->iNumOperators, \array_fill(0, $this->iNumVoices, []));
 
         for ($i = 0; $i < $this->iNumVoices; ++$i) {
             $this->aBaseFreq[$i] = Audio\Note::CENTRE_FREQUENCY;
@@ -405,7 +405,7 @@ class DeXter implements Audio\IMachine {
     public function setVoiceNote(int $iVoiceNumber, string $sNoteName) : self {
         if (isset($this->aVoice[$iVoiceNumber])) {
             $this->aBaseFreq[$iVoiceNumber] = $fFrequency = Audio\Note::getFrequency($sNoteName);
-            $aOperators = array_column($this->aOperators, $iVoiceNumber);
+            $aOperators = \array_column($this->aOperators, $iVoiceNumber);
             foreach ($aOperators as $oOperator) {
                 $oOperator->setFrequency($fFrequency);
             }
@@ -418,7 +418,7 @@ class DeXter implements Audio\IMachine {
      */
     public function setVoiceVelocity(int $iVoiceNumber, int $iVelocity) : self {
         if (isset($this->aVoice[$iVoiceNumber])) {
-            $aOperators = array_column($this->aOperators, $iVoiceNumber);
+            $aOperators = \array_column($this->aOperators, $iVoiceNumber);
             foreach ($aOperators as $oOperator) {
                 $oOperator->setVelocity($iVelocity);
             }

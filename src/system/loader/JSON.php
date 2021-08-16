@@ -48,10 +48,10 @@ class JSON implements System\ILoader {
      * @inheritDoc
      */
     public function __construct(string $sFilePath) {
-        if (!file_exists($sFilePath) || !is_readable($sFilePath)) {
+        if (!\file_exists($sFilePath) || !\is_readable($sFilePath)) {
             throw new \Exception('Unable to open ' . $sFilePath . ' for reading');
         }
-        $oDocument = json_decode(file_get_contents($sFilePath));
+        $oDocument = \json_decode(\file_get_contents($sFilePath));
         if (!$oDocument) {
             throw new \Exception('Unable to parse ' . $sFilePath . ', invalid JSON?');
         }
@@ -60,7 +60,7 @@ class JSON implements System\ILoader {
 
         if (
             !isset($oDocument->displays) ||
-            !is_object($oDocument->displays) ||
+            !\is_object($oDocument->displays) ||
             empty($oDocument->displays)
         ) {
             throw new \Exception('Missing or invalid display section');
@@ -72,7 +72,7 @@ class JSON implements System\ILoader {
 
         if (
             !isset($oDocument->routines) ||
-            !is_object($oDocument->routines) ||
+            !\is_object($oDocument->routines) ||
             empty($oDocument->routines)
         ) {
             throw new \Exception('Missing or invalid routines section');
@@ -82,7 +82,7 @@ class JSON implements System\ILoader {
             $this->aRoutines[$sName] = new Definition\Routine($oJSON);
         }
 
-        if (!isset($oDocument->events) || !is_array($oDocument->events)) {
+        if (!isset($oDocument->events) || !\is_array($oDocument->events)) {
             throw new \Exception('Missing or invalid timeline section');
         }
 

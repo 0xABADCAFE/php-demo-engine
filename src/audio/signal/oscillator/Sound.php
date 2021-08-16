@@ -41,7 +41,7 @@ class Sound extends Base {
     ;
 
     protected ?Audio\Signal\IEnvelope
-        $oLevelEnvelope       = null,
+        $oLevelEnvelope  = null,
         $oPitchEnvelope  = null
     ;
 

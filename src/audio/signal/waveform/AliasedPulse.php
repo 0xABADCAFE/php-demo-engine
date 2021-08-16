@@ -105,11 +105,11 @@ class AliasedPulse implements Signal\IWaveform {
                 ->scaleBy(0.5 * $this->fPulseWidth)
                 ->biasBy(0.5);
             foreach ($oInput as $i => $fTime) {
-                $oOutput[$i] = ((ceil($fTime) - $fTime) > $oWidth[$i]) ? 1.0 : -1.0;
+                $oOutput[$i] = ((\ceil($fTime) - $fTime) > $oWidth[$i]) ? 1.0 : -1.0;
             }
         } else {
             foreach ($oInput as $i => $fTime) {
-                $oOutput[$i] = ((ceil($fTime) - $fTime) > $this->fPulseWidth) ? 1.0 : -1.0;
+                $oOutput[$i] = ((\ceil($fTime) - $fTime) > $this->fPulseWidth) ? 1.0 : -1.0;
             }
         }
         return $oOutput;

@@ -39,13 +39,13 @@ class Simple implements System\IRateLimiter {
         }
         $this->iMaxFramesPerSecond = $iMaxFramesPerSecond;
         $this->fFrameDuration      = 1.0 / (float)$iMaxFramesPerSecond;
-        $this->fFirst              = microtime(true);
+        $this->fFirst              = \microtime(true);
     }
 
     public function __destruct() {
         $fAverageSleepPerFrame = $this->fTotalSlept / (float)$this->iFrameNumber;
 
-        printf(
+        \printf(
             "\nPerf: %d frames @ %d fps, %.2f ms/frame, %.2f ms asleep. Free: %.02f%%\n",
             $this->iFrameNumber,
             $this->iMaxFramesPerSecond,
@@ -68,9 +68,9 @@ class Simple implements System\IRateLimiter {
     public function limit() : float {
         ++$this->iFrameNumber;
         $fWakeAt = $this->fFirst + ($this->iFrameNumber * $this->fFrameDuration);
-        $fSleepBegins = microtime(true);
-        @time_sleep_until($fWakeAt);
-        $fSleepEnds = microtime(true);
+        $fSleepBegins = \microtime(true);
+        @\time_sleep_until($fWakeAt);
+        $fSleepEnds = \microtime(true);
         $this->fTotalSlept += $fSleepEnds - $fSleepBegins;
         return $fSleepEnds - $this->fFirst;
     }

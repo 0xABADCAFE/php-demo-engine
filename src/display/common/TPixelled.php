@@ -38,7 +38,7 @@ trait TPixelled {
      */
     private function initPixelBuffer(int $iWidth, int $iHeight, int $iFormat, int $iFill) {
         $this->oPixels    = clone // drop through
-        $this->oNewPixels = SPLFixedArray::fromArray(array_fill(0, $iWidth * $iHeight, $iFill));
+        $this->oNewPixels = SPLFixedArray::fromArray(\array_fill(0, $iWidth * $iHeight, $iFill));
         $this->iFormat    = $iFormat;
     }
 
@@ -82,6 +82,6 @@ trait TPixelled {
     protected function setDefaultPixelValue(int $iValue) {
         $iCount           = $this->oPixels->count();
         $this->oPixels    = clone // drop through
-        $this->oNewPixels = SPLFixedArray::fromArray(array_fill(0, $iCount, $iValue));
+        $this->oNewPixels = SPLFixedArray::fromArray(\array_fill(0, $iCount, $iValue));
     }
 }

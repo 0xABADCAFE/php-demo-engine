@@ -51,11 +51,11 @@ class Pattern {
      * @param int $iNumLines
      */
     public function __construct(int $iNumChannels, int $iNumLines, string $sLabel = '') {
-        $this->iNumChannels = max(1, $iNumChannels);
-        $this->iNumLines    = max(1, $iNumLines);
+        $this->iNumChannels = \max(1, $iNumChannels);
+        $this->iNumLines    = \max(1, $iNumLines);
 
         $this->oRow         = new SPLFixedArray($this->iNumChannels);
-        $this->aChannels    = array_fill(0, $this->iNumChannels, []);
+        $this->aChannels    = \array_fill(0, $this->iNumChannels, []);
         $this->sLabel       = $sLabel;
     }
 
@@ -129,5 +129,3 @@ class Pattern {
         return $this;
     }
 }
-
-

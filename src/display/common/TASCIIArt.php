@@ -56,7 +56,7 @@ trait TASCIIArt {
         }
         if ($iColour != $this->iFGColour) {
             $this->iFGColour = $iColour;
-            $this->sFGColour = sprintf(
+            $this->sFGColour = \sprintf(
                 IANSIControl::ATTR_FG_FIXED_TPL,
                 $this->iFGColour
             );
@@ -77,7 +77,7 @@ trait TASCIIArt {
         }
         if ($iColour != $this->iBGColour) {
             $this->iBGColour = $iColour;
-            $this->sBGColour = sprintf(
+            $this->sBGColour = \sprintf(
                 IANSIControl::ATTR_BG_FIXED_TPL,
                 $this->iBGColour
             );
@@ -89,11 +89,11 @@ trait TASCIIArt {
      * Initialise the default fixed colours.
      */
     private function initFixedColours() {
-        $this->sBGColour = sprintf(
+        $this->sBGColour = \sprintf(
             IANSIControl::ATTR_BG_FIXED_TPL,
             $this->iBGColour
         );
-        $this->sFGColour = sprintf(
+        $this->sFGColour = \sprintf(
             IANSIControl::ATTR_FG_FIXED_TPL,
             $this->iFGColour
         );
@@ -107,7 +107,7 @@ trait TASCIIArt {
      */
     private function initASCIIBuffer(int $iWidth, int $iHeight) {
         $this->sRawBuffer    = // drop through
-        $this->sNewRawBuffer = str_repeat(str_repeat(' ', $iWidth) . "\n", $iHeight);
+        $this->sNewRawBuffer = \str_repeat(\str_repeat(' ', $iWidth) . "\n", $iHeight);
     }
 
     /**
@@ -153,7 +153,7 @@ trait TASCIIArt {
             $this->sLumaChars = IASCIIArt::DEF_LUMA_CHAR;
             $this->iMaxLuma   = IASCIIArt::DEF_MAX_LUMA;
         } else {
-            $iLength = strlen($sLumaChars);
+            $iLength = \strlen($sLumaChars);
             if ($iLength < 2) {
                 throw new \LengthException();
             }
@@ -178,24 +178,24 @@ trait TASCIIArt {
         // Determine boundary
         $iMaxX = ($iMaxX < 1) ?
             $this->iWidth :
-            min($iMaxX, $this->iWidth);
+            \min($iMaxX, $this->iWidth);
         $iMaxY = ($iMaxY < 1) ?
             $this->iHeight :
-            min($iMaxY, $this->iHeight);
+            \min($iMaxY, $this->iHeight);
 
         if ($iX > $iMaxX || $iY > $iMaxY) {
             return $this;
         }
 
-        $aStrings = explode("\n", $sText);
+        $aStrings = \explode("\n", $sText);
 
-        if (count($aStrings) + $iY < 0) {
+        if (\count($aStrings) + $iY < 0) {
             return $this; // Completely off the top
         }
 
         // Deal with negative Y coordinate
         if ($iY < 0) {
-            $aStrings    = array_slice($aStrings, -$iY);
+            $aStrings    = \array_slice($aStrings, -$iY);
             $iY          = 0;
         }
 
@@ -216,7 +216,7 @@ trait TASCIIArt {
 
         $iMaxX = ($iMaxX < 1) ?
             $this->iWidth :
-            min($iMaxX, $this->iWidth);
+            \min($iMaxX, $this->iWidth);
 
         // Sanity check
         if (
@@ -228,8 +228,8 @@ trait TASCIIArt {
             return $this;
         }
         // Restrict to 1 line
-        $iEnd  = strpos($sText, "\n");
-        $sText = ($iEnd === false) ? $sText : substr($sText, 0, $iEnd);
+        $iEnd  = \strpos($sText, "\n");
+        $sText = ($iEnd === false) ? $sText : \substr($sText, 0, $iEnd);
         if (empty($sText)) {
             return $this;
         }
@@ -249,14 +249,14 @@ trait TASCIIArt {
 
         // Handle negative X by chopping off the left
         if ($iX < 0) {
-            $sText = substr($sText, -$iX);
+            $sText = \substr($sText, -$iX);
             $iX    = 0;
         }
         if (empty($sText)) {
             return $this;
         }
 
-        $iLength = strlen($sText);
+        $iLength = \strlen($sText);
         if ($iX + $iLength > $iMaxX) {
             $iLength = $iMaxX - $iX;
         }
@@ -266,6 +266,5 @@ trait TASCIIArt {
         while ($iLength--) {
             $this->sRawBuffer[$iDstIndex++] = $sText[$iSrcIndex++];
         }
-
     }
 }

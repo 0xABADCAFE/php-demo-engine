@@ -52,7 +52,7 @@ abstract class Base implements PDE\IDisplay {
      * @inheritDoc
      */
     public function reset() : self {
-        printf(IANSIControl::TERM_SIZE_TPL, $this->iHeight + 2, $this->iWidth + 1);
+        \printf(IANSIControl::TERM_SIZE_TPL, $this->iHeight + 2, $this->iWidth + 1);
         $this->clear();
         echo IANSIControl::TERM_CLEAR . IANSIControl::CRSR_OFF;
         return $this;
@@ -88,7 +88,7 @@ abstract class Base implements PDE\IDisplay {
         $aFiltered = [];
         foreach ($aParameters as $sParameterName => $mParameterValue) {
             if (isset($aDefaults[$sParameterName])) {
-                settype($mParameterValue, gettype($aDefaults[$sParameterName]));
+                settype($mParameterValue, \gettype($aDefaults[$sParameterName]));
                 $aFiltered[$sParameterName] = $mParameterValue;
             }
         }

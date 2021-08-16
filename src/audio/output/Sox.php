@@ -32,7 +32,7 @@ class Sox extends Piped {
      * @inheritDoc
      */
     protected function createOutputCommand() : string {
-        return sprintf(
+        return \sprintf(
             'play -t raw -b 16 -c 1 -e signed --endian=little -r %d --buffer %d -',
             Audio\IConfig::PROCESS_RATE,
             self::BUFFER_SIZE

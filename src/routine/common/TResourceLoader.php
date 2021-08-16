@@ -46,8 +46,8 @@ trait TResourceLoader {
      */
     private function loadFile(string $sRelativePath) : string {
         $sPath = $this->sBasePath . $sRelativePath;
-        if (file_exists($sPath) && is_readable($sPath)) {
-            return file_get_contents($sPath);
+        if (\file_exists($sPath) && \is_readable($sPath)) {
+            return \file_get_contents($sPath);
         }
         throw new \Exception($sPath . ' could not be read');
     }
@@ -70,19 +70,19 @@ trait TResourceLoader {
             $iHeight      = (int)$aMatches[2];
             $oImage       = new Graphics\Image($iWidth, $iHeight);
             $iArea        = $iWidth * $iHeight;
-            $sData        = substr($sRaw, ($iArea * -($bRGB ? 3 : 1)));
+            $sData        = \substr($sRaw, ($iArea * -($bRGB ? 3 : 1)));
             $iDataOffset  = 0;
             $oPixels      = $oImage->getPixels();
             if ($bRGB) {
                 for ($i = 0; $i < $iArea; ++$i) {
                     $oPixels[$i] =
-                        (ord($sData[$iDataOffset++]) << 16) |
-                        (ord($sData[$iDataOffset++]) << 8) |
-                        (ord($sData[$iDataOffset++]));
+                        (\ord($sData[$iDataOffset++]) << 16) |
+                        (\ord($sData[$iDataOffset++]) << 8) |
+                        (\ord($sData[$iDataOffset++]));
                 }
             } else {
                 for ($i = 0; $i < $iArea; ++$i) {
-                    $iGrey = ord($sData[$iDataOffset++]);
+                    $iGrey = \ord($sData[$iDataOffset++]);
                     $oPixels[$i] = ($iGrey << 24) | ($iGrey << 8) | ($iGrey);
                 }
             }

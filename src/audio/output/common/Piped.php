@@ -58,13 +58,13 @@ abstract class Piped implements Audio\IPCMOutput {
      */
     public static function create() : self {
         while (null === self::$sPlayerClass) {
-            $sAPlay = exec('which aplay');
+            $sAPlay = \exec('which aplay');
             if (!empty($sAPlay)) {
                 dprintf("Found %s\n", $sAPlay);
                 self::$sPlayerClass = APlay::class;
                 break;
             }
-            $sSoxPlay = exec('which play');
+            $sSoxPlay = \exec('which play');
             if (!empty($sSoxPlay)) {
                 dprintf("Found %s\n", $sSoxPlay);
                 self::$sPlayerClass = Sox::class;
@@ -81,7 +81,7 @@ abstract class Piped implements Audio\IPCMOutput {
      * Constructor
      */
     public function __construct() {
-        $this->aOutputBuffer = array_fill(0, Audio\IConfig::PACKET_SIZE, 0);
+        $this->aOutputBuffer = \array_fill(0, Audio\IConfig::PACKET_SIZE, 0);
     }
 
     /**
@@ -102,7 +102,7 @@ abstract class Piped implements Audio\IPCMOutput {
 
         if (
             $this->rOutput ||
-            !($this->rOutput = proc_open($sCommand, $this->aPipeDescriptors, $this->aPipes))
+            !($this->rOutput = \proc_open($sCommand, $this->aPipeDescriptors, $this->aPipes))
         ) {
             throw new \Exception();
         } else {
@@ -127,7 +127,7 @@ abstract class Piped implements Audio\IPCMOutput {
                     $iValue
                 );
         }
-        fwrite($this->aPipes[0], pack('v*', ...$this->aOutputBuffer));
+        \fwrite($this->aPipes[0], \pack('v*', ...$this->aOutputBuffer));
     }
 
     /**

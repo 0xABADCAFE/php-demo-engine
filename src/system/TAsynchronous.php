@@ -42,7 +42,7 @@ trait TAsynchronous {
      * @return string
      */
     private function makeMessageHeader(int $iCommand, int $iSize) : string {
-        return pack(
+        return \pack(
             'V4',
             IAsynchronous::HEADER_MAGIC,
             $iCommand,
@@ -63,9 +63,9 @@ trait TAsynchronous {
         string $sRawData = '',
         int    $iProcess = IAsynchronous::ID_PARENT
     ) {
-        $iSize = strlen($sRawData);
+        $iSize = \strlen($sRawData);
         $sMessageData = $this->makeMessageHeader($iCommand, $iSize) . $sRawData;
-        socket_write($this->aSocketPair[$iProcess], $sMessageData, IAsynchronous::HEADER_SIZE + $iSize);
+        \socket_write($this->aSocketPair[$iProcess], $sMessageData, IAsynchronous::HEADER_SIZE + $iSize);
     }
 
     /**
@@ -80,7 +80,7 @@ trait TAsynchronous {
         if (empty($sMessageData)) {
             return null;
         }
-        $oHeader = unpack(
+        $oHeader = \unpack(
             'ViMagic/ViCommand/ViSize/ViCheck',
             $sMessageData
         );
@@ -105,13 +105,13 @@ trait TAsynchronous {
      * @param int  $iProcess      - which process is receiving the data
      */
     private function receiveData(int $iExpectSize, int $iProcess = IAsynchronous::ID_CHILD) : string {
-        $sMessageData     = socket_read($this->aSocketPair[$iProcess], $iExpectSize, PHP_BINARY_READ);
-        $iGotSize  = strlen($sMessageData);
-        $iAttempts = IAsynchronous::MAX_RETRIES;
+        $sMessageData = \socket_read($this->aSocketPair[$iProcess], $iExpectSize, PHP_BINARY_READ);
+        $iGotSize     = \strlen($sMessageData);
+        $iAttempts    = IAsynchronous::MAX_RETRIES;
         while ($iGotSize < $iExpectSize && $iAttempts--) {
-            usleep(IAsynchronous::RETRY_PAUSE);
-            $sMessageData .= socket_read($this->aSocketPair[$iProcess], $iExpectSize - $iGotSize);
-            $iGotSize = strlen($sMessageData);
+            \usleep(IAsynchronous::RETRY_PAUSE);
+            $sMessageData .= \socket_read($this->aSocketPair[$iProcess], $iExpectSize - $iGotSize);
+            $iGotSize = \strlen($sMessageData);
         }
 
         if (0 == $iAttempts) {
@@ -127,9 +127,9 @@ trait TAsynchronous {
      * @param  int $iProcess      - which process is sending the response
      */
     private function sendResponseCode(int $iResponseCode, int $iProcess = IAsynchronous::ID_CHILD) : self {
-        socket_write(
+        \socket_write(
             $this->aSocketPair[$iProcess],
-            pack('V', $iResponseCode)
+            \pack('V', $iResponseCode)
         );
         return $this;
     }
@@ -138,10 +138,10 @@ trait TAsynchronous {
      * Initialise the asynchronous process and a socket pair for IPC.
      */
     private function initAsyncProcess() {
-        if (!socket_create_pair(AF_UNIX, SOCK_STREAM, 0, $this->aSocketPair)) {
+        if (!\socket_create_pair(AF_UNIX, SOCK_STREAM, 0, $this->aSocketPair)) {
             throw new \Exception("Could not create socket pair");
         }
-        $iProcessID = pcntl_fork();
+        $iProcessID = \pcntl_fork();
         if (-1 == $iProcessID) {
             $this->closeSocket(IAsynchronous::ID_CHILD);
             $this->closeSocket(IAsynchronous::ID_PARENT);
@@ -169,7 +169,7 @@ trait TAsynchronous {
      */
     private function closeSocket(int $iProcess) {
         if (isset($this->aSocketPair[$iProcess])) {
-            socket_close($this->aSocketPair[$iProcess]);
+            \socket_close($this->aSocketPair[$iProcess]);
             unset($this->aSocketPair[$iProcess]);
         }
     }

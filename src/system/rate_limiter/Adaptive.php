@@ -45,7 +45,7 @@ class Adaptive implements System\IRateLimiter {
         $this->fAdjustedDelay      = // fall through
         $this->fTargetDelay        = (1000000.0 / $iMaxFramesPerSecond);
         $this->fFirst              = // fall through
-        $this->fPrevious           = microtime(true);
+        $this->fPrevious           = \microtime(true);
     }
 
     /**
@@ -60,13 +60,13 @@ class Adaptive implements System\IRateLimiter {
      */
     public function limit() : float {
         ++$this->iFrameNumber;
-        usleep((int)($this->fAdjustedDelay));
-        $fTimeIndex            = microtime(true) - $this->fFirst;
+        \usleep((int)($this->fAdjustedDelay));
+        $fTimeIndex            = \microtime(true) - $this->fFirst;
         $fFramesPerSecond      = $this->iFrameNumber / $fTimeIndex;
 
         $fAdjustment = $fFramesPerSecond / $this->iMaxFramesPerSecond;
 
-        $this->fAdjustedDelay = $this->fTargetDelay * pow($fAdjustment, 5);
+        $this->fAdjustedDelay = $this->fTargetDelay * \pow($fAdjustment, 5);
         return $fTimeIndex;
     }
 }

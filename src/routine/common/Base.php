@@ -66,7 +66,7 @@ abstract class Base implements PDE\IRoutine {
         $aDefaults = $this->mergeDefaultParameters();
         foreach ($aParameters as $sParameterName => $mParameterValue) {
             if (isset($aDefaults[$sParameterName])) {
-                settype($mParameterValue, gettype($aDefaults[$sParameterName]));
+                \settype($mParameterValue, \gettype($aDefaults[$sParameterName]));
                 if ($mParameterValue != $this->oParameters->{$sParameterName}) {
                     $this->oParameters->{$sParameterName} = $mParameterValue;
                     $bChanged = true;
@@ -131,6 +131,6 @@ abstract class Base implements PDE\IRoutine {
      * @return mixed[] - associative key/value pair of the default parameters
      */
     private function mergeDefaultParameters() : array {
-        return array_merge(self::COMMON_PARAMETERS, static::DEFAULT_PARAMETERS);
+        return \array_merge(self::COMMON_PARAMETERS, static::DEFAULT_PARAMETERS);
     }
 }

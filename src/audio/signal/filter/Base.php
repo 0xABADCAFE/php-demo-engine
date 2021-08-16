@@ -135,7 +135,7 @@ abstract class Base implements Audio\Signal\IFilter {
      * @inheritDoc
      */
     public function setCutoff(float $fCutoff) : self {
-        $this->fFixedCutoff = max($fCutoff, self::MIN_CUTOFF);
+        $this->fFixedCutoff = \max($fCutoff, self::MIN_CUTOFF);
         return $this;
     }
 
@@ -152,7 +152,7 @@ abstract class Base implements Audio\Signal\IFilter {
      * @inheritDoc
      */
     public function setResonance(float $fResonance) : self {
-        $this->fFixedResonance = max($fResonance, self::MIN_RESONANCE);
+        $this->fFixedResonance = \max($fResonance, self::MIN_RESONANCE);
         return $this;
     }
 

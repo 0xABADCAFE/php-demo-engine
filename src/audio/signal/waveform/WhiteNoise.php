@@ -53,10 +53,10 @@ class WhiteNoise implements Audio\Signal\IWaveform {
      */
     public function __construct() {
         if (null === self::$oRandom) {
-            self::$fNormalise = 2.0 / (float)mt_getrandmax();
+            self::$fNormalise = 2.0 / (float)\mt_getrandmax();
             self::$oRandom = Audio\Signal\Packet::create();
             for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
-                self::$oRandom[$i] = mt_rand();
+                self::$oRandom[$i] = \mt_rand();
             }
         }
     }
@@ -72,7 +72,7 @@ class WhiteNoise implements Audio\Signal\IWaveform {
      * @inheritDoc
      */
     public function map(Audio\Signal\Packet $oInput) : Audio\Signal\Packet {
-        $fRandom = self::RAND_SCALE * mt_rand();
+        $fRandom = self::RAND_SCALE * \mt_rand();
         $iMask   = 0x7FFFFFFF;
         $oOutput = clone $oInput;
         for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {

@@ -38,7 +38,7 @@ trait TInstrumented {
     private function reportRedraw(?string $sWho = null) {
         // Only report the statistics if the instance was used
         if ($this->iTotalRedrawCount) {
-            printf(
+            \printf(
                 "%s Total Redraw Time: %.3f seconds, %.2f ms/redraw\n",
                 $sWho ?? static::class,
                 $this->fTotalRedrawTime,
@@ -51,14 +51,14 @@ trait TInstrumented {
      * Mark the beginning of a redraw
      */
     protected function beginRedraw() {
-        $this->fRedrawMark = microtime(true);
+        $this->fRedrawMark = \microtime(true);
     }
 
     /**
      * Mark the end of a redraw
      */
     protected function endRedraw() {
-        $this->fTotalRedrawTime += microtime(true) - $this->fRedrawMark;
+        $this->fTotalRedrawTime += \microtime(true) - $this->fRedrawMark;
         ++$this->iTotalRedrawCount;
     }
 }

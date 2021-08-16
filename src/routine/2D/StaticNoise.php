@@ -64,7 +64,7 @@ class StaticNoise extends Base {
         for ($iYPos = $this->oParameters->iBorderV; $iYPos < $iMaxY; ++$iYPos) {
             for ($iXPos = $this->oParameters->iBorderH; $iXPos < $iMaxX; ++$iXPos) {
                 $iBufferPos = $iXPos + $iSpan * $iYPos;
-                $sCharBuffer[$iBufferPos] = self::NOISE_CHARS[mt_rand(0, self::MAX_CHAR)];
+                $sCharBuffer[$iBufferPos] = self::NOISE_CHARS[\mt_rand(0, self::MAX_CHAR)];
             }
         }
         return $this;

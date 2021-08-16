@@ -40,7 +40,7 @@ trait TAsynchronous {
 
         // Now wait for the message to come back. We don't really care about the
         // actual response code, the messaging itself is a synchronisation.
-        $sResponse = socket_read(
+        $sResponse = \socket_read(
             $this->aSocketPair[IAsynchronous::ID_PARENT],
             4,
             PHP_BINARY_READ
@@ -61,11 +61,11 @@ trait TAsynchronous {
             throw new \InvalidArgumentException();
         }
         $iSize = count($oPixels) * $iDataFormat;
-        $sMessageData = $this->makeMessageHeader(IAsynchronous::MESSAGE_NEW_FRAME, $iSize) . pack(
+        $sMessageData = $this->makeMessageHeader(IAsynchronous::MESSAGE_NEW_FRAME, $iSize) . \pack(
             IAsynchronous::DATA_FORMAT_MAP[$iDataFormat],
             ...$oPixels
         );
-        socket_write($this->aSocketPair[IAsynchronous::ID_PARENT], $sMessageData, IAsynchronous::HEADER_SIZE + $iSize);
+        \socket_write($this->aSocketPair[IAsynchronous::ID_PARENT], $sMessageData, IAsynchronous::HEADER_SIZE + $iSize);
     }
 
     /**
@@ -74,8 +74,8 @@ trait TAsynchronous {
      * @param int $iWriteMask
      */
     private function sendSetWritemaskMessage(int $iWriteMask) {
-        $sMessageData = $this->makeMessageHeader(IAsynchronous::MESSAGE_SET_WRITEMASK, 8) . pack('Q', $iWriteMask);
-        socket_write($this->aSocketPair[IAsynchronous::ID_PARENT], $sMessageData, IAsynchronous::HEADER_SIZE + 8);
+        $sMessageData = $this->makeMessageHeader(IAsynchronous::MESSAGE_SET_WRITEMASK, 8) . \pack('Q', $iWriteMask);
+        \socket_write($this->aSocketPair[IAsynchronous::ID_PARENT], $sMessageData, IAsynchronous::HEADER_SIZE + 8);
     }
 
     /**
@@ -84,8 +84,8 @@ trait TAsynchronous {
      * @param int $iWriteMask
      */
     private function sendSetForegroundColour(int $iColour) {
-        $sMessageData = $this->makeMessageHeader(IAsynchronous::MESSAGE_SET_FG_COLOUR, 4) . pack('V', $iColour);
-        socket_write($this->aSocketPair[IAsynchronous::ID_PARENT], $sMessageData, IAsynchronous::HEADER_SIZE + 4);
+        $sMessageData = $this->makeMessageHeader(IAsynchronous::MESSAGE_SET_FG_COLOUR, 4) . \pack('V', $iColour);
+        \socket_write($this->aSocketPair[IAsynchronous::ID_PARENT], $sMessageData, IAsynchronous::HEADER_SIZE + 4);
     }
 
     /**
@@ -94,8 +94,8 @@ trait TAsynchronous {
      * @param int $iWriteMask
      */
     private function sendSetBackgroundColour(int $iColour) {
-        $sMessageData = $this->makeMessageHeader(IAsynchronous::MESSAGE_SET_BG_COLOUR, 4) . pack('V', $iColour);
-        socket_write($this->aSocketPair[IAsynchronous::ID_PARENT], $sMessageData, IAsynchronous::HEADER_SIZE + 4);
+        $sMessageData = $this->makeMessageHeader(IAsynchronous::MESSAGE_SET_BG_COLOUR, 4) . \pack('V', $iColour);
+        \socket_write($this->aSocketPair[IAsynchronous::ID_PARENT], $sMessageData, IAsynchronous::HEADER_SIZE + 4);
     }
 
 
@@ -110,8 +110,8 @@ trait TAsynchronous {
      */
     private function runSubprocess() {
         // In the unlikely event we run as root, bang up our priority
-        if (0 === posix_getuid()) {
-            proc_nice(-19);
+        if (0 === \posix_getuid()) {
+            \proc_nice(-19);
         }
         $this->subprocessRenderLoop();
         $this->reportRedraw(self::class . " Subprocess");
@@ -125,7 +125,7 @@ trait TAsynchronous {
      */
     private function closeSocket(int $iProcess) {
         if (isset($this->aSocketPair[$iProcess])) {
-            socket_close($this->aSocketPair[$iProcess]);
+            \socket_close($this->aSocketPair[$iProcess]);
             unset($this->aSocketPair[$iProcess]);
         }
     }

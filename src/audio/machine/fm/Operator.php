@@ -194,7 +194,7 @@ class Operator implements Audio\Signal\IOscillator {
      * @return self
      */
     public function setRatio(float $fRatio) : self {
-        $this->fRatio = min(max($fRatio, self::MIN_RATIO), self::MAX_RATIO);
+        $this->fRatio = \min(\max($fRatio, self::MIN_RATIO), self::MAX_RATIO);
         return $this;
     }
 

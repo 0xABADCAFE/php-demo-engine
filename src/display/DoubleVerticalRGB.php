@@ -97,7 +97,7 @@ class DoubleVerticalRGB extends Base implements IPixelled, IAsynchronous {
      * @inheritDoc
      */
     public function reset() : self {
-        printf(IANSIControl::TERM_SIZE_TPL, ($this->iHeight >> 1) + 2, $this->iWidth + 1);
+        \printf(IANSIControl::TERM_SIZE_TPL, ($this->iHeight >> 1) + 2, $this->iWidth + 1);
         $this->clear();
         echo IANSIControl::TERM_CLEAR . IANSIControl::CRSR_OFF;
         return $this;
@@ -139,7 +139,7 @@ class DoubleVerticalRGB extends Base implements IPixelled, IAsynchronous {
     public function setParameters(array $aParameters) : self {
         $oParameters = $this->filterRawParameters($aParameters);
         if (isset($oParameters->sMaskRGB)) {
-            $this->setRGBWriteMask((int)base_convert($oParameters->sMaskRGB, 16, 10));
+            $this->setRGBWriteMask((int)\base_convert($oParameters->sMaskRGB, 16, 10));
         }
         return $this;
     }
@@ -149,9 +149,9 @@ class DoubleVerticalRGB extends Base implements IPixelled, IAsynchronous {
      * it decodes and prints it.
      */
     protected function subprocessRenderLoop() {
-        ini_set('output_buffering', 'true');
+        \ini_set('output_buffering', 'true');
 
-        $sInitial = IANSIControl::CRSR_TOP_LEFT . sprintf(IANSIControl::ATTR_BG_RGB_TPL, 0, 0, 0);
+        $sInitial = IANSIControl::CRSR_TOP_LEFT . \sprintf(IANSIControl::ATTR_BG_RGB_TPL, 0, 0, 0);
 
         while (($oMessage = $this->receiveMessageHeader())) {
 
@@ -160,7 +160,7 @@ class DoubleVerticalRGB extends Base implements IPixelled, IAsynchronous {
 
             switch ($oMessage->iCommand) {
                 case self::MESSAGE_SET_WRITEMASK:
-                    $aData = unpack('Q', $sData);
+                    $aData = \unpack('Q', $sData);
                     $this->iRGBWriteMask = reset($aData);
                     break;
 
@@ -178,7 +178,7 @@ class DoubleVerticalRGB extends Base implements IPixelled, IAsynchronous {
 
     private function drawFrame(string $sData, string $sInitial) {
         $this->beginRedraw();
-        $aPixels      = array_values(unpack('V*', $sData));
+        $aPixels      = \array_values(\unpack('V*', $sData));
         $sRawBuffer   = $sInitial;
         $iEvenOffset  = 0;
         $iOddOffset   = $this->iWidth;
@@ -206,7 +206,7 @@ class DoubleVerticalRGB extends Base implements IPixelled, IAsynchronous {
                     case 4:
                     case 5:
                         // Background RGB changes only
-                        $sRawBuffer .= sprintf(
+                        $sRawBuffer .= \sprintf(
                             $sTemplate,
                             $iBackRGB >> 16,
                             ($iBackRGB >> 8) & 0xFF,
@@ -216,7 +216,7 @@ class DoubleVerticalRGB extends Base implements IPixelled, IAsynchronous {
                     case 3:
 
                         // Foreground RGB changes
-                        $sRawBuffer .= sprintf(
+                        $sRawBuffer .= \sprintf(
                             $sTemplate,
                             $iForeRGB >> 16,
                             ($iForeRGB >> 8) & 0xFF,
@@ -226,7 +226,7 @@ class DoubleVerticalRGB extends Base implements IPixelled, IAsynchronous {
                     case 6:
                     case 7:
                         // Background and foreground changes
-                        $sRawBuffer .= sprintf(
+                        $sRawBuffer .= \sprintf(
                             $sTemplate,
                             $iForeRGB >> 16,
                             ($iForeRGB >> 8) & 0xFF,
@@ -237,7 +237,7 @@ class DoubleVerticalRGB extends Base implements IPixelled, IAsynchronous {
                         );
                         break;
                     default:
-                        $sRawBuffer .= sprintf(
+                        $sRawBuffer .= \sprintf(
                             $aTemplates[7],
                             $iForeRGB >> 16,
                             ($iForeRGB >> 8) & 0xFF,
@@ -254,9 +254,9 @@ class DoubleVerticalRGB extends Base implements IPixelled, IAsynchronous {
             $iOddOffset  += $this->iWidth;
             $sRawBuffer .= "\n";
         }
-        ob_start(null, 0);
+        \ob_start(null, 0);
         echo $sRawBuffer . IANSIControl::ATTR_RESET;
-        ob_end_flush();
+        \ob_end_flush();
         $this->endRedraw();
     }
 

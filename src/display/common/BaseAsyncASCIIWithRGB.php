@@ -62,9 +62,9 @@ abstract class BaseAsyncASCIIWithRGB extends Base implements IPixelled, IASCIIAr
     public function __construct(int $iWidth, int $iHeight) {
         parent::__construct($iWidth, $iHeight);
 
-        $aLineBreaks   = range(0, $iWidth * $iHeight, $iWidth);
+        $aLineBreaks   = \range(0, $iWidth * $iHeight, $iWidth);
         unset($aLineBreaks[0]);
-        $this->aLineBreaks = array_fill_keys($aLineBreaks, "\n");
+        $this->aLineBreaks = \array_fill_keys($aLineBreaks, "\n");
         $this->iBGColour   = 0;
         $this->iFGColour   = 0xFFFFFF;
 
@@ -110,13 +110,13 @@ abstract class BaseAsyncASCIIWithRGB extends Base implements IPixelled, IASCIIAr
     public function setParameters(array $aParameters) : self {
         $oParameters = $this->filterRawParameters($aParameters);
         if (isset($oParameters->sFGColourRGB)) {
-            $this->setForegroundColour((int)base_convert($oParameters->sFGColourRGB, 16, 10));
+            $this->setForegroundColour((int)\base_convert($oParameters->sFGColourRGB, 16, 10));
         }
         if (isset($oParameters->sBGColourRGB)) {
-            $this->setBackgroundColour((int)base_convert($oParameters->sBGColourRGB, 16, 10));
+            $this->setBackgroundColour((int)\base_convert($oParameters->sBGColourRGB, 16, 10));
         }
         if (isset($oParameters->sMaskRGB)) {
-            $this->setRGBWriteMask((int)base_convert($oParameters->sMaskRGB, 16, 10));
+            $this->setRGBWriteMask((int)\base_convert($oParameters->sMaskRGB, 16, 10));
         }
         return $this;
     }
@@ -171,7 +171,7 @@ abstract class BaseAsyncASCIIWithRGB extends Base implements IPixelled, IASCIIAr
      * it decodes and prints it.
      */
     protected function subprocessRenderLoop() {
-        ini_set('output_buffering', 'true');
+        \ini_set('output_buffering', 'true');
         $sInput   = '';
         $sInitial = IANSIControl::CRSR_TOP_LEFT;
         while (($oMessage = $this->receiveMessageHeader())) {
@@ -181,8 +181,8 @@ abstract class BaseAsyncASCIIWithRGB extends Base implements IPixelled, IASCIIAr
 
             switch ($oMessage->iCommand) {
                 case self::MESSAGE_SET_WRITEMASK:
-                    $aData = unpack('Q', $sData);
-                    $this->iRGBWriteMask = reset($aData);
+                    $aData = \unpack('Q', $sData);
+                    $this->iRGBWriteMask = \reset($aData);
                     break;
 
                 case self::MESSAGE_NEW_FRAME:
@@ -196,9 +196,9 @@ abstract class BaseAsyncASCIIWithRGB extends Base implements IPixelled, IASCIIAr
                     break;
 
                 case self::MESSAGE_SET_FG_COLOUR:
-                    $aData = unpack('V', $sData);
-                    $iRGB  = reset($aData);
-                    $this->sFGColour = sprintf(
+                    $aData = \unpack('V', $sData);
+                    $iRGB  = \reset($aData);
+                    $this->sFGColour = \sprintf(
                         IANSIControl::ATTR_FG_RGB_TPL,
                         ($iRGB >> 16),
                         (($iRGB >> 8) & 0xFF),
@@ -207,9 +207,9 @@ abstract class BaseAsyncASCIIWithRGB extends Base implements IPixelled, IASCIIAr
                     break;
 
                 case self::MESSAGE_SET_BG_COLOUR:
-                    $aData = unpack('V', $sData);
-                    $iRGB  = reset($aData);
-                    $this->sBGColour = sprintf(
+                    $aData = \unpack('V', $sData);
+                    $iRGB  = \reset($aData);
+                    $this->sBGColour = \sprintf(
                         IANSIControl::ATTR_BG_RGB_TPL,
                         ($iRGB >> 16),
                         (($iRGB >> 8) & 0xFF),
@@ -230,7 +230,7 @@ abstract class BaseAsyncASCIIWithRGB extends Base implements IPixelled, IASCIIAr
      * @param string $sInitial  - The first part of the output, e.g. reset the cursor position etc.
      */
     protected function drawFrame(string $sData, string $sInitial) {
-        $aPixels    = unpack(self::DATA_FORMAT_MAP[static::DATA_FORMAT], $sData);
+        $aPixels    = \unpack(self::DATA_FORMAT_MAP[static::DATA_FORMAT], $sData);
         $sRawBuffer = $sInitial;
         $iLastRGB   = 0xFF000000;
         $i          = 0;
@@ -238,9 +238,9 @@ abstract class BaseAsyncASCIIWithRGB extends Base implements IPixelled, IASCIIAr
             $sRawBuffer .= $this->aLineBreaks[$i++] ?? '';
             $iCharCode   = $iCRGB >> 24;
             $iRGB        = $iCRGB & $this->iRGBWriteMask;
-            $sTextChar   = ICustomChars::MAP[$iCharCode] ?? chr($iCharCode);
+            $sTextChar   = ICustomChars::MAP[$iCharCode] ?? \chr($iCharCode);
             if ($iRGB !== $iLastRGB) {
-                $sRawBuffer .= sprintf(
+                $sRawBuffer .= \sprintf(
                     static::ATTR_TEMPLATE,
                     ($iRGB >> 16) & 0xFF, // Red
                     ($iRGB >> 8) & 0xFF,  // Green
@@ -252,9 +252,9 @@ abstract class BaseAsyncASCIIWithRGB extends Base implements IPixelled, IASCIIAr
             }
         }
         // Make sure we output the data in one blast to try to mitigate partial redraw.
-        ob_start(null, 0);
+        \ob_start(null, 0);
         echo $sRawBuffer;
-        ob_end_flush();
+        \ob_end_flush();
     }
 
     /**
@@ -265,7 +265,7 @@ abstract class BaseAsyncASCIIWithRGB extends Base implements IPixelled, IASCIIAr
         $j = 0;
         foreach ($this->oPixels as $i => $iRGB) {
             $j += (int)isset($this->aLineBreaks[$i]);
-            $this->oPixels[$i] = ord($this->sRawBuffer[$j++]) << 24 | $iRGB;
+            $this->oPixels[$i] = \ord($this->sRawBuffer[$j++]) << 24 | $iRGB;
         }
     }
 

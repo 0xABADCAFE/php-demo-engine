@@ -49,7 +49,7 @@ class AliasedSaw implements Signal\IWaveform {
     public function map(Signal\Packet $oInput) : Signal\Packet {
         $oOutput = clone $oInput;
         foreach ($oInput as $i => $fTime) {
-            $oOutput[$i] = 2.0 * (ceil($fTime) - $fTime - 0.5);
+            $oOutput[$i] = 2.0 * (\ceil($fTime) - $fTime - 0.5);
         }
         return $oOutput;
     }

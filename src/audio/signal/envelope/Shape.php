@@ -84,12 +84,12 @@ class Shape extends Base {
             0 => [$fInitial, 0]
         ];
         foreach ($aPoints as $aPoint) {
-            if (!is_array($aPoint) || count($aPoint) != 2) {
+            if (!\is_array($aPoint) || \count($aPoint) != 2) {
                 throw new \Exception();
             }
             $this->aPoints[] = [
                 (float)$aPoint[0],
-                min(max((float)$aPoint[1], self::MIN_TIME), self::MAX_TIME)
+                \min(\max((float)$aPoint[1], self::MIN_TIME), self::MAX_TIME)
             ];
         }
         $this->bParameterChanged = true;

@@ -10,7 +10,6 @@ require_once '../PDE.php';
 $iWidth  = 120;
 $iHeight = 30;
 
-
 $oDisplay = Display\Factory::get()->create('PlainASCII', $iWidth, $iHeight);
 $oDisplay
     ->reset()
@@ -20,7 +19,7 @@ $oDisplay
     ->writeTextSpan("Bottom Left", 0, 29)
     ->writeTextSpan("Bottom Right", 108, 29)
     ->writeTextSpan("Centre", 57, 15)
-    ->writeTextSpan(str_repeat("0123456789", 20), 0, 2)
+    ->writeTextSpan(\str_repeat("0123456789", 20), 0, 2)
     ->writeTextSpan("Off Left", -20, 15)
     ->writeTextSpan("Off Right", 120, 15)
     ->writeTextSpan("Off Top", 0, -1)
@@ -30,11 +29,11 @@ $oDisplay
     ->writeTextSpan("Visible Line\nHidden Line", 54, 0)
     ->redraw();
 
-sleep(5);
+\sleep(5);
 
 
 $oDisplay
     ->reset()
-    ->writeTextBounded(file_get_contents('text_test.php'), 0, 0)
+    ->writeTextBounded(\file_get_contents('text_test.php'), 0, 0)
     ->redraw()
     ->waitForFrame();

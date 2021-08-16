@@ -63,7 +63,7 @@ final class Vec3F {
      * Calculates the scalar magnitude of the current instance.
      */
     public function magnitude() : float {
-        return sqrt(
+        return \sqrt(
             $this->fX * $this->fX +
             $this->fY * $this->fY +
             $this->fZ * $this->fZ
@@ -214,7 +214,7 @@ final class Vec3F {
      * @return self
      */
     public function normalise() : self {
-        $fInvMag = 1.0/sqrt(
+        $fInvMag = 1.0/\sqrt(
             $this->fX * $this->fX +
             $this->fY * $this->fY +
             $this->fZ * $this->fZ
@@ -226,7 +226,7 @@ final class Vec3F {
     }
 
     public function iNormalise() : self {
-        $fInvMag = 1.0/sqrt(
+        $fInvMag = 1.0/\sqrt(
             $this->fX * $this->fX +
             $this->fY * $this->fY +
             $this->fZ * $this->fZ

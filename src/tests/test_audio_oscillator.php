@@ -82,7 +82,7 @@ foreach ($aWaveforms as $sName => $oWaveform) {
         $fFrequency2 = Audio\Note::getFrequency($sNote2);
         $fFrequency3 = Audio\Note::getFrequency($sNote3);
 
-        printf("%s [%.2fHz] ", $sNote1, $fFrequency1);
+        \printf("%s [%.2fHz] ", $sNote1, $fFrequency1);
         $oMixer->reset();
         $oOsc1->setFrequency($fFrequency1);
         $oOsc2->setFrequency($fFrequency2);

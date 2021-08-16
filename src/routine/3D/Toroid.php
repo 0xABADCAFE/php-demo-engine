@@ -175,13 +175,13 @@ class Toroid extends Base {
 
             // This is to do the dissolve into rings effect
             if (\abs($this->oParameters->fUncoilToroid) > 0) {
-                $fToroidStep = self::EIGHTH_PI * (1.0 - cos(
+                $fToroidStep = self::EIGHTH_PI * (1.0 - \cos(
                     $fTimeIndex * $this->oParameters->fUncoilToroid
                 )) + $this->oParameters->fToroidStep;
             }
             // This is to do the dissolve into rings effect
             if (\abs($this->oParameters->fUncoilPoloid) > 0) {
-                $fPoloidStep = self::EIGHTH_PI * (1.0 - cos(
+                $fPoloidStep = self::EIGHTH_PI * (1.0 - \cos(
                     $fTimeIndex * $this->oParameters->fUncoilPoloid
                 )) + $this->oParameters->fPoloidStep;
             }

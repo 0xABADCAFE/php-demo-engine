@@ -161,7 +161,7 @@ class DoubleVerticalRGB extends Base implements IPixelled, IAsynchronous {
             switch ($oMessage->iCommand) {
                 case self::MESSAGE_SET_WRITEMASK:
                     $aData = \unpack('Q', $sData);
-                    $this->iRGBWriteMask = reset($aData);
+                    $this->iRGBWriteMask = \reset($aData);
                     break;
 
                 case self::MESSAGE_NEW_FRAME:

@@ -54,9 +54,9 @@ class Palette {
         if ($iCount < 2) {
             throw new \LengthException('A gradient requires at least 2 points');
         }
-        ksort($aPoints);
+        \ksort($aPoints);
         $aPositions = \array_keys($aPoints);
-        if (min($aPositions) < 0) {
+        if (\min($aPositions) < 0) {
             throw new OutOfBoundsException('Negative indexes not allowed');
         }
         $aRGBValues = \array_values($aPoints);

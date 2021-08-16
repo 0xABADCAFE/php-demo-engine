@@ -88,7 +88,7 @@ abstract class Base implements PDE\IDisplay {
         $aFiltered = [];
         foreach ($aParameters as $sParameterName => $mParameterValue) {
             if (isset($aDefaults[$sParameterName])) {
-                settype($mParameterValue, \gettype($aDefaults[$sParameterName]));
+                \settype($mParameterValue, \gettype($aDefaults[$sParameterName]));
                 $aFiltered[$sParameterName] = $mParameterValue;
             }
         }

@@ -144,7 +144,7 @@ class Context {
             }
             $this->aRoutinePriorities[$sIdentity] = $oRoutineDefinition->iPriority;
         }
-        asort($this->aRoutinePriorities, SORT_NUMERIC);
+        \asort($this->aRoutinePriorities, SORT_NUMERIC);
     }
 
     /**

@@ -334,6 +334,9 @@ class Sequencer {
             $oMixer->addInputStream($sMachineName, $oMachine, 1.0);
         }
 
+        $fPlayTime    = \microtime(true);
+        $fComputeTime = 0.0;
+
         $iLineOffset = 0;
         for ($iMeasure = $iStartMeasure; $iMeasure < $iLastMeasure; ++$iMeasure) {
             $aActivePatterns = [];
@@ -359,10 +362,22 @@ class Sequencer {
                     $iLastLineNumber = $iLineNumber;
                     $this->triggerLine($iLineNumber, $aActivePatterns);
                 }
-                $oOutput->write($oMixer->emit());
+
+                $fStart  = \microtime(true);
+                $oPacket = $oMixer->emit();
+                $fComputeTime += \microtime(true) - $fStart;
+
+                $oOutput->write($oPacket);
             }
             $iLineOffset += $this->iBasePatternLength;
         }
+
+        $fPlayTime = \microtime(true) - $fPlayTime;
+
+        \printf(
+            "Audio Performance %.3f seconds generated in %.3f seconds\n",
+            $fPlayTime, $fComputeTime
+        );
 
         return $this;
     }
@@ -380,13 +395,13 @@ class Sequencer {
                 }
                 switch ($oEvent->iType) {
                     case Audio\Sequence\Event::NOTE_ON:
-                        dprintf("\tLn:%4d Mc:%5s Ch:%2d Ev:NoteOn %s V:%d\n",
-                            $iLineNumber,
-                            $sMachineName,
-                            $iChannel,
-                            $oEvent->sNote,
-                            $oEvent->iVelocity
-                        );
+//                         dprintf("\tLn:%4d Mc:%5s Ch:%2d Ev:NoteOn %s V:%d\n",
+//                             $iLineNumber,
+//                             $sMachineName,
+//                             $iChannel,
+//                             $oEvent->sNote,
+//                             $oEvent->iVelocity
+//                         );
 
                         $oMachine
                             ->setVoiceNote($iChannel, $oEvent->sNote)

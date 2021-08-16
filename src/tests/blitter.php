@@ -17,4 +17,4 @@ $oBlitter
 
 $oBlitter->copy(0, 0, 2, 2, 4, 4);
 
-print_r($oTarget);
+\print_r($oTarget);

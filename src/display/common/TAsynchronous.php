@@ -60,7 +60,7 @@ trait TAsynchronous {
         if (!isset(IAsynchronous::DATA_FORMAT_MAP[$iDataFormat])) {
             throw new \InvalidArgumentException();
         }
-        $iSize = count($oPixels) * $iDataFormat;
+        $iSize = \count($oPixels) * $iDataFormat;
         $sMessageData = $this->makeMessageHeader(IAsynchronous::MESSAGE_NEW_FRAME, $iSize) . \pack(
             IAsynchronous::DATA_FORMAT_MAP[$iDataFormat],
             ...$oPixels

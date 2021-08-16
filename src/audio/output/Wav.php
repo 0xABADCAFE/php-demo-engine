@@ -120,14 +120,14 @@ class Wav implements Audio\IPCMOutput {
                     $iValue
                 );
         }
-        fwrite($this->rOutput, pack('v*', ...$this->aOutputBuffer));
+        \fwrite($this->rOutput, \pack('v*', ...$this->aOutputBuffer));
     }
 
     /**
      * Reserve the header storage on opening the file
      */
     private function reserveHeader() {
-        fwrite($this->rOutput, \str_repeat('-', self::HEADER_SIZE));
+        \fwrite($this->rOutput, \str_repeat('-', self::HEADER_SIZE));
     }
 
     /**

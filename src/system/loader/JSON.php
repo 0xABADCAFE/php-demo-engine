@@ -56,7 +56,7 @@ class JSON implements System\ILoader {
             throw new \Exception('Unable to parse ' . $sFilePath . ', invalid JSON?');
         }
 
-        $this->sBasePath = dirname($sFilePath) . '/';
+        $this->sBasePath = \dirname($sFilePath) . '/';
 
         if (
             !isset($oDocument->displays) ||

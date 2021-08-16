@@ -64,8 +64,8 @@ trait TResourceLoader {
      */
     protected function loadPNM(string $sPath) : Graphics\Image {
         $sRaw = $this->loadFile($sPath);
-        $bRGB = (substr($sRaw, 0, 2) === 'P6');
-        if (preg_match('/^(\d+)\s+(\d+)$/m', $sRaw, $aMatches)) {
+        $bRGB = (\substr($sRaw, 0, 2) === 'P6');
+        if (\preg_match('/^(\d+)\s+(\d+)$/m', $sRaw, $aMatches)) {
             $iWidth       = (int)$aMatches[1];
             $iHeight      = (int)$aMatches[2];
             $oImage       = new Graphics\Image($iWidth, $iHeight);

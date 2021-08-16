@@ -16,7 +16,7 @@ $oGammaN2 = new Audio\ControlCurve\Gamma(0.75, 0.25, 2.0);
 
 for ($i = 0; $i < 128; ++$i) {
 
-    printf(
+    \printf(
         "\t%3d | %0.4f | %0.4f | %0.4f | %0.4f | %0.4f | %0.4f | %0.4f \n",
         $i,
         $oFlat->map((float)$i),

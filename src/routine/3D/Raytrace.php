@@ -119,7 +119,7 @@ class Raytrace extends Base {
 
         $this->oBlitter = new Graphics\Blitter();
 
-        $this->fInvRM = 0.25 / (float)mt_getrandmax();
+        $this->fInvRM = 0.25 / (float)\mt_getrandmax();
         $this->initCamera();
         $this->initLights();
         $this->initObjects();
@@ -278,7 +278,7 @@ class Raytrace extends Base {
         $fStep       = M_PI / $this->oParameters->iMaxFrames;
         foreach ($this->aSpheres as $iIndex => $vSpherePos) {
             $aAnimation = $this->oParameters->aAnimation[$iIndex];
-            $vSpherePos->fZ = $aAnimation[0] + $aAnimation[1] * abs(cos(
+            $vSpherePos->fZ = $aAnimation[0] + $aAnimation[1] * \abs(\cos(
                 $this->fSimulationTime + M_PI * $aAnimation[2]
             ));
         }
@@ -300,10 +300,10 @@ class Raytrace extends Base {
 
                     // Random delta to be added for depth of field effects
                     $vDelta = $this->vCameraUp
-                        ->iScale((($this->fInvRM * mt_rand()) - 0.5) * $fDepthOfField)
+                        ->iScale((($this->fInvRM * \mt_rand()) - 0.5) * $fDepthOfField)
                         ->add(
                             $this->vCameraRight
-                                ->iScale((($this->fInvRM * mt_rand()) - 0.5) * $fDepthOfField)
+                                ->iScale((($this->fInvRM * \mt_rand()) - 0.5) * $fDepthOfField)
                         );
 
                     // Accumulate the sample result into the current pixel
@@ -311,10 +311,10 @@ class Raytrace extends Base {
                         $this->sample(
                             $this->vFocalPoint->iAdd($vDelta),
                             $this->vCameraUp
-                                ->iScale(($this->fInvRM * mt_rand()) + $iPixelX)
+                                ->iScale(($this->fInvRM * \mt_rand()) + $iPixelX)
                                 ->add(
                                     $this->vCameraRight
-                                        ->iScale(($this->fInvRM * mt_rand()) + $iPixelY)
+                                        ->iScale(($this->fInvRM * \mt_rand()) + $iPixelY)
                                         ->add($this->vEyeOffset)
                                 )
                                 ->scale($fScaleDOF)
@@ -367,7 +367,7 @@ class Raytrace extends Base {
             $fIntrSqrd = $fDot * $fDot - $fEye;
 
             if ($fIntrSqrd > 0.0) {
-                $fObjectDistance = -$fDot - sqrt($fIntrSqrd);
+                $fObjectDistance = -$fDot - \sqrt($fIntrSqrd);
                 if ($fObjectDistance < $fTraceDistance && $fObjectDistance > 0.01) {
                     $fTraceDistance = $fObjectDistance;
                     $vNormal = $vDirection
@@ -416,8 +416,8 @@ class Raytrace extends Base {
 
         // Calculate the lighting vector
         $vLight = $this->vLight->iSub($vIntersect);
-        $vLight->fX += ($this->fInvRM * mt_rand());
-        $vLight->fY += ($this->fInvRM * mt_rand());
+        $vLight->fX += ($this->fInvRM * \mt_rand());
+        $vLight->fY += ($this->fInvRM * \mt_rand());
         $vLight->normalise();
 
         $vHalfVector = $vNormal
@@ -437,7 +437,7 @@ class Raytrace extends Base {
             --$this->iRecursion;
             return (
                 // Compute check colour based on the position
-                (int) (ceil($vIntersect->fX) + ceil($vIntersect->fY)) & 1 ?
+                (int) (\ceil($vIntersect->fX) + \ceil($vIntersect->fY)) & 1 ?
                 $this->vFloorRGB1 :
                 $this->vFloorRGB2   // white
             )->iScale($fLambertian * 0.2 + 0.1);
@@ -450,7 +450,7 @@ class Raytrace extends Base {
 
         if ($fLambertian > 0) {
             // Compute the specular highlight power
-            $fSpecular = pow($vLight->dot($vHalfVector), $this->oParameters->fSpecularPower);
+            $fSpecular = \pow($vLight->dot($vHalfVector), $this->oParameters->fSpecularPower);
             $vRGB->fX += $fSpecular;
             $vRGB->fY += $fSpecular;
             $vRGB->fZ += $fSpecular;

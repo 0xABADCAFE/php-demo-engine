@@ -66,7 +66,7 @@ class Factory implements Audio\IFactory {
 
         if (
             !empty($oDefinition->{$sSubNodeKey}) &&
-            is_object($oDefinition->{$sSubNodeKey})
+            \is_object($oDefinition->{$sSubNodeKey})
         ) {
             $oWaveform = Audio\Signal\Waveform\Factory::get()
                 ->createFrom($oDefinition->{$sSubNodeKey});
@@ -97,7 +97,7 @@ class Factory implements Audio\IFactory {
 
         if (
             !empty($oDefinition->{$sSubNodeKey}) &&
-            is_object($oDefinition->{$sSubNodeKey})
+            \is_object($oDefinition->{$sSubNodeKey})
         ) {
             $oWaveform = Audio\Signal\Waveform\Factory::get()
                 ->createFrom($oDefinition->{$sSubNodeKey});

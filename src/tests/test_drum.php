@@ -16,7 +16,7 @@ const SOUNDS = [
     'tom'      => Audio\Machine\Percussion\AnalogueTom::class,
 ];
 
-$sSound = strtolower($_SERVER['argv'][1] ?? 'kick');
+$sSound = \strtolower($_SERVER['argv'][1] ?? 'kick');
 if (!isset(SOUNDS[$sSound])) {
     echo "Unrecognised sound name '", $sSound, "'\n";
     exit();
@@ -28,9 +28,9 @@ if (!isset(Audio\Note::NOTE_NAMES[$sNote])) {
     exit();
 }
 
-$iVelocity = min(max((int)($_SERVER['argv'][3] ?? 100), 1), 127);
+$iVelocity = \min(\max((int)($_SERVER['argv'][3] ?? 100), 1), 127);
 
-printf(
+\printf(
     "Playing %s at note %s, velocity %d...\n",
     $sSound,
     $sNote,

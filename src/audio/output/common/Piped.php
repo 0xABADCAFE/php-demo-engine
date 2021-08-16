@@ -136,10 +136,10 @@ abstract class Piped implements Audio\IPCMOutput {
     public function close() {
         if ($this->rOutput) {
             $this->pushSilence();
-            proc_close($this->rOutput);
+            \proc_close($this->rOutput);
             foreach ($this->aPipes as $rPipe) {
-                if (is_resource($rPipe)) {
-                    fclose($rPipe);
+                if (\is_resource($rPipe)) {
+                    \fclose($rPipe);
                 }
             }
             $this->rOutput = null;
@@ -151,9 +151,9 @@ abstract class Piped implements Audio\IPCMOutput {
      * Pushes a block of silence to bookend opening and closing.
      */
     protected function pushSilence() {
-        $aOutputBuffer = array_fill(0, Audio\IConfig::PACKET_SIZE, 0);
+        $aOutputBuffer = \array_fill(0, Audio\IConfig::PACKET_SIZE, 0);
         for ($i = 0; $i < 10; ++$i) {
-            fwrite($this->aPipes[0], pack('v*', ...$aOutputBuffer));
+            \fwrite($this->aPipes[0], \pack('v*', ...$aOutputBuffer));
         }
     }
 

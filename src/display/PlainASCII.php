@@ -63,7 +63,7 @@ class PlainASCII extends Base implements IASCIIArt {
         $this->initFixedColours();
         $this->initASCIIBuffer($iWidth, $iHeight);
         if (empty(self::$aBlockMapReplace)) {
-            self::$aBlockMapReplace = array_combine(
+            self::$aBlockMapReplace = \array_combine(
                 \array_map('\chr', \array_keys(ICustomChars::MAP)),
                 \array_values(ICustomChars::MAP)
             );

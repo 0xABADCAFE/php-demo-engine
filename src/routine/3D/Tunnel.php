@@ -158,7 +158,7 @@ class Tunnel extends Base implements IResourceLoader {
             for ($iX = 0; $iX < $iWidth * 2; ++$iX) {
                 $iDeltaX = $iX - $iWidth;
                 $iDeltaY = $iY - $iHeight;
-                $oDistanceTable[$iIndex] = $iTextureMod & (int)($fRatio * $iTextureDim / sqrt(
+                $oDistanceTable[$iIndex] = $iTextureMod & (int)($fRatio * $iTextureDim / \sqrt(
                     ($iDeltaX * $iDeltaX) + ($iDeltaY * $iDeltaY) + $this->oParameters->fLimitSqrt
                 ));
                 $oAngleTable[$iIndex] = (int)($fAngleScale * \atan2($iDeltaY, $iDeltaX));

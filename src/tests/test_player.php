@@ -9,4 +9,4 @@ require_once '../PDE.php';
 $oPlayer = new Audio\Player();
 
 
-sleep(30);
+\sleep(30);

@@ -16,13 +16,13 @@ while(true) {
     $iMax = 10;
     while ($iMax--) {
         $oBlitter->fill(
-            mt_rand(0, 0xFFFFFF),
-            mt_rand(-80, 80),
-            mt_rand(-50, 50),
-            mt_rand(0, 160),
-            mt_rand(0, 100)
+            \mt_rand(0, 0xFFFFFF),
+            \mt_rand(-80, 80),
+            \mt_rand(-50, 50),
+            \mt_rand(0, 160),
+            \mt_rand(0, 100)
         );
     }
     $oDisplay->redraw()->waitForFrame();
-    usleep(10000);
+    \usleep(10000);
 }

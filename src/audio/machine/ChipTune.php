@@ -29,7 +29,7 @@ use ABadCafe\PDE\Audio;
  */
 class ChipTune implements Audio\IMachine {
 
-    use TPolyphonicMachine;
+    use TPolyphonicMachine, TSimpleVelocity, TControllerless;
 
     const LEVEL_ADJUST = [
         Audio\Signal\IWaveform::SINE     => 1.0,

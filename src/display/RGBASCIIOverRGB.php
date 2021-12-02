@@ -48,14 +48,14 @@ class RGBASCIIOverRGB extends BaseAsyncASCIIWithRGB {
     /**
      * @inheritDoc
      */
-    protected function getDefaultPixelValue() : int {
+    protected function getDefaultPixelValue(): int {
         return $this->iBGColour | $this->iFGColour << 24;
     }
 
     /**
      * @inheritDoc
      */
-    protected function preparePixels() : void {
+    protected function preparePixels(): void {
         $j = 0;
         $oPixels    = $this->getPixels();
         $sRawBuffer = $this->getCharacterBuffer();
@@ -72,8 +72,8 @@ class RGBASCIIOverRGB extends BaseAsyncASCIIWithRGB {
      * @param string $sData     - The raw binary data representing the pixel array
      * @param string $sInitial  - The first part of the output, e.g. reset the cursor position etc.
      */
-    protected function drawFrame(string $sData, string $sInitial) {
-        $aPixels       = unpack(self::DATA_FORMAT_MAP[self::DATA_FORMAT], $sData);
+    protected function drawFrame(string $sData, string $sInitial): void {
+        $aPixels       = (array)unpack(self::DATA_FORMAT_MAP[self::DATA_FORMAT], $sData);
         $sRawBuffer    = $sInitial;
         $iLastForeRGB  = 0xFF000000;
         $iLastBackRGB  = 0xFF000000;

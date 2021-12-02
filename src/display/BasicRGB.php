@@ -38,6 +38,7 @@ class BasicRGB extends Base implements IPixelled {
 
     use TPixelled, TInstrumented;
 
+    /** @var string[] $aLineBreaks */
     private array $aLineBreaks = [];
 
     /**

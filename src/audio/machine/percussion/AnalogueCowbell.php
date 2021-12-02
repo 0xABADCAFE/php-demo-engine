@@ -78,7 +78,7 @@ class AnalogueCowbell implements IVoice {
             0.65
         );
         $this->oAutoMute = new Audio\Signal\AutoMuteAfter($this->oFilter, 0.6);
-        return $this->oAutoMute->disable();
+        $this->oAutoMute->disable();
     }
 
     /**

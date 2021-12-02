@@ -85,7 +85,7 @@ class Wav implements Audio\IPCMOutput {
     /**
      * @inheritdoc
      */
-    public function open() {
+    public function open(): void {
         if (
             $this->rOutput ||
             !($this->rOutput = fopen($this->sPath, 'wb'))
@@ -98,7 +98,7 @@ class Wav implements Audio\IPCMOutput {
     /**
      * @inheritdoc
      */
-    public function close() {
+    public function close(): void {
         if ($this->rOutput) {
             $this->writeHeader();
             fclose($this->rOutput);
@@ -109,7 +109,7 @@ class Wav implements Audio\IPCMOutput {
     /**
      * @inheritdoc
      */
-    public function write(Audio\Signal\Packet $oPacket) {
+    public function write(Audio\Signal\Packet $oPacket): void {
         // Quantize and clamp
         for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
             $iValue = (int)(self::SCALE * $oPacket[$i]);
@@ -126,14 +126,14 @@ class Wav implements Audio\IPCMOutput {
     /**
      * Reserve the header storage on opening the file
      */
-    private function reserveHeader() {
+    private function reserveHeader(): void {
         fwrite($this->rOutput, str_repeat('-', self::HEADER_SIZE));
     }
 
     /**
      * Rewinds and writes the header on closing the file
      */
-    private function writeHeader() {
+    private function writeHeader(): void {
         $aHeader     = self::M_HEADER;
         $iFileSize   = ftell($this->rOutput);
         $iBlockAlign = ($this->iNumChannels * $this->iBitsPerSample) >> 3;

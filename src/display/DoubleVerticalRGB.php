@@ -148,7 +148,7 @@ class DoubleVerticalRGB extends Base implements IPixelled, IAsynchronous {
      * Main subprocess loop. This sits and waits for data from the socket. When the data arrives
      * it decodes and prints it.
      */
-    protected function subprocessRenderLoop() {
+    protected function subprocessRenderLoop(): void {
         ini_set('output_buffering', 'true');
 
         $sInitial = IANSIControl::CRSR_TOP_LEFT . sprintf(IANSIControl::ATTR_BG_RGB_TPL, 0, 0, 0);
@@ -156,11 +156,11 @@ class DoubleVerticalRGB extends Base implements IPixelled, IAsynchronous {
         while (($oMessage = $this->receiveMessageHeader())) {
 
             // Get any expected data following the message header
-            $sData = $oMessage->iSize > 0 ? $this->receiveData($oMessage->iSize) : null;
+            $sData = $oMessage->iSize > 0 ? $this->receiveData($oMessage->iSize) : '';
 
             switch ($oMessage->iCommand) {
                 case self::MESSAGE_SET_WRITEMASK:
-                    $aData = unpack('Q', $sData);
+                    $aData = (array)unpack('Q', $sData);
                     $this->iRGBWriteMask = reset($aData);
                     break;
 
@@ -176,9 +176,9 @@ class DoubleVerticalRGB extends Base implements IPixelled, IAsynchronous {
         }
     }
 
-    private function drawFrame(string $sData, string $sInitial) {
+    private function drawFrame(string $sData, string $sInitial): void {
         $this->beginRedraw();
-        $aPixels      = array_values(unpack('V*', $sData));
+        $aPixels      = array_values((array)unpack('V*', $sData));
         $sRawBuffer   = $sInitial;
         $iEvenOffset  = 0;
         $iOddOffset   = $this->iWidth;

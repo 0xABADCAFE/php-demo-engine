@@ -29,6 +29,10 @@ use \SPLFixedArray;
  */
 trait TPixelled {
 
+    /**
+     * @var SPLFixedArray<int> $oPixels
+     * @var SPLFixedArray<int> $oNewPixels
+     */
     private SPLFixedArray $oPixels, $oNewPixels;
 
     private int $iFormat, $iRGBWriteMask = 0xFFFFFF;

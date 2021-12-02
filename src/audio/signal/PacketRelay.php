@@ -48,7 +48,7 @@ class PacketRelay implements IStream {
     }
 
     /**
-     * @param  Packet $oPacket
+     * @param  Packet<float> $oPacket
      * @return self
      */
     public function setPacket(Packet $oPacket) : self {

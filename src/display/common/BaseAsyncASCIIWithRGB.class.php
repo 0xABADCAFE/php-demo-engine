@@ -54,6 +54,7 @@ abstract class BaseAsyncASCIIWithRGB extends Base implements IPixelled, IASCIIAr
         TAsynchronous
     ;
 
+    /** @var string[] $aLineBreaks */
     protected array $aLineBreaks = [];
 
     /**
@@ -87,7 +88,7 @@ abstract class BaseAsyncASCIIWithRGB extends Base implements IPixelled, IASCIIAr
     /**
      * @inheritDoc
      */
-    public function clear() : self {
+    public function clear(): self {
         $this->resetASCIIBuffer();
         $this->resetPixelBuffer();
         return $this;
@@ -96,7 +97,7 @@ abstract class BaseAsyncASCIIWithRGB extends Base implements IPixelled, IASCIIAr
     /**
      * @inheritDoc
      */
-    public function redraw() : self {
+    public function redraw(): self {
         $this->beginRedraw();
         $this->preparePixels();
         $this->sendNewFrameMessage($this->oPixels, static::DATA_FORMAT);
@@ -107,7 +108,7 @@ abstract class BaseAsyncASCIIWithRGB extends Base implements IPixelled, IASCIIAr
     /**
      * @inheritDoc
      */
-    public function setParameters(array $aParameters) : self {
+    public function setParameters(array $aParameters): self {
         $oParameters = $this->filterRawParameters($aParameters);
         if (isset($oParameters->sFGColourRGB)) {
             $this->setForegroundColour((int)base_convert($oParameters->sFGColourRGB, 16, 10));
@@ -124,7 +125,7 @@ abstract class BaseAsyncASCIIWithRGB extends Base implements IPixelled, IASCIIAr
     /**
      * @inheritDoc
      */
-    public function setRGBWriteMask(int $iMask) : self {
+    public function setRGBWriteMask(int $iMask): self {
         if ($iMask !== $this->iRGBWriteMask) {
             $this->iRGBWriteMask = $iMask;
             $this->sendSetWritemaskMessage($iMask);
@@ -139,7 +140,7 @@ abstract class BaseAsyncASCIIWithRGB extends Base implements IPixelled, IASCIIAr
      * @param  int  $iColour
      * @return self
      */
-    public function setForegroundColour(int $iColour) : self {
+    public function setForegroundColour(int $iColour): self {
         $iColour &= 0xFFFFFF;
         if ($iColour != $this->iFGColour) {
             $this->iFGColour = $iColour;
@@ -156,7 +157,7 @@ abstract class BaseAsyncASCIIWithRGB extends Base implements IPixelled, IASCIIAr
      * @param  int  $iColour
      * @return self
      */
-    public function setBackgroundColour(int $iColour) : self {
+    public function setBackgroundColour(int $iColour): self {
         $iColour &= 0xFFFFFF;
         if ($iColour != $this->iBGColour) {
             $this->iBGColour = $iColour;
@@ -170,18 +171,18 @@ abstract class BaseAsyncASCIIWithRGB extends Base implements IPixelled, IASCIIAr
      * Main subprocess loop. This sits and waits for data from the socket. When the data arrives
      * it decodes and prints it.
      */
-    protected function subprocessRenderLoop() {
+    protected function subprocessRenderLoop(): void {
         ini_set('output_buffering', 'true');
         $sInput   = '';
         $sInitial = IANSIControl::CRSR_TOP_LEFT;
         while (($oMessage = $this->receiveMessageHeader())) {
 
             // Get any expected data following the message header
-            $sData = $oMessage->iSize > 0 ? $this->receiveData($oMessage->iSize) : null;
+            $sData = $oMessage->iSize > 0 ? $this->receiveData($oMessage->iSize) : '';
 
             switch ($oMessage->iCommand) {
                 case self::MESSAGE_SET_WRITEMASK:
-                    $aData = unpack('Q', $sData);
+                    $aData = (array)unpack('Q', $sData);
                     $this->iRGBWriteMask = reset($aData);
                     break;
 
@@ -196,7 +197,7 @@ abstract class BaseAsyncASCIIWithRGB extends Base implements IPixelled, IASCIIAr
                     break;
 
                 case self::MESSAGE_SET_FG_COLOUR:
-                    $aData = unpack('V', $sData);
+                    $aData = (array)unpack('V', $sData);
                     $iRGB  = reset($aData);
                     $this->sFGColour = sprintf(
                         IANSIControl::ATTR_FG_RGB_TPL,
@@ -207,7 +208,7 @@ abstract class BaseAsyncASCIIWithRGB extends Base implements IPixelled, IASCIIAr
                     break;
 
                 case self::MESSAGE_SET_BG_COLOUR:
-                    $aData = unpack('V', $sData);
+                    $aData = (array)unpack('V', $sData);
                     $iRGB  = reset($aData);
                     $this->sBGColour = sprintf(
                         IANSIControl::ATTR_BG_RGB_TPL,
@@ -229,8 +230,8 @@ abstract class BaseAsyncASCIIWithRGB extends Base implements IPixelled, IASCIIAr
      * @param string $sData     - The raw binary data representing the pixel array
      * @param string $sInitial  - The first part of the output, e.g. reset the cursor position etc.
      */
-    protected function drawFrame(string $sData, string $sInitial) {
-        $aPixels    = unpack(self::DATA_FORMAT_MAP[static::DATA_FORMAT], $sData);
+    protected function drawFrame(string $sData, string $sInitial): void {
+        $aPixels    = (array)unpack(self::DATA_FORMAT_MAP[static::DATA_FORMAT], $sData);
         $sRawBuffer = $sInitial;
         $iLastRGB   = 0xFF000000;
         $i          = 0;
@@ -261,7 +262,7 @@ abstract class BaseAsyncASCIIWithRGB extends Base implements IPixelled, IASCIIAr
      * Prepare the pixel array before submission to the asynchronous process. This is split out
      * so that it can be overridden.
      */
-    protected function preparePixels() : void {
+    protected function preparePixels(): void {
         $j = 0;
         foreach ($this->oPixels as $i => $iRGB) {
             $j += (int)isset($this->aLineBreaks[$i]);
@@ -269,5 +270,5 @@ abstract class BaseAsyncASCIIWithRGB extends Base implements IPixelled, IASCIIAr
         }
     }
 
-    protected abstract function getDefaultPixelValue() : int;
+    protected abstract function getDefaultPixelValue(): int;
 }

@@ -39,7 +39,9 @@ spl_autoload_register(function(string $str_class) {
 
 /**
  * Debugging output
+ *
+ * @param mixed $mVarArgs
  */
-function dprintf(string $sTemplate, ...$aVarArgs) {
-    fprintf(STDERR, $sTemplate, ...$aVarArgs);
+function dprintf(string $sTemplate, ...$mVarArgs): void {
+    fprintf(STDERR, $sTemplate, ...$mVarArgs);
 }

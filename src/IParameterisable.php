@@ -35,7 +35,7 @@ interface IParameterisable {
      *     The type of a parameter will be force cast (where appropriate)
      *     Out of range values will be clamped..
      *
-     * @param  array $aParameters [key => value]
+     * @param  mixed[] $aParameters [key => value]
      * @return self  fluent
      */
     public function setParameters(array $aParameters) : self;

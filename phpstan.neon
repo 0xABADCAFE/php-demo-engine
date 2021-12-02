@@ -1,0 +1,6 @@
+parameters:
+    bootstrapFiles:
+        - src/classmap.php
+    excludePaths:
+        - 'src/tests/*'
+        - 'src/audio/*'

@@ -49,7 +49,7 @@ trait TASCIIArt {
      * @param  int  $iColour
      * @return self
      */
-    public function setForegroundColour(int $iColour) : self {
+    public function setForegroundColour(int $iColour): self {
         $iColour &= 0xFF;
         if ($iColour < 16) {
             $iColour = IASCIIArt::REMAP_DEFAULTS[$iColour & 0x0F];
@@ -70,7 +70,7 @@ trait TASCIIArt {
      * @param  int  $iColour
      * @return self
      */
-    public function setBackgroundColour(int $iColour) : self {
+    public function setBackgroundColour(int $iColour): self {
         $iColour &= 0xFF;
         if ($iColour < 16) {
             $iColour = IASCIIArt::REMAP_DEFAULTS[$iColour & 0x0F];
@@ -88,7 +88,7 @@ trait TASCIIArt {
     /**
      * Initialise the default fixed colours.
      */
-    private function initFixedColours() {
+    private function initFixedColours(): void {
         $this->sBGColour = sprintf(
             IANSIControl::ATTR_BG_FIXED_TPL,
             $this->iBGColour
@@ -105,7 +105,7 @@ trait TASCIIArt {
      * @param int $iWidth
      * @param int $iHeight
      */
-    private function initASCIIBuffer(int $iWidth, int $iHeight) {
+    private function initASCIIBuffer(int $iWidth, int $iHeight): void {
         $this->sRawBuffer    = // drop through
         $this->sNewRawBuffer = str_repeat(str_repeat(' ', $iWidth) . "\n", $iHeight);
     }
@@ -113,42 +113,42 @@ trait TASCIIArt {
     /**
      * @inheritDoc
      */
-    public function getCharacterWidth() : int {
+    public function getCharacterWidth(): int {
         return $this->iWidth + 1; // 1 for the newline
     }
 
     /**
      * @inheritDoc
      */
-    private function resetASCIIBuffer() {
+    private function resetASCIIBuffer(): void {
         $this->sRawBuffer = $this->sNewRawBuffer;
     }
 
     /**
      * @inheritDoc
      */
-    public function &getCharacterBuffer() : string {
+    public function &getCharacterBuffer(): string {
         return $this->sRawBuffer;
     }
 
     /**
      * @inheritDoc
      */
-    public function getLuminanceCharacters() : string {
+    public function getLuminanceCharacters(): string {
         return $this->sLumaChars;
     }
 
     /**
      * @inheritDoc
      */
-    public function getMaxLuminance() : int {
+    public function getMaxLuminance(): int {
         return $this->iMaxLuma;
     }
 
     /**
      * @inheritDoc
      */
-    public function setLuminanceCharacters(string $sLumaChars) : self {
+    public function setLuminanceCharacters(string $sLumaChars): self {
         if (empty($sLumaChars)) {
             $this->sLumaChars = IASCIIArt::DEF_LUMA_CHAR;
             $this->iMaxLuma   = IASCIIArt::DEF_MAX_LUMA;
@@ -166,7 +166,7 @@ trait TASCIIArt {
     /**
      * @inheritDoc
      */
-    public function writeTextBounded(string $sText, int $iX, int $iY, int $iMaxX = 0, $iMaxY = 0) : self {
+    public function writeTextBounded(string $sText, int $iX, int $iY, int $iMaxX = 0, $iMaxY = 0): self {
         if (
             empty($sText)         || // nothing to render
             $iX >= $this->iWidth  || // completely off right
@@ -212,7 +212,7 @@ trait TASCIIArt {
     /**
      * @inheritDoc
      */
-    public function writeTextSpan(string $sText, int $iX, int $iY, int $iMaxX = 0) : self {
+    public function writeTextSpan(string $sText, int $iX, int $iY, int $iMaxX = 0): self {
 
         $iMaxX = ($iMaxX < 1) ?
             $this->iWidth :
@@ -245,7 +245,7 @@ trait TASCIIArt {
      * @param int    $iY
      * @param int    $iMaxX
      */
-    private function writeRightClippedSpan(string $sText, int $iX, int $iY, $iMaxX) {
+    private function writeRightClippedSpan(string $sText, int $iX, int $iY, $iMaxX): void {
 
         // Handle negative X by chopping off the left
         if ($iX < 0) {
@@ -253,7 +253,7 @@ trait TASCIIArt {
             $iX    = 0;
         }
         if (empty($sText)) {
-            return $this;
+            return;
         }
 
         $iLength = strlen($sText);
@@ -266,6 +266,5 @@ trait TASCIIArt {
         while ($iLength--) {
             $this->sRawBuffer[$iDstIndex++] = $sText[$iSrcIndex++];
         }
-
     }
 }

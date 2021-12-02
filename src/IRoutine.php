@@ -38,7 +38,7 @@ interface IRoutine extends IParameterisable {
      * Expected constructor profile
      *
      * @param IDisplay $oDisplay
-     * @param array    $aParameters
+     * @param mixed[]  $aParameters
      */
     public function __construct(IDisplay $oDisplay, array $aParameters = []);
 

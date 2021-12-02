@@ -49,7 +49,7 @@ class PlainASCII extends Base implements IASCIIArt {
     use TASCIIArt, TInstrumented;
 
     /**
-     * @var string[] $aBlockMapSearch, $aBlockMapReplace
+     * @var string[] $aBlockMapReplace
      *
      * These arrays are used to convert any ICustomChars characters just before display.
      */

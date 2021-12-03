@@ -18,34 +18,22 @@
 
 declare(strict_types=1);
 
-namespace ABadCafe\PDE\Audio\ControlCurve;
-
+namespace ABadCafe\PDE\Audio\Machine;
 use ABadCafe\PDE\Audio;
-use \SPLFixedArray;
 
 /**
- * Flat
+ * TSimpleVelocity
  *
- * Completely ignores the control value and returns a preset amount.
+ * Trait that adds simple, linear velocity dynamics to output volume only.
  */
-class Flat implements Audio\IControlCurve {
+trait TSimpleVelocity {
 
-    private float $fFixed;
-
-    /**
-     * Constructor.
-     *
-     * @param float $fValue - the constant value that will be returned.
-     */
-    public function __construct(float $fValue) {
-        $this->fFixed = $fValue;
-    }
+    protected static $fSimpleVelocityScale = 1.0 / 127.0;
 
     /**
      * @inheritDoc
      */
-    public function map(float $fControlValue) : float {
-        return $this->fFixed;
+    public function setVoiceVelocity(int $iVoiceNumber, int $iVelocity) : self {
+        return $this->setVoiceLevel($iVoiceNumber, self::$fSimpleVelocityScale * $iVelocity);
     }
 }
-

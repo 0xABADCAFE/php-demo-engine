@@ -18,34 +18,27 @@
 
 declare(strict_types=1);
 
-namespace ABadCafe\PDE\Audio\ControlCurve;
-
+namespace ABadCafe\PDE\Audio\Machine;
 use ABadCafe\PDE\Audio;
-use \SPLFixedArray;
 
 /**
- * Flat
+ * TControllerless
  *
- * Completely ignores the control value and returns a preset amount.
+ * Empty controllers
  */
-class Flat implements Audio\IControlCurve {
-
-    private float $fFixed;
+trait TControllerless {
 
     /**
-     * Constructor.
-     *
-     * @param float $fValue - the constant value that will be returned.
+     * @inheritDoc
      */
-    public function __construct(float $fValue) {
-        $this->fFixed = $fValue;
+    public function setVoiceControllerValue(int $iVoiceNumber, int $iController, int $iValue) : self {
+        return $this;
     }
 
     /**
      * @inheritDoc
      */
-    public function map(float $fControlValue) : float {
-        return $this->fFixed;
+    public function adjustVoiceControllerValue(int $iVoiceNumber, int $iController, int $iDelta) : self {
+        return $this;
     }
 }
-

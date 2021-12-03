@@ -36,7 +36,7 @@ class DeXter implements Audio\IMachine {
         MAX_OPERATORS = 8
     ;
 
-    use TPolyphonicMachine;
+    use TPolyphonicMachine, TControllerless;
 
     /**
      * @var Audio\Signal\IWaveform[] $aWaveforms

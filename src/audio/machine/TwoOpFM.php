@@ -39,7 +39,7 @@ class TwoOpFM implements Audio\IMachine {
         MAX_RATIO = 16.0
     ;
 
-    use TPolyphonicMachine;
+    use TPolyphonicMachine, TSimpleVelocity, TControllerless;
 
     /**
      * @var Audio\Signal\IWaveform[] $aWaveforms
@@ -399,14 +399,6 @@ class TwoOpFM implements Audio\IMachine {
             $this->aCarrier[$iVoiceNumber]->setFrequency($fFrequency * $this->fCarrierRatio);
             $this->aModulator[$iVoiceNumber]->setFrequency($fFrequency * $this->fModulatorRatio);
         }
-        return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setVoiceVelocity(int $iVoiceNumber, int $iVelocity) : self {
-
         return $this;
     }
 

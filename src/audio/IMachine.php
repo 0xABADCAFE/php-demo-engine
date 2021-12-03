@@ -30,6 +30,12 @@ interface IMachine extends Signal\IStream {
         MAX_POLYPHONY = 8
     ;
 
+    const
+        CTRL_PITCH       = 1,
+        CTRL_VOLUME      = 2,
+        CTRL_CUSTOM      = 128
+    ;
+
     /**
      * Returns the voice count, i.e. how polyphonic the machine is.
      *
@@ -87,6 +93,27 @@ interface IMachine extends Signal\IStream {
      * @return self
      */
     public function setVoiceVelocity(int $iVoiceNumber, int $iVelocity) : self;
+
+
+    /**
+     * Sets a controller to a specific value. Controllers are typically machine specific.
+     *
+     * @param  int  $iVoiceNumber
+     * @param  int  $iController
+     * @param  int  $iValue
+     * @return self
+     */
+    public function setVoiceControllerValue(int $iVoiceNumber, int $iController, int $iValue) : self;
+
+    /**
+     * Modifies a controller value.
+     *
+     * @param  int  $iVoiceNumber
+     * @param  int  $iController
+     * @param  int  $iDelta
+     * @return self
+     */
+    public function adjustVoiceControllerValue(int $iVoiceNumber, int $iController, int $iDelta) : self;
 
     /**
      * Starts the specified voice playing. Does nothing if the voice number is out of range.

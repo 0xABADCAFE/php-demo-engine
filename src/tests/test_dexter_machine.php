@@ -4,6 +4,8 @@ declare(strict_types = 1);
 
 namespace ABadCafe\PDE;
 
+die("todo - update sequence");
+
 require_once '../PDE.php';
 
 $oDexter = new Audio\Machine\DeXter(6, 3);

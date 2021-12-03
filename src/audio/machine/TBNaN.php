@@ -34,7 +34,7 @@ class TBNaN implements Audio\IMachine {
         Audio\Signal\IWaveform::PULSE    => 0.25
     ];
 
-    use TMonophonicMachine;
+    use TMonophonicMachine, TSimpleVelocity, TControllerless;
 
     private array $aWaveforms = [];
 
@@ -116,14 +116,6 @@ class TBNaN implements Audio\IMachine {
      */
     public function setVoiceNote(int $iVoiceNumber, string $sNoteName) : self {
         $this->oOscillator->setFrequency(Audio\Note::getFrequency($sNoteName));
-        return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setVoiceVelocity(int $iVoiceNumber, int $iVelocity) : self {
-
         return $this;
     }
 

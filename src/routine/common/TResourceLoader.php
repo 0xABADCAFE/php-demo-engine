@@ -29,6 +29,8 @@ use ABadCafe\PDE\Graphics;
  */
 trait TResourceLoader {
 
+    private string $sBasePath;
+
     /**
      * Sets the base path expectation for resource loads
      */

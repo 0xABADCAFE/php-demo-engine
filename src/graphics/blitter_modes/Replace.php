@@ -40,11 +40,11 @@ class Replace extends Base {
         $iTargetW = $oTarget->getWidth();
         $iOffset  = $iTargetW * $iTargetY + $iTargetX;
         $iSpan    = $iTargetW - $iWidth;
-        $oTarget  = $oTarget->getPixels();
+        $oTargetP = $oTarget->getPixels();
         while ($iHeight--) {
             $i = $iWidth;
             while ($i--) {
-                $oTarget[$iOffset++] = $iValue;
+                $oTargetP[$iOffset++] = $iValue;
             }
             $iOffset += $iSpan;
         }
@@ -65,8 +65,8 @@ class Replace extends Base {
     ) {
         $iSourceW = $oSource->getWidth();
         $iTargetW = $oTarget->getWidth();
-        $oSource  = $oSource->getPixels();
-        $oTarget  = $oTarget->getPixels();
+        $oSourceP = $oSource->getPixels();
+        $oTargetP = $oTarget->getPixels();
 
         $iSourceIndex = $iSourceY * $iSourceW + $iSourceX;
         $iTargetIndex = $iTargetY * $iTargetW + $iTargetX;
@@ -76,7 +76,7 @@ class Replace extends Base {
         while ($iHeight--) {
             $i = $iWidth;
             while ($i--) {
-                $oTarget[$iTargetIndex++] = $oSource[$iSourceIndex++];
+                $oTargetP[$iTargetIndex++] = $oSourceP[$iSourceIndex++];
             }
             $iSourceIndex += $iSourceSpan;
             $iTargetIndex += $iTargetSpan;

@@ -29,6 +29,8 @@ abstract class Base implements IMode {
 
     /**
      * Lookup array of channel multiplication values
+     *
+     * @var SPLFixedArray<int>|null $oProducts
      */
     protected static ?SPLFixedArray $oProducts = null;
 
@@ -44,7 +46,7 @@ abstract class Base implements IMode {
     /**
      * Lookup initialisation
      */
-    private static function initProducts() : void {
+    private static function initProducts(): void {
         self::$oProducts = new SPLFixedArray(65536);
         $iIndex = 0;
         for ($i1 = 0; $i1 < 256; ++$i1) {

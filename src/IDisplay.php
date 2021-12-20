@@ -46,35 +46,35 @@ interface IDisplay extends IParameterisable {
      *
      * @return self - fluent
      */
-    public function reset() : self;
+    public function reset(): self;
 
     /**
      * Get the pixel width
      *
      * @return int
      */
-    public function getWidth() : int;
+    public function getWidth(): int;
 
     /**
      * Get the pixel height
      *
      * @return int
      */
-    public function getHeight() : int;
+    public function getHeight(): int;
 
     /**
      * Clear
      *
      * @return self
      */
-    public function clear() : self;
+    public function clear(): self;
 
     /**
      * Render the frame.
      *
      * @return self
      */
-    public function redraw() : self;
+    public function redraw(): self;
 
     /**
      * Waits for the frame to be drawn. The primary use for this is when
@@ -82,6 +82,6 @@ interface IDisplay extends IParameterisable {
      *
      * @return self
      */
-    public function waitForFrame() : self;
+    public function waitForFrame(): self;
 
 }

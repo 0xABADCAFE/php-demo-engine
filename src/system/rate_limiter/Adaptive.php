@@ -32,7 +32,7 @@ class Adaptive implements System\IRateLimiter {
     private int $iMaxFramesPerSecond;
     private int $iFrameNumber = 0;
 
-    private float $fFirst, $fTargetDelay, $fAdjustedDelay;
+    private float $fFirst, $fPrevious, $fTargetDelay, $fAdjustedDelay;
 
     /**
      * @inheritDoc

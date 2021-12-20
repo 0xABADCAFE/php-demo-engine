@@ -57,7 +57,7 @@ class Palette {
         ksort($aPoints);
         $aPositions = array_keys($aPoints);
         if (min($aPositions) < 0) {
-            throw new OutOfBoundsException('Negative indexes not allowed');
+            throw new \OutOfBoundsException('Negative indexes not allowed');
         }
         $aRGBValues = array_values($aPoints);
 

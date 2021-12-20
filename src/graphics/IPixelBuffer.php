@@ -35,14 +35,17 @@ interface IPixelBuffer {
      *
      * @return int
      */
-    public function getWidth() : int;
+    public function getWidth(): int;
 
     /**
      * Get the pixel height
      *
      * @return int
      */
-    public function getHeight() : int;
+    public function getHeight(): int;
 
-    public function getPixels() : SPLFixedArray;
+    /**
+     * @return SPLFixedArray<int>
+     */
+    public function getPixels(): SPLFixedArray;
 }

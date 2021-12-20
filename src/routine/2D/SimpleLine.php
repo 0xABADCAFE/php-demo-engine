@@ -48,6 +48,9 @@ class SimpleLine extends Base {
      * @inheritDoc
      */
     public function render(int $iFrameNumber, float $fTimeIndex) : self {
+        if ($this->oDisplay instanceof PDE\Display\IASCIIArt) {
+            return $this;
+        }
         $sDrawBuffer = &$this->oDisplay->getCharacterBuffer();
         $sDrawBuffer = '';
         $iWidth      = $this->oDisplay->getWidth();

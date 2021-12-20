@@ -65,6 +65,10 @@ class RGBPersistence extends Base {
      * @inheritDoc
      */
     public function render(int $iFrameNumber, float $fTimeIndex) : self {
+        if (! $this->oDisplay instanceof PDE\Display\IPixelled) {
+            return $this;
+        }
+
         $oPixels = $this->oDisplay->getPixels();
         $oLast   = $this->oLastBuffer;
 

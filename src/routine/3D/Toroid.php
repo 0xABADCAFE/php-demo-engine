@@ -117,8 +117,8 @@ class Toroid extends Base {
     public function setDisplay(PDE\IDisplay $oDisplay) : self {
         $this->oDisplay  = $oDisplay;
         // Dimension related
-        $this->iCenterX  = $oDisplay->getWidth() >> 1;
-        $this->iCenterY  = $oDisplay->getHeight() >> 1;
+        $this->iCentreX  = $oDisplay->getWidth() >> 1;
+        $this->iCentreY  = $oDisplay->getHeight() >> 1;
         $this->iMaxX     = $oDisplay->getWidth()-1;
         $this->iMaxY     = $oDisplay->getHeight()-1;
         $this->iArea     = $oDisplay->getWidth() * $oDisplay->getHeight();
@@ -198,7 +198,7 @@ class Toroid extends Base {
                     $fTemp2     = $fSinToroid * $fTemp1 * $fCosAxis1Rot - $fSinPoloid * $fSinAxis1Rot;
 
                     // Screen coordinate calculation
-                    $iXPos = $this->iCenterX + (int)(
+                    $iXPos = $this->iCentreX + (int)(
                         $this->oParameters->fRenderXScale * $fDepth * (
                             $fCosToroid * $fTemp1 * $fCosAxis2Rot - $fTemp2 * $fSinAxis2Rot
                         )
@@ -209,7 +209,7 @@ class Toroid extends Base {
                         continue;
                     }
 
-                    $iYPos = $this->iCenterY + (int)(
+                    $iYPos = $this->iCentreY + (int)(
                         $this->oParameters->fRenderYScale * $fDepth * (
                             $fCosToroid * $fTemp1 * $fSinAxis2Rot + $fTemp2 * $fCosAxis2Rot
                         )

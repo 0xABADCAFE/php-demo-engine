@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 namespace ABadCafe\PDE\System\RateLimiter;
 use ABadCafe\PDE\System;
+use function \microtime, \printf, \time_sleep_until;
 
 /**
  * Simple rate limiter.
@@ -58,14 +59,14 @@ class Simple implements System\IRateLimiter {
     /**
      * @inheritDoc
      */
-    public function getMaxFramesPerSecond() : int {
+    public function getMaxFramesPerSecond(): int {
         return $this->iMaxFramesPerSecond;
     }
 
     /**
      * @inheritDoc
      */
-    public function limit() : float {
+    public function limit(): float {
         ++$this->iFrameNumber;
         $fWakeAt = $this->fFirst + ($this->iFrameNumber * $this->fFrameDuration);
         $fSleepBegins = \microtime(true);

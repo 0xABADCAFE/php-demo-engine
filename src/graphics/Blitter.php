@@ -74,7 +74,7 @@ class Blitter {
      * @param  IPixelBuffer $oPixels
      * @return self
      */
-    public function setSource(IPixelBuffer $oPixels) : self {
+    public function setSource(IPixelBuffer $oPixels): self {
         $this->oSource  = $oPixels;
         return $this;
     }
@@ -85,7 +85,7 @@ class Blitter {
      * @param  int $iMode
      * @return self
      */
-    public function setMode(int $iMode) : self {
+    public function setMode(int $iMode): self {
         $iMode = isset(self::$aModes[$iMode]) ? $iMode : self::MODE_REPLACE;
         $this->iMode = $iMode;
         return $this;
@@ -101,7 +101,7 @@ class Blitter {
      * @param  bool $bY
      * @return self
      */
-    public function setNegativeTargetBehaviour(bool $bX, bool $bY) : self {
+    public function setNegativeTargetBehaviour(bool $bX, bool $bY): self {
         $this->bCorrectNegativeTargetX = $bX;
         $this->bCorrectNegativeTargetY = $bY;
         return $this;
@@ -113,7 +113,7 @@ class Blitter {
      * @param  IPixelBuffer $oPixels
      * @return self
      */
-    public function setTarget(IPixelBuffer $oPixels) : self {
+    public function setTarget(IPixelBuffer $oPixels): self {
         $this->oTarget  = $oPixels;
         return $this;
     }
@@ -133,7 +133,7 @@ class Blitter {
         int $iTargetX, int $iTargetY,
         int $iWidth,   int $iHeight
 
-    ) : self {
+    ): self {
         if (!$this->oTarget) {
             throw new \Exception();
         }
@@ -184,7 +184,7 @@ class Blitter {
         int $iSourceX, int $iSourceY,
         int $iTargetX, int $iTargetY,
         int $iWidth,   int $iHeight
-    ) : self {
+    ): self {
         if (!$this->oSource || !$this->oTarget) {
             throw new \Exception();
         }
@@ -262,9 +262,16 @@ class Blitter {
      * @param  int $iRectH
      * @param  int $iAreaW
      * @param  int $iAreaH
-     * @return object|null  { int $iRectX, int $iRectY, int $iRectW, int $iRectH }
+     * @return \stdClass|null  { int $iRectX, int $iRectY, int $iRectW, int $iRectH }
      */
-    protected function cropRectangleToArea(int $iRectX, int $iRectY, int $iRectW, int $iRectH, int $iAreaW, int $iAreaH) : ?object {
+    protected function cropRectangleToArea(
+        int $iRectX,
+        int $iRectY,
+        int $iRectW,
+        int $iRectH,
+        int $iAreaW,
+        int $iAreaH
+    ): ?\stdClass {
         // Crop copy rectangle against target dimensions
         if ($iRectX < 0) {
             // Crop Left

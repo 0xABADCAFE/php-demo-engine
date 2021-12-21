@@ -1,0 +1,9 @@
+parameters:
+    bootstrapFiles:
+        - src/classmap.php
+    level: 9
+    paths:
+        - src
+    excludePaths:
+        - 'src/tests/*'
+        - 'src/audio/*'

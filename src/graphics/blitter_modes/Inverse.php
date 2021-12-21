@@ -36,15 +36,15 @@ class Inverse implements IMode {
         int $iTargetY,
         int $iWidth,
         int $iHeight
-    ) {
+    ): void {
         $iTargetW = $oTarget->getWidth();
         $iOffset  = $iTargetW * $iTargetY + $iTargetX;
         $iSpan    = $iTargetW - $iWidth;
-        $oTarget  = $oTarget->getPixels();
+        $oTargetP = $oTarget->getPixels();
         while ($iHeight--) {
             $i = $iWidth;
             while ($i--) {
-                $oTarget[$iOffset] = ~$oTarget[$iOffset];
+                $oTargetP[$iOffset] = ~(int)$oTargetP[$iOffset];
                 ++$iOffset;
             }
             $iOffset += $iSpan;
@@ -63,11 +63,11 @@ class Inverse implements IMode {
         int $iTargetY,
         int $iWidth,
         int $iHeight
-    ) {
+    ): void {
         $iSourceW = $oSource->getWidth();
         $iTargetW = $oTarget->getWidth();
-        $oSource  = $oSource->getPixels();
-        $oTarget  = $oTarget->getPixels();
+        $oSourceP = $oSource->getPixels();
+        $oTargetP = $oTarget->getPixels();
         $iSourceIndex = $iSourceY * $iSourceW + $iSourceX;
         $iTargetIndex = $iTargetY * $iTargetW + $iTargetX;
         $iSourceSpan  = $iSourceW - $iWidth;
@@ -76,7 +76,7 @@ class Inverse implements IMode {
         while ($iHeight--) {
             $i = $iWidth;
             while ($i--) {
-                $oTarget[$iTargetIndex++] = ~$oSource[$iSourceIndex++];
+                $oTargetP[$iTargetIndex++] = ~(int)$oSourceP[$iSourceIndex++];
             }
             $iSourceIndex += $iSourceSpan;
             $iTargetIndex += $iTargetSpan;

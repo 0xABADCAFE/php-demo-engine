@@ -82,7 +82,7 @@ interface IASCIIArt {
      * @param  int  $iColour
      * @return self
      */
-    public function setForegroundColour(int $iColour) : self;
+    public function setForegroundColour(int $iColour): self;
 
     /**
      * Set the default background ANSI colour to use. Accepts a value in the range 0-255 which is set using the
@@ -91,7 +91,7 @@ interface IASCIIArt {
      * @param  int  $iColour
      * @return self
      */
-    public function setBackgroundColour(int $iColour) : self;
+    public function setBackgroundColour(int $iColour): self;
 
     /**
      * Returns the span width of the text display which will typically be the display width plus however many bytes
@@ -100,7 +100,7 @@ interface IASCIIArt {
      *
      * @return int
      */
-    public function getCharacterWidth() : int;
+    public function getCharacterWidth(): int;
 
     /**
      * Render a string of text starting at a given x/y coordinate. An optional max X and Y can be passed
@@ -114,7 +114,7 @@ interface IASCIIArt {
      * @param  int    $iMaxY - If < 1, the maximum Y ordinate of the display is used
      * @return self
      */
-    public function writeTextBounded(string $sText, int $iX, int $iY, int $iMaxX = 0, $iMaxY = 0) : self;
+    public function writeTextBounded(string $sText, int $iX, int $iY, int $iMaxX = 0, $iMaxY = 0): self;
 
     /**
      * Simple text render. Does not support new lines, all text after a new line is discarded. Negative coordinates
@@ -126,29 +126,29 @@ interface IASCIIArt {
      * @param  int    $iMaxX - If < 1, the maximum X ordinate of the display is used
      * @return self
      */
-    public function writeTextSpan(string $sText, int $iX, int $iY, int $iMaxX = 0) : self;
+    public function writeTextSpan(string $sText, int $iX, int $iY, int $iMaxX = 0): self;
 
     /**
      * Get the raw display buffer, aka 1337 mode, lol. String is returned by refrence so that modifying it has the
      * desired effect.
      *
-     * @return string&
+     * @return string
      */
-    public function &getCharacterBuffer() : string;
+    public function &getCharacterBuffer(): string;
 
     /**
      * Return an indexable string of characters that can be used to simulate luminance.
      *
      * @return string
      */
-    public function getLuminanceCharacters() : string;
+    public function getLuminanceCharacters(): string;
 
     /**
      * Return the largest luminance, i.e. the last index in the luminance character set.
      *
      * @return int
      */
-    public function getMaxLuminance() : int;
+    public function getMaxLuminance(): int;
 
     /**
      * Install a new luminance character set. Must be at least 2 characters.
@@ -157,5 +157,5 @@ interface IASCIIArt {
      * @return self   fluent
      * @throws \LengthException
      */
-    public function setLuminanceCharacters(string $sCharacters) : self;
+    public function setLuminanceCharacters(string $sCharacters): self;
 }

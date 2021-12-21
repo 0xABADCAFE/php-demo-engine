@@ -50,14 +50,16 @@ class Event {
     public float  $fAtTimeIndex;
     public int    $iAction;
     public string $sTarget = '_';
+
+    /** @var mixed[] $aParameters */
     public array  $aParameters = [];
 
     /**
      * Constructor
      *
-     * @param object $oRaw
+     * @param \stdClass $oRaw
      */
-    public function __construct(object $oRaw) {
+    public function __construct(\stdClass $oRaw) {
         if (
             !isset($oRaw->at) ||
             !isset($oRaw->do) ||

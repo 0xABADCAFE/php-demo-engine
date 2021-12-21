@@ -22,6 +22,7 @@ namespace ABadCafe\PDE\Routine;
 
 use ABadCafe\PDE;
 use \SPLFixedArray;
+use function \abs, \array_fill, \cos, \max, \min, \sin;
 
 /**
  * Toroid
@@ -87,10 +88,11 @@ class Toroid extends Base {
     private int    $iCharMaxLuma;
     private string $sCharDrawBuffer, $sLumaCharLUT;
 
+    /** @var SPLFixedArray<int>|null $oPixelBuffer */
     private ?SPLFixedArray $oPixelBuffer = null;
 
     /**
-     * Pixel specific mode rendering facts
+     * @var int[] $aPalettePoints
      */
     private array $aPalettePoints = [
         0   => 0x000033,
@@ -99,12 +101,11 @@ class Toroid extends Base {
         255 => 0xFFFFFF
     ];
 
+    /** @var SPLFixedArray<int> $oPalette */
     private SPLFixedArray $oPalette;
 
     /**
-     * Basic constructor
-     *
-     * @implements IRoutine::__construct()
+     * @inheritDoc
      */
     public function __construct(PDE\IDisplay $oDisplay, array $aParameters = []) {
         parent::__construct($oDisplay, $aParameters);
@@ -114,26 +115,26 @@ class Toroid extends Base {
     /**
      * @inheritDoc
      */
-    public function setDisplay(PDE\IDisplay $oDisplay) : self {
+    public function setDisplay(PDE\IDisplay $oDisplay): self {
         $this->oDisplay  = $oDisplay;
         // Dimension related
-        $this->iCenterX  = $oDisplay->getWidth() >> 1;
-        $this->iCenterY  = $oDisplay->getHeight() >> 1;
+        $this->iCentreX  = $oDisplay->getWidth() >> 1;
+        $this->iCentreY  = $oDisplay->getHeight() >> 1;
         $this->iMaxX     = $oDisplay->getWidth()-1;
         $this->iMaxY     = $oDisplay->getHeight()-1;
         $this->iArea     = $oDisplay->getWidth() * $oDisplay->getHeight();
         $this->iDrawMask = 0;
 
         // Start with the most basic
-        if ($oDisplay instanceof PDE\Display\IASCIIArt) {
+        if ($this->oDisplay instanceof PDE\Display\IASCIIArt) {
             $this->iDrawMask    = self::DRAW_ASCII_GREY;
             $this->iCharMaxLuma = $this->oDisplay->getMaxLuminance();
             $this->sLumaCharLUT = $this->oDisplay->getLuminanceCharacters();
-            $this->iSpan        = $oDisplay->getCharacterWidth();
+            $this->iSpan        = $this->oDisplay->getCharacterWidth();
         }
 
         // Pixel type behaviour?
-        if ($oDisplay instanceof PDE\Display\IPixelled) {
+        if ($this->oDisplay instanceof PDE\Display\IPixelled) {
             $this->iDrawMask |= self::DRAW_BLOCK_GREY | self::DRAW_BLOCK_RGB;
 
             // Both available?
@@ -149,56 +150,59 @@ class Toroid extends Base {
     /**
      * @inheritDoc
      */
-    public function render(int $iFrameNumber, float $fTimeIndex) : self {
+    public function render(int $iFrameNumber, float $fTimeIndex): self {
         $iDrawMode = $this->iDrawMask & $this->oParameters->iDrawMode;
         if ($iDrawMode) {
 
             if ($iDrawMode & self::MASK_NEEDS_PIX_BUFFER) {
-                $this->oPixelBuffer = $this->oDisplay->getPixels();
+                $this->oPixelBuffer = $this->castDisplayPixelled()->getPixels();
             }
             if ($iDrawMode & self::MASK_NEEDS_ASCII_BUFFER) {
-                $this->sCharDrawBuffer = &$this->oDisplay->getCharacterBuffer();
-                $this->iCharMaxLuma = $this->oDisplay->getMaxLuminance();
-                $this->sLumaCharLUT = $this->oDisplay->getLuminanceCharacters();
-                $this->iSpan        = $this->oDisplay->getCharacterWidth();
+                $oASCII = $this->castDisplayASCIIArt();
+                $this->sCharDrawBuffer = &$oASCII->getCharacterBuffer();
+                $this->iCharMaxLuma = $oASCII->getMaxLuminance();
+                $this->sLumaCharLUT = $oASCII->getLuminanceCharacters();
+                $this->iSpan        = $oASCII->getCharacterWidth();
             }
+
+            /** @var callable $cPlotPixel */
             $cPlotPixel = [$this, self::PLOT_FUNCTIONS[$iDrawMode]];
 
-            $fCosAxis1Rot  = \cos($this->oParameters->fAxis1Rotation);
-            $fSinAxis1Rot  = \sin($this->oParameters->fAxis1Rotation);
-            $fCosAxis2Rot  = \cos($this->oParameters->fAxis2Rotation);
-            $fSinAxis2Rot  = \sin($this->oParameters->fAxis2Rotation);
-            $aDepthBuffer  = \array_fill(0, $this->iArea, 0.0);
+            $fCosAxis1Rot  = cos($this->oParameters->fAxis1Rotation);
+            $fSinAxis1Rot  = sin($this->oParameters->fAxis1Rotation);
+            $fCosAxis2Rot  = cos($this->oParameters->fAxis2Rotation);
+            $fSinAxis2Rot  = sin($this->oParameters->fAxis2Rotation);
+            $aDepthBuffer  = array_fill(0, $this->iArea, 0.0);
 
             $fToroidStep   = $this->oParameters->fToroidStep;
             $fPoloidStep   = $this->oParameters->fPoloidStep;
 
             // This is to do the dissolve into rings effect
-            if (\abs($this->oParameters->fUncoilToroid) > 0) {
-                $fToroidStep = self::EIGHTH_PI * (1.0 - \cos(
+            if (abs($this->oParameters->fUncoilToroid) > 0) {
+                $fToroidStep = self::EIGHTH_PI * (1.0 - cos(
                     $fTimeIndex * $this->oParameters->fUncoilToroid
                 )) + $this->oParameters->fToroidStep;
             }
             // This is to do the dissolve into rings effect
-            if (\abs($this->oParameters->fUncoilPoloid) > 0) {
-                $fPoloidStep = self::EIGHTH_PI * (1.0 - \cos(
+            if (abs($this->oParameters->fUncoilPoloid) > 0) {
+                $fPoloidStep = self::EIGHTH_PI * (1.0 - cos(
                     $fTimeIndex * $this->oParameters->fUncoilPoloid
                 )) + $this->oParameters->fPoloidStep;
             }
 
             $iWidth = $this->iMaxX + 1;
             for ($fPoloid = 0.0; $fPoloid < self::TWICE_PI; $fPoloid += $fPoloidStep) {
-                $fCosPoloid = \cos($fPoloid);
-                $fSinPoloid = \sin($fPoloid);
+                $fCosPoloid = cos($fPoloid);
+                $fSinPoloid = sin($fPoloid);
                 for ($fToroid = 0.0; $fToroid < self::TWICE_PI; $fToroid += $fToroidStep) {
-                    $fSinToroid = \sin($fToroid);
-                    $fCosToroid = \cos($fToroid);
+                    $fSinToroid = sin($fToroid);
+                    $fCosToroid = cos($fToroid);
                     $fTemp1     = $fCosPoloid + 2.0;
                     $fDepth     = 1.0 / ($fSinToroid * $fTemp1 * $fSinAxis1Rot + $fSinPoloid * $fCosAxis1Rot + 5.0);
                     $fTemp2     = $fSinToroid * $fTemp1 * $fCosAxis1Rot - $fSinPoloid * $fSinAxis1Rot;
 
                     // Screen coordinate calculation
-                    $iXPos = $this->iCenterX + (int)(
+                    $iXPos = $this->iCentreX + (int)(
                         $this->oParameters->fRenderXScale * $fDepth * (
                             $fCosToroid * $fTemp1 * $fCosAxis2Rot - $fTemp2 * $fSinAxis2Rot
                         )
@@ -209,7 +213,7 @@ class Toroid extends Base {
                         continue;
                     }
 
-                    $iYPos = $this->iCenterY + (int)(
+                    $iYPos = $this->iCentreY + (int)(
                         $this->oParameters->fRenderYScale * $fDepth * (
                             $fCosToroid * $fTemp1 * $fSinAxis2Rot + $fTemp2 * $fCosAxis2Rot
                         )
@@ -227,7 +231,7 @@ class Toroid extends Base {
                         $fDepth > $aDepthBuffer[$iBufferPos]
                     ) {
                         $aDepthBuffer[$iBufferPos] = $fDepth;
-                        $cPlotPixel($iBufferPos, $iXPos, $iYPos, $this->oParameters->fLumaFactor * \max(
+                        $cPlotPixel($iBufferPos, $iXPos, $iYPos, $this->oParameters->fLumaFactor * max(
                             ($fSinPoloid * $fSinAxis1Rot - $fSinToroid * $fCosPoloid * $fCosAxis1Rot) * $fCosAxis2Rot -
                             $fSinToroid * $fCosPoloid * $fSinAxis1Rot -
                             $fSinPoloid * $fCosAxis1Rot -
@@ -246,7 +250,7 @@ class Toroid extends Base {
     /**
      * @inheritDoc
      */
-    protected function parameterChange() {
+    protected function parameterChange(): void {
 
     }
 
@@ -256,8 +260,8 @@ class Toroid extends Base {
      * @param int $iYPos
      * @param float $fLuma
      */
-    private function plotASCIIGrey(int $iBufferPos, int $iXPos, int $iYPos, float $fLuma) {
-        $iLuminance = (int)\min((
+    private function plotASCIIGrey(int $iBufferPos, int $iXPos, int $iYPos, float $fLuma): void {
+        $iLuminance = (int)min((
             $this->oParameters->fMinLuma +
             $this->oParameters->fLumaFactor * $fLuma * $this->iCharMaxLuma
         ), $this->iCharMaxLuma);
@@ -270,9 +274,9 @@ class Toroid extends Base {
      * @param int $iYPos
      * @param float $fLuma
      */
-    private function plotASCIIGreyDarkenBG(int $iBufferPos, int $iXPos, int $iYPos, float $fLuma) {
+    private function plotASCIIGreyDarkenBG(int $iBufferPos, int $iXPos, int $iYPos, float $fLuma): void {
         $this->plotASCIIGrey($iBufferPos, $iXPos, $iYPos, $fLuma);
-        $iHalfRGB  = ($this->oPixelBuffer[$iBufferPos] >> 1) & 0x007F7F7F;
+        $iHalfRGB  = ($this->oPixelBuffer[$iBufferPos] >> 1) & 0x007F7F7F; // @phpstan-ignore-line
         $iQtrRGB   = ($iHalfRGB >> 1) & 0x007F7F7F;
         $this->oPixelBuffer[$iBufferPos] = $iHalfRGB + $iQtrRGB;
     }
@@ -283,7 +287,7 @@ class Toroid extends Base {
      * @param int $iYPos
      * @param float $fLuma
      */
-    private function plotASCIIRGB(int $iBufferPos, int $iXPos, int $iYPos, float $fLuma) {
+    private function plotASCIIRGB(int $iBufferPos, int $iXPos, int $iYPos, float $fLuma): void {
 
     }
 
@@ -293,7 +297,7 @@ class Toroid extends Base {
      * @param int $iYPos
      * @param float $fLuma
      */
-    private function plotASCIIRGBDarkenBG(int $iBufferPos, int $iXPos, int $iYPos, float $fLuma) {
+    private function plotASCIIRGBDarkenBG(int $iBufferPos, int $iXPos, int $iYPos, float $fLuma): void {
 
     }
 
@@ -303,8 +307,8 @@ class Toroid extends Base {
      * @param int $iYPos
      * @param float $fLuma
      */
-    private function plotBlockGrey(int $iBufferPos, $iXPos, int $iYPos, float $fLuma) {
-        $iLuminance = (int)\min((
+    private function plotBlockGrey(int $iBufferPos, $iXPos, int $iYPos, float $fLuma): void {
+        $iLuminance = (int)min((
             $this->oParameters->fMinLuma +
             $this->oParameters->fLumaFactor * $fLuma * 255
         ), 255);
@@ -317,8 +321,8 @@ class Toroid extends Base {
      * @param int $iYPos
      * @param float $fLuma
      */
-    private function plotBlockRGB(int $iBufferPos, int $iXPos, int $iYPos, float $fLuma) {
-        $iPaletteIndex = (int)\min((
+    private function plotBlockRGB(int $iBufferPos, int $iXPos, int $iYPos, float $fLuma): void {
+        $iPaletteIndex = (int)min((
             $this->oParameters->fMinLuma +
             $this->oParameters->fLumaFactor * $fLuma * self::PALETTE_SIZE
         ), self::PALETTE_SIZE - 1);

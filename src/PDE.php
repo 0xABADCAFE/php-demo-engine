@@ -39,7 +39,9 @@ require_once 'classmap.php';
 
 /**
  * Debugging output
+ *
+ * @param float|int|string $mVarArgs
  */
-function dprintf(string $sTemplate, ...$aVarArgs) {
-    \fprintf(STDERR, $sTemplate, ...$aVarArgs);
+function dprintf(string $sTemplate, ...$mVarArgs): void {
+    \fprintf(STDERR, $sTemplate, ...$mVarArgs);
 }

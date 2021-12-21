@@ -1,0 +1,33 @@
+{
+    "displays": {
+        "default": {
+            "sType": "DoubleVerticalRGB",
+            "iWidth": 160,
+            "iHeight": 100,
+            "iMaxFPS": 5
+        }
+    },
+    "routines": {
+        "image": {
+            "sType": "2D/RGBImage",
+            "iPriority": 1,
+            "aParameters": {
+                "sPath": "images/eternity.ppm",
+                "iLeft": 0,
+                "iTop": 0,
+                "aPath": []
+            }
+        }
+    },
+    "events": [
+        {
+            "at": 0.0,
+            "on": "routine/image",
+            "do": "enable"
+        },
+        {
+            "at": 1.0,
+            "do": "end"
+        }
+    ]
+}

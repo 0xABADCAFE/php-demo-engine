@@ -21,6 +21,7 @@ declare(strict_types=1);
 namespace ABadCafe\PDE\Display;
 use ABadCafe\PDE;
 use \SPLFixedArray;
+use function \array_fill_keys, \base_convert, \range, \sprintf;
 
 /**
  * BasicRGB
@@ -38,6 +39,7 @@ class BasicRGB extends Base implements IPixelled {
 
     use TPixelled, TInstrumented;
 
+    /** @var string[] $aLineBreaks */
     private array $aLineBreaks = [];
 
     /**
@@ -45,10 +47,10 @@ class BasicRGB extends Base implements IPixelled {
      */
     public function __construct(int $iWidth, int $iHeight) {
         parent::__construct($iWidth, $iHeight);
-        $this->initPixelBuffer($iWidth, $iHeight, self::FORMAT_RGB);
-        $aLineBreaks = \range(0, $iWidth * $iHeight, $iWidth);
+        $this->initPixelBuffer($iWidth, $iHeight, self::FORMAT_RGB, 0);
+        $aLineBreaks   = range(0, $iWidth * $iHeight, $iWidth);
         unset($aLineBreaks[0]);
-        $this->aLineBreaks = \array_fill_keys($aLineBreaks, "\n");
+        $this->aLineBreaks = array_fill_keys($aLineBreaks, "\n");
         $this->reset();
     }
 
@@ -60,7 +62,7 @@ class BasicRGB extends Base implements IPixelled {
     /**
      * @inheritDoc
      */
-    public function clear() : self {
+    public function clear(): self {
         $this->resetPixelBuffer();
         return $this;
     }
@@ -68,16 +70,16 @@ class BasicRGB extends Base implements IPixelled {
     /**
      * @inheritDoc
      */
-    public function redraw() : self {
+    public function redraw(): self {
         $this->beginRedraw();
-        $sRawBuffer = IANSIControl::CRSR_TOP_LEFT . \sprintf(IANSIControl::ATTR_BG_RGB_TPL, 0, 0, 0);
+        $sRawBuffer = IANSIControl::CRSR_TOP_LEFT . sprintf(IANSIControl::ATTR_BG_RGB_TPL, 0, 0, 0);
         $iLastRGB  = 0;
         $sTemplate = IANSIControl::ATTR_BG_RGB_TPL . ' ';
         foreach ($this->oPixels as $j => $iRGB) {
             $iRGB &= $this->iRGBWriteMask;
             $sRawBuffer .= $this->aLineBreaks[$j] ?? '';
             if ($iRGB !== $iLastRGB) {
-                $sRawBuffer .= \sprintf(
+                $sRawBuffer .= sprintf(
                     $sTemplate,
                     ($iRGB >> 16) & 0xFF, // Red
                     ($iRGB >> 8) & 0xFF,  // Green
@@ -96,10 +98,10 @@ class BasicRGB extends Base implements IPixelled {
     /**
      * @inheritDoc
      */
-    public function setParameters(array $aParameters) : self {
+    public function setParameters(array $aParameters): self {
         $oParameters = $this->filterRawParameters($aParameters);
         if (isset($oParameters->sMaskRGB)) {
-            $this->setRGBWriteMask((int)\base_convert($oParameters->sMaskRGB, 16, 10));
+            $this->setRGBWriteMask((int)base_convert($oParameters->sMaskRGB, 16, 10));
         }
         return $this;
     }

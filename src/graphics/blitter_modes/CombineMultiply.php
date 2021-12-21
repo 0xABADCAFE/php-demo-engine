@@ -33,11 +33,11 @@ class CombineMultiply implements IMode {
         int $iTargetY,
         int $iWidth,
         int $iHeight
-    ) {
+    ): void {
         $iTargetW = $oTarget->getWidth();
         $iOffset  = $iTargetW * $iTargetY + $iTargetX;
         $iSpan    = $iTargetW - $iWidth;
-        $oTarget  = $oTarget->getPixels();
+        $oTargetP = $oTarget->getPixels();
 
         $iSourceR = ($iValue >> 16) & 0xFF;
         $iSourceG = ($iValue >> 8)  & 0xFF;
@@ -46,11 +46,11 @@ class CombineMultiply implements IMode {
         while ($iHeight--) {
             $i = $iWidth;
             while ($i--) {
-                $iTarget = $oTarget[$iOffset];
+                $iTarget = $oTargetP[$iOffset];
                 $iRed    = ($iSourceR * (($iTarget >> 16) & 0xFF)) >> 8;
                 $iGreen  = ($iSourceG * (($iTarget >> 8)  & 0xFF)) >> 8;
                 $iBlue   = ($iSourceB * ($iTarget & 0xFF)) >> 8;
-                $oTarget[$iOffset++] = ($iRed << 16) | ($iGreen << 8) | $iBlue;
+                $oTargetP[$iOffset++] = ($iRed << 16) | ($iGreen << 8) | $iBlue;
             }
             $iOffset += $iSpan;
         }
@@ -68,11 +68,11 @@ class CombineMultiply implements IMode {
         int $iTargetY,
         int $iWidth,
         int $iHeight
-    ) {
+    ): void {
         $iSourceW = $oSource->getWidth();
         $iTargetW = $oTarget->getWidth();
-        $oSource  = $oSource->getPixels();
-        $oTarget  = $oTarget->getPixels();
+        $oSourceP = $oSource->getPixels();
+        $oTargetP = $oTarget->getPixels();
 
         $iSourceIndex = $iSourceY * $iSourceW + $iSourceX;
         $iTargetIndex = $iTargetY * $iTargetW + $iTargetX;
@@ -83,8 +83,8 @@ class CombineMultiply implements IMode {
             $i     = $iWidth;
             $iMask = 0xFFFFFF;
             while ($i--) {
-                $iSource  = $oSource[$iSourceIndex++];
-                $iTarget  = $oTarget[$iTargetIndex];
+                $iSource  = $oSourceP[$iSourceIndex++];
+                $iTarget  = $oTargetP[$iTargetIndex];
                 $iProduct = 0;
                 if (($iSource & $iMask) && ($iTarget & $iMask)) {
                     $iRed    = ((($iSource >> 16) & 0xFF) * (($iTarget >> 16) & 0xFF)) >> 8;
@@ -92,7 +92,7 @@ class CombineMultiply implements IMode {
                     $iBlue   = ((($iSource & 0xFF) * ($iTarget & 0xFF))) >> 8;
                     $iProduct = ($iRed << 16) | ($iGreen << 8) | $iBlue;
                 }
-                $oTarget[$iTargetIndex++] = $iProduct;
+                $oTargetP[$iTargetIndex++] = $iProduct;
             }
             $iSourceIndex += $iSourceSpan;
             $iTargetIndex += $iTargetSpan;

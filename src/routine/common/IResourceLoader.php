@@ -35,12 +35,12 @@ interface IResourceLoader {
      * @param  string $sBasePath
      * @return self
      */
-    public function setBasePath(string $sBasePath) : self;
+    public function setBasePath(string $sBasePath): self;
 
     /**
      * Preload any resources
      *
      * @return self
      */
-    public function preload() : self;
+    public function preload(): self;
 }

@@ -21,6 +21,7 @@ declare(strict_types=1);
 namespace ABadCafe\PDE\Routine;
 
 use ABadCafe\PDE;
+use function \str_repeat, \strlen, \urldecode;
 
 /**
  * SimpleLine
@@ -38,7 +39,7 @@ class SimpleLine extends Base {
     /**
      * @inheritDoc
      */
-    public function setDisplay(PDE\IDisplay $oDisplay) : self {
+    public function setDisplay(PDE\IDisplay $oDisplay): self {
         $this->bCanRender = ($oDisplay instanceof PDE\Display\IASCIIArt);
         $this->oDisplay   = $oDisplay;
         return $this;
@@ -47,7 +48,10 @@ class SimpleLine extends Base {
     /**
      * @inheritDoc
      */
-    public function render(int $iFrameNumber, float $fTimeIndex) : self {
+    public function render(int $iFrameNumber, float $fTimeIndex): self {
+        if (!$this->oDisplay instanceof PDE\Display\IASCIIArt) {
+            return $this;
+        }
         $sDrawBuffer = &$this->oDisplay->getCharacterBuffer();
         $sDrawBuffer = '';
         $iWidth      = $this->oDisplay->getWidth();
@@ -69,7 +73,7 @@ class SimpleLine extends Base {
     /**
      * @inheritDoc
      */
-    protected function parameterChange() {
+    protected function parameterChange(): void {
 
     }
 }

@@ -43,7 +43,7 @@ interface IMode {
         int $iTargetY,
         int $iWidth,
         int $iHeight
-    );
+    ): void;
 
     /**
      * Main copy operation. The rectagular region defined by {iSourceX, iSourceY, iWidth, iHeight} is copied
@@ -70,5 +70,5 @@ interface IMode {
         int $iTargetY,
         int $iWidth,
         int $iHeight
-    );
+    ): void;
 }

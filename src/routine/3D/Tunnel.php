@@ -23,6 +23,7 @@ namespace ABadCafe\PDE\Routine;
 use ABadCafe\PDE;
 use ABadCafe\PDE\Graphics;
 use \SPLFixedArray;
+use function \atan2, \min, \sin, \sqrt;
 
 /**
  * Display an image
@@ -35,6 +36,8 @@ class Tunnel extends Base implements IResourceLoader {
     private Graphics\Image $oTexture;
 
     // Calculation tables
+
+    /** @var SPLFixedArray<int> */
     private SPLFixedArray $oDistanceTable, $oAngleTable;
 
     const DEFAULT_PARAMETERS = [
@@ -51,15 +54,16 @@ class Tunnel extends Base implements IResourceLoader {
     ];
 
     /**
-     * Basic constructor
-     *
-     * @implements IRoutine::__construct()
+     * @inheritDoc
      */
     public function __construct(PDE\IDisplay $oDisplay, array $aParameters = []) {
         parent::__construct($oDisplay, $aParameters);
     }
 
-    public function preload() : self {
+    /**
+     * @inheritDoc
+     */
+    public function preload(): self {
         $iExpect = 1 << $this->oParameters->iTexDim;
         $oTexture = $this->loadPNM($this->oParameters->sTexPath);
         if (
@@ -75,7 +79,7 @@ class Tunnel extends Base implements IResourceLoader {
     /**
      * @inheritDoc
      */
-    public function setDisplay(PDE\IDisplay $oDisplay) : self {
+    public function setDisplay(PDE\IDisplay $oDisplay): self {
         if ($this->bCanRender = ($oDisplay instanceof PDE\Display\IPixelled)) {
             $this->initTables($oDisplay);
         }
@@ -86,13 +90,13 @@ class Tunnel extends Base implements IResourceLoader {
     /**
      * @inheritDoc
      */
-    public function render(int $iFrameNumber, float $fTimeIndex) : self {
+    public function render(int $iFrameNumber, float $fTimeIndex): self {
         $iWidth      = $this->oDisplay->getWidth();
         $iHeight     = $this->oDisplay->getHeight();
         $iTexShift   = $this->oParameters->iTexDim;
         $iTextureDim = 1 << $this->oParameters->iTexDim;
         $iTextureMod = $iTextureDim - 1;
-        $oPixels     = $this->oDisplay->getPixels();
+        $oPixels     = $this->castDisplayPixelled()->getPixels();
         $oTexels     = $this->oTexture->getPixels();
         $iIndex      = 0;
 
@@ -100,7 +104,6 @@ class Tunnel extends Base implements IResourceLoader {
         $iPanX       = ($iWidth  + $this->oParameters->fHPanLimit * $iWidth  * \sin($fTimeIndex * $this->oParameters->fHPanRate)) >> 1;
         $iPanY       = ($iHeight + $this->oParameters->fVPanLimit * $iHeight * \sin($fTimeIndex * $this->oParameters->fVPanRate)) >> 1;
         $iWidth2     = $iWidth << 1;
-
 
         for ($iY = 0; $iY < $iHeight; ++$iY) {
             $iTableY = $iY + $iPanY;
@@ -129,21 +132,20 @@ class Tunnel extends Base implements IResourceLoader {
                 }
             }
         }
-
         return $this;
     }
 
     /**
      * @inheritDoc
      */
-    protected function parameterChange() {
+    protected function parameterChange(): void {
         $this->initTables($this->oDisplay);
     }
 
     /**
      * Initialise the required lookup tables for transformation
      */
-    private function initTables(PDE\IDisplay $oDisplay) {
+    private function initTables(PDE\IDisplay $oDisplay): void {
         $iWidth         = $oDisplay->getWidth();
         $iHeight        = $oDisplay->getHeight();
         $iSize          = $iWidth * $iHeight * 4;

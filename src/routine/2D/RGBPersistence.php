@@ -34,6 +34,7 @@ class RGBPersistence extends Base {
         'iStrength' => 0
     ];
 
+    /** @var SPLFixedArray<int> $oLastBuffer */
     private SPLFixedArray $oLastBuffer;
 
     /**
@@ -42,10 +43,10 @@ class RGBPersistence extends Base {
      * Overridden from base class to capture the current buffer contents
      * of the display for the blend buffer.
      */
-    public function enable(int $iFrameNumber, float $fTimeIndex) : self {
+    public function enable(int $iFrameNumber, float $fTimeIndex): self {
         parent::enable($iFrameNumber, $fTimeIndex);
         if ($this->bEnabled) {
-            $this->oLastBuffer = clone $this->oDisplay->getPixels();
+            $this->oLastBuffer = clone $this->castDisplayPixelled()->getPixels();
         }
         return $this;
     }
@@ -53,9 +54,12 @@ class RGBPersistence extends Base {
     /**
      * @inheritDoc
      */
-    public function setDisplay(PDE\IDisplay $oDisplay) : self {
-        if ($this->bCanRender = ($oDisplay instanceof PDE\Display\IPixelled)) {
+    public function setDisplay(PDE\IDisplay $oDisplay): self {
+        if ($oDisplay instanceof PDE\Display\IPixelled) {
+            $this->bCanRender  = true;
             $this->oLastBuffer = clone $oDisplay->getPixels();
+        } else {
+            $this->bCanRender  = false;
         }
         $this->oDisplay = $oDisplay;
         return $this;
@@ -64,14 +68,15 @@ class RGBPersistence extends Base {
     /**
      * @inheritDoc
      */
-    public function render(int $iFrameNumber, float $fTimeIndex) : self {
-        $oPixels = $this->oDisplay->getPixels();
+    public function render(int $iFrameNumber, float $fTimeIndex): self {
+
+        $oPixels = $this->castDisplayPixelled()->getPixels();
         $oLast   = $this->oLastBuffer;
 
         $iHalfMask =  0x7F7F7F;
         $iQrtrMask =  0x3F3F3F;
 
-        if ($this->oDisplay->getFormat() & PDE\Graphics\IDrawMode::FG_RGB) {
+        if ($this->castDisplayPixelled()->getFormat() & PDE\Graphics\IDrawMode::FG_RGB) {
             $iHalfMask |= $iHalfMask << 24;
             $iQrtrMask |= $iQrtrMask << 24;
         }
@@ -111,7 +116,7 @@ class RGBPersistence extends Base {
     /**
      * @inheritDoc
      */
-    protected function parameterChange() {
+    protected function parameterChange(): void {
 
     }
 }

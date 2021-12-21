@@ -20,7 +20,7 @@ declare(strict_types=1);
 
 namespace ABadCafe\PDE\Audio\Output;
 use ABadCafe\PDE\Audio;
-use function ABadCafe\PDE\dprintf;
+use function ABadCafe\PDE\dprintf, \array_fill, \exec, \fclose, \fwrite, \is_resource, \pack, \proc_close, \proc_open;
 
 /**
  * APlay
@@ -58,13 +58,13 @@ abstract class Piped implements Audio\IPCMOutput {
      */
     public static function create() : self {
         while (null === self::$sPlayerClass) {
-            $sAPlay = \exec('which aplay');
+            $sAPlay = exec('which aplay');
             if (!empty($sAPlay)) {
                 dprintf("Found %s\n", $sAPlay);
                 self::$sPlayerClass = APlay::class;
                 break;
             }
-            $sSoxPlay = \exec('which play');
+            $sSoxPlay = exec('which play');
             if (!empty($sSoxPlay)) {
                 dprintf("Found %s\n", $sSoxPlay);
                 self::$sPlayerClass = Sox::class;
@@ -81,7 +81,7 @@ abstract class Piped implements Audio\IPCMOutput {
      * Constructor
      */
     public function __construct() {
-        $this->aOutputBuffer = \array_fill(0, Audio\IConfig::PACKET_SIZE, 0);
+        $this->aOutputBuffer = array_fill(0, Audio\IConfig::PACKET_SIZE, 0);
     }
 
     /**
@@ -97,12 +97,12 @@ abstract class Piped implements Audio\IPCMOutput {
      *
      * @throws \Exception
      */
-    public function open() {
+    public function open(): void {
         $sCommand = $this->createOutputCommand();
 
         if (
             $this->rOutput ||
-            !($this->rOutput = \proc_open($sCommand, $this->aPipeDescriptors, $this->aPipes))
+            !($this->rOutput = proc_open($sCommand, $this->aPipeDescriptors, $this->aPipes))
         ) {
             throw new \Exception();
         } else {
@@ -114,9 +114,9 @@ abstract class Piped implements Audio\IPCMOutput {
     /**
      * Write a signal packet. This involves scaling, quantising values and limiting them before writing.
      *
-     * @param Signal\Packet $oPacket
+     * @param Signal\Packet<float> $oPacket
      */
-    public function write(Audio\Signal\Packet $oPacket) {
+    public function write(Audio\Signal\Packet $oPacket): void {
         // Quantize and clamp
         for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
             $iValue = (int)(self::SCALE * $oPacket[$i]);
@@ -127,19 +127,19 @@ abstract class Piped implements Audio\IPCMOutput {
                     $iValue
                 );
         }
-        \fwrite($this->aPipes[0], \pack('v*', ...$this->aOutputBuffer));
+        fwrite($this->aPipes[0], pack('v*', ...$this->aOutputBuffer));
     }
 
     /**
      * Close down the output handle and subprocess.
      */
-    public function close() {
+    public function close(): void {
         if ($this->rOutput) {
             $this->pushSilence();
-            \proc_close($this->rOutput);
+            proc_close($this->rOutput);
             foreach ($this->aPipes as $rPipe) {
-                if (\is_resource($rPipe)) {
-                    \fclose($rPipe);
+                if (is_resource($rPipe)) {
+                    fclose($rPipe);
                 }
             }
             $this->rOutput = null;
@@ -150,10 +150,10 @@ abstract class Piped implements Audio\IPCMOutput {
     /**
      * Pushes a block of silence to bookend opening and closing.
      */
-    protected function pushSilence() {
-        $aOutputBuffer = \array_fill(0, Audio\IConfig::PACKET_SIZE, 0);
+    protected function pushSilence(): void {
+        $aOutputBuffer = array_fill(0, Audio\IConfig::PACKET_SIZE, 0);
         for ($i = 0; $i < 10; ++$i) {
-            \fwrite($this->aPipes[0], \pack('v*', ...$aOutputBuffer));
+            fwrite($this->aPipes[0], pack('v*', ...$aOutputBuffer));
         }
     }
 

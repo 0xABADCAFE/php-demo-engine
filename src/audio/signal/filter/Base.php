@@ -22,6 +22,8 @@ namespace ABadCafe\PDE\Audio\Signal\Filter;
 
 use ABadCafe\PDE\Audio;
 
+use function \max;
+
 /**
  * Base filter class, to be extended into Low/High/Band/Notch variants.
  *

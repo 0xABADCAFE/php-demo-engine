@@ -52,7 +52,7 @@ class Factory {
      *
      * @return self
      */
-    public static function get() : self {
+    public static function get(): self {
         if (null === self::$oInstance) {
             self::$oInstance = new self;
         }
@@ -67,7 +67,7 @@ class Factory {
      * @param  int    $iHeight
      * @return PDE\IDisplay
      */
-    public function create(string $sKind, int $iWidth, int $iHeight) : PDE\IDisplay {
+    public function create(string $sKind, int $iWidth, int $iHeight): PDE\IDisplay {
         if (!isset(self::TYPES[$sKind])) {
             throw new \OutOfBoundsException($sKind . ' is not a known IDisplay type)');
         }

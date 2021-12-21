@@ -37,14 +37,18 @@ class Routine {
 
     public string $sType;
     public int    $iPriority;
+
+    /**
+     * @var mixed[] $aParameters
+     */
     public array  $aParameters;
 
     /**
      * Constructor
      *
-     * @param object $oRaw
+     * @param \stdClass $oRaw
      */
-    public function __construct(object $oRaw) {
+    public function __construct(\stdClass $oRaw) {
         $this->mapFromRaw($oRaw);
     }
 

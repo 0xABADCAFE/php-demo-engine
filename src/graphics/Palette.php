@@ -20,12 +20,14 @@ declare(strict_types=1);
 
 namespace ABadCafe\PDE\Graphics;
 use \SPLFixedArray;
+use function \array_fill, \array_keys, \array_values, \count, \ksort, \max, \min;
 
 /**
  * Simple Palette class.
  */
 class Palette {
 
+    /** @var SPLFixedArray<int> $oEntries */
     private SPLFixedArray $oEntries;
     private int           $iSize;
 
@@ -34,10 +36,10 @@ class Palette {
             throw new \LengthException();
         }
         $this->iSize    = $iSize;
-        $this->oEntries = SPLFixedArray::fromArray(\array_fill(0, $iSize, 0));
+        $this->oEntries = SPLFixedArray::fromArray(array_fill(0, $iSize, 0));
     }
 
-    public function size() : int {
+    public function size(): int {
         return $this->iSize;
     }
 
@@ -48,18 +50,21 @@ class Palette {
      * given.
      *
      * @param int[] $aPoints
+     * @return SPLFixedArray<int>
      */
-    public function gradient(array $aPoints) : SPLFixedArray {
-        $iCount = \count($aPoints);
+    public function gradient(array $aPoints): SPLFixedArray {
+        $iCount = count($aPoints);
         if ($iCount < 2) {
             throw new \LengthException('A gradient requires at least 2 points');
         }
-        \ksort($aPoints);
-        $aPositions = \array_keys($aPoints);
-        if (\min($aPositions) < 0) {
-            throw new OutOfBoundsException('Negative indexes not allowed');
+        ksort($aPoints);
+
+        /** @var int[] $aPositions */
+        $aPositions = array_keys($aPoints);
+        if (min($aPositions) < 0) {
+            throw new \OutOfBoundsException('Negative indexes not allowed');
         }
-        $aRGBValues = \array_values($aPoints);
+        $aRGBValues = array_values($aPoints);
 
         $iLastPosition  = $aPositions[0];
         $iLastRGBValue  = $aRGBValues[0];
@@ -86,9 +91,9 @@ class Palette {
             $k = $iLastPosition;
             while ($iSpanLen-- >= 0) {
                 $this->oEntries[$k++] =
-                    (int)\min(($iRed   + $j * $fRedStep), 255) << 16 |
-                    (int)\min(($iGreen + $j * $fGreenStep), 255) << 8 |
-                    (int)\min(($iBlue  + $j * $fBlueStep), 255);
+                    (int)min(($iRed   + $j * $fRedStep), 255) << 16 |
+                    (int)min(($iGreen + $j * $fGreenStep), 255) << 8 |
+                    (int)min(($iBlue  + $j * $fBlueStep), 255);
                     ++$j;
             }
 
@@ -100,8 +105,10 @@ class Palette {
 
     /**
      * Return the raw palette data.
+     *
+     * @return SPLFixedArray<int>
      */
-    public function getEntries() : SPLFixedArray {
+    public function getEntries(): SPLFixedArray {
         return $this->oEntries;
     }
 }

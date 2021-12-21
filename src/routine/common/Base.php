@@ -21,6 +21,7 @@ declare(strict_types=1);
 namespace ABadCafe\PDE\Routine;
 
 use ABadCafe\PDE;
+use function \array_merge, \gettype, \settype;
 
 /**
  * Base
@@ -29,10 +30,12 @@ use ABadCafe\PDE;
  */
 abstract class Base implements PDE\IRoutine {
 
+    const DEFAULT_PARAMETERS = [];
+
     /**
-     * @var object $oParameters - basic key value structure
+     * @var \stdClass $oParameters - basic key value structure
      */
-    protected object $oParameters;
+    protected \stdClass $oParameters;
 
     /**
      * @var PDE\IDisplay $oDisplay
@@ -44,9 +47,7 @@ abstract class Base implements PDE\IRoutine {
     protected float $fUntil = 0.0;
 
     /**
-     * Basic constructor
-     *
-     * @implements IRoutine::__construct()
+     * @inheritDoc
      */
     public function __construct(PDE\IDisplay $oDisplay, array $aParameters = []) {
         $this->oParameters = (object)$this->mergeDefaultParameters();
@@ -56,17 +57,16 @@ abstract class Base implements PDE\IRoutine {
 
     /**
      * @inheritDoc
-     * @implements IParameterisable::setParameters()
      *
      * Each input value is key checked against the DEFAULT_PARAMETERS set and if the key matches the
      * value is first type cooerced then assigned.
      */
-    public function setParameters(array $aParameters) : self {
+    public function setParameters(array $aParameters): self {
         $bChanged  = false;
         $aDefaults = $this->mergeDefaultParameters();
         foreach ($aParameters as $sParameterName => $mParameterValue) {
             if (isset($aDefaults[$sParameterName])) {
-                \settype($mParameterValue, \gettype($aDefaults[$sParameterName]));
+                settype($mParameterValue, gettype($aDefaults[$sParameterName]));
                 if ($mParameterValue != $this->oParameters->{$sParameterName}) {
                     $this->oParameters->{$sParameterName} = $mParameterValue;
                     $bChanged = true;
@@ -81,9 +81,8 @@ abstract class Base implements PDE\IRoutine {
 
     /**
      * @inheritDoc
-     * @implements IRoutine::enable()
      */
-    public function enable(int $iFrameNumber, float $fTimeIndex) : self {
+    public function enable(int $iFrameNumber, float $fTimeIndex): self {
         // Enable the routine if it can be rendered.
         if ( ($this->bEnabled = $this->bCanRender) ) {
             $this->fUntil = $this->oParameters->fDuration > 0.0 ?
@@ -94,21 +93,16 @@ abstract class Base implements PDE\IRoutine {
 
     /**
      * @inheritDoc
-     * @implements IRoutine::disable()
      */
-    public function disable(int $iFrameNumber, float $fTimeIndex) : self {
+    public function disable(int $iFrameNumber, float $fTimeIndex): self {
         $this->bEnabled = false;
         return $this;
     }
 
     /**
-     * Returns true if the effect can render right now, taking into account expected duration, etc.
-     *
-     * @param  int   $iFrameNumber
-     * @param  float $fTimeIndex
-     * @return bool
+     * @inheritDoc
      */
-    public function canRender(int $iFrameNumber, float $fTimeIndex) : bool {
+    public function canRender(int $iFrameNumber, float $fTimeIndex): bool {
         $bWasEnabled   = $this->bEnabled;
         $bStillEnabled = $bWasEnabled && (
             $this->fUntil > 0.0 ?
@@ -125,12 +119,30 @@ abstract class Base implements PDE\IRoutine {
     /**
      * Hook function called if any of the parameters have changed during a call to SetParameters
      */
-    protected abstract function parameterChange();
+    protected abstract function parameterChange(): void;
 
     /**
      * @return mixed[] - associative key/value pair of the default parameters
      */
-    private function mergeDefaultParameters() : array {
-        return \array_merge(self::COMMON_PARAMETERS, static::DEFAULT_PARAMETERS);
+    private function mergeDefaultParameters(): array {
+        return array_merge(self::COMMON_PARAMETERS, static::DEFAULT_PARAMETERS);
+    }
+
+    /**
+     * Return the IASCIIArt interface realisation of the display (if it has one). Throws /TypeError if it doesn't.
+     *
+     * @throws \TypeError
+     */
+    protected function castDisplayASCIIArt(): PDE\Display\IASCIIArt {
+        return $this->oDisplay; // @phpstan-ignore-line
+    }
+
+    /**
+     * Return the IPixelled interface realisation of the display (if it has one). Throws /TypeError if it doesn't.
+     *
+     * @throws \TypeError
+     */
+    protected function castDisplayPixelled(): PDE\Display\IPixelled {
+        return $this->oDisplay; // @phpstan-ignore-line
     }
 }

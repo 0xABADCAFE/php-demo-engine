@@ -21,6 +21,8 @@ declare(strict_types=1);
 namespace ABadCafe\PDE\Audio\Signal\Waveform;
 use ABadCafe\PDE\Audio\Signal;
 
+use function \sin;
+
 /**
  * Sine
  *

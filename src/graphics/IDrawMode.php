@@ -20,9 +20,6 @@ declare(strict_types=1);
 
 namespace ABadCafe\PDE\Graphics;
 
-use ABadCafe\PDE;
-use \SPLFixedArray;
-
 /**
  * IDrawMode
  *

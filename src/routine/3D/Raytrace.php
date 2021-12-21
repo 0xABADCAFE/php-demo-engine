@@ -24,6 +24,7 @@ use ABadCafe\PDE;
 use ABadCafe\PDE\Graphics;
 use ABadCafe\PDE\Util\Vec3F;
 use \SPLFixedArray;
+use function \abs, \base_convert, \ceil, \cos, \min, \mt_getrandmax, \mt_rand, \pow, \sqrt;
 
 /**
  * Raytrace a simple scene
@@ -79,7 +80,10 @@ class Raytrace extends Base {
 
     private Graphics\Blitter $oBlitter;
 
+    /** @var Vec3F[] $aSpheres */
     private array $aSpheres = [];
+
+    /** @var float[] $aRadii */
     private array $aRadii = [];
 
     private Vec3F
@@ -106,9 +110,7 @@ class Raytrace extends Base {
     ;
 
     /**
-     * Basic constructor
-     *
-     * @implements IRoutine::__construct()
+     * @inheritDoc
      */
     public function __construct(PDE\IDisplay $oDisplay, array $aParameters = []) {
         // These must be initialised no matter what
@@ -119,7 +121,7 @@ class Raytrace extends Base {
 
         $this->oBlitter = new Graphics\Blitter();
 
-        $this->fInvRM = 0.25 / (float)\mt_getrandmax();
+        $this->fInvRM = 0.25 / (float)mt_getrandmax();
         $this->initCamera();
         $this->initLights();
         $this->initObjects();
@@ -130,7 +132,7 @@ class Raytrace extends Base {
     /**
      * @inheritDoc
      */
-    public function setDisplay(PDE\IDisplay $oDisplay) : self {
+    public function setDisplay(PDE\IDisplay $oDisplay): self {
         $this->bCanRender  = ($oDisplay instanceof PDE\Display\IPixelled);
         $this->oDisplay    = $oDisplay;
         return $this;
@@ -139,11 +141,11 @@ class Raytrace extends Base {
     /**
      * @inheritDoc
      */
-    public function render(int $iFrameNumber, float $fTimeIndex) : self {
+    public function render(int $iFrameNumber, float $fTimeIndex): self {
         $this->renderScene();
         $this->oBlitter
             ->setSource($this->aFrames[0])
-            ->setTarget($this->oDisplay)
+            ->setTarget($this->castDisplayPixelled())
             ->copy(
                 0,
                 0,
@@ -158,7 +160,7 @@ class Raytrace extends Base {
     /**
      * @inheritDoc
      */
-    protected function parameterChange() {
+    protected function parameterChange(): void {
         $this->initCamera();
         $this->initLights();
         $this->initObjects();
@@ -168,7 +170,7 @@ class Raytrace extends Base {
     /**
      * Initialise the camera properties.
      */
-    private function initCamera() {
+    private function initCamera(): void {
 
         $this->vCameraDirection = new Vec3F(
             $this->oParameters->aCameraDir[0],
@@ -209,7 +211,7 @@ class Raytrace extends Base {
     /**
      * Initialise light source
      */
-    private function initLights() {
+    private function initLights(): void {
         $this->vLight = new Vec3F(
             $this->oParameters->aLight[0],
             $this->oParameters->aLight[1],
@@ -220,7 +222,7 @@ class Raytrace extends Base {
     /**
      * Initialise material properties
      */
-    private function initMaterials() {
+    private function initMaterials(): void {
         $this->vAmbientRGB = $this->hexRGBToVec3F($this->oParameters->sAmbientRGB)
             ->scale($this->oParameters->fAmbientBright);
 
@@ -234,8 +236,8 @@ class Raytrace extends Base {
             ->scale($this->oParameters->fSkyBright);
     }
 
-    private function hexRGBToVec3F(string $sColourRGB) : Vec3F {
-        $iRGB = (int)\base_convert($sColourRGB, 16, 10);
+    private function hexRGBToVec3F(string $sColourRGB): Vec3F {
+        $iRGB = (int)base_convert($sColourRGB, 16, 10);
         return new Vec3F(
             (float)($iRGB >> 16),
             (float)(($iRGB >> 8) & 0xFF),
@@ -246,7 +248,7 @@ class Raytrace extends Base {
     /**
      * Initialise objects
      */
-    private function initObjects() {
+    private function initObjects(): void {
         $this->aSpheres = [];
         $this->aRadii   = [];
         foreach ($this->oParameters->aSpheres as $aSphere) {
@@ -260,7 +262,7 @@ class Raytrace extends Base {
     /**
      * Initialise draw buffer
      */
-    private function initBuffers() {
+    private function initBuffers(): void {
         // TODO - once asynchronous record mode is working, use a buffer per frame.
         $i = 1;//$this->oParameters->iMaxFrames;
         while ($i--) {
@@ -271,14 +273,14 @@ class Raytrace extends Base {
     /**
      * Render the scene
      */
-    private function renderScene() {
+    private function renderScene(): void {
         $iWidth      = $this->oParameters->iWidth;
         $iHeight     = $this->oParameters->iHeight;
         $fImageScale = $this->oParameters->fImageScale / $iWidth;
         $fStep       = M_PI / $this->oParameters->iMaxFrames;
         foreach ($this->aSpheres as $iIndex => $vSpherePos) {
             $aAnimation = $this->oParameters->aAnimation[$iIndex];
-            $vSpherePos->fZ = $aAnimation[0] + $aAnimation[1] * \abs(\cos(
+            $vSpherePos->fZ = $aAnimation[0] + $aAnimation[1] * abs(cos(
                 $this->fSimulationTime + M_PI * $aAnimation[2]
             ));
         }
@@ -300,10 +302,10 @@ class Raytrace extends Base {
 
                     // Random delta to be added for depth of field effects
                     $vDelta = $this->vCameraUp
-                        ->iScale((($this->fInvRM * \mt_rand()) - 0.5) * $fDepthOfField)
+                        ->iScale((($this->fInvRM * mt_rand()) - 0.5) * $fDepthOfField)
                         ->add(
                             $this->vCameraRight
-                                ->iScale((($this->fInvRM * \mt_rand()) - 0.5) * $fDepthOfField)
+                                ->iScale((($this->fInvRM * mt_rand()) - 0.5) * $fDepthOfField)
                         );
 
                     // Accumulate the sample result into the current pixel
@@ -311,10 +313,10 @@ class Raytrace extends Base {
                         $this->sample(
                             $this->vFocalPoint->iAdd($vDelta),
                             $this->vCameraUp
-                                ->iScale(($this->fInvRM * \mt_rand()) + $iPixelX)
+                                ->iScale(($this->fInvRM * mt_rand()) + $iPixelX)
                                 ->add(
                                     $this->vCameraRight
-                                        ->iScale(($this->fInvRM * \mt_rand()) + $iPixelY)
+                                        ->iScale(($this->fInvRM * mt_rand()) + $iPixelY)
                                         ->add($this->vEyeOffset)
                                 )
                                 ->scale($fScaleDOF)
@@ -329,9 +331,9 @@ class Raytrace extends Base {
 
                 // Convert to integers and push out to ppm outpu stream
                 $oPixels[$iPixel++] =
-                    \min($vPixel->fX, 255) << 16 |
-                    \min($vPixel->fY, 255) << 8  |
-                    (int)\min($vPixel->fZ, 255);
+                    min($vPixel->fX, 255) << 16 |
+                    min($vPixel->fY, 255) << 8  |
+                    (int)min($vPixel->fZ, 255);
             }
         }
     }
@@ -345,7 +347,7 @@ class Raytrace extends Base {
      * @param  Vec3F|null &$vNormal
      * @return int
      */
-    private function trace(Vec3F $vOrigin, Vec3F $vDirection, ?float &$fTraceDistance, ?Vec3F &$vNormal) : int {
+    private function trace(Vec3F $vOrigin, Vec3F $vDirection, ?float &$fTraceDistance, ?Vec3F &$vNormal): int {
 
         $fTraceDistance = 1000.0;
 
@@ -367,7 +369,7 @@ class Raytrace extends Base {
             $fIntrSqrd = $fDot * $fDot - $fEye;
 
             if ($fIntrSqrd > 0.0) {
-                $fObjectDistance = -$fDot - \sqrt($fIntrSqrd);
+                $fObjectDistance = -$fDot - sqrt($fIntrSqrd);
                 if ($fObjectDistance < $fTraceDistance && $fObjectDistance > 0.01) {
                     $fTraceDistance = $fObjectDistance;
                     $vNormal = $vDirection
@@ -391,7 +393,7 @@ class Raytrace extends Base {
      * @param  Vec3F $vDirection
      * @return Vec3F (rgb)
      */
-    function sample(Vec3F $vOrigin, Vec3F $vDirection) : Vec3F {
+    function sample(Vec3F $vOrigin, Vec3F $vDirection): Vec3F {
 
         if (++$this->iRecursion > 4) {
             --$this->iRecursion;
@@ -416,8 +418,8 @@ class Raytrace extends Base {
 
         // Calculate the lighting vector
         $vLight = $this->vLight->iSub($vIntersect);
-        $vLight->fX += ($this->fInvRM * \mt_rand());
-        $vLight->fY += ($this->fInvRM * \mt_rand());
+        $vLight->fX += ($this->fInvRM * mt_rand());
+        $vLight->fY += ($this->fInvRM * mt_rand());
         $vLight->normalise();
 
         $vHalfVector = $vNormal
@@ -437,7 +439,7 @@ class Raytrace extends Base {
             --$this->iRecursion;
             return (
                 // Compute check colour based on the position
-                (int) (\ceil($vIntersect->fX) + \ceil($vIntersect->fY)) & 1 ?
+                (int) (ceil($vIntersect->fX) + ceil($vIntersect->fY)) & 1 ?
                 $this->vFloorRGB1 :
                 $this->vFloorRGB2   // white
             )->iScale($fLambertian * 0.2 + 0.1);
@@ -450,7 +452,7 @@ class Raytrace extends Base {
 
         if ($fLambertian > 0) {
             // Compute the specular highlight power
-            $fSpecular = \pow($vLight->dot($vHalfVector), $this->oParameters->fSpecularPower);
+            $fSpecular = pow($vLight->dot($vHalfVector), $this->oParameters->fSpecularPower);
             $vRGB->fX += $fSpecular;
             $vRGB->fY += $fSpecular;
             $vRGB->fZ += $fSpecular;

@@ -22,6 +22,8 @@ namespace ABadCafe\PDE\Routine;
 
 use ABadCafe\PDE;
 
+use function \mt_rand;
+
 /**
  * StaticNoise
  *
@@ -45,7 +47,7 @@ class StaticNoise extends Base {
     /**
      * @inheritDoc
      */
-    public function setDisplay(PDE\IDisplay $oDisplay) : self {
+    public function setDisplay(PDE\IDisplay $oDisplay): self {
         $this->bCanRender = ($oDisplay instanceof PDE\Display\IASCIIArt);
         $this->oDisplay   = $oDisplay;
         $this->iWidth     = $oDisplay->getWidth();
@@ -56,9 +58,9 @@ class StaticNoise extends Base {
     /**
      * @inheritDoc
      */
-    public function render(int $iFrameNumber, float $fTimeIndex) : self {
-        $sCharBuffer = &$this->oDisplay->getCharacterBuffer();
-        $iSpan       = $this->oDisplay->getCharacterWidth();
+    public function render(int $iFrameNumber, float $fTimeIndex): self {
+        $sCharBuffer = &$this->castDisplayASCIIArt()->getCharacterBuffer();
+        $iSpan       = $this->castDisplayASCIIArt()->getCharacterWidth();
         $iMaxY       = $this->iHeight - $this->oParameters->iBorderV;
         $iMaxX       = $this->iWidth  - $this->oParameters->iBorderH;
         for ($iYPos = $this->oParameters->iBorderV; $iYPos < $iMaxY; ++$iYPos) {
@@ -73,7 +75,7 @@ class StaticNoise extends Base {
     /**
      * @inheritDoc
      */
-    protected function parameterChange() {
+    protected function parameterChange(): void {
 
     }
 }

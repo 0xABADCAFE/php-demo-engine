@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 namespace ABadCafe\PDE\Display;
 use ABadCafe\PDE;
+use function \array_slice, \count, \explode, \min, \sprintf, \str_repeat, \strlen, \strpos, \substr;
 
 /**
  * TASCIIArt
@@ -49,14 +50,14 @@ trait TASCIIArt {
      * @param  int  $iColour
      * @return self
      */
-    public function setForegroundColour(int $iColour) : self {
+    public function setForegroundColour(int $iColour): self {
         $iColour &= 0xFF;
         if ($iColour < 16) {
             $iColour = IASCIIArt::REMAP_DEFAULTS[$iColour & 0x0F];
         }
         if ($iColour != $this->iFGColour) {
             $this->iFGColour = $iColour;
-            $this->sFGColour = \sprintf(
+            $this->sFGColour = sprintf(
                 IANSIControl::ATTR_FG_FIXED_TPL,
                 $this->iFGColour
             );
@@ -70,14 +71,14 @@ trait TASCIIArt {
      * @param  int  $iColour
      * @return self
      */
-    public function setBackgroundColour(int $iColour) : self {
+    public function setBackgroundColour(int $iColour): self {
         $iColour &= 0xFF;
         if ($iColour < 16) {
             $iColour = IASCIIArt::REMAP_DEFAULTS[$iColour & 0x0F];
         }
         if ($iColour != $this->iBGColour) {
             $this->iBGColour = $iColour;
-            $this->sBGColour = \sprintf(
+            $this->sBGColour = sprintf(
                 IANSIControl::ATTR_BG_FIXED_TPL,
                 $this->iBGColour
             );
@@ -88,12 +89,12 @@ trait TASCIIArt {
     /**
      * Initialise the default fixed colours.
      */
-    private function initFixedColours() {
-        $this->sBGColour = \sprintf(
+    private function initFixedColours(): void {
+        $this->sBGColour = sprintf(
             IANSIControl::ATTR_BG_FIXED_TPL,
             $this->iBGColour
         );
-        $this->sFGColour = \sprintf(
+        $this->sFGColour = sprintf(
             IANSIControl::ATTR_FG_FIXED_TPL,
             $this->iFGColour
         );
@@ -105,55 +106,55 @@ trait TASCIIArt {
      * @param int $iWidth
      * @param int $iHeight
      */
-    private function initASCIIBuffer(int $iWidth, int $iHeight) {
+    private function initASCIIBuffer(int $iWidth, int $iHeight): void {
         $this->sRawBuffer    = // drop through
-        $this->sNewRawBuffer = \str_repeat(\str_repeat(' ', $iWidth) . "\n", $iHeight);
+        $this->sNewRawBuffer = str_repeat(str_repeat(' ', $iWidth) . "\n", $iHeight);
     }
 
     /**
      * @inheritDoc
      */
-    public function getCharacterWidth() : int {
+    public function getCharacterWidth(): int {
         return $this->iWidth + 1; // 1 for the newline
     }
 
     /**
      * @inheritDoc
      */
-    private function resetASCIIBuffer() {
+    private function resetASCIIBuffer(): void {
         $this->sRawBuffer = $this->sNewRawBuffer;
     }
 
     /**
      * @inheritDoc
      */
-    public function &getCharacterBuffer() : string {
+    public function &getCharacterBuffer(): string {
         return $this->sRawBuffer;
     }
 
     /**
      * @inheritDoc
      */
-    public function getLuminanceCharacters() : string {
+    public function getLuminanceCharacters(): string {
         return $this->sLumaChars;
     }
 
     /**
      * @inheritDoc
      */
-    public function getMaxLuminance() : int {
+    public function getMaxLuminance(): int {
         return $this->iMaxLuma;
     }
 
     /**
      * @inheritDoc
      */
-    public function setLuminanceCharacters(string $sLumaChars) : self {
+    public function setLuminanceCharacters(string $sLumaChars): self {
         if (empty($sLumaChars)) {
             $this->sLumaChars = IASCIIArt::DEF_LUMA_CHAR;
             $this->iMaxLuma   = IASCIIArt::DEF_MAX_LUMA;
         } else {
-            $iLength = \strlen($sLumaChars);
+            $iLength = strlen($sLumaChars);
             if ($iLength < 2) {
                 throw new \LengthException();
             }
@@ -166,7 +167,7 @@ trait TASCIIArt {
     /**
      * @inheritDoc
      */
-    public function writeTextBounded(string $sText, int $iX, int $iY, int $iMaxX = 0, $iMaxY = 0) : self {
+    public function writeTextBounded(string $sText, int $iX, int $iY, int $iMaxX = 0, $iMaxY = 0): self {
         if (
             empty($sText)         || // nothing to render
             $iX >= $this->iWidth  || // completely off right
@@ -178,24 +179,24 @@ trait TASCIIArt {
         // Determine boundary
         $iMaxX = ($iMaxX < 1) ?
             $this->iWidth :
-            \min($iMaxX, $this->iWidth);
+            min($iMaxX, $this->iWidth);
         $iMaxY = ($iMaxY < 1) ?
             $this->iHeight :
-            \min($iMaxY, $this->iHeight);
+            min($iMaxY, $this->iHeight);
 
         if ($iX > $iMaxX || $iY > $iMaxY) {
             return $this;
         }
 
-        $aStrings = \explode("\n", $sText);
+        $aStrings = explode("\n", $sText);
 
-        if (\count($aStrings) + $iY < 0) {
+        if (count($aStrings) + $iY < 0) {
             return $this; // Completely off the top
         }
 
         // Deal with negative Y coordinate
         if ($iY < 0) {
-            $aStrings    = \array_slice($aStrings, -$iY);
+            $aStrings    = array_slice($aStrings, -$iY);
             $iY          = 0;
         }
 
@@ -212,11 +213,11 @@ trait TASCIIArt {
     /**
      * @inheritDoc
      */
-    public function writeTextSpan(string $sText, int $iX, int $iY, int $iMaxX = 0) : self {
+    public function writeTextSpan(string $sText, int $iX, int $iY, int $iMaxX = 0): self {
 
         $iMaxX = ($iMaxX < 1) ?
             $this->iWidth :
-            \min($iMaxX, $this->iWidth);
+            min($iMaxX, $this->iWidth);
 
         // Sanity check
         if (
@@ -228,8 +229,8 @@ trait TASCIIArt {
             return $this;
         }
         // Restrict to 1 line
-        $iEnd  = \strpos($sText, "\n");
-        $sText = ($iEnd === false) ? $sText : \substr($sText, 0, $iEnd);
+        $iEnd  = strpos($sText, "\n");
+        $sText = ($iEnd === false) ? $sText : substr($sText, 0, $iEnd);
         if (empty($sText)) {
             return $this;
         }
@@ -245,18 +246,18 @@ trait TASCIIArt {
      * @param int    $iY
      * @param int    $iMaxX
      */
-    private function writeRightClippedSpan(string $sText, int $iX, int $iY, $iMaxX) {
+    private function writeRightClippedSpan(string $sText, int $iX, int $iY, $iMaxX): void {
 
         // Handle negative X by chopping off the left
         if ($iX < 0) {
-            $sText = \substr($sText, -$iX);
+            $sText = substr($sText, -$iX);
             $iX    = 0;
         }
         if (empty($sText)) {
-            return $this;
+            return;
         }
 
-        $iLength = \strlen($sText);
+        $iLength = strlen($sText);
         if ($iX + $iLength > $iMaxX) {
             $iLength = $iMaxX - $iX;
         }
@@ -266,5 +267,6 @@ trait TASCIIArt {
         while ($iLength--) {
             $this->sRawBuffer[$iDstIndex++] = $sText[$iSrcIndex++];
         }
+
     }
 }

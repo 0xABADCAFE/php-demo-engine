@@ -23,6 +23,7 @@ namespace ABadCafe\PDE\Routine;
 use ABadCafe\PDE;
 use ABadCafe\PDE\Graphics;
 use \SPLFixedArray;
+use function \array_fill, \cos, \sin;
 
 /**
  * Voxel
@@ -46,8 +47,13 @@ class Voxel extends Base implements IResourceLoader {
     ];
 
     private Graphics\Image $oTexture;
+
+    /** @var SPLFixedArray<int> */
     private SPLFixedArray  $oElevation;
 
+    /**
+     * @inheritDoc
+     */
     public function preload() : self {
         $this->oTexture = $this->loadPNM($this->oParameters->sTexture);
         $oElevation     = $this->loadPNM($this->oParameters->sElevation);
@@ -71,7 +77,7 @@ class Voxel extends Base implements IResourceLoader {
     /**
      * @inheritDoc
      */
-    public function setDisplay(PDE\IDisplay $oDisplay) : self {
+    public function setDisplay(PDE\IDisplay $oDisplay): self {
         $this->bCanRender = ($oDisplay instanceof PDE\Display\IPixelled);
         $this->oDisplay   = $oDisplay;
         return $this;
@@ -80,7 +86,7 @@ class Voxel extends Base implements IResourceLoader {
     /**
      * @inheritDoc
      */
-    public function render(int $iFrameNumber, float $fTimeIndex) : self {
+    public function render(int $iFrameNumber, float $fTimeIndex): self {
         $iViewWidth = $this->oDisplay->getWidth();
         $iMapWidth  = $this->oTexture->getWidth();
 
@@ -102,7 +108,7 @@ class Voxel extends Base implements IResourceLoader {
 
         $oHeightMap = $this->oElevation;
         $oColourMap = $this->oTexture->getPixels();
-        $oPixels    = $this->oDisplay->getPixels();
+        $oPixels    = $this->castDisplayPixelled()->getPixels();
 
         $i = (int)($iViewWidth * $this->oParameters->fHorizon * 1.3);
         while ($i--) {
@@ -171,7 +177,7 @@ class Voxel extends Base implements IResourceLoader {
     /**
      * @inheritDoc
      */
-    protected function parameterChange() {
+    protected function parameterChange(): void {
 
     }
 }

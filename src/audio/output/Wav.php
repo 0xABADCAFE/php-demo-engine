@@ -20,7 +20,7 @@ declare(strict_types=1);
 
 namespace ABadCafe\PDE\Audio\Output;
 use ABadCafe\PDE\Audio;
-use function ABadCafe\PDE\dprintf;
+use function ABadCafe\PDE\dprintf, \array_fill, \array_values, \date, \fclose, \fopen, \ftell, \fwrite, \pack, \rewind, \str_repeat;
 
 /**
  * Wav
@@ -71,8 +71,8 @@ class Wav implements Audio\IPCMOutput {
      * @param string $sPath
      */
     public function __construct(string $sPath) {
-        $this->sPath = empty($sPath) ? (\date('ymdHis') . '.wav') : $sPath;
-        $this->aOutputBuffer = \array_fill(0, Audio\IConfig::PACKET_SIZE, 0);
+        $this->sPath = empty($sPath) ? (date('ymdHis') . '.wav') : $sPath;
+        $this->aOutputBuffer = array_fill(0, Audio\IConfig::PACKET_SIZE, 0);
     }
 
     /**
@@ -85,10 +85,10 @@ class Wav implements Audio\IPCMOutput {
     /**
      * @inheritdoc
      */
-    public function open() {
+    public function open(): void {
         if (
             $this->rOutput ||
-            !($this->rOutput = \fopen($this->sPath, 'wb'))
+            !($this->rOutput = fopen($this->sPath, 'wb'))
         ) {
             throw new \Exception();
         }
@@ -98,10 +98,10 @@ class Wav implements Audio\IPCMOutput {
     /**
      * @inheritdoc
      */
-    public function close() {
+    public function close(): void {
         if ($this->rOutput) {
             $this->writeHeader();
-            \fclose($this->rOutput);
+            fclose($this->rOutput);
             $this->rOutput = null;
         }
     }
@@ -109,7 +109,7 @@ class Wav implements Audio\IPCMOutput {
     /**
      * @inheritdoc
      */
-    public function write(Audio\Signal\Packet $oPacket) {
+    public function write(Audio\Signal\Packet $oPacket): void {
         // Quantize and clamp
         for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
             $iValue = (int)(self::SCALE * $oPacket[$i]);
@@ -120,22 +120,22 @@ class Wav implements Audio\IPCMOutput {
                     $iValue
                 );
         }
-        \fwrite($this->rOutput, \pack('v*', ...$this->aOutputBuffer));
+        fwrite($this->rOutput, pack('v*', ...$this->aOutputBuffer));
     }
 
     /**
      * Reserve the header storage on opening the file
      */
-    private function reserveHeader() {
-        \fwrite($this->rOutput, \str_repeat('-', self::HEADER_SIZE));
+    private function reserveHeader(): void {
+        fwrite($this->rOutput, str_repeat('-', self::HEADER_SIZE));
     }
 
     /**
      * Rewinds and writes the header on closing the file
      */
-    private function writeHeader() {
+    private function writeHeader(): void {
         $aHeader     = self::M_HEADER;
-        $iFileSize   = \ftell($this->rOutput);
+        $iFileSize   = ftell($this->rOutput);
         $iBlockAlign = ($this->iNumChannels * $this->iBitsPerSample) >> 3;
         $aHeader['iChunkSize']     = $iFileSize - 8;
         $aHeader['iSubChunk2Size'] = $iFileSize - self::HEADER_SIZE;
@@ -144,10 +144,10 @@ class Wav implements Audio\IPCMOutput {
         $aHeader['iByteRate']      = $this->iSampleRate * $iBlockAlign;
         $aHeader['iBlockAlign']    = $iBlockAlign;
         $aHeader['iBitsPerSample'] = $this->iBitsPerSample;
-        \rewind($this->rOutput);
-        \fwrite(
+        rewind($this->rOutput);
+        fwrite(
             $this->rOutput,
-            \pack(self::S_HEADER_PACK, ...\array_values($aHeader))
+            pack(self::S_HEADER_PACK, ...array_values($aHeader))
         );
     }
 }

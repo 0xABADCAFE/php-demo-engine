@@ -21,6 +21,7 @@ declare(strict_types=1);
 namespace ABadCafe\PDE\Display;
 use ABadCafe\PDE;
 use \SPLFixedArray;
+use function \microtime, \printf;
 
 /**
  * TInstrumented
@@ -35,10 +36,10 @@ trait TInstrumented {
     /**
      * @param string|null $sWho
      */
-    private function reportRedraw(?string $sWho = null) {
+    private function reportRedraw(?string $sWho = null): void {
         // Only report the statistics if the instance was used
         if ($this->iTotalRedrawCount) {
-            \printf(
+            printf(
                 "%s Total Redraw Time: %.3f seconds, %.2f ms/redraw\n",
                 $sWho ?? static::class,
                 $this->fTotalRedrawTime,
@@ -50,15 +51,15 @@ trait TInstrumented {
     /**
      * Mark the beginning of a redraw
      */
-    protected function beginRedraw() {
-        $this->fRedrawMark = \microtime(true);
+    protected function beginRedraw(): void {
+        $this->fRedrawMark = microtime(true);
     }
 
     /**
      * Mark the end of a redraw
      */
-    protected function endRedraw() {
-        $this->fTotalRedrawTime += \microtime(true) - $this->fRedrawMark;
+    protected function endRedraw(): void {
+        $this->fTotalRedrawTime += microtime(true) - $this->fRedrawMark;
         ++$this->iTotalRedrawCount;
     }
 }

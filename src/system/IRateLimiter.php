@@ -43,12 +43,12 @@ interface IRateLimiter {
     /**
      * @return int
      */
-    public function getMaxFramesPerSecond() : int;
+    public function getMaxFramesPerSecond(): int;
 
     /**
      * Inject a delay. We start off injecting the initial target value.
      *
      * @return float - time since created (in seconds)
      */
-    public function limit() : float;
+    public function limit(): float;
 }

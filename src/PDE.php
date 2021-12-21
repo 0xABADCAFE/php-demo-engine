@@ -31,7 +31,7 @@ if (PHP_VERSION_ID < 70415) {
  * Basic classmap autoloader
  */
 require_once 'classmap.php';
-spl_autoload_register(function(string $str_class) {
+\spl_autoload_register(function(string $str_class) {
     if (isset(CLASS_MAP[$str_class])) {
         require_once __DIR__ . CLASS_MAP[$str_class];
     }
@@ -39,7 +39,9 @@ spl_autoload_register(function(string $str_class) {
 
 /**
  * Debugging output
+ *
+ * @param float|int|string $mVarArgs
  */
-function dprintf(string $sTemplate, ...$aVarArgs) {
-    fprintf(STDERR, $sTemplate, ...$aVarArgs);
+function dprintf(string $sTemplate, ...$mVarArgs): void {
+    \fprintf(STDERR, $sTemplate, ...$mVarArgs);
 }

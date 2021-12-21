@@ -36,15 +36,15 @@ class Replace extends Base {
         int $iTargetY,
         int $iWidth,
         int $iHeight
-    ) {
+    ): void {
         $iTargetW = $oTarget->getWidth();
         $iOffset  = $iTargetW * $iTargetY + $iTargetX;
         $iSpan    = $iTargetW - $iWidth;
-        $oTarget  = $oTarget->getPixels();
+        $oTargetP = $oTarget->getPixels();
         while ($iHeight--) {
             $i = $iWidth;
             while ($i--) {
-                $oTarget[$iOffset++] = $iValue;
+                $oTargetP[$iOffset++] = $iValue;
             }
             $iOffset += $iSpan;
         }
@@ -62,11 +62,11 @@ class Replace extends Base {
         int $iTargetY,
         int $iWidth,
         int $iHeight
-    ) {
+    ): void {
         $iSourceW = $oSource->getWidth();
         $iTargetW = $oTarget->getWidth();
-        $oSource  = $oSource->getPixels();
-        $oTarget  = $oTarget->getPixels();
+        $oSourceP = $oSource->getPixels();
+        $oTargetP = $oTarget->getPixels();
 
         $iSourceIndex = $iSourceY * $iSourceW + $iSourceX;
         $iTargetIndex = $iTargetY * $iTargetW + $iTargetX;
@@ -76,7 +76,7 @@ class Replace extends Base {
         while ($iHeight--) {
             $i = $iWidth;
             while ($i--) {
-                $oTarget[$iTargetIndex++] = $oSource[$iSourceIndex++];
+                $oTargetP[$iTargetIndex++] = $oSourceP[$iSourceIndex++];
             }
             $iSourceIndex += $iSourceSpan;
             $iTargetIndex += $iTargetSpan;
@@ -95,18 +95,18 @@ class Replace extends Base {
         int $iTargetY,
         int $iWidth,
         int $iHeight
-    ) {
+    ): void {
         $iSourceW = $oSource->getWidth();
         $iTargetW = $oTarget->getWidth();
-        $oSource  = $oSource->getPixels();
-        $oTarget  = $oTarget->getPixels();
+        $oSourceP = $oSource->getPixels();
+        $oTargetP = $oTarget->getPixels();
         while ($iHeight--) {
             $iPixels      = $iWidth;
             $iSourceIndex = $iSourceX + $iSourceY++ * $iSourceW;
             $iTargetIndex = $iTargetX + $iTargetY++ * $iTargetW;
             while ($iPixels--) {
-                $iSourcePixel = $oSource[$iSourceIndex++];
-                $iTargetPixel = $oSource[$iTargetIndex];
+                $iSourcePixel = $oSourceP[$iSourceIndex++];
+                $iTargetPixel = $oTargetP[$iTargetIndex];
 
                 $iAlphaIndex  = ($iSourcePixel >> 16) & 0xFF00;
                 $iSourceRGB   =
@@ -122,7 +122,7 @@ class Replace extends Base {
                     (self::$oProducts[$iAlphaIndex|(($iTargetPixel & 0xFF0000) >> 16)] << 16)
                 ;
 
-                $oTarget[$iTargetIndex++] = $iSourceRGB + $iTargetRGB;
+                $oTargetP[$iTargetIndex++] = $iSourceRGB + $iTargetRGB;
             }
         }
     }

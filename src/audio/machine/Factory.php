@@ -20,7 +20,7 @@ declare(strict_types=1);
 
 namespace ABadCafe\PDE\Audio\Machine;
 use ABadCafe\PDE\Audio;
-use function ABadCafe\PDE\dprintf;
+use function ABadCafe\PDE\dprintf, \count, \get_class, \is_array, \is_array, \is_object, \is_string;
 
 /**
  * Machine factory

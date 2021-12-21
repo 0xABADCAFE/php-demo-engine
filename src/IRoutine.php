@@ -38,7 +38,7 @@ interface IRoutine extends IParameterisable {
      * Expected constructor profile
      *
      * @param IDisplay $oDisplay
-     * @param array    $aParameters
+     * @param mixed[]  $aParameters
      */
     public function __construct(IDisplay $oDisplay, array $aParameters = []);
 
@@ -51,13 +51,22 @@ interface IRoutine extends IParameterisable {
     public function setDisplay(IDisplay $oDisplay) : self;
 
     /**
+     * Returns true if the effect can render right now, taking into account expected duration, etc.
+     *
+     * @param  int   $iFrameNumber
+     * @param  float $fTimeIndex
+     * @return bool
+     */
+    public function canRender(int $iFrameNumber, float $fTimeIndex): bool;
+
+    /**
      * Render a frame to the given display
      *
      * @param  int   $iFrameNumber
      * @param  float $fTimeIndex
      * @return self  fluent
      */
-    public function render(int $iFrameNumber, float $fTimeIndex) : self;
+    public function render(int $iFrameNumber, float $fTimeIndex): self;
 
     /**
      * Enable the routine. This will be called during the event processing stage before
@@ -68,7 +77,7 @@ interface IRoutine extends IParameterisable {
      * @param  float $fTimeIndex
      * @return self  fluent
      */
-    public function enable(int $iFrameNumber, float $fTimeIndex) : self;
+    public function enable(int $iFrameNumber, float $fTimeIndex): self;
 
     /**
      * Disable the routine. This will be called during the event processing stage before
@@ -78,5 +87,5 @@ interface IRoutine extends IParameterisable {
      * @param  float $fTimeIndex
      * @return self  fluent
      */
-    public function disable(int $iFrameNumber, float $fTimeIndex) : self;
+    public function disable(int $iFrameNumber, float $fTimeIndex): self;
 }

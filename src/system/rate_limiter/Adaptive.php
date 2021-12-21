@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 namespace ABadCafe\PDE\System\RateLimiter;
 use ABadCafe\PDE\System;
+use function \microtime, \pow, \usleep;
 
 /**
  * Adaptive ratelimiter
@@ -44,8 +45,7 @@ class Adaptive implements System\IRateLimiter {
         $this->iMaxFramesPerSecond = $iMaxFramesPerSecond;
         $this->fAdjustedDelay      = // fall through
         $this->fTargetDelay        = (1000000.0 / $iMaxFramesPerSecond);
-        $this->fFirst              = // fall through
-        $this->fPrevious           = microtime(true);
+        $this->fFirst              = microtime(true);
     }
 
     /**

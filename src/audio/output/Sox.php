@@ -21,6 +21,8 @@ declare(strict_types=1);
 namespace ABadCafe\PDE\Audio\Output;
 use ABadCafe\PDE\Audio;
 
+use function \sprintf;
+
 /**
  * Sox
  *
@@ -31,7 +33,7 @@ class Sox extends Piped {
     /**
      * @inheritDoc
      */
-    protected function createOutputCommand() : string {
+    protected function createOutputCommand(): string {
         return sprintf(
             'play -t raw -b 16 -c 1 -e signed --endian=little -r %d --buffer %d -',
             Audio\IConfig::PROCESS_RATE,

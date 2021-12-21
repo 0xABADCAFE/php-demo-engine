@@ -21,6 +21,7 @@ declare(strict_types=1);
 namespace ABadCafe\PDE\Display;
 use ABadCafe\PDE;
 use \SPLFixedArray;
+use function \count, \pack, \posix_getuid, \proc_nice, \socket_close, \socket_read, \socket_write;
 
 /**
  * TAsynchronous
@@ -32,9 +33,9 @@ trait TAsynchronous {
     use PDE\System\TAsynchronous;
 
     /**
-     * @implements IDisplay::waitForFrame()
+     * @return PDE\IDisplay
      */
-    public function waitForFrame() : PDE\IDisplay {
+    public function waitForFrame(): PDE\IDisplay {
         //return $this;
         $this->sendRawMessage(IAsynchronous::MESSAGE_WAIT_FOR_FRAME);
 
@@ -53,10 +54,10 @@ trait TAsynchronous {
     /**
      * Send a message containing the updated pixel buffer
      *
-     * @param SPLFixedArray $oPixels
-     * @param int           $iDataFormat
+     * @param SPLFixedArray<int> $oPixels
+     * @param int                $iDataFormat
      */
-    protected function sendNewFrameMessage(SPLFixedArray $oPixels, int $iDataFormat) {
+    protected function sendNewFrameMessage(SPLFixedArray $oPixels, int $iDataFormat): void {
         if (!isset(IAsynchronous::DATA_FORMAT_MAP[$iDataFormat])) {
             throw new \InvalidArgumentException();
         }
@@ -73,7 +74,7 @@ trait TAsynchronous {
      *
      * @param int $iWriteMask
      */
-    private function sendSetWritemaskMessage(int $iWriteMask) {
+    private function sendSetWritemaskMessage(int $iWriteMask): void {
         $sMessageData = $this->makeMessageHeader(IAsynchronous::MESSAGE_SET_WRITEMASK, 8) . pack('Q', $iWriteMask);
         socket_write($this->aSocketPair[IAsynchronous::ID_PARENT], $sMessageData, IAsynchronous::HEADER_SIZE + 8);
     }
@@ -81,9 +82,9 @@ trait TAsynchronous {
     /**
      * Send a message with a new fixed foreground colour to use
      *
-     * @param int $iWriteMask
+     * @param int $iColour
      */
-    private function sendSetForegroundColour(int $iColour) {
+    private function sendSetForegroundColour(int $iColour): void {
         $sMessageData = $this->makeMessageHeader(IAsynchronous::MESSAGE_SET_FG_COLOUR, 4) . pack('V', $iColour);
         socket_write($this->aSocketPair[IAsynchronous::ID_PARENT], $sMessageData, IAsynchronous::HEADER_SIZE + 4);
     }
@@ -91,9 +92,9 @@ trait TAsynchronous {
     /**
      * Send a message with a new fixed background colour to use
      *
-     * @param int $iWriteMask
+     * @param int $iColour
      */
-    private function sendSetBackgroundColour(int $iColour) {
+    private function sendSetBackgroundColour(int $iColour): void {
         $sMessageData = $this->makeMessageHeader(IAsynchronous::MESSAGE_SET_BG_COLOUR, 4) . pack('V', $iColour);
         socket_write($this->aSocketPair[IAsynchronous::ID_PARENT], $sMessageData, IAsynchronous::HEADER_SIZE + 4);
     }
@@ -102,13 +103,13 @@ trait TAsynchronous {
     /**
      * Class that incorporates the trait needs to implement this.
      */
-    protected abstract function subprocessRenderLoop();
+    protected abstract function subprocessRenderLoop(): void;
 
     /**
      * Main subprocess loop. This sits and waits for data from the socket. When the data arrives
      * it decodes and prints it.
      */
-    private function runSubprocess() {
+    private function runSubprocess(): void {
         // In the unlikely event we run as root, bang up our priority
         if (0 === posix_getuid()) {
             proc_nice(-19);
@@ -123,7 +124,7 @@ trait TAsynchronous {
      *
      * @param int $iProcess - which processes socket to close
      */
-    private function closeSocket(int $iProcess) {
+    private function closeSocket(int $iProcess): void {
         if (isset($this->aSocketPair[$iProcess])) {
             socket_close($this->aSocketPair[$iProcess]);
             unset($this->aSocketPair[$iProcess]);

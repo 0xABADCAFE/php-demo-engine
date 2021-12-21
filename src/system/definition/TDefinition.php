@@ -19,6 +19,7 @@
 declare(strict_types=1);
 
 namespace ABadCafe\PDE\System\Definition;
+use function \gettype, \settype;
 
 /**
  * TDefinition
@@ -31,10 +32,10 @@ trait TDefinition {
     /**
      * Maps a raw object to entity field structure.
      *
-     * @param object $oRaw
+     * @param \stdClass $oRaw
      */
-    protected function mapFromRaw(object $oRaw) {
-        foreach ($oRaw as $sField => $mValue) {
+    protected function mapFromRaw(\stdClass $oRaw): void {
+        foreach ((array)$oRaw as $sField => $mValue) {
             if (isset(self::DEFAULTS[$sField])) {
                 settype($mValue, gettype(self::DEFAULTS[$sField]));
                 $this->{$sField} = $mValue;

@@ -36,15 +36,15 @@ class CombineAnd implements IMode {
         int $iTargetY,
         int $iWidth,
         int $iHeight
-    ) {
+    ): void {
         $iTargetW = $oTarget->getWidth();
         $iOffset  = $iTargetW * $iTargetY + $iTargetX;
         $iSpan    = $iTargetW - $iWidth;
-        $oTarget  = $oTarget->getPixels();
+        $oTargetP = $oTarget->getPixels();
         while ($iHeight--) {
             $i = $iWidth;
             while ($i--) {
-                $oTarget[$iOffset++] &= $iValue;
+                $oTargetP[$iOffset++] &= $iValue;
             }
             $iOffset += $iSpan;
         }
@@ -62,17 +62,17 @@ class CombineAnd implements IMode {
         int $iTargetY,
         int $iWidth,
         int $iHeight
-    ) {
+    ): void {
         $iSourceW = $oSource->getWidth();
         $iTargetW = $oTarget->getWidth();
-        $oSource  = $oSource->getPixels();
-        $oTarget  = $oTarget->getPixels();
+        $oSourceP = $oSource->getPixels();
+        $oTargetP = $oTarget->getPixels();
         while ($iHeight--) {
             $iPixels      = $iWidth;
             $iSourceIndex = $iSourceX + $iSourceY++ * $iSourceW;
             $iTargetIndex = $iTargetX + $iTargetY++ * $iTargetW;
             while ($iPixels--) {
-                $oTarget[$iTargetIndex++] &= $oSource[$iSourceIndex++];
+                $oTargetP[$iTargetIndex++] &= $oSourceP[$iSourceIndex++];
             }
         }
     }

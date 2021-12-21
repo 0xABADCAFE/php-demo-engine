@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 namespace ABadCafe\PDE\Display;
 use ABadCafe\PDE;
+use function \array_combine, \array_keys, \array_map, \array_values, \strlen, \urldecode;
 
 /**
  * PlainASCII
@@ -49,7 +50,7 @@ class PlainASCII extends Base implements IASCIIArt {
     use TASCIIArt, TInstrumented;
 
     /**
-     * @var string[] $aBlockMapSearch, $aBlockMapReplace
+     * @var string[] $aBlockMapReplace
      *
      * These arrays are used to convert any ICustomChars characters just before display.
      */
@@ -79,7 +80,7 @@ class PlainASCII extends Base implements IASCIIArt {
     /**
      * @inheritDoc
      */
-    public function clear() : self {
+    public function clear(): self {
         $this->resetASCIIBuffer();
         return $this;
     }
@@ -87,7 +88,7 @@ class PlainASCII extends Base implements IASCIIArt {
     /**
      * @inheritDoc
      */
-    public function redraw() : self {
+    public function redraw(): self {
         $this->beginRedraw();
 
         $sRawBuffer = '';
@@ -107,7 +108,7 @@ class PlainASCII extends Base implements IASCIIArt {
     /**
      * @inheritDoc
      */
-    public function setParameters(array $aParameters) : self {
+    public function setParameters(array $aParameters): self {
         $oParameters = $this->filterRawParameters($aParameters);
         if (isset($oParameters->iFGColour)) {
             $this->setForegroundColour($oParameters->iFGColour);
@@ -124,7 +125,7 @@ class PlainASCII extends Base implements IASCIIArt {
     /**
      * @inheritDoc
      */
-    public function waitForFrame() : self {
+    public function waitForFrame(): self {
         // If we are leaving this display, make sure we reset anything we messed with.
         echo IANSIControl::ATTR_RESET;
         return $this;

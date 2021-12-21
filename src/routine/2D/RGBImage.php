@@ -34,7 +34,7 @@ class RGBImage extends Base implements IResourceLoader {
     private Graphics\Image   $oImage;
     private Graphics\Blitter $oBlitter;
 
-    private float $fDisplacementX = 0.0, $fDisplacementY = 0.0;
+    //private float $fDisplacementX = 0.0, $fDisplacementY = 0.0;
 
     const DEFAULT_PARAMETERS = [
         'sPath'   => 'required',
@@ -45,16 +45,17 @@ class RGBImage extends Base implements IResourceLoader {
     ];
 
     /**
-     * Basic constructor
-     *
-     * @implements IRoutine::__construct()
+     * @inheritDoc
      */
     public function __construct(PDE\IDisplay $oDisplay, array $aParameters = []) {
         $this->oBlitter = new Graphics\Blitter();
         parent::__construct($oDisplay, $aParameters);
     }
 
-    public function preload() : self {
+    /**
+     * @inheritDoc
+     */
+    public function preload(): self {
         $this->oImage = $this->loadPNM($this->oParameters->sPath);
         $this->oBlitter->setSource($this->oImage);
         return $this;
@@ -63,18 +64,22 @@ class RGBImage extends Base implements IResourceLoader {
     /**
      * @inheritDoc
      */
-    public function setDisplay(PDE\IDisplay $oDisplay) : self {
-        if ($this->bCanRender  = ($oDisplay instanceof PDE\Display\IPixelled)) {
-            $this->oBlitter->setTarget($oDisplay);
+    public function setDisplay(PDE\IDisplay $oDisplay): self {
+        $this->oDisplay = $oDisplay;
+        if ($oDisplay instanceof PDE\Display\IPixelled) {
+            $this->bCanRender = true;
+            $this->oBlitter->setTarget($this->castDisplayPixelled());
+        } else {
+            $this->bCanRender = false;
         }
-        $this->oDisplay    = $oDisplay;
+
         return $this;
     }
 
     /**
      * @inheritDoc
      */
-    public function render(int $iFrameNumber, float $fTimeIndex) : self {
+    public function render(int $iFrameNumber, float $fTimeIndex): self {
         $this->oBlitter
             ->setMode($this->oParameters->iMode)
             ->copy(
@@ -91,7 +96,7 @@ class RGBImage extends Base implements IResourceLoader {
     /**
      * @inheritDoc
      */
-    protected function parameterChange() {
+    protected function parameterChange(): void {
 
     }
 

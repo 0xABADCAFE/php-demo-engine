@@ -21,11 +21,11 @@
 declare(strict_types = 1);
 
 /**
- * ClassMapBuilder
+ * TidyUp
  *
- * Crawls the given directory and builds a simple classmap
+ * Crawls the given directory and performs any file tidying.
  */
-class ClassMapBuilder {
+class TidyUp {
 
     const EXCLUDE_PATTERNS = [
         '.'  => 1,
@@ -39,30 +39,16 @@ class ClassMapBuilder {
     /** @var string[] $aFiles */
     private array $aFiles = [];
 
-    /** @var string[] $aClassMap */
-    private array $aClassMap = [];
-
     /**
      * Main entry point
      *
      * @param string $sSourceDir
      */
-    public function execute(string $sSourceDir, string $sNameSpace) {
+    public function execute(string $sSourceDir, string $sNameSpace): void {
         $this->aFiles = [];
         $this->traverse($sSourceDir);
-        $this->aClassMap = [];
         foreach ($this->aFiles as $sSourcePath) {
             $this->processFile($sSourcePath);
-        }
-        $sCode = "<?php\n\nnamespace " . $sNameSpace . ";\n\nconst CLASS_MAP = " .
-            str_replace(['array (', ')'], ['[', ']'], var_export($this->aClassMap, true)) .
-            ";";
-        file_put_contents('src/classmap.php', $sCode);
-        foreach ($this->aFiles as $sFile) {
-            $sTest = shell_exec('php -dvld.active=1 -dvld.execute=0 ' . $sFile . ' 2>&1 | grep INIT_NS');
-            if (!empty($sTest)) {
-                echo $sFile, ":\n", $sTest, "\n";
-            }
         }
     }
 
@@ -71,7 +57,7 @@ class ClassMapBuilder {
      *
      * @param string $sDirectory
      */
-    private function traverse(string $sDirectory) {
+    private function traverse(string $sDirectory): void {
         $oCurrentDir = dir($sDirectory);
         $sDirectory  = rtrim($sDirectory, '/');
         $aSubdirs    = [];
@@ -100,21 +86,28 @@ class ClassMapBuilder {
     }
 
     /**
-     * Extract namespace, interface, class and trait definitions from a source file
-     *
      * @param string $sFile
      */
-    private function processFile(string $sFile) {
+    private function processFile(string $sFile): void {
         $sContent = file_get_contents($sFile);
-        preg_match('/^namespace\s+([a-z0-9_\\\]+)/im', $sContent, $aMatches);
-        $sNamespace = $aMatches[1] . '\\';
-        preg_match_all('/^(class|interface|trait|abstract\s+class|final\s+class)\s+([a-z0-9_]+)/im', $sContent, $aMatches);
-        $aMatches = $aMatches[2];
-        $sFile    = substr($sFile, 3);
-        foreach ($aMatches as $sName) {
-            $this->aClassMap[$sNamespace . $sName] = $sFile;
+        $sOutput  = preg_replace_callback(
+            '/^\s*use\s+function\s+(.*?);\s*$/m',
+            function (array $aMatches) {
+                $aFunctions = array_map('trim', explode(',', $aMatches[1]));
+                if (count($aFunctions) > 1) {
+                    asort($aFunctions);
+                    return 'use function ' . implode(', ', $aFunctions) . ";\n";
+                } else {
+                    return $aMatches[0];
+                }
+            },
+            $sContent
+        );
+        if ($sOutput !== $sContent) {
+            echo "Reordering use clauses in ", $sFile, "...\n";
+            file_put_contents($sFile, $sOutput);
         }
     }
 }
 
-(new ClassMapBuilder)->execute('src/', 'ABadCafe\PDE');
+(new TidyUp)->execute('src/', 'ABadCafe\PDE');

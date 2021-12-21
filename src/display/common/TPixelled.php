@@ -22,6 +22,8 @@ namespace ABadCafe\PDE\Display;
 use ABadCafe\PDE;
 use \SPLFixedArray;
 
+use function \array_fill;
+
 /**
  * TPixelled
  *
@@ -29,6 +31,10 @@ use \SPLFixedArray;
  */
 trait TPixelled {
 
+    /**
+     * @var SPLFixedArray<int> $oPixels
+     * @var SPLFixedArray<int> $oNewPixels
+     */
     private SPLFixedArray $oPixels, $oNewPixels;
 
     private int $iFormat, $iRGBWriteMask = 0xFFFFFF;
@@ -36,7 +42,7 @@ trait TPixelled {
     /**
      * @inheritDoc
      */
-    private function initPixelBuffer(int $iWidth, int $iHeight, int $iFormat, int $iFill) {
+    private function initPixelBuffer(int $iWidth, int $iHeight, int $iFormat, int $iFill): void {
         $this->oPixels    = clone // drop through
         $this->oNewPixels = SPLFixedArray::fromArray(array_fill(0, $iWidth * $iHeight, $iFill));
         $this->iFormat    = $iFormat;
@@ -46,7 +52,7 @@ trait TPixelled {
     /**
      * @inheritDoc
      */
-    private function resetPixelBuffer() {
+    private function resetPixelBuffer(): void {
         $this->oPixels = clone $this->oNewPixels;
     }
 
@@ -60,14 +66,14 @@ trait TPixelled {
     /**
      * @inheritDoc
      */
-    public function getPixels() : SPLFixedArray {
+    public function getPixels(): SPLFixedArray {
         return $this->oPixels;
     }
 
     /**
      * @inheritDoc
      */
-    public function setRGBWriteMask(int $iMask) : self {
+    public function setRGBWriteMask(int $iMask): self {
         $this->iRGBWriteMask = $iMask;
         return $this;
     }
@@ -75,11 +81,11 @@ trait TPixelled {
     /**
      * @inheritDoc
      */
-    public function getRGBWriteMask() : int {
+    public function getRGBWriteMask(): int {
         return $this->iRGBWriteMask;
     }
 
-    protected function setDefaultPixelValue(int $iValue) {
+    protected function setDefaultPixelValue(int $iValue): void {
         $iCount           = $this->oPixels->count();
         $this->oPixels    = clone // drop through
         $this->oNewPixels = SPLFixedArray::fromArray(array_fill(0, $iCount, $iValue));

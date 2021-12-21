@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 namespace ABadCafe\PDE\Audio\Machine\FM;
 use ABadCafe\PDE\Audio;
+use function \max, \min;
 
 /**
  * Operator

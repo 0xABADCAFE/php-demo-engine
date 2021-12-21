@@ -21,6 +21,7 @@ declare(strict_types=1);
 namespace ABadCafe\PDE\Routine;
 
 use ABadCafe\PDE\Graphics;
+use function \file_exists, \file_get_contents, \is_readable, \ord, \preg_match, \substr;
 
 /**
  * TResourceLoader
@@ -29,10 +30,12 @@ use ABadCafe\PDE\Graphics;
  */
 trait TResourceLoader {
 
+    private string $sBasePath;
+
     /**
      * Sets the base path expectation for resource loads
      */
-    public function setBasePath(string $sBasePath) : self {
+    public function setBasePath(string $sBasePath): self {
         $this->sBasePath = $sBasePath;
         return $this;
     }
@@ -44,10 +47,10 @@ trait TResourceLoader {
      * @return string
      * @throws \Exception
      */
-    private function loadFile(string $sRelativePath) : string {
+    private function loadFile(string $sRelativePath): string {
         $sPath = $this->sBasePath . $sRelativePath;
         if (file_exists($sPath) && is_readable($sPath)) {
-            return file_get_contents($sPath);
+            return (string)file_get_contents($sPath);
         }
         throw new \Exception($sPath . ' could not be read');
     }
@@ -62,7 +65,7 @@ trait TResourceLoader {
      * @return Graphics\Image;
      * @throws \Exception
      */
-    protected function loadPNM(string $sPath) : Graphics\Image {
+    protected function loadPNM(string $sPath): Graphics\Image {
         $sRaw = $this->loadFile($sPath);
         $bRGB = (substr($sRaw, 0, 2) === 'P6');
         if (preg_match('/^(\d+)\s+(\d+)$/m', $sRaw, $aMatches)) {

@@ -64,15 +64,15 @@ interface IPixelled extends Graphics\IPixelBuffer {
      *
      * @return int
      */
-    public function getFormat() : int;
+    public function getFormat(): int;
 
     /**
      * Returns a fixed length array of integer values that represent the pixels. The size of the array
      * is the product of the display's width and height.
      *
-     * @return SPLFixedArray
+     * @return SPLFixedArray<int>
      */
-    public function getPixels() : SPLFixedArray;
+    public function getPixels(): SPLFixedArray;
 
     /**
      * Set an RGB write mask to use. This is an integer value that will be bitwise masked against the
@@ -89,10 +89,10 @@ interface IPixelled extends Graphics\IPixelBuffer {
      * @param  int  $iMask
      * @return self
      */
-    public function setRGBWriteMask(int $iMask) : self;
+    public function setRGBWriteMask(int $iMask): self;
 
     /**
      * @return int
      */
-    public function getRGBWriteMask() : int;
+    public function getRGBWriteMask(): int;
 }

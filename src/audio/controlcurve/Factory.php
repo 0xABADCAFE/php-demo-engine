@@ -22,6 +22,8 @@ namespace ABadCafe\PDE\Audio\ControlCurve;
 
 use ABadCafe\PDE\Audio;
 
+use function \abs;
+
 /**
  * Factory
  *

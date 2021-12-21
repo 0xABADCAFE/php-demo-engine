@@ -46,21 +46,21 @@ class Player implements PDE\System\IAsynchronous {
     /**
      * Start playback
      */
-    public function start() {
+    public function start(): void {
 
     }
 
     /**
      * Schtop playback
      */
-    public function stop() {
+    public function stop(): void {
 
     }
 
     /**
      * @inheritDoc
      */
-    protected function runSubprocess() {
+    protected function runSubprocess(): void {
         $oDrumMachine = new Machine\TRNaN();
         $oDrumMachine->setOutputLevel(0.75);
         $oDrumPattern = new Sequence\Pattern(6, 128);

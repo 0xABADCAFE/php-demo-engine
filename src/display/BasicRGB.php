@@ -21,6 +21,7 @@ declare(strict_types=1);
 namespace ABadCafe\PDE\Display;
 use ABadCafe\PDE;
 use \SPLFixedArray;
+use function \array_fill_keys, \base_convert, \range, \sprintf;
 
 /**
  * BasicRGB
@@ -38,6 +39,7 @@ class BasicRGB extends Base implements IPixelled {
 
     use TPixelled, TInstrumented;
 
+    /** @var string[] $aLineBreaks */
     private array $aLineBreaks = [];
 
     /**
@@ -60,7 +62,7 @@ class BasicRGB extends Base implements IPixelled {
     /**
      * @inheritDoc
      */
-    public function clear() : self {
+    public function clear(): self {
         $this->resetPixelBuffer();
         return $this;
     }
@@ -68,7 +70,7 @@ class BasicRGB extends Base implements IPixelled {
     /**
      * @inheritDoc
      */
-    public function redraw() : self {
+    public function redraw(): self {
         $this->beginRedraw();
         $sRawBuffer = IANSIControl::CRSR_TOP_LEFT . sprintf(IANSIControl::ATTR_BG_RGB_TPL, 0, 0, 0);
         $iLastRGB  = 0;
@@ -96,7 +98,7 @@ class BasicRGB extends Base implements IPixelled {
     /**
      * @inheritDoc
      */
-    public function setParameters(array $aParameters) : self {
+    public function setParameters(array $aParameters): self {
         $oParameters = $this->filterRawParameters($aParameters);
         if (isset($oParameters->sMaskRGB)) {
             $this->setRGBWriteMask((int)base_convert($oParameters->sMaskRGB, 16, 10));

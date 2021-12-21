@@ -22,6 +22,8 @@ namespace ABadCafe\PDE\Audio\Signal\Oscillator;
 
 use ABadCafe\PDE\Audio;
 
+use function \is_object;
+
 /**
  * Oscillator factory
  */

@@ -29,6 +29,8 @@ use \SPLFixedArray;
  * Based on the GIMPS implementation, simplified.
  *
  * @see https://github.com/0xABADCAFE/random-proto-synth
+ *
+ * @implements SPLFixedArray<float>
  */
 class Packet extends \SPLFixedArray {
 

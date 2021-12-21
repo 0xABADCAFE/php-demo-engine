@@ -149,5 +149,4 @@ const CLASS_MAP = [
   'ABadCafe\\PDE\\System\\Definition\\Event' => '/system/definition/Event.php',
   'ABadCafe\\PDE\\System\\Definition\\Routine' => '/system/definition/Routine.php',
   'ABadCafe\\PDE\\System\\Loader\\JSON' => '/system/loader/JSON.php',
-  '\\Scene' => '/tests/raytrace.php',
 ];

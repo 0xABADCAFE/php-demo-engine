@@ -37,17 +37,17 @@ interface IPCMOutput {
      *
      * @throws \Exception
      */
-    public function open();
+    public function open(): void;
 
     /**
      * Write a signal packet. This involves scaling, quantising values and limiting them before writing.
      *
-     * @param Signal\Packet $oPacket
+     * @param Signal\Packet<float> $oPacket
      */
-    public function write(Signal\Packet $oPacket);
+    public function write(Signal\Packet $oPacket): void;
 
     /**
      * Close down the output handle and subprocess.
      */
-    public function close();
+    public function close(): void;
 }

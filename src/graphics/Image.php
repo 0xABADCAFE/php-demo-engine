@@ -21,9 +21,13 @@ declare(strict_types=1);
 namespace ABadCafe\PDE\Graphics;
 use \SPLFixedArray;
 
+use function \array_fill;
+
 class Image implements IPixelBuffer {
 
     private int $iWidth, $iHeight;
+
+    /** @var SPLFixedArray<int> $oPixels */
     private SPLFixedArray $oPixels;
 
     /**
@@ -47,21 +51,21 @@ class Image implements IPixelBuffer {
     /**
      * @inheritDoc
      */
-    public function getWidth() : int {
+    public function getWidth(): int {
         return $this->iWidth;
     }
 
     /**
      * @inheritDoc
      */
-    public function getHeight() : int {
+    public function getHeight(): int {
         return $this->iHeight;
     }
 
     /**
      * @inheritDoc
      */
-    public function getPixels() : SPLFixedArray {
+    public function getPixels(): SPLFixedArray {
         return $this->oPixels;
     }
 }

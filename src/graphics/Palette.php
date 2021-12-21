@@ -20,12 +20,14 @@ declare(strict_types=1);
 
 namespace ABadCafe\PDE\Graphics;
 use \SPLFixedArray;
+use function \array_fill, \array_keys, \array_values, \count, \ksort, \max, \min;
 
 /**
  * Simple Palette class.
  */
 class Palette {
 
+    /** @var SPLFixedArray<int> $oEntries */
     private SPLFixedArray $oEntries;
     private int           $iSize;
 
@@ -37,7 +39,7 @@ class Palette {
         $this->oEntries = SPLFixedArray::fromArray(array_fill(0, $iSize, 0));
     }
 
-    public function size() : int {
+    public function size(): int {
         return $this->iSize;
     }
 
@@ -48,16 +50,19 @@ class Palette {
      * given.
      *
      * @param int[] $aPoints
+     * @return SPLFixedArray<int>
      */
-    public function gradient(array $aPoints) : SPLFixedArray {
+    public function gradient(array $aPoints): SPLFixedArray {
         $iCount = count($aPoints);
         if ($iCount < 2) {
             throw new \LengthException('A gradient requires at least 2 points');
         }
         ksort($aPoints);
+
+        /** @var int[] $aPositions */
         $aPositions = array_keys($aPoints);
         if (min($aPositions) < 0) {
-            throw new OutOfBoundsException('Negative indexes not allowed');
+            throw new \OutOfBoundsException('Negative indexes not allowed');
         }
         $aRGBValues = array_values($aPoints);
 
@@ -100,8 +105,10 @@ class Palette {
 
     /**
      * Return the raw palette data.
+     *
+     * @return SPLFixedArray<int>
      */
-    public function getEntries() : SPLFixedArray {
+    public function getEntries(): SPLFixedArray {
         return $this->oEntries;
     }
 }

@@ -58,7 +58,7 @@ class Factory {
      *
      * @return self
      */
-    public static function get() : self {
+    public static function get(): self {
         if (null === self::$oInstance) {
             self::$oInstance = new self;
         }
@@ -68,12 +68,12 @@ class Factory {
     /**
      * Factory method
      *
-     * @param  string $sKind
-     * @paran  int    $iWidth
-     * @param  int    $iHeight
-     * @return PDE\IDisplay
+     * @param  string       $sKind
+     * @param  PDE\IDisplay $oDisplay
+     * @param  mixed[]      $aParameters
+     * @return PDE\IRoutine
      */
-    public function create(string $sKind, PDE\IDisplay $oDisplay, array $aParameters = []) : PDE\IRoutine {
+    public function create(string $sKind, PDE\IDisplay $oDisplay, array $aParameters = []): PDE\IRoutine {
         if (!isset(self::TYPES[$sKind])) {
             throw new \OutOfBoundsException($sKind . ' is not a known IRoutine type)');
         }

@@ -39,24 +39,24 @@ interface ILoader {
      *
      * @return string
      */
-    public function getBasePath() : string;
+    public function getBasePath(): string;
 
     /**
      * Return an associative array of the Display definitions in file.
      *
      * @return Definition\Display[] - keyed by identifer
      */
-    public function getDisplays() : array;
+    public function getDisplays(): array;
 
     /**
     * Return an associative array of the Routine definitions in the file.
      *
      * @return Definition\Routine[] - keyed by identifier
      */
-    public function getRoutines() : array;
+    public function getRoutines(): array;
 
     /**
      * @return Definition\Event[]
      */
-    public function getEvents() : array;
+    public function getEvents(): array;
 }

@@ -21,9 +21,9 @@
 declare(strict_types = 1);
 
 /**
- * ClassMapBuilder
+ * TidyUp
  *
- * Crawls the given directory and builds a simple classmap
+ * Crawls the given directory and performs any file tidying.
  */
 class TidyUp {
 
@@ -44,7 +44,7 @@ class TidyUp {
      *
      * @param string $sSourceDir
      */
-    public function execute(string $sSourceDir, string $sNameSpace) {
+    public function execute(string $sSourceDir, string $sNameSpace): void {
         $this->aFiles = [];
         $this->traverse($sSourceDir);
         foreach ($this->aFiles as $sSourcePath) {
@@ -57,7 +57,7 @@ class TidyUp {
      *
      * @param string $sDirectory
      */
-    private function traverse(string $sDirectory) {
+    private function traverse(string $sDirectory): void {
         $oCurrentDir = dir($sDirectory);
         $sDirectory  = rtrim($sDirectory, '/');
         $aSubdirs    = [];
@@ -88,7 +88,7 @@ class TidyUp {
     /**
      * @param string $sFile
      */
-    private function processFile(string $sFile) {
+    private function processFile(string $sFile): void {
         $sContent = file_get_contents($sFile);
         $sOutput  = preg_replace_callback(
             '/^\s*use\s+function\s+(.*?);\s*$/m',

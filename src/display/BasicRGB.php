@@ -22,6 +22,8 @@ namespace ABadCafe\PDE\Display;
 use ABadCafe\PDE;
 use \SPLFixedArray;
 
+use function \range, \array_fill_keys, \sprintf, \base_convert;
+
 /**
  * BasicRGB
  *

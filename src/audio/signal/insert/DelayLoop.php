@@ -22,6 +22,8 @@ namespace ABadCafe\PDE\Audio\Signal\Insert;
 use ABadCafe\PDE\Audio;
 use \SPLDoublyLinkedList;
 
+use function \ceil;
+
 /**
  * DelayLoop
  *

@@ -24,6 +24,8 @@ use ABadCafe\PDE;
 use ABadCafe\PDE\Graphics;
 use \SPLFixedArray;
 
+use function \sin, \min, \sqrt, \atan2;
+
 /**
  * Display an image
  */
@@ -35,6 +37,8 @@ class Tunnel extends Base implements IResourceLoader {
     private Graphics\Image $oTexture;
 
     // Calculation tables
+
+    /** @var SPLFixedArray<int> */
     private SPLFixedArray $oDistanceTable, $oAngleTable;
 
     const DEFAULT_PARAMETERS = [
@@ -51,14 +55,15 @@ class Tunnel extends Base implements IResourceLoader {
     ];
 
     /**
-     * Basic constructor
-     *
-     * @implements IRoutine::__construct()
+     * @inheritDoc
      */
     public function __construct(PDE\IDisplay $oDisplay, array $aParameters = []) {
         parent::__construct($oDisplay, $aParameters);
     }
 
+    /**
+     * @inheritDoc
+     */
     public function preload(): self {
         $iExpect = 1 << $this->oParameters->iTexDim;
         $oTexture = $this->loadPNM($this->oParameters->sTexPath);
@@ -101,7 +106,6 @@ class Tunnel extends Base implements IResourceLoader {
         $iPanY       = ($iHeight + $this->oParameters->fVPanLimit * $iHeight * sin($fTimeIndex * $this->oParameters->fVPanRate)) >> 1;
         $iWidth2     = $iWidth << 1;
 
-
         for ($iY = 0; $iY < $iHeight; ++$iY) {
             $iTableY = $iY + $iPanY;
             for ($iX = 0; $iX < $iWidth; ++$iX) {
@@ -129,7 +133,6 @@ class Tunnel extends Base implements IResourceLoader {
                 }
             }
         }
-
         return $this;
     }
 

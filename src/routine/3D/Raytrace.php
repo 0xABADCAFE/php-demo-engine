@@ -25,6 +25,8 @@ use ABadCafe\PDE\Graphics;
 use ABadCafe\PDE\Util\Vec3F;
 use \SPLFixedArray;
 
+use function \mt_getrandmax, \base_convert, \abs, \cos, \mt_rand, \min, \sqrt, \ceil, \pow;
+
 /**
  * Raytrace a simple scene
  */
@@ -79,7 +81,10 @@ class Raytrace extends Base {
 
     private Graphics\Blitter $oBlitter;
 
+    /** @var Vec3F[] $aSpheres */
     private array $aSpheres = [];
+
+    /** @var float[] $aRadii */
     private array $aRadii = [];
 
     private Vec3F
@@ -106,9 +111,7 @@ class Raytrace extends Base {
     ;
 
     /**
-     * Basic constructor
-     *
-     * @implements IRoutine::__construct()
+     * @inheritDoc
      */
     public function __construct(PDE\IDisplay $oDisplay, array $aParameters = []) {
         // These must be initialised no matter what

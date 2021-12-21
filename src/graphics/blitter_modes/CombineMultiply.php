@@ -46,7 +46,7 @@ class CombineMultiply implements IMode {
         while ($iHeight--) {
             $i = $iWidth;
             while ($i--) {
-                $iTarget = $oTarget[$iOffset];
+                $iTarget = $oTargetP[$iOffset];
                 $iRed    = ($iSourceR * (($iTarget >> 16) & 0xFF)) >> 8;
                 $iGreen  = ($iSourceG * (($iTarget >> 8)  & 0xFF)) >> 8;
                 $iBlue   = ($iSourceB * ($iTarget & 0xFF)) >> 8;

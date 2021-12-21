@@ -21,8 +21,9 @@ declare(strict_types=1);
 namespace ABadCafe\PDE\Routine;
 
 use ABadCafe\PDE;
-
 use \SPLFixedArray;
+
+use function \array_fill, \sin, \mt_rand, \min, \max;
 
 /**
  * Random plasma fire effect. Burns upwards from the lower extent of the display.
@@ -41,6 +42,9 @@ class RGBFire extends Base {
         'fMixRatio'   => 10.0    // Persistence effect, ratio of new value to existing value.
     ];
 
+    /**
+     * @var int[] $aPalettePoints
+     */
     private array $aPalettePoints = [
         0   => 0x000000,
         86  => 0xFF3300,
@@ -48,7 +52,11 @@ class RGBFire extends Base {
         255 => 0xFFFFFF
     ];
 
-    private SPLFixedArray $oBuffer, $oPalette;
+    /** @var SPLFixedArray<float> $oBuffer */
+    private SPLFixedArray $oBuffer;
+
+    /** @var SPLFixedArray<int> $oPalette */
+    private SPLFixedArray $oPalette;
 
     /**
      * @inheritDoc
@@ -85,7 +93,7 @@ class RGBFire extends Base {
             $fPhase2 =
                 $this->oParameters->fPhase2Base +
                 $this->oParameters->fPhase2Amp * sin($fTimeIndex * $this->oParameters->fPhase2Rate + $fX);
-            $this->oBuffer[$iOffset++] = mt_rand((int)min($fPhase1, $fPhase2), (int)max($fPhase1, $fPhase2));
+            $this->oBuffer[$iOffset++] = (float)mt_rand((int)min($fPhase1, $fPhase2), (int)max($fPhase1, $fPhase2));
         }
 
         // Fan the flames up

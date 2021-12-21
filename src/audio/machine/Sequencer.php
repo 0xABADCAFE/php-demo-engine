@@ -24,8 +24,7 @@ use ABadCafe\PDE\Audio;
 use \OutOfBoundsException;
 use \RangeException;
 
-
-use function ABadCafe\PDE\dprintf;
+use function ABadCafe\PDE\dprintf, \min, \max, \array_filter, \array_map, \array_unique, \floor;
 
 /**
  * Sequencer

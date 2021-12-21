@@ -21,6 +21,8 @@ declare(strict_types=1);
 namespace ABadCafe\PDE\Display;
 use ABadCafe\PDE;
 
+use function \sprintf, \str_repeat, \strlen, \min, \explode, \count, \array_slice, \strpos, \substr;
+
 /**
  * TASCIIArt
  *

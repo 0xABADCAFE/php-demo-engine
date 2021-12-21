@@ -24,6 +24,8 @@ use ABadCafe\PDE;
 use ABadCafe\PDE\Graphics;
 use \SPLFixedArray;
 
+use function \sin, \cos, \array_fill;
+
 /**
  * Voxel
  *
@@ -46,8 +48,13 @@ class Voxel extends Base implements IResourceLoader {
     ];
 
     private Graphics\Image $oTexture;
+
+    /** @var SPLFixedArray<int> */
     private SPLFixedArray  $oElevation;
 
+    /**
+     * @inheritDoc
+     */
     public function preload() : self {
         $this->oTexture = $this->loadPNM($this->oParameters->sTexture);
         $oElevation     = $this->loadPNM($this->oParameters->sElevation);

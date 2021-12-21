@@ -22,6 +22,8 @@ namespace ABadCafe\PDE\Routine;
 
 use ABadCafe\PDE\Graphics;
 
+use function \file_exists, \is_readable, \file_get_contents, \substr, \preg_match, \ord;
+
 /**
  * TResourceLoader
  *

@@ -30,15 +30,16 @@ abstract class Base implements IMode {
     /**
      * Lookup array of channel multiplication values
      *
-     * @var SPLFixedArray<int>|null $oProducts
+     * @var SPLFixedArray<int> $oProducts
      */
-    protected static ?SPLFixedArray $oProducts = null;
+    protected static SPLFixedArray $oProducts;
+    private static bool $bInit = false;
 
     /**
      * Constructor
      */
     public function __construct() {
-        if (null === self::$oProducts) {
+        if (false === self::$bInit) {
             self::initProducts();
         }
     }
@@ -54,5 +55,6 @@ abstract class Base implements IMode {
                 self::$oProducts[$iIndex++] = (($i1 + 0.5) * ($i2 + 0.5)) >> 8;
             }
         }
+        self::$bInit = true;
     }
 }

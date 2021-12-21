@@ -22,6 +22,8 @@ namespace ABadCafe\PDE\Routine;
 
 use ABadCafe\PDE;
 
+use function \settype, \gettype, \array_merge;
+
 /**
  * Base
  *
@@ -44,9 +46,7 @@ abstract class Base implements PDE\IRoutine {
     protected float $fUntil = 0.0;
 
     /**
-     * Basic constructor
-     *
-     * @implements IRoutine::__construct()
+     * @inheritDoc
      */
     public function __construct(PDE\IDisplay $oDisplay, array $aParameters = []) {
         $this->oParameters = (object)$this->mergeDefaultParameters();
@@ -56,7 +56,6 @@ abstract class Base implements PDE\IRoutine {
 
     /**
      * @inheritDoc
-     * @implements IParameterisable::setParameters()
      *
      * Each input value is key checked against the DEFAULT_PARAMETERS set and if the key matches the
      * value is first type cooerced then assigned.
@@ -81,7 +80,6 @@ abstract class Base implements PDE\IRoutine {
 
     /**
      * @inheritDoc
-     * @implements IRoutine::enable()
      */
     public function enable(int $iFrameNumber, float $fTimeIndex): self {
         // Enable the routine if it can be rendered.
@@ -94,7 +92,6 @@ abstract class Base implements PDE\IRoutine {
 
     /**
      * @inheritDoc
-     * @implements IRoutine::disable()
      */
     public function disable(int $iFrameNumber, float $fTimeIndex): self {
         $this->bEnabled = false;
@@ -102,11 +99,7 @@ abstract class Base implements PDE\IRoutine {
     }
 
     /**
-     * Returns true if the effect can render right now, taking into account expected duration, etc.
-     *
-     * @param  int   $iFrameNumber
-     * @param  float $fTimeIndex
-     * @return bool
+     * @inheritDoc
      */
     public function canRender(int $iFrameNumber, float $fTimeIndex): bool {
         $bWasEnabled   = $this->bEnabled;

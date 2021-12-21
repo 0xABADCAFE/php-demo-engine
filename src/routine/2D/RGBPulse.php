@@ -22,6 +22,8 @@ namespace ABadCafe\PDE\Routine;
 
 use ABadCafe\PDE;
 
+use function \cos;
+
 /**
  * Colour pulsating effect based on simple interpolation. Requires an IPixelled display.
  *

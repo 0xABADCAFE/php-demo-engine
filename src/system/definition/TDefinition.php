@@ -20,6 +20,8 @@ declare(strict_types=1);
 
 namespace ABadCafe\PDE\System\Definition;
 
+use function \gettype, \settype;
+
 /**
  * TDefinition
  *
@@ -34,7 +36,7 @@ trait TDefinition {
      * @param \stdClass $oRaw
      */
     protected function mapFromRaw(\stdClass $oRaw): void {
-        foreach ($oRaw as $sField => $mValue) {
+        foreach ((array)$oRaw as $sField => $mValue) {
             if (isset(self::DEFAULTS[$sField])) {
                 settype($mValue, gettype(self::DEFAULTS[$sField]));
                 $this->{$sField} = $mValue;

@@ -21,6 +21,8 @@ declare(strict_types=1);
 namespace ABadCafe\PDE\System;
 use ABadCafe\PDE;
 
+use function \pack, \unpack, \strlen, \socket_write, \socket_read, \usleep, \socket_create_pair, \pcntl_fork, \socket_close;
+
 /**
  * TAsynchronous
  *
@@ -29,7 +31,7 @@ use ABadCafe\PDE;
 trait TAsynchronous {
 
     /**
-     * @var Socket[2]|resource[2] - Socket on php8
+     * @var Socket[]|resource[] $aSocketPair - Socket on php8
      */
     private array $aSocketPair = [];
 
@@ -100,17 +102,17 @@ trait TAsynchronous {
     /**
      * Try to receive a given sized chunk of data.
      *
-     * @param int  $iExpectedSize - how many bytes we expect
-     * @param int  $iAttempts     - number of retries on a short read
-     * @param int  $iProcess      - which process is receiving the data
+     * @param  int  $iExpectedSize - how many bytes we expect
+     * @param  int  $iProcess      - which process is receiving the data
+     * @return string
      */
     private function receiveData(int $iExpectSize, int $iProcess = IAsynchronous::ID_CHILD): string {
-        $sMessageData     = socket_read($this->aSocketPair[$iProcess], $iExpectSize, PHP_BINARY_READ);
+        $sMessageData = (string)socket_read($this->aSocketPair[$iProcess], $iExpectSize, PHP_BINARY_READ);
         $iGotSize  = strlen($sMessageData);
         $iAttempts = IAsynchronous::MAX_RETRIES;
         while ($iGotSize < $iExpectSize && $iAttempts--) {
             usleep(IAsynchronous::RETRY_PAUSE);
-            $sMessageData .= socket_read($this->aSocketPair[$iProcess], $iExpectSize - $iGotSize);
+            $sMessageData .= (string)socket_read($this->aSocketPair[$iProcess], $iExpectSize - $iGotSize);
             $iGotSize = strlen($sMessageData);
         }
 
@@ -125,6 +127,7 @@ trait TAsynchronous {
      *
      * @param  int $iResponseCode - 32-bit integer response code
      * @param  int $iProcess      - which process is sending the response
+     * @return self
      */
     private function sendResponseCode(int $iResponseCode, int $iProcess = IAsynchronous::ID_CHILD): self {
         socket_write(

@@ -22,6 +22,8 @@ namespace ABadCafe\PDE\Audio\Sequence;
 
 use \SPLFixedArray;
 
+use function \max, \array_fill;
+
 /**
  * Pattern
  *

@@ -23,6 +23,8 @@ namespace ABadCafe\PDE\Routine;
 use ABadCafe\PDE;
 use \SPLFixedArray;
 
+use function \cos, \sin, \abs, \array_fill, \min, \max;
+
 /**
  * Toroid
  *
@@ -87,10 +89,11 @@ class Toroid extends Base {
     private int    $iCharMaxLuma;
     private string $sCharDrawBuffer, $sLumaCharLUT;
 
+    /** @var SPLFixedArray<int>|null $oPixelBuffer */
     private ?SPLFixedArray $oPixelBuffer = null;
 
     /**
-     * Pixel specific mode rendering facts
+     * @var int[] $aPalettePoints
      */
     private array $aPalettePoints = [
         0   => 0x000033,
@@ -99,12 +102,11 @@ class Toroid extends Base {
         255 => 0xFFFFFF
     ];
 
+    /** @var SPLFixedArray<int> $oPalette */
     private SPLFixedArray $oPalette;
 
     /**
-     * Basic constructor
-     *
-     * @implements IRoutine::__construct()
+     * @inheritDoc
      */
     public function __construct(PDE\IDisplay $oDisplay, array $aParameters = []) {
         parent::__construct($oDisplay, $aParameters);

@@ -34,7 +34,7 @@ class RGBImage extends Base implements IResourceLoader {
     private Graphics\Image   $oImage;
     private Graphics\Blitter $oBlitter;
 
-    private float $fDisplacementX = 0.0, $fDisplacementY = 0.0;
+    //private float $fDisplacementX = 0.0, $fDisplacementY = 0.0;
 
     const DEFAULT_PARAMETERS = [
         'sPath'   => 'required',
@@ -45,15 +45,16 @@ class RGBImage extends Base implements IResourceLoader {
     ];
 
     /**
-     * Basic constructor
-     *
-     * @implements IRoutine::__construct()
+     * @inheritDoc
      */
     public function __construct(PDE\IDisplay $oDisplay, array $aParameters = []) {
         $this->oBlitter = new Graphics\Blitter();
         parent::__construct($oDisplay, $aParameters);
     }
 
+    /**
+     * @inheritDoc
+     */
     public function preload(): self {
         $this->oImage = $this->loadPNM($this->oParameters->sPath);
         $this->oBlitter->setSource($this->oImage);

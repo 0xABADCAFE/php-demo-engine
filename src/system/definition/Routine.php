@@ -37,6 +37,10 @@ class Routine {
 
     public string $sType;
     public int    $iPriority;
+
+    /**
+     * @var mixed[] $aParameters
+     */
     public array  $aParameters;
 
     /**

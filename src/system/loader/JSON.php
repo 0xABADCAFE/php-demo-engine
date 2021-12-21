@@ -22,6 +22,8 @@ namespace ABadCafe\PDE\System\Loader;
 use ABadCafe\PDE\System;
 use ABadCafe\PDE\System\Definition;
 
+use function \file_exists, \is_readable, \json_decode, \file_get_contents, \dirname, \is_object, \is_array;
+
 /**
  * JSON implementation for ILoader
  */

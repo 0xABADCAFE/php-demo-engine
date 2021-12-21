@@ -34,6 +34,7 @@ class RGBPersistence extends Base {
         'iStrength' => 0
     ];
 
+    /** @var SPLFixedArray<int> $oLastBuffer */
     private SPLFixedArray $oLastBuffer;
 
     /**

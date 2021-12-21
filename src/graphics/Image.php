@@ -21,6 +21,8 @@ declare(strict_types=1);
 namespace ABadCafe\PDE\Graphics;
 use \SPLFixedArray;
 
+use function \array_fill;
+
 class Image implements IPixelBuffer {
 
     private int $iWidth, $iHeight;

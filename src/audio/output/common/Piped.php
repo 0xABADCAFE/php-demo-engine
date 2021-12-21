@@ -20,7 +20,7 @@ declare(strict_types=1);
 
 namespace ABadCafe\PDE\Audio\Output;
 use ABadCafe\PDE\Audio;
-use function ABadCafe\PDE\dprintf;
+use function ABadCafe\PDE\dprintf, \exec, \array_fill, \proc_open, \fwrite, \pack, \proc_close, \is_resource, \fclose;
 
 /**
  * APlay

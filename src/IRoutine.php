@@ -51,6 +51,15 @@ interface IRoutine extends IParameterisable {
     public function setDisplay(IDisplay $oDisplay) : self;
 
     /**
+     * Returns true if the effect can render right now, taking into account expected duration, etc.
+     *
+     * @param  int   $iFrameNumber
+     * @param  float $fTimeIndex
+     * @return bool
+     */
+    public function canRender(int $iFrameNumber, float $fTimeIndex): bool;
+
+    /**
      * Render a frame to the given display
      *
      * @param  int   $iFrameNumber

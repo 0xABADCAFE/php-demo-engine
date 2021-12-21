@@ -22,6 +22,8 @@ namespace ABadCafe\PDE\System;
 
 use ABadCafe\PDE;
 
+use function \reset, \asort;
+
 /**
  * Context
  *
@@ -45,7 +47,7 @@ class Context {
     private IRateLimiter $oRateLimiter;
 
     /**
-     * @var PDE\IDisplay[] $aRoutineInstances
+     * @var PDE\IDisplay[] $aDisplayInstances
      */
     private array $aDisplayInstances = [];
 
@@ -99,7 +101,7 @@ class Context {
     /**
      * Initialie the display properties
      *
-     * @param Definition\Display[] $aDisplays
+     * @param Definition\Display[] $aDisplayDefinitions
      */
     private function initialiseDisplays(array $aDisplayDefinitions): void {
         $oDisplayFactory = PDE\Display\Factory::get();

@@ -21,6 +21,8 @@ declare(strict_types=1);
 namespace ABadCafe\PDE\Audio\Signal\Envelope;
 use ABadCafe\PDE\Audio;
 
+use function \is_array, \count, \min, \max, \end;
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class Shape extends Base {

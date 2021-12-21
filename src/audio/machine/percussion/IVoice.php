@@ -36,7 +36,7 @@ interface IVoice {
      * @param  string $sNote : @see Audio\Note
      * @return self
      */
-    public function setNote(string $sNote) : self;
+    public function setNote(string $sNote): self;
 
     /**
      * Set the velocity. This can be interpreted in various ways by the implementor, it doesn't just have to be about
@@ -45,12 +45,12 @@ interface IVoice {
      * @param  int $iVelocity
      * @return self
      */
-    public function setVelocity(int $iVelocity) : self;
+    public function setVelocity(int $iVelocity): self;
 
     /**
      * Get the output stream.
      *
      * @return Audio\Signal\IStream
      */
-    public function getOutputStream() : Audio\Signal\IStream;
+    public function getOutputStream(): Audio\Signal\IStream;
 }

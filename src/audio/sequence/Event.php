@@ -72,7 +72,7 @@ class Event {
      * @param  int    $iVelocity
      * @return self
      */
-    public static function noteOn(string $sNote, int $iVelocity) : self {
+    public static function noteOn(string $sNote, int $iVelocity): self {
         $sKey = $sNote . $iVelocity;
         if (!isset(self::$aNoteOn[$sKey])) {
             $oEvent = new self(self::NOTE_ON);
@@ -89,7 +89,7 @@ class Event {
      * @param  string $sNote
      * @return self
      */
-    public function setNote(string $sNote) : self {
+    public function setNote(string $sNote): self {
         if (!isset(self::$aSetNote[$sNote])) {
             $oEvent        = new self(self::SET_NOTE);
             $oEvent->sNote = $sNote;
@@ -102,7 +102,7 @@ class Event {
      *
      * @return self
      */
-    public static function noteOff() : self {
+    public static function noteOff(): self {
         if (null === self::$oNoteOff) {
             self::$oNoteOff = new self(self::NOTE_OFF);
         }

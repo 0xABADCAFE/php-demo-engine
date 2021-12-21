@@ -34,7 +34,7 @@ trait TFactory {
      *
      * @return self
      */
-    public static function get() : self {
+    public static function get(): self {
         if (null === self::$oInstance) {
             self::$oInstance = new self;
         }

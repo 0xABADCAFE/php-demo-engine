@@ -35,7 +35,7 @@ class APlay extends Piped {
     /**
      * @inheritDoc
      */
-    protected function createOutputCommand() : string {
+    protected function createOutputCommand(): string {
         return sprintf(
             'aplay -c1 -f %s -r%d -',
             self::FORMAT,

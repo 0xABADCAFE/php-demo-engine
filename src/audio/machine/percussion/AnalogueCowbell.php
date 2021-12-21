@@ -84,7 +84,7 @@ class AnalogueCowbell implements IVoice {
     /**
      * @inheritDoc
      */
-    public function setNote(string $sNote) : self {
+    public function setNote(string $sNote): self {
         $iNoteNumber = Audio\Note::getNumber($sNote) - Audio\Note::CENTRE_REFERENCE;
         $fNote       = self::SEMI_SCALE * $iNoteNumber;
         $fBase       = self::CENTRE_FREQ * 2.0 ** $fNote;
@@ -96,14 +96,14 @@ class AnalogueCowbell implements IVoice {
     /**
      * @inheritDoc
      */
-    public function setVelocity(int $iVelocity) : self {
+    public function setVelocity(int $iVelocity): self {
         return $this;
     }
 
     /**
      * @inheritDoc
      */
-    public function getOutputStream() : Audio\Signal\IStream {
+    public function getOutputStream(): Audio\Signal\IStream {
         return $this->oAutoMute;
     }
 

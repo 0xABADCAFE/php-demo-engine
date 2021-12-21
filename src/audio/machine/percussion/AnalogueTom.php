@@ -69,7 +69,7 @@ class AnalogueTom implements IVoice {
     /**
      * @inheritDoc
      */
-    public function setNote(string $sNote) : self {
+    public function setNote(string $sNote): self {
         $iNoteNumber = Audio\Note::getNumber($sNote) + self::DEF_TRANS;
         $iSemitone   = ($iNoteNumber % self::DEF_RANGE) - Audio\Note::SEMIS_PER_OCTAVE;
         $fPower      = ($iSemitone) * Audio\Note::FACTOR_PER_SEMI;
@@ -81,14 +81,14 @@ class AnalogueTom implements IVoice {
     /**
      * @inheritDoc
      */
-    public function setVelocity(int $iVelocity) : self {
+    public function setVelocity(int $iVelocity): self {
         return $this;
     }
 
     /**
      * @inheritDoc
      */
-    public function getOutputStream() : Audio\Signal\IStream {
+    public function getOutputStream(): Audio\Signal\IStream {
         return $this->oAutoMute;
     }
 }

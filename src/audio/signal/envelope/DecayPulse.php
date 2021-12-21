@@ -64,7 +64,7 @@ class DecayPulse extends Base {
     /**
      * @inheritDoc
      */
-    public function emit(?int $iIndex = null) : Audio\Signal\Packet {
+    public function emit(?int $iIndex = null): Audio\Signal\Packet {
         if (!$this->bEnabled) {
             return $this->emitSilence();
         }
@@ -88,7 +88,7 @@ class DecayPulse extends Base {
      * @param  float $fInitial
      * @return self
      */
-    public function setInitial(float $fInitial) : self {
+    public function setInitial(float $fInitial): self {
         if ($fInitial != $this->fInitial) {
             $this->fInitial          = $fInitial;
             $this->bParameterChanged = true;
@@ -102,7 +102,7 @@ class DecayPulse extends Base {
      * @param  float $fTarget
      * @return self
      */
-    public function setTarget(float $fTarget) : self {
+    public function setTarget(float $fTarget): self {
         if ($fTarget != $this->fTarget) {
             $this->fTarget           = $fTarget;
             $this->bParameterChanged = true;
@@ -116,7 +116,7 @@ class DecayPulse extends Base {
      * @param  float $fInitial
      * @return self
      */
-    public function setHalfLife(float $fHalfLife) : self {
+    public function setHalfLife(float $fHalfLife): self {
         if ($fHalfLife != $this->fHalfLife) {
             $this->fHalfLife          = $fHalfLife;
             $this->bParameterChanged  = true;

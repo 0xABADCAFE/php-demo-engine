@@ -51,14 +51,14 @@ class FixedMixer implements IStream {
     /**
      * @inheritDoc
      */
-    public function getPosition() : int {
+    public function getPosition(): int {
         return $this->iPosition;
     }
 
     /**
      * @inheritDoc
      */
-    public function reset() : self {
+    public function reset(): self {
         $this->iPosition  = 0;
         $this->iLastIndex = 0;
         $this->oLastPacket->fillWith(0);
@@ -71,7 +71,7 @@ class FixedMixer implements IStream {
     /**
      * @inheritDoc
      */
-    public function emit(?int $iIndex = null) : Packet {
+    public function emit(?int $iIndex = null): Packet {
         $this->iPosition += Audio\IConfig::PACKET_SIZE;
         if (empty($this->aLevels) || !$this->bEnabled) {
             return $this->emitSilence();
@@ -89,7 +89,7 @@ class FixedMixer implements IStream {
      * @param  float  $fLevel
      * @return self
      */
-    public function setInputLevel(string $sInputName, float $fLevel) : self {
+    public function setInputLevel(string $sInputName, float $fLevel): self {
         $this->aLevels[$sInputName]  = $fLevel;
         return $this;
     }
@@ -100,7 +100,7 @@ class FixedMixer implements IStream {
      * @param  string $sInputName
      * @return float
      */
-    public function getInputLevel(string $sInputName) : float {
+    public function getInputLevel(string $sInputName): float {
         return $this->aLevels[$sInputName] ?? 0.0;
     }
 
@@ -109,7 +109,7 @@ class FixedMixer implements IStream {
      *
      * @return float
      */
-    public function getOutputLevel() : float {
+    public function getOutputLevel(): float {
         return $this->fOutLevel;
     }
 
@@ -119,7 +119,7 @@ class FixedMixer implements IStream {
      * @param  float $fOutLevel
      * @return self
      */
-    public function setOutputLevel(float $fOutLevel) : self {
+    public function setOutputLevel(float $fOutLevel): self {
         $this->fOutLevel = $fOutLevel;
         return $this;
     }
@@ -132,7 +132,7 @@ class FixedMixer implements IStream {
      * @param  float   $fLevel
      * @return self
      */
-    public function addInputStream(string $sInputName, IStream $oStream, float $fLevel) : self {
+    public function addInputStream(string $sInputName, IStream $oStream, float $fLevel): self {
         $this->aStreams[$sInputName] = $oStream;
         $this->aLevels[$sInputName]  = $fLevel;
         return $this;
@@ -144,7 +144,7 @@ class FixedMixer implements IStream {
      * @param  string $sInputName
      * @return self
      */
-    public function removeInputStream(string $sInputName) : self {
+    public function removeInputStream(string $sInputName): self {
         unset($this->aStreams[$sInputName]);
         unset($this->aLevels[$sInputName]);
         return $this;
@@ -153,7 +153,7 @@ class FixedMixer implements IStream {
     /**
      * @return Packet
      */
-    private function emitNew() : Packet {
+    private function emitNew(): Packet {
         $this->oLastPacket->fillWith(0.0);
         foreach ($this->aStreams as $sInputName => $oStream) {
             if ($oStream->isEnabled()) {

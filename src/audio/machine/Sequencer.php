@@ -77,7 +77,7 @@ class Sequencer {
      * @param  int $iTempoBeatsPerMinute
      * @return self
      */
-    public function setTempo(int $iTempoBeatsPerMinute) : self {
+    public function setTempo(int $iTempoBeatsPerMinute): self {
         $this->iTempoBeatsPerMinute = min(
             max($iTempoBeatsPerMinute, self::MIN_TEMPO_BPM),
             self::MAX_TEMPO_BPM
@@ -90,7 +90,7 @@ class Sequencer {
      *
      * @return int
      */
-    public function getTempo() : int {
+    public function getTempo(): int {
         return $this->iTempoBeatsPerMinute;
     }
 
@@ -100,7 +100,7 @@ class Sequencer {
      * @param  int $iBeatsPerMeasure
      * @return self
      */
-    public function setBeatsPerMeasure(int $iBeatsPerMeasure) : self {
+    public function setBeatsPerMeasure(int $iBeatsPerMeasure): self {
         $this->iBeatsPerMeasure = min(
             max($iBeatsPerMeasure, self::MIN_BEATS_PER_MEASURE),
             self::MAX_BEATS_PER_MEASURE
@@ -114,7 +114,7 @@ class Sequencer {
      *
      * @return int
      */
-    public function getBeatsPerMeasure() : int {
+    public function getBeatsPerMeasure(): int {
         return $this->iBasePatternLength;
     }
 
@@ -124,7 +124,7 @@ class Sequencer {
      * @param  int $iLinesPerBeat
      * @return self
      */
-    public function setLinesPerBeat(int $iLinesPerBeat) : self {
+    public function setLinesPerBeat(int $iLinesPerBeat): self {
         $this->iLinesPerBeat = min(
             max($iLinesPerBeat, self::MIN_LINES_PER_BEAT),
             self::MAX_LINES_PER_BEAT
@@ -138,7 +138,7 @@ class Sequencer {
      *
      * @return int
      */
-    public function getLinesPerBeat() : int {
+    public function getLinesPerBeat(): int {
         return $this->iLinesPerBeat;
     }
 
@@ -147,7 +147,7 @@ class Sequencer {
      *
      * @return int
      */
-    public function getLength() : int {
+    public function getLength(): int {
         return $this->iNumMeasures;
     }
 
@@ -159,7 +159,7 @@ class Sequencer {
      * @return self
      * @throws LogicException Thrown if the machine name has already been assigned.
      */
-    public function addMachine(string $sMachineName, Audio\IMachine $oMachine) : self {
+    public function addMachine(string $sMachineName, Audio\IMachine $oMachine): self {
         if (!isset($this->aMachines[$sMachineName])) {
             $this->aMachines[$sMachineName]             = $oMachine;
             $this->aMachinePatterns[$sMachineName]      = [];
@@ -182,7 +182,7 @@ class Sequencer {
      * @throws OutOfBoundsException   - When the machine name is not recognised
      * @throws RangeException         - When the Pattern length is less than 1 measure
      */
-    public function allocatePattern(string $sMachineName, ?array $aMeasures = null) : Audio\Sequence\Pattern {
+    public function allocatePattern(string $sMachineName, ?array $aMeasures = null): Audio\Sequence\Pattern {
         $this->assertMachineExists($sMachineName);
 
         // Create the Pattern.
@@ -221,7 +221,7 @@ class Sequencer {
         string $sMachineName,
         ?Audio\Sequence\Pattern $oPattern,
         array $aMeasures
-    ) : self {
+    ): self {
         $this->assertMachineExists($sMachineName);
 
         // Sanitise the sequence. Dedupe, cast to int and remove any negative measure positions
@@ -264,7 +264,7 @@ class Sequencer {
      * @return Audio\Sequence\Pattern[]
      * @throws OutOfBoundsException
      */
-    public function getSequence(string $sMachineName) : array {
+    public function getSequence(string $sMachineName): array {
         $this->assertMachineExists($sMachineName);
         return $this->aMachineSequences[$sMachineName];
     }
@@ -288,7 +288,7 @@ class Sequencer {
      * @param  Audio\Sequence\Pattern $oPattern
      * @return self
      */
-    public function addPattern(string $sMachineName, Audio\Sequence\Pattern $oPattern) : self {
+    public function addPattern(string $sMachineName, Audio\Sequence\Pattern $oPattern): self {
         if (isset($this->aMachinePatterns[$sMachineName])) {
             $this->aMachinePatterns[$sMachineName][] = $oPattern;
         } else {
@@ -311,7 +311,7 @@ class Sequencer {
         float $fGain       = 1.0,
         int $iStartMeasure = 0,
         int $iNumMeasures  = 0
-    ) : self {
+    ): self {
 
         // Sanity checks
         if ($iStartMeasure < 0 || $iStartMeasure >= $this->iNumMeasures) {

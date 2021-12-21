@@ -57,7 +57,7 @@ class LFO extends Base {
     /**
      * Set the depth.
      */
-    public function setDepth(float $fDepth) : self {
+    public function setDepth(float $fDepth): self {
         $this->fDepth = $fDepth;
         return $this;
     }
@@ -67,7 +67,7 @@ class LFO extends Base {
      *
      * @return Signal\Audio\Packet;
      */
-    protected function emitNew() : Audio\Signal\Packet {
+    protected function emitNew(): Audio\Signal\Packet {
         for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
             $this->oWaveformInput[$i] = $this->fScaleVal * $this->iSamplePosition++;
         }

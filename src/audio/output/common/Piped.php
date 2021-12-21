@@ -56,7 +56,7 @@ abstract class Piped implements Audio\IPCMOutput {
     /**
      * Factory for piped playback. Perfers APlay > Sox > None
      */
-    public static function create() : self {
+    public static function create(): self {
         while (null === self::$sPlayerClass) {
             $sAPlay = exec('which aplay');
             if (!empty($sAPlay)) {
@@ -162,5 +162,5 @@ abstract class Piped implements Audio\IPCMOutput {
      *
      * @return string
      */
-    protected abstract function createOutputCommand() : string;
+    protected abstract function createOutputCommand(): string;
 }

@@ -43,7 +43,7 @@ class Factory implements Audio\IFactory {
     /**
      * @inheritDoc
      */
-    public function createFrom(object $oDefinition) : Audio\Signal\IOscillator {
+    public function createFrom(object $oDefinition): Audio\Signal\IOscillator {
         $sType    = $oDefinition->sType ?? '<none>';
         $sFactory = self::PRODUCT_TYPES[$sType] ?? null;
         if ($sFactory) {
@@ -60,7 +60,7 @@ class Factory implements Audio\IFactory {
      * @param  string $sType
      * @return Audio\Signal\IOscillator
      */
-    private function createLFO(object $oDefinition, string $sType) : Audio\Signal\IOscillator {
+    private function createLFO(object $oDefinition, string $sType): Audio\Signal\IOscillator {
         $fDepth      = (float)($oDefinition->fDepth ?? 0.5);
         $fRate       = (float)($oDefinition->fRate  ?? LFO::DEF_FREQUENCY);
         $oWaveform   = null;
@@ -90,7 +90,7 @@ class Factory implements Audio\IFactory {
      * @param  string $sType
      * @return Audio\Signal\IOscillator
      */
-    private function createSound(object $oDefinition, string $sType) :  Audio\Signal\IOscillator  {
+    private function createSound(object $oDefinition, string $sType):  Audio\Signal\IOscillator  {
         $oWaveform   = null;
         $sSubNodeKey = Audio\Signal\Waveform\Factory::STANDARD_KEY;
 

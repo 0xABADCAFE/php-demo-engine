@@ -57,7 +57,7 @@ class Octave implements Audio\IControlCurve {
     /**
      * @inheritDoc
      */
-    public function map(float $fControlValue) : float {
+    public function map(float $fControlValue): float {
         $fControlValue -= $this->fCentrePosition;
         return $this->fCentreOutput * (2.0 ** ($this->fScalePerOctave * $fControlValue));
     }

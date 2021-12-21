@@ -39,5 +39,5 @@ interface IControlCurve {
      * @param  float $fControlValue
      * @return float
      */
-    public function map(float $fControlValue) : float;
+    public function map(float $fControlValue): float;
 }

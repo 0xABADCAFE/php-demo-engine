@@ -36,7 +36,7 @@ interface IEnvelope extends IStream {
      * @param  float $fTimeScale
      * @return self
      */
-    public function setTimeScale(float $fTimeScale) : self;
+    public function setTimeScale(float $fTimeScale): self;
 
     /**
      * Set a scaling factor for envelope levels. A smaller value results in a quieter envelope. Use to simlulate the
@@ -46,5 +46,5 @@ interface IEnvelope extends IStream {
      * @param  float $fTimeScale
      * @return self
      */
-    public function setLevelScale(float $fLevelScale) : self;
+    public function setLevelScale(float $fLevelScale): self;
 }

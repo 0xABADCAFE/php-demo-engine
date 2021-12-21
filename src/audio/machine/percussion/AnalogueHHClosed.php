@@ -31,7 +31,7 @@ class AnalogueHHClosed extends BandPassNoise {
     /**
      * @inheritDoc
      */
-    public function setNote(string $sNote) : self {
+    public function setNote(string $sNote): self {
         $iNoteNumber = Audio\Note::getNumber($sNote);
         $iSemitone   = $iNoteNumber % Audio\Note::SEMIS_PER_OCTAVE;
         $iOctave     = (int)($iNoteNumber / Audio\Note::SEMIS_PER_OCTAVE);
@@ -41,7 +41,7 @@ class AnalogueHHClosed extends BandPassNoise {
     /**
      * @inheritDoc
      */
-    public function setVelocity(int $iVelocity) : self {
+    public function setVelocity(int $iVelocity): self {
         return $this;
     }
 

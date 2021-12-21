@@ -53,7 +53,7 @@ class Sound extends Base {
     /**
      * @inheritDoc
      */
-    public function reset() : self {
+    public function reset(): self {
         parent::reset();
         $this->oPitchModulator && $this->oPitchModulator->reset();
         $this->oPhaseModulator && $this->oPhaseModulator->reset();
@@ -71,7 +71,7 @@ class Sound extends Base {
      *
      * @param Audio\Signal\IStream|null $oModulator
      */
-    public function setPitchModulator(?Audio\Signal\IStream $oModulator) : self {
+    public function setPitchModulator(?Audio\Signal\IStream $oModulator): self {
         $this->oPitchModulator = $oModulator;
         return $this;
     }
@@ -79,7 +79,7 @@ class Sound extends Base {
     /**
      * @return Audio\Signal\IStream|null
      */
-    public function getPitchModulator() : ?Audio\Signal\IStream {
+    public function getPitchModulator(): ?Audio\Signal\IStream {
         return $this->oPitchModulator;
     }
 
@@ -93,7 +93,7 @@ class Sound extends Base {
      * @param  Audio\Signal\IStream|null $oModulator
      * @return self
      */
-    public function setPhaseModulator(?Audio\Signal\IStream $oModulator) : self {
+    public function setPhaseModulator(?Audio\Signal\IStream $oModulator): self {
         $this->oPhaseModulator = $oModulator;
         return $this;
     }
@@ -101,7 +101,7 @@ class Sound extends Base {
     /**
      * @return Audio\Signal\IStream|null
      */
-    public function getPhaseModulator() : ?Audio\Signal\IStream {
+    public function getPhaseModulator(): ?Audio\Signal\IStream {
         return $this->oPhaseModulator;
     }
 
@@ -111,7 +111,7 @@ class Sound extends Base {
      * @param  float $fModulationIndex
      * @return self
      */
-    public function setPhaseModulationIndex(float $fModulationIndex) : self {
+    public function setPhaseModulationIndex(float $fModulationIndex): self {
         $this->fPhaseModulationIndex = $fModulationIndex;
         return $this;
     }
@@ -119,7 +119,7 @@ class Sound extends Base {
     /**
      * @return float
      */
-    public function getPhaseModulationIndex() : float {
+    public function getPhaseModulationIndex(): float {
         return $this->fPhaseModulationIndex;
     }
 
@@ -132,7 +132,7 @@ class Sound extends Base {
      * @param  Audio\Signal\IStream $oModulator
      * @return self
      */
-    public function setLevelModulator(?Audio\Signal\IStream $oModulator) : self {
+    public function setLevelModulator(?Audio\Signal\IStream $oModulator): self {
         $this->oLevelModulator = $oModulator;
         return $this;
     }
@@ -140,7 +140,7 @@ class Sound extends Base {
     /**
      * @return Audio\Signal\IStream|null
      */
-    public function getLevelModulator() : ?Audio\Signal\IStream {
+    public function getLevelModulator(): ?Audio\Signal\IStream {
         return $this->oLevelModulator;
     }
 
@@ -150,7 +150,7 @@ class Sound extends Base {
      * @param  float $fModulationIndex
      * @return self
      */
-    public function setLevelModulationIndex(float $fModulationIndex) : self {
+    public function setLevelModulationIndex(float $fModulationIndex): self {
         $this->fLevelModulationIndex = $fModulationIndex;
         return $this;
     }
@@ -158,7 +158,7 @@ class Sound extends Base {
     /**
      * @return float
      */
-    public function getLevelModulationIndex() : float {
+    public function getLevelModulationIndex(): float {
         return $this->fLevelModulationIndex;
     }
 
@@ -168,7 +168,7 @@ class Sound extends Base {
      * @param  Audio\Signal\IEnvelope|null $oEnvelope
      * @return self
      */
-    public function setLevelEnvelope(?Audio\Signal\IEnvelope $oEnvelope) : self {
+    public function setLevelEnvelope(?Audio\Signal\IEnvelope $oEnvelope): self {
         $this->oLevelEnvelope = $oEnvelope;
         return $this;
     }
@@ -176,7 +176,7 @@ class Sound extends Base {
     /**
      * @return Audio\Signal\IEnvelope|null
      */
-    public function getLevelEnvelope() : ?Audio\Signal\IEnvelope {
+    public function getLevelEnvelope(): ?Audio\Signal\IEnvelope {
         return $this->oLevelEnvelope;
     }
 
@@ -186,7 +186,7 @@ class Sound extends Base {
      * @param  Audio\Signal\IEnvelope|null $oEnvelope
      * @return self
      */
-    public function setPitchEnvelope(?Audio\Signal\IEnvelope $oEnvelope) : self {
+    public function setPitchEnvelope(?Audio\Signal\IEnvelope $oEnvelope): self {
         $this->oPitchEnvelope = $oEnvelope;
         return $this;
     }
@@ -194,7 +194,7 @@ class Sound extends Base {
     /**
      * @return Audio\Signal\IEnvelope|null
      */
-    public function getPitchEnvelope() : ?Audio\Signal\IEnvelope {
+    public function getPitchEnvelope(): ?Audio\Signal\IEnvelope {
         return $this->oPitchEnvelope;
     }
 
@@ -203,7 +203,7 @@ class Sound extends Base {
      *
      * @return Signal\Audio\Packet;
      */
-    protected function emitNew() : Audio\Signal\Packet {
+    protected function emitNew(): Audio\Signal\Packet {
 
         if ($this->oPitchModulator || $this->oPitchEnvelope) {
             $oPitchShifts = Audio\Signal\Packet::create();

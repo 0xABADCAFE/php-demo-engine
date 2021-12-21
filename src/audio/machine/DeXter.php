@@ -106,7 +106,7 @@ class DeXter implements Audio\IMachine {
      * @param  string $sName
      * @return self
      */
-    public function aliasOperator(int $iOperator, string $sName) : self {
+    public function aliasOperator(int $iOperator, string $sName): self {
         if (!empty($sName) && isset($this->aOperators[$iOperator])) {
             $this->aOperatorNames[$sName] = $iOperator;
         }
@@ -119,7 +119,7 @@ class DeXter implements Audio\IMachine {
      * @param  int $iOperator
      * @return self
      */
-    public function selectOperator(int $iOperator) : self {
+    public function selectOperator(int $iOperator): self {
         $this->iUsingOperator = isset($this->aOperators[$iOperator]) ? $iOperator : null;
         return $this;
     }
@@ -142,7 +142,7 @@ class DeXter implements Audio\IMachine {
      * @param  int $iModifier
      * @return self
      */
-    public function setEnumeratedWaveform(int $iWaveform, int $iModifier = Audio\Signal\Waveform\Rectifier::NONE) : self {
+    public function setEnumeratedWaveform(int $iWaveform, int $iModifier = Audio\Signal\Waveform\Rectifier::NONE): self {
         if (null !== $this->iUsingOperator && isset(self::$aWaveforms[$iWaveform])) {
             $oWaveform = Audio\Signal\Waveform\Rectifier::createStandard(
                 self::$aWaveforms[$iWaveform],
@@ -161,7 +161,7 @@ class DeXter implements Audio\IMachine {
      * @param  Audio\Signal\IWaveform $oWaveform
      * @return self
      */
-    public function setWaveform(Audio\Signal\IWaveform $oWaveform) : self {
+    public function setWaveform(Audio\Signal\IWaveform $oWaveform): self {
         if (null !== $this->iUsingOperator) {
             foreach ($this->aOperators[$this->iUsingOperator] as $iVoice => $oOperator) {
                 $oOperator->setWaveform($oWaveform);
@@ -176,7 +176,7 @@ class DeXter implements Audio\IMachine {
      * @param  float $fRatio
      * @return self
      */
-    public function setRatio(float $fRatio) : self {
+    public function setRatio(float $fRatio): self {
         if (null !== $this->iUsingOperator) {
             foreach ($this->aOperators[$this->iUsingOperator] as $iVoice => $oOperator) {
                 $oOperator->setRatio($fRatio);
@@ -191,7 +191,7 @@ class DeXter implements Audio\IMachine {
      * @param  float $fSemitones
      * @return self
      */
-    public function setRatioSemitones(float $fSemitones) : self {
+    public function setRatioSemitones(float $fSemitones): self {
         if (null !== $this->iUsingOperator) {
             $this->setRatio(2.0 ** ($fSemitones * Audio\Note::FACTOR_PER_SEMI));
         }
@@ -204,7 +204,7 @@ class DeXter implements Audio\IMachine {
      * @param  Audio\Signal\IEnvelope|null $oEnvelope
      * @return self
      */
-    public function setLevelEnvelope(?Audio\Signal\IEnvelope $oEnvelope) : self {
+    public function setLevelEnvelope(?Audio\Signal\IEnvelope $oEnvelope): self {
         if (null !== $this->iUsingOperator) {
             foreach ($this->aOperators[$this->iUsingOperator] as $iVoice => $oOperator) {
                 $oOperator->setLevelEnvelope(clone $oEnvelope);
@@ -213,7 +213,7 @@ class DeXter implements Audio\IMachine {
         return $this;
     }
 
-    public function setLevelIntensityVelocityCurve(?Audio\IControlCurve $oCurve) : self {
+    public function setLevelIntensityVelocityCurve(?Audio\IControlCurve $oCurve): self {
         if (null !== $this->iUsingOperator) {
             foreach ($this->aOperators[$this->iUsingOperator] as $iVoice => $oOperator) {
                 $oOperator->setLevelIntensityVelocityCurve($oCurve);
@@ -222,7 +222,7 @@ class DeXter implements Audio\IMachine {
         return $this;
     }
 
-    public function setLevelRateVelocityCurve(?Audio\IControlCurve $oCurve) : self {
+    public function setLevelRateVelocityCurve(?Audio\IControlCurve $oCurve): self {
         if (null !== $this->iUsingOperator) {
             foreach ($this->aOperators[$this->iUsingOperator] as $iVoice => $oOperator) {
                 $oOperator->setLevelRateVelocityCurve($oCurve);
@@ -237,7 +237,7 @@ class DeXter implements Audio\IMachine {
      * @param  Audio\Signal\IEnvelope|null $oEnvelope
      * @return self
      */
-    public function setPitchEnvelope(?Audio\Signal\IEnvelope $oEnvelope) : self {
+    public function setPitchEnvelope(?Audio\Signal\IEnvelope $oEnvelope): self {
         if (null !== $this->iUsingOperator) {
             foreach ($this->aOperators[$this->iUsingOperator] as $iVoice => $oOperator) {
                 $oOperator->setPitchEnvelope(clone $oEnvelope);
@@ -254,7 +254,7 @@ class DeXter implements Audio\IMachine {
      * @param  float $fRatio
      * @return self
      */
-    public function setOutputMixLevel(float $fLevel) : self {
+    public function setOutputMixLevel(float $fLevel): self {
         if (null !== $this->iUsingOperator) {
             $sMixId = 'op_' . $this->iUsingOperator;
             if ($fLevel <= 0.0) {
@@ -278,7 +278,7 @@ class DeXter implements Audio\IMachine {
      * @param  float $fModulationIndex
      * @return self
      */
-    public function setModulation(int $iModulator, float $fModulationIndex) : self {
+    public function setModulation(int $iModulator, float $fModulationIndex): self {
         if (
             null === $this->iUsingOperator ||
             $this->iUsingOperator === $iModulator ||
@@ -302,7 +302,7 @@ class DeXter implements Audio\IMachine {
      * @param  float $fLevel
      * @return self
      */
-    public function setPitchLFODepth($fDepth) : self {
+    public function setPitchLFODepth($fDepth): self {
         if (null !== $this->iUsingOperator) {
             foreach ($this->aOperators[$this->iUsingOperator] as $iVoice => $oOperator) {
                 $oOperator->setPitchLFODepth($fDepth);
@@ -315,7 +315,7 @@ class DeXter implements Audio\IMachine {
      * @param  float $fRate
      * @return self
      */
-    public function setPitchLFORate($fRate) : self {
+    public function setPitchLFORate($fRate): self {
         if (null !== $this->iUsingOperator) {
             foreach ($this->aOperators[$this->iUsingOperator] as $iVoice => $oOperator) {
                 $oOperator->setPitchLFORate($fRate);
@@ -327,7 +327,7 @@ class DeXter implements Audio\IMachine {
     /**
      * @return self
      */
-    public function enablePitchLFO() : self {
+    public function enablePitchLFO(): self {
         if (null !== $this->iUsingOperator) {
             foreach ($this->aOperators[$this->iUsingOperator] as $iVoice => $oOperator) {
                 $oOperator->enablePitchLFO();
@@ -340,7 +340,7 @@ class DeXter implements Audio\IMachine {
     /**
      * @return self
      */
-    public function disablePitchLFO() : self {
+    public function disablePitchLFO(): self {
         if (null !== $this->iUsingOperator) {
             foreach ($this->aOperators[$this->iUsingOperator] as $iVoice => $oOperator) {
                 $oOperator->disablePitchLFO();
@@ -353,7 +353,7 @@ class DeXter implements Audio\IMachine {
      * @param  float $fLevel
      * @return self
      */
-    public function setLevelLFODepth($fDepth) : self {
+    public function setLevelLFODepth($fDepth): self {
         if (null !== $this->iUsingOperator) {
             foreach ($this->aOperators[$this->iUsingOperator] as $iVoice => $oOperator) {
                 $oOperator->setLevelLFODepth($fDepth);
@@ -366,7 +366,7 @@ class DeXter implements Audio\IMachine {
      * @param  float $fRate
      * @return self
      */
-    public function setLevelLFORate($fRate) : self {
+    public function setLevelLFORate($fRate): self {
         if (null !== $this->iUsingOperator) {
             foreach ($this->aOperators[$this->iUsingOperator] as $iVoice => $oOperator) {
                 $oOperator->setLevelLFORate($fRate);
@@ -378,7 +378,7 @@ class DeXter implements Audio\IMachine {
     /**
      * @return self
      */
-    public function enableLevelLFO() : self {
+    public function enableLevelLFO(): self {
         if (null !== $this->iUsingOperator) {
             foreach ($this->aOperators[$this->iUsingOperator] as $iVoice => $oOperator) {
                 $oOperator->enableLevelLFO();
@@ -391,7 +391,7 @@ class DeXter implements Audio\IMachine {
     /**
      * @return self
      */
-    public function disableLevelLFO() : self {
+    public function disableLevelLFO(): self {
         if (null !== $this->iUsingOperator) {
             foreach ($this->aOperators[$this->iUsingOperator] as $iVoice => $oOperator) {
                 $oOperator->disableLevelLFO();
@@ -403,7 +403,7 @@ class DeXter implements Audio\IMachine {
     /**
      * @inheritDoc
      */
-    public function setVoiceNote(int $iVoiceNumber, string $sNoteName) : self {
+    public function setVoiceNote(int $iVoiceNumber, string $sNoteName): self {
         if (isset($this->aVoice[$iVoiceNumber])) {
             $this->aBaseFreq[$iVoiceNumber] = $fFrequency = Audio\Note::getFrequency($sNoteName);
             $aOperators = array_column($this->aOperators, $iVoiceNumber);
@@ -417,7 +417,7 @@ class DeXter implements Audio\IMachine {
     /**
      * @inheritDoc
      */
-    public function setVoiceVelocity(int $iVoiceNumber, int $iVelocity) : self {
+    public function setVoiceVelocity(int $iVoiceNumber, int $iVelocity): self {
         if (isset($this->aVoice[$iVoiceNumber])) {
             $aOperators = array_column($this->aOperators, $iVoiceNumber);
             foreach ($aOperators as $oOperator) {
@@ -431,7 +431,7 @@ class DeXter implements Audio\IMachine {
     /**
      * @inheritDoc
      */
-    public function startVoice(int $iVoiceNumber) : self {
+    public function startVoice(int $iVoiceNumber): self {
         if (isset($this->aVoice[$iVoiceNumber])) {
             $this->aVoice[$iVoiceNumber]
                 ->reset()
@@ -443,7 +443,7 @@ class DeXter implements Audio\IMachine {
     /**
      * @inheritDoc
      */
-    public function stopVoice(int $iVoiceNumber) : self {
+    public function stopVoice(int $iVoiceNumber): self {
         if (isset($this->aVoice[$iVoiceNumber])) {
             $this->aVoice[$iVoiceNumber]->disable();
         }
@@ -451,7 +451,7 @@ class DeXter implements Audio\IMachine {
     }
 
 
-    private static function initShared() {
+    private static function initShared(): void {
         if (empty(self::$aWaveforms)) {
             self::$aWaveforms = [
                 Audio\Signal\IWaveform::SINE     => new Audio\Signal\Waveform\Sine(),

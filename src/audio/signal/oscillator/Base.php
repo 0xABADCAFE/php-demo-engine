@@ -69,14 +69,14 @@ abstract class Base implements Audio\Signal\IOscillator {
     /**
      * @inheritDoc
      */
-    public function getPosition() : int {
+    public function getPosition(): int {
         return $this->iSamplePosition;
     }
 
     /**
      * @inheritDoc
      */
-    public function reset() : self {
+    public function reset(): self {
         $this->iSamplePosition  = 0;
         $this->fCurrentFreqency = $this->fFrequency;
         $this->fPhaseCorrection = 0;
@@ -86,7 +86,7 @@ abstract class Base implements Audio\Signal\IOscillator {
     /**
      * @inheritDoc
      */
-    public function emit(?int $iIndex = null) : Audio\Signal\Packet {
+    public function emit(?int $iIndex = null): Audio\Signal\Packet {
         if (!$this->bEnabled || null === $this->oWaveform) {
             return $this->emitSilence();
         }
@@ -99,7 +99,7 @@ abstract class Base implements Audio\Signal\IOscillator {
     /**
      * @inheritDoc
      */
-    public function setWaveform(?Audio\Signal\IWaveform $oWaveform) : self {
+    public function setWaveform(?Audio\Signal\IWaveform $oWaveform): self {
         if ($oWaveform) {
             $this->oWaveform       = clone $oWaveform;
             $this->fWaveformPeriod = $oWaveform->getPeriod();
@@ -116,7 +116,7 @@ abstract class Base implements Audio\Signal\IOscillator {
     /**
      * @inheritDoc
      */
-    public function setFrequency(float $fFrequency) : self {
+    public function setFrequency(float $fFrequency): self {
         $fLastFrequency = $this->fCurrentFrequency;
         $this->fCurrentFrequency =
         $this->fFrequency        = ($fFrequency < static::MIN_FREQUENCY) ?
@@ -134,6 +134,6 @@ abstract class Base implements Audio\Signal\IOscillator {
      *
      * @return Audio\Signal\Packet
      */
-    protected abstract function emitNew() : Audio\Signal\Packet;
+    protected abstract function emitNew(): Audio\Signal\Packet;
 }
 

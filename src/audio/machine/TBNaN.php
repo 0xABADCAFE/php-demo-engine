@@ -60,7 +60,7 @@ class TBNaN implements Audio\IMachine {
      * @param  float $fCutoff
      * @return self
      */
-    public function setCutoff(float $fCutoff) : self {
+    public function setCutoff(float $fCutoff): self {
         $this->oFilter->setCutoff($fCutoff);
         return $this;
     }
@@ -71,7 +71,7 @@ class TBNaN implements Audio\IMachine {
      * @param  float $fCutoff
      * @return self
      */
-    public function setResonance(float $fResonance) : self {
+    public function setResonance(float $fResonance): self {
         $this->oFilter->setResonance($fResonance);
         return $this;
     }
@@ -82,7 +82,7 @@ class TBNaN implements Audio\IMachine {
      * @param  float $fCutoff
      * @return self
      */
-    public function setLevelDecay(float $fHalfLife) : self {
+    public function setLevelDecay(float $fHalfLife): self {
         $this->oAEG->setHalfLife($fHalfLife);
         return $this;
     }
@@ -93,7 +93,7 @@ class TBNaN implements Audio\IMachine {
      * @param  float $fCutoff
      * @return self
      */
-    public function setCutoffDecay(float $fHalfLife) : self {
+    public function setCutoffDecay(float $fHalfLife): self {
         $this->oFEG->setHalfLife($fHalfLife);
         return $this;
     }
@@ -104,7 +104,7 @@ class TBNaN implements Audio\IMachine {
      * @param  int $iWaveform
      * @return self
      */
-    public function setWaveform(int $iWaveform) : self {
+    public function setWaveform(int $iWaveform): self {
         if (isset($this->aWaveforms[$iWaveform])) {
             $this->oOscillator->setWaveform($this->aWaveforms[$iWaveform]);
         }
@@ -114,7 +114,7 @@ class TBNaN implements Audio\IMachine {
     /**
      * @inheritDoc
      */
-    public function setVoiceNote(int $iVoiceNumber, string $sNoteName) : self {
+    public function setVoiceNote(int $iVoiceNumber, string $sNoteName): self {
         $this->oOscillator->setFrequency(Audio\Note::getFrequency($sNoteName));
         return $this;
     }
@@ -122,7 +122,7 @@ class TBNaN implements Audio\IMachine {
     /**
      * @inheritDoc
      */
-    public function startVoice(int $iVoiceNumber) : self {
+    public function startVoice(int $iVoiceNumber): self {
         $this->oVoice
             ->reset()
             ->enable();
@@ -132,7 +132,7 @@ class TBNaN implements Audio\IMachine {
     /**
      * @inheritDoc
      */
-    public function stopVoice(int $iVoiceNumber) : self {
+    public function stopVoice(int $iVoiceNumber): self {
         $this->oVoice->disable();
         return $this;
     }

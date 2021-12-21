@@ -67,7 +67,7 @@ class AliasedPulse implements Signal\IWaveform {
      * @param  float $fPulseWidth
      * @return self
      */
-    public function setPulsewidth(float $fPulseWidth) : self {
+    public function setPulsewidth(float $fPulseWidth): self {
         $fPulseWidth > self::MAX_WIDTH && $fPulseWidth = self::MAX_WIDTH;
         $fPulseWidth < self::MIN_WIDTH && $fPulseWidth = self::MIN_WIDTH;
         $this->fPulseWidth = $fPulseWidth;
@@ -80,7 +80,7 @@ class AliasedPulse implements Signal\IWaveform {
      * @param  Signal\IStream|null $oModulator
      * @return self
      */
-    public function setPulsewidthModulator(?Signal\IStream $oModulator) : self {
+    public function setPulsewidthModulator(?Signal\IStream $oModulator): self {
         if ($oModulator) {
             $this->oWidthModulator = clone $oModulator;
         } else {
@@ -92,14 +92,14 @@ class AliasedPulse implements Signal\IWaveform {
     /**
      * @inheritDoc
      */
-    public function getPeriod() : float {
+    public function getPeriod(): float {
         return self::PERIOD;
     }
 
     /**
      * @inheritDoc
      */
-    public function map(Signal\Packet $oInput) : Signal\Packet {
+    public function map(Signal\Packet $oInput): Signal\Packet {
         $oOutput = clone $oInput;
         if ($this->oWidthModulator) {
             $oWidth = $this->oWidthModulator

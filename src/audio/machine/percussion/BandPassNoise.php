@@ -58,7 +58,7 @@ abstract class BandPassNoise implements IVoice {
     /**
      * @inheritDoc
      */
-    public function getOutputStream() : Audio\Signal\IStream {
+    public function getOutputStream(): Audio\Signal\IStream {
         return $this->oAutoMute;
     }
 

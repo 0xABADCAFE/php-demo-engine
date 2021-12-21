@@ -118,14 +118,14 @@ class Operator implements Audio\Signal\IOscillator {
     /**
      * @return string
      */
-    public function getUniqueID() : string {
+    public function getUniqueID(): string {
         return $this->sUniqueID;
     }
 
     /**
      * @inheritDoc
      */
-    public function enable() : self {
+    public function enable(): self {
         $this->oOscillator->enable();
         return $this;
     }
@@ -133,7 +133,7 @@ class Operator implements Audio\Signal\IOscillator {
     /**
      * @inheritDoc
      */
-    public function disable() : self {
+    public function disable(): self {
         $this->oOscillator->disable();
         return $this;
     }
@@ -141,21 +141,21 @@ class Operator implements Audio\Signal\IOscillator {
     /**
      * @inheritDoc
      */
-    public function isEnabled() : bool {
+    public function isEnabled(): bool {
         return $this->oOscillator->isEnabled();
     }
 
     /**
      * @inheritDoc
      */
-    public function getPosition() : int {
+    public function getPosition(): int {
         return $this->oOscillator->getPosition();
     }
 
     /**
      * @inheritDoc
      */
-    public function reset() : self {
+    public function reset(): self {
         $this->oOscillator->reset();
         foreach ($this->aModulators as $oModulator) {
             $oModulator->reset();
@@ -166,14 +166,14 @@ class Operator implements Audio\Signal\IOscillator {
     /**
      * @inheritDoc
      */
-    public function emit(?int $iIndex = null) : Audio\Signal\Packet {
+    public function emit(?int $iIndex = null): Audio\Signal\Packet {
         return $this->oOscillator->emit($iIndex);
     }
 
     /**
      * @inheritDoc
      */
-    public function setWaveform(?Audio\Signal\IWaveform $oWaveform) : self {
+    public function setWaveform(?Audio\Signal\IWaveform $oWaveform): self {
         $this->oOscillator->setWaveform($oWaveform);
         // Don't propagate to modulators
         return $this;
@@ -182,7 +182,7 @@ class Operator implements Audio\Signal\IOscillator {
     /**
      * @inheritDoc
      */
-    public function setFrequency(float $fFrequency) : self {
+    public function setFrequency(float $fFrequency): self {
         $this->oOscillator->setFrequency($fFrequency * $this->fRatio);
         // Don't propagate to modulators
         return $this;
@@ -194,7 +194,7 @@ class Operator implements Audio\Signal\IOscillator {
      * @param  float $fRatio
      * @return self
      */
-    public function setRatio(float $fRatio) : self {
+    public function setRatio(float $fRatio): self {
         $this->fRatio = min(max($fRatio, self::MIN_RATIO), self::MAX_RATIO);
         return $this;
     }
@@ -208,7 +208,7 @@ class Operator implements Audio\Signal\IOscillator {
      *
      * @return self
      */
-    public function enableLevelLFO() : self {
+    public function enableLevelLFO(): self {
         $this->oOscillator->setLevelModulator($this->oLevelLFO);
         return $this;
     }
@@ -218,7 +218,7 @@ class Operator implements Audio\Signal\IOscillator {
      *
      * @return self
      */
-    public function disableLevelLFO() : self {
+    public function disableLevelLFO(): self {
         $this->oOscillator->setLevelModulator(null);
         return $this;
     }
@@ -230,7 +230,7 @@ class Operator implements Audio\Signal\IOscillator {
      * @param  Audio\Signal\IWaveform|null $oWaveform
      * @return self
      */
-    public function setLevelLFOWaveform(?Audio\Signal\IWaveform $oWaveform) : self {
+    public function setLevelLFOWaveform(?Audio\Signal\IWaveform $oWaveform): self {
         if (null == $oWaveform) {
             $this->disableLevelLFO();
         } else {
@@ -246,7 +246,7 @@ class Operator implements Audio\Signal\IOscillator {
      * @param  float $fDepth
      * @return self
      */
-    public function setLevelLFODepth(float $fDepth) : self {
+    public function setLevelLFODepth(float $fDepth): self {
         if ($fDepth <= 0.0) {
             $this->disableLevelLFO();
         } else {
@@ -262,7 +262,7 @@ class Operator implements Audio\Signal\IOscillator {
      * @param  float $fDepth
      * @return self
      */
-    public function setLevelLFORate(float $fRate) : self {
+    public function setLevelLFORate(float $fRate): self {
         if ($fRate <= 0.0) {
             $this->disableLevelLFO();
         } else {
@@ -280,7 +280,7 @@ class Operator implements Audio\Signal\IOscillator {
      *
      * @return self
      */
-    public function enablePitchLFO() : self {
+    public function enablePitchLFO(): self {
         $this->oOscillator->setPitchModulator($this->oPitchLFO);
         return $this;
     }
@@ -290,7 +290,7 @@ class Operator implements Audio\Signal\IOscillator {
      *
      * @return self
      */
-    public function disablePitchLFO() : self {
+    public function disablePitchLFO(): self {
         $this->oOscillator->setPitchModulator(null);
         return $this;
     }
@@ -302,7 +302,7 @@ class Operator implements Audio\Signal\IOscillator {
      * @param  Audio\Signal\IWaveform|null $oWaveform
      * @return self
      */
-    public function setPitchLFOWaveform(?Audio\Signal\IWaveform $oWaveform) : self {
+    public function setPitchLFOWaveform(?Audio\Signal\IWaveform $oWaveform): self {
         if (null == $oWaveform) {
             $this->disablePitchLFO();
         } else {
@@ -318,7 +318,7 @@ class Operator implements Audio\Signal\IOscillator {
      * @param  float $fDepth
      * @return self
      */
-    public function setPitchLFODepth(float $fDepth) : self {
+    public function setPitchLFODepth(float $fDepth): self {
         if ($fDepth <= 0.0) {
             $this->disablePitchLFO();
         } else {
@@ -334,7 +334,7 @@ class Operator implements Audio\Signal\IOscillator {
      * @param  float $fDepth
      * @return self
      */
-    public function setPitchLFORate(float $fRate) : self {
+    public function setPitchLFORate(float $fRate): self {
         if ($fRate <= 0.0) {
             $this->disablePitchLFO();
         } else {
@@ -353,7 +353,7 @@ class Operator implements Audio\Signal\IOscillator {
      * @param  Audio\Signal\IEnvelope|null $oEnvelope
      * @return self
      */
-    public function setLevelEnvelope(?Audio\Signal\IEnvelope $oEnvelope) : self {
+    public function setLevelEnvelope(?Audio\Signal\IEnvelope $oEnvelope): self {
         $this->oOscillator->setLevelEnvelope($oEnvelope);
         return $this;
     }
@@ -364,7 +364,7 @@ class Operator implements Audio\Signal\IOscillator {
      * @param  Audio\Signal\IEnvelope|null $oEnvelope
      * @return self
      */
-    public function setPitchEnvelope(?Audio\Signal\IEnvelope $oEnvelope) : self {
+    public function setPitchEnvelope(?Audio\Signal\IEnvelope $oEnvelope): self {
         $this->oOscillator->setPitchEnvelope($oEnvelope);
         return $this;
     }
@@ -380,7 +380,7 @@ class Operator implements Audio\Signal\IOscillator {
      * @param  float $fIndex      - The modulation strength. 1.0 represents one full duty cycle of the oscillator.
      * @return self
      */
-    public function addModulator(self $oModulator, float $fIndex) : self {
+    public function addModulator(self $oModulator, float $fIndex): self {
         // This is not how you self modulate
         if ($this === $oModulator) {
             throw new \LogicException('Cyclical operator configuration');
@@ -410,7 +410,7 @@ class Operator implements Audio\Signal\IOscillator {
      * @param  self $oModulator
      * @return self
      */
-    public function removeModulator(self $oModulator) : self {
+    public function removeModulator(self $oModulator): self {
         $this->oModulation->removeInputStream($oModulator->sUniqueID);
     }
 
@@ -424,7 +424,7 @@ class Operator implements Audio\Signal\IOscillator {
      * @param  Audio\IControlCurve|null $oCurve
      * @return self
      */
-    public function setLevelIntensityVelocityCurve(?Audio\IControlCurve $oCurve) : self {
+    public function setLevelIntensityVelocityCurve(?Audio\IControlCurve $oCurve): self {
         $this->oLevelIntensityVelocityCurve = $oCurve;
         return $this;
     }
@@ -435,7 +435,7 @@ class Operator implements Audio\Signal\IOscillator {
      * @param  Audio\IControlCurve|null $oCurve
      * @return self
      */
-    public function setLevelRateVelocityCurve(?Audio\IControlCurve $oCurve) : self {
+    public function setLevelRateVelocityCurve(?Audio\IControlCurve $oCurve): self {
         $this->oLevelRateVelocityCurve = $oCurve;
         return $this;
     }
@@ -446,7 +446,7 @@ class Operator implements Audio\Signal\IOscillator {
      * @param  Audio\IControlCurve|null $oCurve
      * @return self
      */
-    public function setPitchIntensityVelocityCurve(?Audio\IControlCurve $oCurve) : self {
+    public function setPitchIntensityVelocityCurve(?Audio\IControlCurve $oCurve): self {
         $this->oPitchIntensityVelocityCurve = $oCurve;
         return $this;
     }
@@ -457,7 +457,7 @@ class Operator implements Audio\Signal\IOscillator {
      * @param  Audio\IControlCurve|null $oCurve
      * @return self
      */
-    public function setPitchRateVelocityCurve(?Audio\IControlCurve $oCurve) : self {
+    public function setPitchRateVelocityCurve(?Audio\IControlCurve $oCurve): self {
         $this->oPitchRateVelocityCurve = $oCurve;
         return $this;
     }
@@ -468,7 +468,7 @@ class Operator implements Audio\Signal\IOscillator {
      * @param  int  $iVelocity
      * @return self
      */
-    public function setVelocity(int $iVelocity) : self {
+    public function setVelocity(int $iVelocity): self {
         $fCurveInput = (float)$iVelocity;
         if ($oEnvelope = $this->oOscillator->getLevelEnvelope()) {
             $fLevelScale = 1.0;
@@ -509,7 +509,7 @@ class Operator implements Audio\Signal\IOscillator {
      *
      * @param string $sUniqueID
      */
-    private function check(string $sUniqueID) : void {
+    private function check(string $sUniqueID): void {
         if (isset($this->aModulators[$sUniqueID])) {
             throw new \LogicException('Cyclical operator configuration');
         }

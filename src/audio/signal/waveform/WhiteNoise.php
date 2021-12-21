@@ -65,14 +65,14 @@ class WhiteNoise implements Audio\Signal\IWaveform {
     /**
      * @inheritDoc
      */
-    public function getPeriod() : float {
+    public function getPeriod(): float {
         return self::PERIOD;
     }
 
     /**
      * @inheritDoc
      */
-    public function map(Audio\Signal\Packet $oInput) : Audio\Signal\Packet {
+    public function map(Audio\Signal\Packet $oInput): Audio\Signal\Packet {
         $fRandom = self::RAND_SCALE * mt_rand();
         $iMask   = 0x7FFFFFFF;
         $oOutput = clone $oInput;

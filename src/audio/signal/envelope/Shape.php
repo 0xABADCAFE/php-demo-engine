@@ -80,7 +80,7 @@ class Shape extends Base {
      * @param float      $fInitial
      * @param float[2][] $aPoints
      */
-    public function setShape(float $fInitial, array $aPoints) : self {
+    public function setShape(float $fInitial, array $aPoints): self {
         $this->aPoints = [
             0 => [$fInitial, 0]
         ];
@@ -100,7 +100,7 @@ class Shape extends Base {
     /**
      * @inheritDoc
      */
-    public function emit(?int $iIndex = null) : Audio\Signal\Packet {
+    public function emit(?int $iIndex = null): Audio\Signal\Packet {
         if (!$this->bEnabled) {
             return $this->emitSilence();
         }

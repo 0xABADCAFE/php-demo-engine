@@ -41,7 +41,7 @@ trait TStream {
     /**
      * @return Packet
      */
-    protected function emitSilence() : Packet {
+    protected function emitSilence(): Packet {
         return self::$oSilence;
     }
 
@@ -50,7 +50,7 @@ trait TStream {
      *
      * @return IStream (self)
      */
-    public function enable() : IStream {
+    public function enable(): IStream {
         $this->bEnabled = true;
         return $this;
     }
@@ -60,7 +60,7 @@ trait TStream {
      *
      * @return IStream (self)
      */
-    public function disable() : IStream {
+    public function disable(): IStream {
         $this->bEnabled = false;
         return $this;
     }
@@ -70,7 +70,7 @@ trait TStream {
      *
      * @return bool
      */
-    public function isEnabled() : bool {
+    public function isEnabled(): bool {
         return $this->bEnabled;
     }
 }

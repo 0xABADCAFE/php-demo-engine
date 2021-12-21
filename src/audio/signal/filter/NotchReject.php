@@ -34,7 +34,7 @@ class NotchReject extends Base {
     /**
      * @inheritDoc
      */
-    protected function applyFixedCutoffFixedResonance() {
+    protected function applyFixedCutoffFixedResonance(): void {
         $oInputSamples  = $this->oInputStream->emit($this->iLastIndex);
         $oOutputSamples = $this->oLastOutputPacket;
         $fResonance     = $this->fFixedResonance * self::F_SCALE_MAX_Q;
@@ -47,7 +47,7 @@ class NotchReject extends Base {
     /**
      * @inheritDoc
      */
-    protected function applyVaryingCutoffFixedResonance() {
+    protected function applyVaryingCutoffFixedResonance(): void {
         $oInputSamples  = $this->oInputStream->emit($this->iLastIndex);
         $oOutputSamples = $this->oLastOutputPacket;
         $oCutoffValues  = $this->oCutoffControl->emit($this->iLastIndex);
@@ -61,7 +61,7 @@ class NotchReject extends Base {
     /**
      * @inheritDoc
      */
-    protected function applyFixedCutoffVaryingResonance() {
+    protected function applyFixedCutoffVaryingResonance(): void {
         $oInputSamples    = $this->oInputStream->emit($this->iLastIndex);
         $oOutputSamples   = $this->oLastOutputPacket;
         $oResonanceValues = $this->oResonanceControl->emit($this->iLastIndex);
@@ -75,7 +75,7 @@ class NotchReject extends Base {
     /**
      * @inheritDoc
      */
-    protected function applyVaryingCutoffVaryingResonance() {
+    protected function applyVaryingCutoffVaryingResonance(): void {
         $oInputSamples    = $this->oInputStream->emit($this->iLastIndex);
         $oOutputSamples   = $this->oLastOutputPacket;
         $oCutoffValues    = $this->oCutoffControl->emit($this->iLastIndex);

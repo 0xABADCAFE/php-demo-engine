@@ -40,14 +40,14 @@ class Triangle implements Signal\IWaveform {
     /**
      * @inheritDoc
      */
-    public function getPeriod() : float {
+    public function getPeriod(): float {
         return self::PERIOD;
     }
 
     /**
      * @inheritDoc
      */
-    public function map(Signal\Packet $oInput) : Signal\Packet {
+    public function map(Signal\Packet $oInput): Signal\Packet {
         $oOutput = clone $oInput;
         $fHalf   = 0.5;
         foreach ($oInput as $i => $fTime) {

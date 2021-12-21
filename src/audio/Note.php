@@ -87,7 +87,7 @@ class Note {
      * @return int
      * @throws OutOfBoundsException;
      */
-    public static function getNumber(string $sNote) : int {
+    public static function getNumber(string $sNote): int {
         if (!isset(self::NOTE_NAMES[$sNote])) {
             throw new OutOfBoundsException($sNote);
         }
@@ -110,7 +110,7 @@ class Note {
         float $fBendSemis = 0.0,
         $fScalePerOctave  = 1.0,
         $fCentreValue     = self::CENTRE_FREQUENCY
-    ) : float {
+    ): float {
         $iNote  = self::getNumber($sNote) - self::CENTRE_REFERENCE;
         $fNote  = $fScalePerOctave * self::FACTOR_PER_SEMI * ($iNote + $fBendSemis);
         return $fCentreValue * 2.0 ** $fNote;

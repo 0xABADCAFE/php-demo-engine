@@ -58,14 +58,14 @@ class QuadrantMutator implements Audio\Signal\IWaveform {
     /**
      * @inheritDoc
      */
-    public function getPeriod() : float {
+    public function getPeriod(): float {
         return self::PERIOD;
     }
 
     /**
      * @inheritDoc
      */
-    public function map(Audio\Signal\Packet $oInput) : Audio\Signal\Packet {
+    public function map(Audio\Signal\Packet $oInput): Audio\Signal\Packet {
 
         $oAdjust = clone $oInput;
 

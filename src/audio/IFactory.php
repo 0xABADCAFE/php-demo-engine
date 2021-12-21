@@ -35,5 +35,5 @@ interface IFactory {
      * @return object
      * @throws \RuntimeException
      */
-    public function createFrom(object $oDefinition) : object;
+    public function createFrom(\stdClass $oDefinition): object;
 }

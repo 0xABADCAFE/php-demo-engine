@@ -67,7 +67,7 @@ class TRNaN implements Audio\IMachine {
     /**
      * @inheritDoc
      */
-    public function setVoiceNote(int $iVoiceNumber, string $sNoteName) : self {
+    public function setVoiceNote(int $iVoiceNumber, string $sNoteName): self {
         isset($this->aVoices[$iVoiceNumber]) &&
         $this->aVoices[$iVoiceNumber]->setNote($sNoteName);
         return $this;
@@ -76,7 +76,7 @@ class TRNaN implements Audio\IMachine {
     /**
      * @inheritDoc
      */
-    public function startVoice(int $iVoiceNumber) : self {
+    public function startVoice(int $iVoiceNumber): self {
         if (isset(self::MUTE_GROUPS[$iVoiceNumber])) {
             foreach (self::MUTE_GROUPS[$iVoiceNumber] as $iMuteNumber) {
                 $this->aVoices[$iMuteNumber]
@@ -95,7 +95,7 @@ class TRNaN implements Audio\IMachine {
     /**
      * @inheritDoc
      */
-    public function stopVoice(int $iVoiceNumber) : self {
+    public function stopVoice(int $iVoiceNumber): self {
         isset($this->aVoices[$iVoiceNumber]) &&
         $this->aVoices[$iVoiceNumber]
             ->getOutputStream()

@@ -42,7 +42,7 @@ class Saw extends AliasedSaw {
     /**
      * @inheritDoc
      */
-    public function map(Signal\Packet $oInput) : Signal\Packet {
+    public function map(Signal\Packet $oInput): Signal\Packet {
         $oOutput   = clone $oInput;
 
         // Avoid sharp transitions at the edges with a simple hamming filter.

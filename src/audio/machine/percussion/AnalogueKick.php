@@ -97,7 +97,7 @@ class AnalogueKick implements IVoice {
     /**
      * @inheritDoc
      */
-    public function setNote(string $sNote) : self {
+    public function setNote(string $sNote): self {
         $iNoteNumber = Audio\Note::getNumber($sNote);
         $iSemitone   = $iNoteNumber % Audio\Note::SEMIS_PER_OCTAVE;
         $iOctave     = (int)($iNoteNumber / Audio\Note::SEMIS_PER_OCTAVE);
@@ -113,14 +113,14 @@ class AnalogueKick implements IVoice {
     /**
      * @inheritDoc
      */
-    public function setVelocity(int $iVelocity) : self {
+    public function setVelocity(int $iVelocity): self {
         return $this;
     }
 
     /**
      * @inheritDoc
      */
-    public function getOutputStream() : Audio\Signal\IStream {
+    public function getOutputStream(): Audio\Signal\IStream {
         return $this->oAutoMute;
     }
 

@@ -35,35 +35,35 @@ interface IStream {
      *
      * @return self
      */
-    public function enable() : self;
+    public function enable(): self;
 
     /**
      * Disable a stream. A disabled stream will emit silence packets if invoked.
      *
      * @return self
      */
-    public function disable() : self;
+    public function disable(): self;
 
     /**
      * Check if a stream is enabled.
      *
      * @return bool
      */
-    public function isEnabled() : bool;
+    public function isEnabled(): bool;
 
     /**
      * Get the current stream position
      *
      * @return int
      */
-    public function getPosition() : int;
+    public function getPosition(): int;
 
     /**
      * Reset the stream
      *
      * @return self
      */
-    public function reset() : self;
+    public function reset(): self;
 
     /**
      * Emit a Packet. An optional index parameter allows the stream to ascertain if it is being asked repeatedly for
@@ -73,5 +73,5 @@ interface IStream {
      * @param  int|null $iIndex
      * @return IPacket
      */
-    public function emit(?int $iIndex = null) : Packet;
+    public function emit(?int $iIndex = null): Packet;
 }

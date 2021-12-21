@@ -50,14 +50,14 @@ class Modulator implements IStream {
     /**
      * @inheritDoc
      */
-    public function getPosition() : int {
+    public function getPosition(): int {
         return $this->iPosition;
     }
 
     /**
      * @inheritDoc
      */
-    public function reset() : self {
+    public function reset(): self {
         $this->iPosition  = 0;
         $this->iLastIndex = 0;
         $this->oStream1->reset();
@@ -68,7 +68,7 @@ class Modulator implements IStream {
     /**
      * @inheritDoc
      */
-    public function emit(?int $iIndex = null) : Packet {
+    public function emit(?int $iIndex = null): Packet {
         $this->iPosition += Audio\IConfig::PACKET_SIZE;
         if (!$this->bEnabled) {
             return $this->emitSilence();
@@ -82,7 +82,7 @@ class Modulator implements IStream {
     /**
      * @return Packet
      */
-    private function emitNew() : Packet {
+    private function emitNew(): Packet {
         $this->oLastPacket = $this->oStream1->emit($this->iLastIndex);
         return $this->oLastPacket->modulateWith($this->oStream2->emit($this->iLastIndex));
     }

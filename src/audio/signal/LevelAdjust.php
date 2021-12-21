@@ -50,14 +50,14 @@ class LevelAdjust implements IStream {
     /**
      * @return IStream
      */
-    public function getStream() : IStream {
+    public function getStream(): IStream {
         return $this->oStream;
     }
 
     /**
      * @return float
      */
-    public function getLevel() : float {
+    public function getLevel(): float {
         return $this->fLevel;
     }
 
@@ -67,7 +67,7 @@ class LevelAdjust implements IStream {
      * @param  float $fLevel
      * @return self
      */
-    public function setLevel(float $fLevel) : self {
+    public function setLevel(float $fLevel): self {
         $this->fLevel  = $fLevel;
         return $this;
     }
@@ -75,14 +75,14 @@ class LevelAdjust implements IStream {
     /**
      * @inheritDoc
      */
-    public function getPosition() : int {
+    public function getPosition(): int {
         return $this->oStream->getPosition();
     }
 
     /**
      * @inheritDoc
      */
-    public function reset() : self {
+    public function reset(): self {
         $this->oStream->reset();
         return $this;
     }
@@ -90,7 +90,7 @@ class LevelAdjust implements IStream {
     /**
      * @inheritDoc
      */
-    public function emit(?int $iIndex = null) : Packet {
+    public function emit(?int $iIndex = null): Packet {
         if ($this->bEnabled) {
             return $this->oStream
                 ->emit($iIndex)

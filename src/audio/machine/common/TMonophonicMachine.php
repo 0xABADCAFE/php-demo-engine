@@ -55,21 +55,21 @@ trait TMonophonicMachine {
     /**
      * @inheritDoc
      */
-    public function getNumVoices() : int {
+    public function getNumVoices(): int {
         return 1;
     }
 
     /**
      * @inheritDoc
      */
-    public function getVoiceLevel(int $iVoiceNumber) : float {
+    public function getVoiceLevel(int $iVoiceNumber): float {
         return $this->fVoiceLevel;
     }
 
     /**
      * @inheritDoc
      */
-    public function setVoiceLevel(int $iVoiceNumber, float $fVolume) : Audio\IMachine {
+    public function setVoiceLevel(int $iVoiceNumber, float $fVolume): Audio\IMachine {
         $this->fVoiceLevel = $fVolume;
         $this->oVoice->setLevel($fVolume * $this->fAttenuation);
         return $this;
@@ -78,28 +78,28 @@ trait TMonophonicMachine {
     /**
      * @inheritDoc
      */
-    public function getOutputLevel() : float {
+    public function getOutputLevel(): float {
         return $this->fVoiceLevel;
     }
 
     /**
      * @inheritDoc
      */
-    public function setOutputLevel(float $fVolume) : Audio\IMachine {
+    public function setOutputLevel(float $fVolume): Audio\IMachine {
         return $this->setVoiceLevel(0, $fVolume);
     }
 
     /**
      * @inheritDoc
      */
-    public function getPosition() : int {
+    public function getPosition(): int {
         return $this->oOutput->getPosition();
     }
 
     /**
      * @inheritDoc
      */
-    public function reset() : Audio\Signal\IStream {
+    public function reset(): Audio\Signal\IStream {
         $this->oOutput->reset();
         return $this;
     }
@@ -107,21 +107,21 @@ trait TMonophonicMachine {
     /**
      * @inheritDoc
      */
-    public function emit(?int $iIndex = null) : Audio\Signal\Packet {
+    public function emit(?int $iIndex = null): Audio\Signal\Packet {
         return $this->oOutput->emit($iIndex);
     }
 
     /**
      * @inheritDoc
      */
-    public function getInsert() : ?Audio\Signal\IInsert {
+    public function getInsert(): ?Audio\Signal\IInsert {
         return $this->oInsert;
     }
 
     /**
      * @inheritDoc
      */
-    public function setInsert(?Audio\Signal\IInsert $oInsert = null) : self {
+    public function setInsert(?Audio\Signal\IInsert $oInsert = null): self {
         if ($this->oInsert = $oInsert) {
             $oInsert->setInputStream($this->oVoice);
             $this->oOutput = $oInsert;

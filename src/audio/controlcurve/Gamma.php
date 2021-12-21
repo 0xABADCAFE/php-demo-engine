@@ -58,7 +58,7 @@ class Gamma implements Audio\IControlCurve {
     /**
      * @inheritDoc
      */
-    public function map(float $fControlValue) : float {
+    public function map(float $fControlValue): float {
         $fControlValue = $this->fInScale * ($fControlValue - $this->fInBase);
         return $this->fOutBase + ($fControlValue ** $this->fGamma) * $this->fOutRange;
     }

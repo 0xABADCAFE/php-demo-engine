@@ -41,14 +41,14 @@ class AliasedSquare implements Signal\IWaveform {
     /**
      * @inheritDoc
      */
-    public function getPeriod() : float {
+    public function getPeriod(): float {
         return self::PERIOD;
     }
 
     /**
      * @inheritDoc
      */
-    public function map(Signal\Packet $oInput) : Signal\Packet {
+    public function map(Signal\Packet $oInput): Signal\Packet {
         $oOutput = clone $oInput;
         foreach ($oInput as $i => $fTime) {
             $oOutput[$i] = (int)floor($fTime) & 1 ? -1.0 : 1.0;

@@ -41,7 +41,7 @@ interface IMachine extends Signal\IStream {
      *
      * @return int
      */
-    public function getNumVoices() : int;
+    public function getNumVoices(): int;
 
     /**
      * Get the level for a specific voice number. Returns zero if the voice number is out of range.
@@ -49,7 +49,7 @@ interface IMachine extends Signal\IStream {
      * @param  int $iVoiceNumber
      * @return float
      */
-    public function getVoiceLevel(int $iVoiceNumber) : float;
+    public function getVoiceLevel(int $iVoiceNumber): float;
 
     /**
      * Set the level for a specific voice number. Does not care if the voice number is out of range.
@@ -58,14 +58,14 @@ interface IMachine extends Signal\IStream {
      * @param  float $fVolume
      * @return self
      */
-    public function setVoiceLevel(int $iVoiceNumber, float $fVolume) : self;
+    public function setVoiceLevel(int $iVoiceNumber, float $fVolume): self;
 
     /**
      * Get the overall output level for the machine.
      *
      * @return float
      */
-    public function getOutputLevel() : float;
+    public function getOutputLevel(): float;
 
     /**
      * Set the overall output level for the machine.
@@ -73,7 +73,7 @@ interface IMachine extends Signal\IStream {
      * @param  float $fVolume
      * @return self
      */
-    public function setOutputLevel(float $fVolume) : self;
+    public function setOutputLevel(float $fVolume): self;
 
     /**
      * Start a note on the specified voice. Does nothing if the voice number is out of range.
@@ -82,7 +82,7 @@ interface IMachine extends Signal\IStream {
      * @param  string $sNoteName
      * @return self
      */
-    public function setVoiceNote(int $iVoiceNumber, string $sNoteName) : self;
+    public function setVoiceNote(int $iVoiceNumber, string $sNoteName): self;
 
     /**
      * Set the velocity of the voice. This is in the MIDI range 0 - 127 and can be mapped to various parameters
@@ -92,7 +92,7 @@ interface IMachine extends Signal\IStream {
      * @param  int  $iVelocity
      * @return self
      */
-    public function setVoiceVelocity(int $iVoiceNumber, int $iVelocity) : self;
+    public function setVoiceVelocity(int $iVoiceNumber, int $iVelocity): self;
 
 
     /**
@@ -103,7 +103,7 @@ interface IMachine extends Signal\IStream {
      * @param  int  $iValue
      * @return self
      */
-    public function setVoiceControllerValue(int $iVoiceNumber, int $iController, int $iValue) : self;
+    public function setVoiceControllerValue(int $iVoiceNumber, int $iController, int $iValue): self;
 
     /**
      * Modifies a controller value.
@@ -113,7 +113,7 @@ interface IMachine extends Signal\IStream {
      * @param  int  $iDelta
      * @return self
      */
-    public function adjustVoiceControllerValue(int $iVoiceNumber, int $iController, int $iDelta) : self;
+    public function adjustVoiceControllerValue(int $iVoiceNumber, int $iController, int $iDelta): self;
 
     /**
      * Starts the specified voice playing. Does nothing if the voice number is out of range.
@@ -121,7 +121,7 @@ interface IMachine extends Signal\IStream {
      * @param  int    $iVoiceNumber
      * @return self
      */
-    public function startVoice(int $iVoiceNumber) : self;
+    public function startVoice(int $iVoiceNumber): self;
 
     /**
      * Stops the specified voice playing. Does nothing if the voice number is out of range.
@@ -129,7 +129,7 @@ interface IMachine extends Signal\IStream {
      * @param  int    $iVoiceNumber
      * @return self
      */
-    public function stopVoice(int $iVoiceNumber) : self;
+    public function stopVoice(int $iVoiceNumber): self;
 
     /**
      * Set an Insert to use on the machine output. This could be a compressor, EQ, etc. Setting null removes any
@@ -138,13 +138,13 @@ interface IMachine extends Signal\IStream {
      * @param  Signal\IInsert|null $oInsert
      * @return self
      */
-    public function setInsert(?Signal\IInsert $oInsert) : self;
+    public function setInsert(?Signal\IInsert $oInsert): self;
 
     /**
      * Get the currently assigned Insert, if any.
      *
      * @return Signal\IInsert|null
      */
-    public function getInsert() : ?Signal\IInsert;
+    public function getInsert(): ?Signal\IInsert;
 }
 

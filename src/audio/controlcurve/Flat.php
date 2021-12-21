@@ -44,7 +44,7 @@ class Flat implements Audio\IControlCurve {
     /**
      * @inheritDoc
      */
-    public function map(float $fControlValue) : float {
+    public function map(float $fControlValue): float {
         return $this->fFixed;
     }
 }

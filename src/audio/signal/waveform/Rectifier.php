@@ -53,7 +53,7 @@ class Rectifier implements Signal\IWaveform {
      * @param  int $iModifier
      * @return self
      */
-    public static function createStandard(Signal\IWaveform $oSource, int $iModifier) : Signal\IWaveform {
+    public static function createStandard(Signal\IWaveform $oSource, int $iModifier): Signal\IWaveform {
         switch ($iModifier) {
             case self::HALF_RECT_P:
                 return new self(
@@ -170,14 +170,14 @@ class Rectifier implements Signal\IWaveform {
     /**
      * @inheritDoc
      */
-    public function getPeriod() : float {
+    public function getPeriod(): float {
         return $this->oSource->getPeriod();
     }
 
     /**
      * @inheritDoc
      */
-    public function map(Signal\Packet $oInput) : Signal\Packet {
+    public function map(Signal\Packet $oInput): Signal\Packet {
         $oOutput = $this->oSource->map($oInput);
         $fMin    = $this->fMin;
         $fMax    = $this->fMax;

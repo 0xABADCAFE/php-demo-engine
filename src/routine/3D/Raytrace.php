@@ -146,7 +146,7 @@ class Raytrace extends Base {
         $this->renderScene();
         $this->oBlitter
             ->setSource($this->aFrames[0])
-            ->setTarget($this->oDisplay)
+            ->setTarget($this->castDisplayPixelled())
             ->copy(
                 0,
                 0,

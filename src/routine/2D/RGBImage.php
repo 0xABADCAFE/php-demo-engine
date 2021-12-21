@@ -65,10 +65,14 @@ class RGBImage extends Base implements IResourceLoader {
      * @inheritDoc
      */
     public function setDisplay(PDE\IDisplay $oDisplay): self {
-        if ($this->bCanRender  = ($oDisplay instanceof PDE\Display\IPixelled)) {
-            $this->oBlitter->setTarget($oDisplay);
+        $this->oDisplay = $oDisplay;
+        if ($oDisplay instanceof PDE\Display\IPixelled) {
+            $this->bCanRender = true;
+            $this->oBlitter->setTarget($this->castDisplayPixelled());
+        } else {
+            $this->bCanRender = false;
         }
-        $this->oDisplay    = $oDisplay;
+
         return $this;
     }
 

@@ -30,6 +30,8 @@ use function \printf, \settype, \gettype;
  */
 abstract class Base implements PDE\IDisplay {
 
+    const DEFAULT_PARAMETERS = [];
+
     protected int $iWidth, $iHeight;
 
     /**

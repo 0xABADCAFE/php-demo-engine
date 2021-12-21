@@ -44,7 +44,7 @@ class Inverse implements IMode {
         while ($iHeight--) {
             $i = $iWidth;
             while ($i--) {
-                $oTargetP[$iOffset] = ~$oTargetP[$iOffset];
+                $oTargetP[$iOffset] = ~(int)$oTargetP[$iOffset];
                 ++$iOffset;
             }
             $iOffset += $iSpan;
@@ -76,7 +76,7 @@ class Inverse implements IMode {
         while ($iHeight--) {
             $i = $iWidth;
             while ($i--) {
-                $oTargetP[$iTargetIndex++] = ~$oSourceP[$iSourceIndex++];
+                $oTargetP[$iTargetIndex++] = ~(int)$oSourceP[$iSourceIndex++];
             }
             $iSourceIndex += $iSourceSpan;
             $iTargetIndex += $iTargetSpan;

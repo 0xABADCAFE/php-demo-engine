@@ -40,7 +40,7 @@ require_once 'classmap.php';
 /**
  * Debugging output
  *
- * @param mixed $mVarArgs
+ * @param float|int|string $mVarArgs
  */
 function dprintf(string $sTemplate, ...$mVarArgs): void {
     \fprintf(STDERR, $sTemplate, ...$mVarArgs);

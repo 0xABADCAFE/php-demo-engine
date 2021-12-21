@@ -117,8 +117,10 @@ class Context {
             );
         }
 
+        // @phpstan-ignore-next-line
         $this->oDisplay     = $this->aDisplayInstances[self::DEFAULT_DISPLAY] ?? reset($this->aDisplayInstances);
         $oDisplayDefinition = $aDisplayDefinitions[self::DEFAULT_DISPLAY]     ?? reset($aDisplayDefinitions);
+        // @phpstan-ignore-next-line
         $this->oRateLimiter = new RateLimiter\Simple($oDisplayDefinition->iMaxFPS);
     }
 

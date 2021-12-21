@@ -33,7 +33,7 @@ class ClassMapBuilder {
     ];
 
     const EXCLUDE_DIRS = [
-
+        'src/tests' => true
     ];
 
     /** @var string[] $aFiles */
@@ -58,8 +58,6 @@ class ClassMapBuilder {
             str_replace(['array (', ')'], ['[', ']'], var_export($this->aClassMap, true)) .
             ";";
         file_put_contents('src/classmap.php', $sCode);
-
-
         foreach ($this->aFiles as $sFile) {
             $sTest = shell_exec('php -dvld.active=1 -dvld.execute=0 ' . $sFile . ' 2>&1 | grep INIT_NS');
             if (!empty($sTest)) {
@@ -83,7 +81,9 @@ class ClassMapBuilder {
                 continue;
             }
             $sPath = $sDirectory . '/' . $sItem;
-            if (isset(self::EXCLUDE_DIRS[$sPath]) || is_link($sPath)) {
+
+
+            if (isset(self::EXCLUDE_DIRS[$sDirectory]) || is_link($sPath)) {
                 continue;
             }
             if (is_dir($sPath)) {

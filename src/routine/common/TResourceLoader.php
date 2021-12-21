@@ -51,7 +51,7 @@ trait TResourceLoader {
     private function loadFile(string $sRelativePath): string {
         $sPath = $this->sBasePath . $sRelativePath;
         if (file_exists($sPath) && is_readable($sPath)) {
-            return file_get_contents($sPath);
+            return (string)file_get_contents($sPath);
         }
         throw new \Exception($sPath . ' could not be read');
     }

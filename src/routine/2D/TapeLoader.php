@@ -91,7 +91,7 @@ class TapeLoader extends Base {
         if (!empty($this->oParameters->sMessage)) {
             $iX = $this->oParameters->iMessageX + $this->oParameters->iVBorder;
             $iY = $this->oParameters->iMessageY + $this->oParameters->iHBorder;
-            $this->oDisplay->writeTextSpan($this->oParameters->sMessage, $iX, $iY);
+            $this->castDisplayASCIIArt()->writeTextSpan($this->oParameters->sMessage, $iX, $iY);
         }
         return $this;
     }
@@ -113,10 +113,10 @@ class TapeLoader extends Base {
      * @param float $fTimeIndex
      */
     private function renderIdle(int $iFrameNumber, float $fTimeIndex): void {
-        $oPixels    = $this->oDisplay->getPixels();
-        $sRawBuffer = &$this->oDisplay->getCharacterBuffer();
+        $oPixels    = $this->castDisplayPixelled()->getPixels();
+        $sRawBuffer = &$this->castDisplayASCIIArt()->getCharacterBuffer();
+        $iSpan      = $this->castDisplayASCIIArt()->getCharacterWidth();
         $iWidth     = $this->oDisplay->getWidth();
-        $iSpan      = $this->oDisplay->getCharacterWidth();
         $iHeight    = $this->oDisplay->getHeight();
         $iOffset    = 0;
         $iASCIIPos  = 0;
@@ -155,10 +155,10 @@ class TapeLoader extends Base {
      * @param float $fTimeIndex
      */
     private function renderSync(int $iFrameNumber, float $fTimeIndex): void {
-        $oPixels    = $this->oDisplay->getPixels();
-        $sRawBuffer = &$this->oDisplay->getCharacterBuffer();
+        $oPixels    = $this->castDisplayPixelled()->getPixels();
+        $sRawBuffer = &$this->castDisplayASCIIArt()->getCharacterBuffer();
+        $iSpan      = $this->castDisplayASCIIArt()->getCharacterWidth();
         $iWidth     = $this->oDisplay->getWidth();
-        $iSpan      = $this->oDisplay->getCharacterWidth();
         $iHeight    = $this->oDisplay->getHeight();
         $iOffset    = 0;
         $iASCIIPos  = 0;
@@ -213,10 +213,10 @@ class TapeLoader extends Base {
      * @param float $fTimeIndex
      */
     private function renderLoad(int $iFrameNumber, float $fTimeIndex): void {
-        $oPixels    = $this->oDisplay->getPixels();
-        $sRawBuffer = &$this->oDisplay->getCharacterBuffer();
+        $oPixels    = $this->castDisplayPixelled()->getPixels();
+        $sRawBuffer = &$this->castDisplayASCIIArt()->getCharacterBuffer();
+        $iSpan      = $this->castDisplayASCIIArt()->getCharacterWidth();
         $iWidth     = $this->oDisplay->getWidth();
-        $iSpan      = $this->oDisplay->getCharacterWidth();
         $iHeight    = $this->oDisplay->getHeight();
         $iOffset    = 0;
         $iASCIIPos  = 0;

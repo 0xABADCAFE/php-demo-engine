@@ -127,15 +127,15 @@ class Toroid extends Base {
         $this->iDrawMask = 0;
 
         // Start with the most basic
-        if ($oDisplay instanceof PDE\Display\IASCIIArt) {
+        if ($this->oDisplay instanceof PDE\Display\IASCIIArt) {
             $this->iDrawMask    = self::DRAW_ASCII_GREY;
             $this->iCharMaxLuma = $this->oDisplay->getMaxLuminance();
             $this->sLumaCharLUT = $this->oDisplay->getLuminanceCharacters();
-            $this->iSpan        = $oDisplay->getCharacterWidth();
+            $this->iSpan        = $this->oDisplay->getCharacterWidth();
         }
 
         // Pixel type behaviour?
-        if ($oDisplay instanceof PDE\Display\IPixelled) {
+        if ($this->oDisplay instanceof PDE\Display\IPixelled) {
             $this->iDrawMask |= self::DRAW_BLOCK_GREY | self::DRAW_BLOCK_RGB;
 
             // Both available?
@@ -156,14 +156,17 @@ class Toroid extends Base {
         if ($iDrawMode) {
 
             if ($iDrawMode & self::MASK_NEEDS_PIX_BUFFER) {
-                $this->oPixelBuffer = $this->oDisplay->getPixels();
+                $this->oPixelBuffer = $this->castDisplayPixelled()->getPixels();
             }
             if ($iDrawMode & self::MASK_NEEDS_ASCII_BUFFER) {
-                $this->sCharDrawBuffer = &$this->oDisplay->getCharacterBuffer();
-                $this->iCharMaxLuma = $this->oDisplay->getMaxLuminance();
-                $this->sLumaCharLUT = $this->oDisplay->getLuminanceCharacters();
-                $this->iSpan        = $this->oDisplay->getCharacterWidth();
+                $oASCII = $this->castDisplayASCIIArt();
+                $this->sCharDrawBuffer = &$oASCII->getCharacterBuffer();
+                $this->iCharMaxLuma = $oASCII->getMaxLuminance();
+                $this->sLumaCharLUT = $oASCII->getLuminanceCharacters();
+                $this->iSpan        = $oASCII->getCharacterWidth();
             }
+
+            /** @var callable $cPlotPixel */
             $cPlotPixel = [$this, self::PLOT_FUNCTIONS[$iDrawMode]];
 
             $fCosAxis1Rot  = cos($this->oParameters->fAxis1Rotation);
@@ -274,7 +277,7 @@ class Toroid extends Base {
      */
     private function plotASCIIGreyDarkenBG(int $iBufferPos, int $iXPos, int $iYPos, float $fLuma): void {
         $this->plotASCIIGrey($iBufferPos, $iXPos, $iYPos, $fLuma);
-        $iHalfRGB  = ($this->oPixelBuffer[$iBufferPos] >> 1) & 0x007F7F7F;
+        $iHalfRGB  = ($this->oPixelBuffer[$iBufferPos] >> 1) & 0x007F7F7F; // @phpstan-ignore-line
         $iQtrRGB   = ($iHalfRGB >> 1) & 0x007F7F7F;
         $this->oPixelBuffer[$iBufferPos] = $iHalfRGB + $iQtrRGB;
     }

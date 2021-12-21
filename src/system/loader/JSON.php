@@ -53,7 +53,7 @@ class JSON implements System\ILoader {
         if (!file_exists($sFilePath) || !is_readable($sFilePath)) {
             throw new \Exception('Unable to open ' . $sFilePath . ' for reading');
         }
-        $oDocument = json_decode(file_get_contents($sFilePath));
+        $oDocument = json_decode((string)file_get_contents($sFilePath));
         if (!$oDocument) {
             throw new \Exception('Unable to parse ' . $sFilePath . ', invalid JSON?');
         }

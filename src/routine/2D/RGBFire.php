@@ -75,12 +75,10 @@ class RGBFire extends Base {
      * @inheritDoc
      */
     public function render(int $iFrameNumber, float $fTimeIndex): self {
-        if (! $this->oDisplay instanceof PDE\Display\IPixelled) {
-            return $this;
-        }
+
         $iWidth  = $this->oDisplay->getWidth();
         $iHeight = $this->oDisplay->getHeight();
-        $oPixels = $this->oDisplay->getPixels();
+        $oPixels = $this->castDisplayPixelled()->getPixels();
 
         // Calculate the base line values based on interfering sines
         $iOffset = $iWidth * ($iHeight - 1);

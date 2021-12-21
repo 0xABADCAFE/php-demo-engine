@@ -31,6 +31,10 @@ use function \range, \array_fill_keys, \base_convert, \ini_set, \unpack, \reset,
  */
 abstract class BaseAsyncASCIIWithRGB extends Base implements IPixelled, IASCIIArt, IAsynchronous {
 
+    const PIXEL_FORMAT  = 0;
+    const DATA_FORMAT   = 0;
+    const ATTR_TEMPLATE = '';
+
     const DEFAULT_PARAMETERS = [
 
         /**
@@ -255,7 +259,7 @@ abstract class BaseAsyncASCIIWithRGB extends Base implements IPixelled, IASCIIAr
             }
         }
         // Make sure we output the data in one blast to try to mitigate partial redraw.
-        ob_start(null, 0);
+        ob_start();
         echo $sRawBuffer;
         ob_end_flush();
     }

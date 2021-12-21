@@ -59,8 +59,8 @@ class StaticNoise extends Base {
      * @inheritDoc
      */
     public function render(int $iFrameNumber, float $fTimeIndex): self {
-        $sCharBuffer = &$this->oDisplay->getCharacterBuffer();
-        $iSpan       = $this->oDisplay->getCharacterWidth();
+        $sCharBuffer = &$this->castDisplayASCIIArt()->getCharacterBuffer();
+        $iSpan       = $this->castDisplayASCIIArt()->getCharacterWidth();
         $iMaxY       = $this->iHeight - $this->oParameters->iBorderV;
         $iMaxX       = $this->iWidth  - $this->oParameters->iBorderH;
         for ($iYPos = $this->oParameters->iBorderV; $iYPos < $iMaxY; ++$iYPos) {

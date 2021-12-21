@@ -142,7 +142,7 @@ class RGBASCIIOverRGB extends BaseAsyncASCIIWithRGB {
             $iLastBackRGB = $iBackRGB;
         }
         // Make sure we output the data in one blast to try to mitigate partial redraw.
-        ob_start(null, 0);
+        ob_start();
         echo $sRawBuffer;
         ob_end_flush();
     }

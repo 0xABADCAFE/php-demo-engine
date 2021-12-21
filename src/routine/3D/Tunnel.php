@@ -97,7 +97,7 @@ class Tunnel extends Base implements IResourceLoader {
         $iTexShift   = $this->oParameters->iTexDim;
         $iTextureDim = 1 << $this->oParameters->iTexDim;
         $iTextureMod = $iTextureDim - 1;
-        $oPixels     = $this->oDisplay->getPixels();
+        $oPixels     = $this->castDisplayPixelled()->getPixels();
         $oTexels     = $this->oTexture->getPixels();
         $iIndex      = 0;
 

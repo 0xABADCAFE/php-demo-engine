@@ -109,7 +109,7 @@ class Voxel extends Base implements IResourceLoader {
 
         $oHeightMap = $this->oElevation;
         $oColourMap = $this->oTexture->getPixels();
-        $oPixels    = $this->oDisplay->getPixels();
+        $oPixels    = $this->castDisplayPixelled()->getPixels();
 
         $i = (int)($iViewWidth * $this->oParameters->fHorizon * 1.3);
         while ($i--) {

@@ -30,10 +30,9 @@ use function \pack, \unpack, \strlen, \socket_write, \socket_read, \usleep, \soc
  */
 trait TAsynchronous {
 
-    /**
-     * @var Socket[]|resource[] $aSocketPair - Socket on php8
-     */
-    private array $aSocketPair = [];
+    /** @var resource[] $aSocketPair @phpstan-ignore-line-since 8.0 */
+    /** @var \Socket[] $aSocketPair   @phpstan-ignore-line-until 8.0 */
+    private array $aSocketPair = []; // @phpstan-ignore-line
 
     /**
      * Construct the required message header, containing the following 32-bit fields
@@ -102,8 +101,8 @@ trait TAsynchronous {
     /**
      * Try to receive a given sized chunk of data.
      *
-     * @param  int  $iExpectedSize - how many bytes we expect
-     * @param  int  $iProcess      - which process is receiving the data
+     * @param  int  $iExpectSize - how many bytes we expect
+     * @param  int  $iProcess    - which process is receiving the data
      * @return string
      */
     private function receiveData(int $iExpectSize, int $iProcess = IAsynchronous::ID_CHILD): string {

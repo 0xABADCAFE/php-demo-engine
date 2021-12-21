@@ -50,6 +50,8 @@ class Event {
     public float  $fAtTimeIndex;
     public int    $iAction;
     public string $sTarget = '_';
+
+    /** @var mixed[] $aParameters */
     public array  $aParameters = [];
 
     /**

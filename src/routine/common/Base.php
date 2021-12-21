@@ -31,6 +31,8 @@ use function \settype, \gettype, \array_merge;
  */
 abstract class Base implements PDE\IRoutine {
 
+    const DEFAULT_PARAMETERS = [];
+
     /**
      * @var \stdClass $oParameters - basic key value structure
      */
@@ -125,5 +127,23 @@ abstract class Base implements PDE\IRoutine {
      */
     private function mergeDefaultParameters(): array {
         return array_merge(self::COMMON_PARAMETERS, static::DEFAULT_PARAMETERS);
+    }
+
+    /**
+     * Return the IASCIIArt interface realisation of the display (if it has one). Throws /TypeError if it doesn't.
+     *
+     * @throws \TypeError
+     */
+    protected function castDisplayASCIIArt(): PDE\Display\IASCIIArt {
+        return $this->oDisplay; // @phpstan-ignore-line
+    }
+
+    /**
+     * Return the IPixelled interface realisation of the display (if it has one). Throws /TypeError if it doesn't.
+     *
+     * @throws \TypeError
+     */
+    protected function castDisplayPixelled(): PDE\Display\IPixelled {
+        return $this->oDisplay; // @phpstan-ignore-line
     }
 }

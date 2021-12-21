@@ -26,6 +26,7 @@ use \SPLFixedArray;
  */
 class Palette {
 
+    /** @var SPLFixedArray<int> $oEntries */
     private SPLFixedArray $oEntries;
     private int           $iSize;
 
@@ -48,6 +49,7 @@ class Palette {
      * given.
      *
      * @param int[] $aPoints
+     * @return SPLFixedArray<int>
      */
     public function gradient(array $aPoints): SPLFixedArray {
         $iCount = count($aPoints);
@@ -55,6 +57,8 @@ class Palette {
             throw new \LengthException('A gradient requires at least 2 points');
         }
         ksort($aPoints);
+
+        /** @var int[] $aPositions */
         $aPositions = array_keys($aPoints);
         if (min($aPositions) < 0) {
             throw new \OutOfBoundsException('Negative indexes not allowed');
@@ -100,6 +104,8 @@ class Palette {
 
     /**
      * Return the raw palette data.
+     *
+     * @return SPLFixedArray<int>
      */
     public function getEntries(): SPLFixedArray {
         return $this->oEntries;

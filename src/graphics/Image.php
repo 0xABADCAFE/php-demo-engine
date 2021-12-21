@@ -24,6 +24,8 @@ use \SPLFixedArray;
 class Image implements IPixelBuffer {
 
     private int $iWidth, $iHeight;
+
+    /** @var SPLFixedArray<int> $oPixels */
     private SPLFixedArray $oPixels;
 
     /**

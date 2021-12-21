@@ -21,8 +21,7 @@ declare(strict_types=1);
 namespace ABadCafe\PDE\Routine;
 
 use ABadCafe\PDE;
-
-use function \str_repeat, \urldecode, \strlen;
+use function \str_repeat, \strlen, \urldecode;
 
 /**
  * SimpleLine

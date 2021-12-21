@@ -19,7 +19,6 @@
 declare(strict_types=1);
 
 namespace ABadCafe\PDE\System\Definition;
-
 use function \gettype, \settype;
 
 /**

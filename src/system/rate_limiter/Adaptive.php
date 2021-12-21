@@ -20,8 +20,7 @@ declare(strict_types=1);
 
 namespace ABadCafe\PDE\System\RateLimiter;
 use ABadCafe\PDE\System;
-
-use function \microtime, \usleep, \pow;
+use function \microtime, \pow, \usleep;
 
 /**
  * Adaptive ratelimiter

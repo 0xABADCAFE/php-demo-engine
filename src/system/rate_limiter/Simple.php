@@ -20,7 +20,6 @@ declare(strict_types=1);
 
 namespace ABadCafe\PDE\System\RateLimiter;
 use ABadCafe\PDE\System;
-
 use function \microtime, \printf, \time_sleep_until;
 
 /**

@@ -1,0 +1,113 @@
+#!/usr/bin/php
+<?php
+
+/**
+ *                   ______                            __
+ *           __     /\\\\\\\\_                        /\\\
+ *          /\\\  /\\\//////\\\_                      \/\\\
+ *        /\\\//  \///     \//\\\    ________       ___\/\\\         _______
+ *      /\\\//               /\\\   /\\\\\\\\\_    /\\\\\\\\\       /\\\\\\\\_
+ *    /\\\//_              /\\\\/   /\\\/////\\\   /\\\////\\\     /\\\/////\\\
+ *    \////\\\ __          /\\\/    \/\\\   \/\\\  \/\\\  \/\\\    /\\\\\\\\\\\
+ *        \////\\\ __      \///_     \/\\\___\/\\\  \/\\\__\/\\\   \//\\\//////_
+ *            \////\\\       /\\\     \/\\\\\\\\\\   \//\\\\\\\\\    \//\\\\\\\\\
+ *                \///       \///      \/\\\//////     \/////////      \/////////
+ *                                      \/\\\
+ *                                       \///
+ *
+ *                             P(?:ointless|ortable|HP) Demo Engine/
+ */
+
+declare(strict_types = 1);
+
+/**
+ * ClassMapBuilder
+ *
+ * Crawls the given directory and builds a simple classmap
+ */
+class TidyUp {
+
+    const EXCLUDE_PATTERNS = [
+        '.'  => 1,
+        '..' => 1
+    ];
+
+    const EXCLUDE_DIRS = [
+        'src/tests' => true
+    ];
+
+    /** @var string[] $aFiles */
+    private array $aFiles = [];
+
+    /**
+     * Main entry point
+     *
+     * @param string $sSourceDir
+     */
+    public function execute(string $sSourceDir, string $sNameSpace) {
+        $this->aFiles = [];
+        $this->traverse($sSourceDir);
+        foreach ($this->aFiles as $sSourcePath) {
+            $this->processFile($sSourcePath);
+        }
+    }
+
+    /**
+     * Recurse over the directory structure
+     *
+     * @param string $sDirectory
+     */
+    private function traverse(string $sDirectory) {
+        $oCurrentDir = dir($sDirectory);
+        $sDirectory  = rtrim($sDirectory, '/');
+        $aSubdirs    = [];
+
+        while (false !== ($sItem = $oCurrentDir->read())) {
+            if (isset(self::EXCLUDE_PATTERNS[$sItem])) {
+                continue;
+            }
+            $sPath = $sDirectory . '/' . $sItem;
+
+
+            if (isset(self::EXCLUDE_DIRS[$sDirectory]) || is_link($sPath)) {
+                continue;
+            }
+            if (is_dir($sPath)) {
+                $aSubdirs[] = $sPath;
+            } else {
+                if ('.php' === substr($sPath, -4, 4)) {
+                    $this->aFiles[] = $sPath;
+                }
+            }
+        }
+        foreach ($aSubdirs as $sSubdir) {
+            $this->traverse($sSubdir);
+        }
+    }
+
+    /**
+     * @param string $sFile
+     */
+    private function processFile(string $sFile) {
+        $sContent = file_get_contents($sFile);
+        $sOutput  = preg_replace_callback(
+            '/^\s*use\s+function\s+(.*?);\s*$/m',
+            function (array $aMatches) {
+                $aFunctions = array_map('trim', explode(',', $aMatches[1]));
+                if (count($aFunctions) > 1) {
+                    asort($aFunctions);
+                    return 'use function ' . implode(', ', $aFunctions) . ";\n";
+                } else {
+                    return $aMatches[0];
+                }
+            },
+            $sContent
+        );
+        if ($sOutput !== $sContent) {
+            echo "Reordering use clauses in ", $sFile, "...\n";
+            file_put_contents($sFile, $sOutput);
+        }
+    }
+}
+
+(new TidyUp)->execute('src/', 'ABadCafe\PDE');

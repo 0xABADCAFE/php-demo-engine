@@ -23,8 +23,7 @@ namespace ABadCafe\PDE\Routine;
 use ABadCafe\PDE;
 use ABadCafe\PDE\Graphics;
 use \SPLFixedArray;
-
-use function \sin, \min, \sqrt, \atan2;
+use function \atan2, \min, \sin, \sqrt;
 
 /**
  * Display an image

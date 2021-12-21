@@ -20,8 +20,7 @@ declare(strict_types=1);
 
 namespace ABadCafe\PDE\System;
 use ABadCafe\PDE;
-
-use function \pack, \unpack, \strlen, \socket_write, \socket_read, \usleep, \socket_create_pair, \pcntl_fork, \socket_close;
+use function \pack, \pcntl_fork, \socket_close, \socket_create_pair, \socket_read, \socket_write, \strlen, \unpack, \usleep;
 
 /**
  * TAsynchronous

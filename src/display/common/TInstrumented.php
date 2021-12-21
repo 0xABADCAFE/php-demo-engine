@@ -21,8 +21,7 @@ declare(strict_types=1);
 namespace ABadCafe\PDE\Display;
 use ABadCafe\PDE;
 use \SPLFixedArray;
-
-use function \printf, \microtime;
+use function \microtime, \printf;
 
 /**
  * TInstrumented

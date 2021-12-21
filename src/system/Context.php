@@ -21,8 +21,7 @@ declare(strict_types=1);
 namespace ABadCafe\PDE\System;
 
 use ABadCafe\PDE;
-
-use function \reset, \asort;
+use function \asort, \reset;
 
 /**
  * Context

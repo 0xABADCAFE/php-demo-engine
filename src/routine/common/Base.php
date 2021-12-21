@@ -21,8 +21,7 @@ declare(strict_types=1);
 namespace ABadCafe\PDE\Routine;
 
 use ABadCafe\PDE;
-
-use function \settype, \gettype, \array_merge;
+use function \array_merge, \gettype, \settype;
 
 /**
  * Base

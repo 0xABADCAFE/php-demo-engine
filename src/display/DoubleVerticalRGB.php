@@ -21,8 +21,7 @@ declare(strict_types=1);
 namespace ABadCafe\PDE\Display;
 use ABadCafe\PDE;
 use \SPLFixedArray;
-
-use function \printf, \base_convert, \ini_set, \sprintf, \unpack, \reset, \array_values, \ob_start, \ob_end_flush;
+use function \array_values, \base_convert, \ini_set, \ob_end_flush, \ob_start, \printf, \reset, \sprintf, \unpack;
 
 /**
  * DoubleVerticalRGB

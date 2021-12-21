@@ -20,8 +20,7 @@ declare(strict_types=1);
 
 namespace ABadCafe\PDE\Display;
 use ABadCafe\PDE;
-
-use function \sprintf, \str_repeat, \strlen, \min, \explode, \count, \array_slice, \strpos, \substr;
+use function \array_slice, \count, \explode, \min, \sprintf, \str_repeat, \strlen, \strpos, \substr;
 
 /**
  * TASCIIArt

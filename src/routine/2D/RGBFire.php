@@ -22,8 +22,7 @@ namespace ABadCafe\PDE\Routine;
 
 use ABadCafe\PDE;
 use \SPLFixedArray;
-
-use function \array_fill, \sin, \mt_rand, \min, \max;
+use function \array_fill, \max, \min, \mt_rand, \sin;
 
 /**
  * Random plasma fire effect. Burns upwards from the lower extent of the display.

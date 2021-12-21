@@ -20,8 +20,7 @@ declare(strict_types=1);
 
 namespace ABadCafe\PDE\Display;
 use ABadCafe\PDE;
-
-use function \array_combine, \array_map, \array_keys, \array_values, \strlen, \urldecode;
+use function \array_combine, \array_keys, \array_map, \array_values, \strlen, \urldecode;
 
 /**
  * PlainASCII

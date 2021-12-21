@@ -21,8 +21,7 @@ declare(strict_types=1);
 namespace ABadCafe\PDE\Display;
 use ABadCafe\PDE;
 use \SPLFixedArray;
-
-use function \range, \array_fill_keys, \base_convert, \ini_set, \unpack, \reset, \sprintf, \chr, \ord, \ob_start, \ob_end_flush;
+use function \array_fill_keys, \base_convert, \chr, \ini_set, \ob_end_flush, \ob_start, \ord, \range, \reset, \sprintf, \unpack;
 
 /**
  * BaseAsyncASCIIWithRGB

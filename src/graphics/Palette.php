@@ -20,8 +20,7 @@ declare(strict_types=1);
 
 namespace ABadCafe\PDE\Graphics;
 use \SPLFixedArray;
-
-use function \array_fill, \count, \ksort, \array_keys, \array_values, \min, \max;
+use function \array_fill, \array_keys, \array_values, \count, \ksort, \max, \min;
 
 /**
  * Simple Palette class.

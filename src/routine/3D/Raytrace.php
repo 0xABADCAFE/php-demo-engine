@@ -24,8 +24,7 @@ use ABadCafe\PDE;
 use ABadCafe\PDE\Graphics;
 use ABadCafe\PDE\Util\Vec3F;
 use \SPLFixedArray;
-
-use function \mt_getrandmax, \base_convert, \abs, \cos, \mt_rand, \min, \sqrt, \ceil, \pow;
+use function \abs, \base_convert, \ceil, \cos, \min, \mt_getrandmax, \mt_rand, \pow, \sqrt;
 
 /**
  * Raytrace a simple scene

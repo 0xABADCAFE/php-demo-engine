@@ -22,8 +22,7 @@ namespace ABadCafe\PDE\Routine;
 
 use ABadCafe\PDE;
 use \SPLFixedArray;
-
-use function \cos, \sin, \abs, \array_fill, \min, \max;
+use function \abs, \array_fill, \cos, \max, \min, \sin;
 
 /**
  * Toroid

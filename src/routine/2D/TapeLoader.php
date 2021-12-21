@@ -21,8 +21,7 @@ declare(strict_types=1);
 namespace ABadCafe\PDE\Routine;
 
 use ABadCafe\PDE;
-
-use function \base_convert, \mt_rand, \mt_getrandmax, \chr;
+use function \base_convert, \chr, \mt_getrandmax, \mt_rand;
 
 /**
  * Mimics a tape loader

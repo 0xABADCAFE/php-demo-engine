@@ -20,7 +20,7 @@ declare(strict_types=1);
 
 namespace ABadCafe\PDE\Audio\Output;
 use ABadCafe\PDE\Audio;
-use function ABadCafe\PDE\dprintf, \date, \array_fill, \fopen, \fclose, \fwrite, \pack, \str_repeat, \ftell, \rewind, \array_values;
+use function ABadCafe\PDE\dprintf, \array_fill, \array_values, \date, \fclose, \fopen, \ftell, \fwrite, \pack, \rewind, \str_repeat;
 
 /**
  * Wav

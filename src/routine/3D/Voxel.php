@@ -23,8 +23,7 @@ namespace ABadCafe\PDE\Routine;
 use ABadCafe\PDE;
 use ABadCafe\PDE\Graphics;
 use \SPLFixedArray;
-
-use function \sin, \cos, \array_fill;
+use function \array_fill, \cos, \sin;
 
 /**
  * Voxel

@@ -21,8 +21,7 @@ declare(strict_types=1);
 namespace ABadCafe\PDE\Display;
 use ABadCafe\PDE;
 use \SPLFixedArray;
-
-use function \socket_read, \count, \pack, \socket_write, \posix_getuid, \proc_nice, \socket_close;
+use function \count, \pack, \posix_getuid, \proc_nice, \socket_close, \socket_read, \socket_write;
 
 /**
  * TAsynchronous

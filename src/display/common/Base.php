@@ -84,9 +84,9 @@ abstract class Base implements PDE\IDisplay {
      * value is first type cooerced then assigned.
      *
      * @param  mixed[] $aParameters
-     * @return object
+     * @return \stdClass
      */
-    protected function filterRawParameters(array $aParameters) : object {
+    protected function filterRawParameters(array $aParameters) : \stdClass {
         $aDefaults = static::DEFAULT_PARAMETERS;
         $aFiltered = [];
         foreach ($aParameters as $sParameterName => $mParameterValue) {

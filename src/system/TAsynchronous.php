@@ -73,9 +73,9 @@ trait TAsynchronous {
      * additional data, we expect to have to recieve it immediatelu afterwards/
      *
      * @param  int $iProcess - which process is receiving the data
-     * @return object|null { int $iMagic, $iCommand, $iSize, $iCheck }
+     * @return \stdClass|null { int $iMagic, $iCommand, $iSize, $iCheck }
      */
-    private function receiveMessageHeader(int $iProcess = IAsynchronous::ID_CHILD) : ?object {
+    private function receiveMessageHeader(int $iProcess = IAsynchronous::ID_CHILD) : ?\stdClass {
         $sMessageData = $this->receiveData(IAsynchronous::HEADER_SIZE, $iProcess);
         if (empty($sMessageData)) {
             return null;

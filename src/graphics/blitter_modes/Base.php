@@ -37,7 +37,7 @@ abstract class Base implements IMode {
     /**
      * Constructor
      */
-    public function construct() {
+    public function __construct() {
         if (null === self::$oProducts) {
             self::initProducts();
         }

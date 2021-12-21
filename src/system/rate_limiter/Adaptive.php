@@ -32,7 +32,7 @@ class Adaptive implements System\IRateLimiter {
     private int $iMaxFramesPerSecond;
     private int $iFrameNumber = 0;
 
-    private float $fFirst, $fPrevious, $fTargetDelay, $fAdjustedDelay;
+    private float $fFirst, $fTargetDelay, $fAdjustedDelay;
 
     /**
      * @inheritDoc
@@ -44,8 +44,7 @@ class Adaptive implements System\IRateLimiter {
         $this->iMaxFramesPerSecond = $iMaxFramesPerSecond;
         $this->fAdjustedDelay      = // fall through
         $this->fTargetDelay        = (1000000.0 / $iMaxFramesPerSecond);
-        $this->fFirst              = // fall through
-        $this->fPrevious           = microtime(true);
+        $this->fFirst              = microtime(true);
     }
 
     /**

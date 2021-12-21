@@ -66,7 +66,7 @@ class JSON implements System\ILoader {
             throw new \Exception('Missing or invalid display section');
         }
 
-        foreach ($oDocument->displays as $sName => $oJSON) {
+        foreach ((array)$oDocument->displays as $sName => $oJSON) {
             $this->aDisplays[$sName] = new Definition\Display($oJSON);
         }
 
@@ -78,7 +78,7 @@ class JSON implements System\ILoader {
             throw new \Exception('Missing or invalid routines section');
         }
 
-        foreach ($oDocument->routines as $sName => $oJSON) {
+        foreach ((array)$oDocument->routines as $sName => $oJSON) {
             $this->aRoutines[$sName] = new Definition\Routine($oJSON);
         }
 

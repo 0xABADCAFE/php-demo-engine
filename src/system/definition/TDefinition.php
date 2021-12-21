@@ -31,9 +31,9 @@ trait TDefinition {
     /**
      * Maps a raw object to entity field structure.
      *
-     * @param object $oRaw
+     * @param \stdClass $oRaw
      */
-    protected function mapFromRaw(object $oRaw) {
+    protected function mapFromRaw(\stdClass $oRaw) {
         foreach ($oRaw as $sField => $mValue) {
             if (isset(self::DEFAULTS[$sField])) {
                 settype($mValue, gettype(self::DEFAULTS[$sField]));

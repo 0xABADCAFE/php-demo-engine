@@ -262,9 +262,9 @@ class Blitter {
      * @param  int $iRectH
      * @param  int $iAreaW
      * @param  int $iAreaH
-     * @return object|null  { int $iRectX, int $iRectY, int $iRectW, int $iRectH }
+     * @return \stdClass|null  { int $iRectX, int $iRectY, int $iRectW, int $iRectH }
      */
-    protected function cropRectangleToArea(int $iRectX, int $iRectY, int $iRectW, int $iRectH, int $iAreaW, int $iAreaH) : ?object {
+    protected function cropRectangleToArea(int $iRectX, int $iRectY, int $iRectW, int $iRectH, int $iAreaW, int $iAreaH) : ?\stdClass {
         // Crop copy rectangle against target dimensions
         if ($iRectX < 0) {
             // Crop Left

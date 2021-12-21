@@ -55,9 +55,9 @@ class Event {
     /**
      * Constructor
      *
-     * @param object $oRaw
+     * @param \stdClass $oRaw
      */
-    public function __construct(object $oRaw) {
+    public function __construct(\stdClass $oRaw) {
         if (
             !isset($oRaw->at) ||
             !isset($oRaw->do) ||

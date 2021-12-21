@@ -30,9 +30,9 @@ use ABadCafe\PDE;
 abstract class Base implements PDE\IRoutine {
 
     /**
-     * @var object $oParameters - basic key value structure
+     * @var \stdClass $oParameters - basic key value structure
      */
-    protected object $oParameters;
+    protected \stdClass $oParameters;
 
     /**
      * @var PDE\IDisplay $oDisplay

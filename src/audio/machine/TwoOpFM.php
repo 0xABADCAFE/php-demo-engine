@@ -262,7 +262,7 @@ class TwoOpFM implements Audio\IMachine {
      * @return self
      */
     public function setModulatorRatio(float $fRatio) : self {
-        $this->fModulatorRatio = \min(\max($fRatio, self::MIN_RATIO), self::MAX_RATIO);
+        $this->fModulatorRatio = min(max($fRatio, self::MIN_RATIO), self::MAX_RATIO);
         foreach ($this->aModulator as $i => $oModulator) {
             $oModulator->setFrequency($this->aBaseFreq[$i] * $this->fModulatorRatio);
         }
@@ -346,7 +346,7 @@ class TwoOpFM implements Audio\IMachine {
      * Set the carrier frequency multiplier as an absolute.
      */
     public function setCarrierRatio(float $fRatio) : self {
-        $this->fCarrierRatio = \min(\max($fRatio, self::MIN_RATIO), self::MAX_RATIO);
+        $this->fCarrierRatio = min(max($fRatio, self::MIN_RATIO), self::MAX_RATIO);
         foreach ($this->aCarrier as $i => $oCarrier) {
             $oCarrier->setFrequency($this->aBaseFreq[$i] * $this->fCarrierRatio);
         }

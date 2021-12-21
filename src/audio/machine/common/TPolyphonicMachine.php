@@ -49,7 +49,7 @@ trait TPolyphonicMachine {
      */
     protected function initPolyphony(int $iNumVoices) : void {
         self::initStreamTrait();
-        $this->iNumVoices = \max(\min($iNumVoices, Audio\IMachine::MAX_POLYPHONY), Audio\IMachine::MIN_POLYPHONY);
+        $this->iNumVoices = max(min($iNumVoices, Audio\IMachine::MAX_POLYPHONY), Audio\IMachine::MIN_POLYPHONY);
         $this->fOutScale  = $this->fOutLevel / $this->iNumVoices;
         $this->oOutput    =
         $this->oMixer     = new Audio\Signal\FixedMixer();

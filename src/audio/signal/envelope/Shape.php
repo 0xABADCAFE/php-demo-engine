@@ -85,12 +85,12 @@ class Shape extends Base {
             0 => [$fInitial, 0]
         ];
         foreach ($aPoints as $aPoint) {
-            if (!\is_array($aPoint) || \count($aPoint) != 2) {
+            if (!is_array($aPoint) || count($aPoint) != 2) {
                 throw new \Exception();
             }
             $this->aPoints[] = [
                 (float)$aPoint[0],
-                \min(\max((float)$aPoint[1], self::MIN_TIME), self::MAX_TIME)
+                min(max((float)$aPoint[1], self::MIN_TIME), self::MAX_TIME)
             ];
         }
         $this->bParameterChanged = true;
@@ -146,7 +146,7 @@ class Shape extends Base {
                 'fLevel' => $aPoint[0] * $this->fLevelScale
             ];
         }
-        $oLastPoint = \end($this->aProcessPoints);
+        $oLastPoint = end($this->aProcessPoints);
 
         // Pad on the last point again with a slight time offset. This ensures the interpolant code is always acting between a pair
         // of points and avoids wandering off the end of the array.

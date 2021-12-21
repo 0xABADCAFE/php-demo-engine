@@ -45,7 +45,7 @@ class Image implements IPixelBuffer {
         }
         $this->iWidth  = $iWidth;
         $this->iHeight = $iHeight;
-        $this->oPixels = SPLFixedArray::fromArray(\array_fill(0, $iWidth * $iHeight, $iDefaultPixel));
+        $this->oPixels = SPLFixedArray::fromArray(array_fill(0, $iWidth * $iHeight, $iDefaultPixel));
     }
 
     /**

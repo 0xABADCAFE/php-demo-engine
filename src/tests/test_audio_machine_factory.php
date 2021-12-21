@@ -33,12 +33,14 @@ foreach (MACHINES as $sDefinition) {
     try {
         echo "\nTest case: ", $sDefinition, "\n";
 
-        $oProduct = Audio\Machine\Factory::get()->createFrom(\json_decode($sDefinition));
+        $oProduct = Audio\Machine\Factory::get()->createFrom(json_decode($sDefinition));
         ++$iSuccess;
     } catch (\Throwable $oError) {
-        echo "\tCaught ", \get_class($oError), " testing ", $sDefinition, ", ", $oError->getMessage(), "\n";
+        echo "\tCaught ", get_class($oError), " testing ", $sDefinition, ", ", $oError->getMessage(), "\n";
         throw $oError;
     }
 }
 
-\printf("\tTests %d, Successes %d\n", $iTests, $iSuccess);
+
+
+printf("\tTests %d, Successes %d\n", $iTests, $iSuccess);

@@ -78,8 +78,8 @@ class Sequencer {
      * @return self
      */
     public function setTempo(int $iTempoBeatsPerMinute) : self {
-        $this->iTempoBeatsPerMinute = \min(
-            \max($iTempoBeatsPerMinute, self::MIN_TEMPO_BPM),
+        $this->iTempoBeatsPerMinute = min(
+            max($iTempoBeatsPerMinute, self::MIN_TEMPO_BPM),
             self::MAX_TEMPO_BPM
         );
         return $this;
@@ -101,8 +101,8 @@ class Sequencer {
      * @return self
      */
     public function setBeatsPerMeasure(int $iBeatsPerMeasure) : self {
-        $this->iBeatsPerMeasure = \min(
-            \max($iBeatsPerMeasure, self::MIN_BEATS_PER_MEASURE),
+        $this->iBeatsPerMeasure = min(
+            max($iBeatsPerMeasure, self::MIN_BEATS_PER_MEASURE),
             self::MAX_BEATS_PER_MEASURE
         );
         $this->iBasePatternLength = $this->iBeatsPerMeasure * $this->iLinesPerBeat;
@@ -125,8 +125,8 @@ class Sequencer {
      * @return self
      */
     public function setLinesPerBeat(int $iLinesPerBeat) : self {
-        $this->iLinesPerBeat = \min(
-            \max($iLinesPerBeat, self::MIN_LINES_PER_BEAT),
+        $this->iLinesPerBeat = min(
+            max($iLinesPerBeat, self::MIN_LINES_PER_BEAT),
             self::MAX_LINES_PER_BEAT
         );
         $this->iBasePatternLength = $this->iBeatsPerMeasure * $this->iLinesPerBeat;
@@ -225,10 +225,10 @@ class Sequencer {
         $this->assertMachineExists($sMachineName);
 
         // Sanitise the sequence. Dedupe, cast to int and remove any negative measure positions
-        $aMeasures = \array_filter(
-            \array_map(
-                '\intval',
-                \array_unique($aMeasures)
+        $aMeasures = array_filter(
+            array_map(
+                'intval',
+                array_unique($aMeasures)
             ),
             function (int $i) {
                 return $i >= 0;
@@ -237,7 +237,7 @@ class Sequencer {
         if (!empty($aMeasures)) {
 
             // Keep track of the total sequence length, in measures.
-            $this->iNumMeasures = \max($this->iNumMeasures, 1 + \max($aMeasures));
+            $this->iNumMeasures = max($this->iNumMeasures, 1 + max($aMeasures));
 
             $aSequence = &$this->aMachineSequences[$sMachineName];
             if (null === $oPattern) {
@@ -321,7 +321,7 @@ class Sequencer {
             $iNumMeasures = $this->iNumMeasures;
         }
 
-        $iLastMeasure = \min($iStartMeasure + $iNumMeasures, $this->iNumMeasures);
+        $iLastMeasure = min($iStartMeasure + $iNumMeasures, $this->iNumMeasures);
 
         $fBeatsPerSecond = $this->iTempoBeatsPerMinute / 60.0;
         $fLinesPerSecond = $fBeatsPerSecond * $this->iLinesPerBeat;
@@ -332,7 +332,7 @@ class Sequencer {
             $oMixer->addInputStream($sMachineName, $oMachine, 1.0);
         }
 
-        $fPlayTime    = \microtime(true);
+        $fPlayTime    = microtime(true);
         $fComputeTime = 0.0;
 
         $iLineOffset = 0;
@@ -352,7 +352,7 @@ class Sequencer {
             while (true) {
                 $iSamplePosition = $oMixer->getPosition();
                 $fCurrentTime    = $fSecondScale * $iSamplePosition;
-                $iLineNumber     = (int)\floor($fCurrentTime * $fLinesPerSecond) - $iLineOffset;
+                $iLineNumber     = (int)floor($fCurrentTime * $fLinesPerSecond) - $iLineOffset;
                 if ($iLineNumber !== $iLastLineNumber) {
                     if ($iLineNumber == $this->iBasePatternLength) {
                         break;
@@ -361,18 +361,18 @@ class Sequencer {
                     $this->triggerLine($iLineNumber, $aActivePatterns);
                 }
 
-                $fStart  = \microtime(true);
+                $fStart  = microtime(true);
                 $oPacket = $oMixer->emit();
-                $fComputeTime += \microtime(true) - $fStart;
+                $fComputeTime += microtime(true) - $fStart;
 
                 $oOutput->write($oPacket);
             }
             $iLineOffset += $this->iBasePatternLength;
         }
 
-        $fPlayTime = \microtime(true) - $fPlayTime;
+        $fPlayTime = microtime(true) - $fPlayTime;
 
-        \printf(
+        printf(
             "Audio Performance %.3f seconds generated in %.3f seconds\n",
             $fPlayTime, $fComputeTime
         );

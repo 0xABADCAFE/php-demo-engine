@@ -145,5 +145,4 @@ class RGBASCIIOverRGB extends BaseAsyncASCIIWithRGB {
         echo $sRawBuffer;
         ob_end_flush();
     }
-
 }

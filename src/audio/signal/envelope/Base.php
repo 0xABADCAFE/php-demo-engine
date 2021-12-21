@@ -36,7 +36,7 @@ abstract class Base implements Audio\Signal\IEnvelope {
      * @inheritDoc
      */
     public function setTimeScale(float $fTimeScale) : self {
-        $fTimeScale = \max($fTimeScale, self::MIN_TIME_SCALE);
+        $fTimeScale = max($fTimeScale, self::MIN_TIME_SCALE);
         if ($fTimeScale != $this->fTimeScale) {
             $this->fTimeScale = $fTimeScale;
             $this->bParameterChanged = true;

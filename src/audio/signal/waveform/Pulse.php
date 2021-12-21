@@ -57,7 +57,7 @@ class Pulse extends AliasedPulse {
                 ->scaleBy(0.5 * $this->fPulseWidth)
                 ->biasBy(0.5);
             foreach ($oInput as $i => $fTime) {
-                $fSample = ((\ceil($fTime) - $fTime) > $oWidth[$i]) ? 1.0 : -1.0;
+                $fSample = ((ceil($fTime) - $fTime) > $oWidth[$i]) ? 1.0 : -1.0;
                 $oOutput[$i] = 0.1 * (
                     $fSample + $fPrev4 +
                     2.0 * ($fPrev1 + $fPrev3)
@@ -70,7 +70,7 @@ class Pulse extends AliasedPulse {
             }
         } else {
             foreach ($oInput as $i => $fTime) {
-                $fSample = ((\ceil($fTime) - $fTime) > $this->fPulseWidth) ? 1.0 : -1.0;
+                $fSample = ((ceil($fTime) - $fTime) > $this->fPulseWidth) ? 1.0 : -1.0;
                 $oOutput[$i] = 0.1 * (
                     $fSample + $fPrev4 +
                     2.0 * ($fPrev1 + $fPrev3)

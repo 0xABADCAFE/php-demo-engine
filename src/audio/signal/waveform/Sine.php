@@ -50,7 +50,7 @@ class Sine implements Signal\IWaveform {
     public function map(Signal\Packet $oInput) : Signal\Packet {
         $oOutput = clone $oInput;
         foreach ($oInput as $i => $fTime) {
-            $oOutput[$i] = \sin($fTime);
+            $oOutput[$i] = sin($fTime);
         }
         return $oOutput;
     }

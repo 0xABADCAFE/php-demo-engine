@@ -95,13 +95,13 @@ class Voxel extends Base implements IResourceLoader {
         $this->oParameters->fYaw -= 0.01;
 
         // Decompose viewing angle
-        $fSinYaw = \sin($this->oParameters->fYaw);
-        $fCosYaw = \cos($this->oParameters->fYaw);
+        $fSinYaw = sin($this->oParameters->fYaw);
+        $fCosYaw = cos($this->oParameters->fYaw);
 
         // Initialise a new height buffer. This is the width of the display and records
         // the current maximum height of a column to reduce overdraw.
         $oHeightBuffer = SPLFixedArray::fromArray(
-            \array_fill(0, $iViewWidth, $this->oDisplay->getHeight()-1)
+            array_fill(0, $iViewWidth, $this->oDisplay->getHeight()-1)
         );
 
         $fWidthFactor = 1.0 / $iViewWidth;
@@ -181,3 +181,4 @@ class Voxel extends Base implements IResourceLoader {
 
     }
 }
+

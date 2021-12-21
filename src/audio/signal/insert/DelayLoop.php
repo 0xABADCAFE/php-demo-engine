@@ -210,7 +210,7 @@ class DelayLoop implements Audio\Signal\IInsert {
     public function createQueue(float $fDelayMs) {
         $this->oQueue      = new SPLDoublyLinkedList;
         $fPacketDurationMs = 1000.0 * Audio\IConfig::PACKET_PERIOD;
-        $iMaxPackets       = (int)\ceil($fDelayMs / $fPacketDurationMs);
+        $iMaxPackets       = (int)ceil($fDelayMs / $fPacketDurationMs);
         for ($i = 0; $i < $iMaxPackets; ++$i) {
             $this->oQueue->add($i, Audio\Signal\Packet::create());
         }

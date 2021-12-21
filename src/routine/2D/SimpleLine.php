@@ -55,9 +55,9 @@ class SimpleLine extends Base {
         $sDrawBuffer = &$this->oDisplay->getCharacterBuffer();
         $sDrawBuffer = '';
         $iWidth      = $this->oDisplay->getWidth();
-        $sBlank      = \str_repeat(' ', $iWidth) . "\n";
-        $sFill       = \urldecode($this->oParameters->sFill);
-        $sFilled     = \str_repeat($sFill[$iFrameNumber % \strlen($sFill)], $iWidth) . "\n";
+        $sBlank      = str_repeat(' ', $iWidth) . "\n";
+        $sFill       = urldecode($this->oParameters->sFill);
+        $sFilled     = str_repeat($sFill[$iFrameNumber % strlen($sFill)], $iWidth) . "\n";
         $iLineCount  = $this->oDisplay->getHeight();
         $iFrameNumber >>= $this->oParameters->iRate;
         while ($iLineCount--) {

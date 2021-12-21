@@ -267,6 +267,5 @@ trait TASCIIArt {
         while ($iLength--) {
             $this->sRawBuffer[$iDstIndex++] = $sText[$iSrcIndex++];
         }
-
     }
 }

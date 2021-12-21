@@ -461,5 +461,4 @@ class Raytrace extends Base {
         --$this->iRecursion;
         return $vRGB;
     }
-
 }

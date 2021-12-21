@@ -81,7 +81,7 @@ class Factory implements Audio\IFactory {
         $fMaxOutput = (float)($oDefinition->fMaxOutput ?? 1.0);
 
         // For tiny ranges output ranges, just create a flat output.
-        if (\abs($fMaxOutput - $fMinOutput) < 1e-4) {
+        if (abs($fMaxOutput - $fMinOutput) < 1e-4) {
             return new Flat(0.5*($fMinOutput + $fMaxOutput));
         }
 
@@ -90,7 +90,7 @@ class Factory implements Audio\IFactory {
         $fGamma     = (float)($oDefinition->fGamma ?? 1.0);
 
         // Don't create a flat gamma curve.
-        if ('Gamma' === $sType && \abs($fGamma - 1.0) < 1e-4) {
+        if ('Gamma' === $sType && abs($fGamma - 1.0) < 1e-4) {
             $sType = 'Linear';
         }
 

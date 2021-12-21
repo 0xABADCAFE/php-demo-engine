@@ -76,7 +76,7 @@ class Factory implements Audio\IFactory {
      * @return Audio\Signal\IEnvelope
      */
     private function createShape(object $oDefinition, string $sType) : Audio\Signal\IEnvelope {
-        if (!isset($oDefinition->aPoints) || !\is_array($oDefinition->aPoints)) {
+        if (!isset($oDefinition->aPoints) || !is_array($oDefinition->aPoints)) {
             throw new \RuntimeException('Shape envelope must have non empty points array');
         }
         return new Shape(

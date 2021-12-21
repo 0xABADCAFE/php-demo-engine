@@ -29,7 +29,7 @@ $oFMMarimba->setInsert(new Audio\Signal\Insert\DelayLoop(null, 123.0 * 3, 0.6));
 $oDrumMachine = new Audio\Machine\TRNaN();
 $oDrumMachine->setOutputLevel(1.25);
 $oBassLine = Audio\Machine\Factory::get()
-    ->createFrom(\json_decode(\file_get_contents('machines/multifm/recently.json')))
+    ->createFrom(json_decode(file_get_contents('machines/multifm/recently.json')))
     ->setOutputLevel(0.35);
 
 $oSequencer

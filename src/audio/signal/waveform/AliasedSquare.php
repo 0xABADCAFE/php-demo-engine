@@ -51,7 +51,7 @@ class AliasedSquare implements Signal\IWaveform {
     public function map(Signal\Packet $oInput) : Signal\Packet {
         $oOutput = clone $oInput;
         foreach ($oInput as $i => $fTime) {
-            $oOutput[$i] = (int)\floor($fTime) & 1 ? -1.0 : 1.0;
+            $oOutput[$i] = (int)floor($fTime) & 1 ? -1.0 : 1.0;
         }
         return $oOutput;
     }

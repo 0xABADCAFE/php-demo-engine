@@ -25,14 +25,14 @@ const CONTROLCURVES = [
 foreach (CONTROLCURVES as $sDefinition) {
     ++$iTests;
     try {
-        $oProduct = Audio\ControlCurve\Factory::get()->createFrom(\json_decode($sDefinition));
+        $oProduct = Audio\ControlCurve\Factory::get()->createFrom(json_decode($sDefinition));
         ++$iSuccess;
     } catch (\Throwable $oError) {
-        echo "\tCaught ", \get_class($oError), " testing ", $sDefinition, ", ", $oError->getMessage(), "\n";
+        echo "\tCaught ", get_class($oError), " testing ", $sDefinition, ", ", $oError->getMessage(), "\n";
     }
 }
 
-\printf("\tTests %d, Successes %d\n", $iTests, $iSuccess);
+printf("\tTests %d, Successes %d\n", $iTests, $iSuccess);
 
 
 echo "Testing Waveform Factory...\n";
@@ -57,14 +57,14 @@ const WAVEFORMS = [
 foreach (WAVEFORMS as $sDefinition) {
     ++$iTests;
     try {
-        $oProduct = Audio\Signal\Waveform\Factory::get()->createFrom(\json_decode($sDefinition));
+        $oProduct = Audio\Signal\Waveform\Factory::get()->createFrom(json_decode($sDefinition));
         ++$iSuccess;
     } catch (\Throwable $oError) {
-        echo "\tCaught ", \get_class($oError), " testing ", $sDefinition, ", ", $oError->getMessage(), "\n";
+        echo "\tCaught ", get_class($oError), " testing ", $sDefinition, ", ", $oError->getMessage(), "\n";
     }
 }
 
-\printf("\tTests %d, Successes %d\n", $iTests, $iSuccess);
+printf("\tTests %d, Successes %d\n", $iTests, $iSuccess);
 
 echo "Testing Oscillator Factory...\n";
 const OSCILLATORS = [
@@ -76,28 +76,28 @@ const OSCILLATORS = [
 
 foreach (OSCILLATORS as $sDefinition) {
     try {
-        $oDefinition = \json_decode(\sprintf($sDefinition, '0'));
+        $oDefinition = json_decode(sprintf($sDefinition, '0'));
         unset($oDefinition->waveform);
         ++$iTests;
         $oProduct = Audio\Signal\Oscillator\Factory::get()->createFrom($oDefinition);
         ++$iSuccess;
         foreach (WAVEFORMS as $sWaveform) {
             ++$iTests;
-            $sDefinitionFull = \sprintf($sDefinition, $sWaveform);
+            $sDefinitionFull = sprintf($sDefinition, $sWaveform);
             try {
-                $oProduct = Audio\Signal\Oscillator\Factory::get()->createFrom(\json_decode($sDefinitionFull));
+                $oProduct = Audio\Signal\Oscillator\Factory::get()->createFrom(json_decode($sDefinitionFull));
                 ++$iSuccess;
             } catch (\Throwable $oError) {
-                echo "\tCaught ", \get_class($oError), " testing ", $sDefinitionFull, ", ", $oError->getMessage(), "\n";
+                echo "\tCaught ", get_class($oError), " testing ", $sDefinitionFull, ", ", $oError->getMessage(), "\n";
             }
         }
 
     } catch (\Throwable $oError) {
-        echo "\tCaught ", \get_class($oError), " testing ", $sDefinition, ", ", $oError->getMessage(), "\n";
+        echo "\tCaught ", get_class($oError), " testing ", $sDefinition, ", ", $oError->getMessage(), "\n";
     }
 }
 
-\printf("\tTests %d, Successes %d\n", $iTests, $iSuccess);
+printf("\tTests %d, Successes %d\n", $iTests, $iSuccess);
 
 echo "Testing Envelope Factory...\n";
 
@@ -115,11 +115,11 @@ const ENVELOPES = [
 foreach (ENVELOPES as $sDefinition) {
     ++$iTests;
     try {
-        $oProduct = Audio\Signal\Envelope\Factory::get()->createFrom(\json_decode($sDefinition));
+        $oProduct = Audio\Signal\Envelope\Factory::get()->createFrom(json_decode($sDefinition));
         ++$iSuccess;
     } catch (\Throwable $oError) {
-        echo "\tCaught ", \get_class($oError), " testing ", $sDefinition, ", ", $oError->getMessage(), "\n";
+        echo "\tCaught ", get_class($oError), " testing ", $sDefinition, ", ", $oError->getMessage(), "\n";
     }
 }
 
-\printf("\tTests %d, Successes %d\n", $iTests, $iSuccess);
+printf("\tTests %d, Successes %d\n", $iTests, $iSuccess);

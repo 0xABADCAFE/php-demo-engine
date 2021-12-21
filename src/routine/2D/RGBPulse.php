@@ -60,9 +60,9 @@ class RGBPulse extends Base {
         $iHeight = $this->oDisplay->getHeight();
         $oPixels = $this->oDisplay->getPixels();
 
-        $fTScale1 = $this->fYScale * 0.5*(1.0 - \cos($fTimeIndex * $this->oParameters->fRate1));
-        $fTScale2 = $this->fXScale * 0.5*(1.0 - \cos($fTimeIndex * $this->oParameters->fRate2));
-        $fTScale3 = $this->fXScale * 0.5*(1.0 - \cos($fTimeIndex * $this->oParameters->fRate3));
+        $fTScale1 = $this->fYScale * 0.5*(1.0 - cos($fTimeIndex * $this->oParameters->fRate1));
+        $fTScale2 = $this->fXScale * 0.5*(1.0 - cos($fTimeIndex * $this->oParameters->fRate2));
+        $fTScale3 = $this->fXScale * 0.5*(1.0 - cos($fTimeIndex * $this->oParameters->fRate3));
 
         $i = 0;
         for ($y = 0; $y < $iHeight; $y++) {

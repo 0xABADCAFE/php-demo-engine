@@ -19,5 +19,5 @@ for ($i = 0; $i < 256; ++$i) {
         ->setBackgroundColour($i)
         ->redraw()
         ->waitForFrame();
-        \usleep(500000);
+        usleep(500000);
 }

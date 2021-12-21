@@ -52,7 +52,7 @@ class Triangle implements Signal\IWaveform {
         $fHalf   = 0.5;
         foreach ($oInput as $i => $fTime) {
             $fTime      -= $fHalf;
-            $fFloor      = \floor($fTime);
+            $fFloor      = floor($fTime);
             $fScale      = (int)$fFloor & 1 ? 2.0 : -2.0;
             $oOutput[$i] = $fScale * ($fTime - $fFloor - $fHalf);
         }

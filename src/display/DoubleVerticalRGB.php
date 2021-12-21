@@ -96,7 +96,7 @@ class DoubleVerticalRGB extends Base implements IPixelled, IAsynchronous {
     /**
      * @inheritDoc
      */
-    public function reset() : self {
+    public function reset(): self {
         printf(IANSIControl::TERM_SIZE_TPL, ($this->iHeight >> 1) + 2, $this->iWidth + 1);
         $this->clear();
         echo IANSIControl::TERM_CLEAR . IANSIControl::CRSR_OFF;
@@ -107,7 +107,7 @@ class DoubleVerticalRGB extends Base implements IPixelled, IAsynchronous {
     /**
      * @inheritDoc
      */
-    public function clear() : self {
+    public function clear(): self {
         $this->resetPixelBuffer();
         return $this;
     }
@@ -115,7 +115,7 @@ class DoubleVerticalRGB extends Base implements IPixelled, IAsynchronous {
     /**
      * @inheritDoc
      */
-    public function redraw() : self {
+    public function redraw(): self {
         $this->beginRedraw();
         $this->sendNewFrameMessage($this->oPixels, self::DATA_FORMAT_32);
         $this->endRedraw();
@@ -125,7 +125,7 @@ class DoubleVerticalRGB extends Base implements IPixelled, IAsynchronous {
     /**
      * @inheritDoc
      */
-    public function setRGBWriteMask(int $iMask) : self {
+    public function setRGBWriteMask(int $iMask): self {
         if ($iMask !== $this->iRGBWriteMask) {
             $this->iRGBWriteMask = $iMask;
             $this->sendSetWritemaskMessage($iMask);
@@ -136,7 +136,7 @@ class DoubleVerticalRGB extends Base implements IPixelled, IAsynchronous {
     /**
      * @inheritDoc
      */
-    public function setParameters(array $aParameters) : self {
+    public function setParameters(array $aParameters): self {
         $oParameters = $this->filterRawParameters($aParameters);
         if (isset($oParameters->sMaskRGB)) {
             $this->setRGBWriteMask((int)base_convert($oParameters->sMaskRGB, 16, 10));

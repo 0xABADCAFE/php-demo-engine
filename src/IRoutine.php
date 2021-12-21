@@ -57,7 +57,7 @@ interface IRoutine extends IParameterisable {
      * @param  float $fTimeIndex
      * @return self  fluent
      */
-    public function render(int $iFrameNumber, float $fTimeIndex) : self;
+    public function render(int $iFrameNumber, float $fTimeIndex): self;
 
     /**
      * Enable the routine. This will be called during the event processing stage before
@@ -68,7 +68,7 @@ interface IRoutine extends IParameterisable {
      * @param  float $fTimeIndex
      * @return self  fluent
      */
-    public function enable(int $iFrameNumber, float $fTimeIndex) : self;
+    public function enable(int $iFrameNumber, float $fTimeIndex): self;
 
     /**
      * Disable the routine. This will be called during the event processing stage before
@@ -78,5 +78,5 @@ interface IRoutine extends IParameterisable {
      * @param  float $fTimeIndex
      * @return self  fluent
      */
-    public function disable(int $iFrameNumber, float $fTimeIndex) : self;
+    public function disable(int $iFrameNumber, float $fTimeIndex): self;
 }

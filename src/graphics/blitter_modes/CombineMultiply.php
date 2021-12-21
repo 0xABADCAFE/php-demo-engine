@@ -33,7 +33,7 @@ class CombineMultiply implements IMode {
         int $iTargetY,
         int $iWidth,
         int $iHeight
-    ) {
+    ): void {
         $iTargetW = $oTarget->getWidth();
         $iOffset  = $iTargetW * $iTargetY + $iTargetX;
         $iSpan    = $iTargetW - $iWidth;
@@ -68,7 +68,7 @@ class CombineMultiply implements IMode {
         int $iTargetY,
         int $iWidth,
         int $iHeight
-    ) {
+    ): void {
         $iSourceW = $oSource->getWidth();
         $iTargetW = $oTarget->getWidth();
         $oSourceP = $oSource->getPixels();

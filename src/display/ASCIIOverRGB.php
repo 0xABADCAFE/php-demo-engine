@@ -36,7 +36,7 @@ class ASCIIOverRGB extends BaseAsyncASCIIWithRGB {
         PIXEL_FORMAT  = self::FORMAT_ASCII_RGB
     ;
 
-    protected function getDefaultPixelValue() : int {
+    protected function getDefaultPixelValue(): int {
         return $this->iBGColour;
     }
 }

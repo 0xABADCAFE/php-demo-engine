@@ -38,5 +38,5 @@ interface IParameterisable {
      * @param  mixed[] $aParameters [key => value]
      * @return self  fluent
      */
-    public function setParameters(array $aParameters) : self;
+    public function setParameters(array $aParameters): self;
 }

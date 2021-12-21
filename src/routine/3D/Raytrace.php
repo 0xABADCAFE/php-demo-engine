@@ -130,7 +130,7 @@ class Raytrace extends Base {
     /**
      * @inheritDoc
      */
-    public function setDisplay(PDE\IDisplay $oDisplay) : self {
+    public function setDisplay(PDE\IDisplay $oDisplay): self {
         $this->bCanRender  = ($oDisplay instanceof PDE\Display\IPixelled);
         $this->oDisplay    = $oDisplay;
         return $this;
@@ -139,7 +139,7 @@ class Raytrace extends Base {
     /**
      * @inheritDoc
      */
-    public function render(int $iFrameNumber, float $fTimeIndex) : self {
+    public function render(int $iFrameNumber, float $fTimeIndex): self {
         $this->renderScene();
         $this->oBlitter
             ->setSource($this->aFrames[0])
@@ -158,7 +158,7 @@ class Raytrace extends Base {
     /**
      * @inheritDoc
      */
-    protected function parameterChange() {
+    protected function parameterChange(): void {
         $this->initCamera();
         $this->initLights();
         $this->initObjects();
@@ -168,7 +168,7 @@ class Raytrace extends Base {
     /**
      * Initialise the camera properties.
      */
-    private function initCamera() {
+    private function initCamera(): void {
 
         $this->vCameraDirection = new Vec3F(
             $this->oParameters->aCameraDir[0],
@@ -209,7 +209,7 @@ class Raytrace extends Base {
     /**
      * Initialise light source
      */
-    private function initLights() {
+    private function initLights(): void {
         $this->vLight = new Vec3F(
             $this->oParameters->aLight[0],
             $this->oParameters->aLight[1],
@@ -220,7 +220,7 @@ class Raytrace extends Base {
     /**
      * Initialise material properties
      */
-    private function initMaterials() {
+    private function initMaterials(): void {
         $this->vAmbientRGB = $this->hexRGBToVec3F($this->oParameters->sAmbientRGB)
             ->scale($this->oParameters->fAmbientBright);
 
@@ -234,7 +234,7 @@ class Raytrace extends Base {
             ->scale($this->oParameters->fSkyBright);
     }
 
-    private function hexRGBToVec3F(string $sColourRGB) : Vec3F {
+    private function hexRGBToVec3F(string $sColourRGB): Vec3F {
         $iRGB = (int)base_convert($sColourRGB, 16, 10);
         return new Vec3F(
             (float)($iRGB >> 16),
@@ -246,7 +246,7 @@ class Raytrace extends Base {
     /**
      * Initialise objects
      */
-    private function initObjects() {
+    private function initObjects(): void {
         $this->aSpheres = [];
         $this->aRadii   = [];
         foreach ($this->oParameters->aSpheres as $aSphere) {
@@ -260,7 +260,7 @@ class Raytrace extends Base {
     /**
      * Initialise draw buffer
      */
-    private function initBuffers() {
+    private function initBuffers(): void {
         // TODO - once asynchronous record mode is working, use a buffer per frame.
         $i = 1;//$this->oParameters->iMaxFrames;
         while ($i--) {
@@ -271,7 +271,7 @@ class Raytrace extends Base {
     /**
      * Render the scene
      */
-    private function renderScene() {
+    private function renderScene(): void {
         $iWidth      = $this->oParameters->iWidth;
         $iHeight     = $this->oParameters->iHeight;
         $fImageScale = $this->oParameters->fImageScale / $iWidth;
@@ -345,7 +345,7 @@ class Raytrace extends Base {
      * @param  Vec3F|null &$vNormal
      * @return int
      */
-    private function trace(Vec3F $vOrigin, Vec3F $vDirection, ?float &$fTraceDistance, ?Vec3F &$vNormal) : int {
+    private function trace(Vec3F $vOrigin, Vec3F $vDirection, ?float &$fTraceDistance, ?Vec3F &$vNormal): int {
 
         $fTraceDistance = 1000.0;
 
@@ -391,7 +391,7 @@ class Raytrace extends Base {
      * @param  Vec3F $vDirection
      * @return Vec3F (rgb)
      */
-    function sample(Vec3F $vOrigin, Vec3F $vDirection) : Vec3F {
+    function sample(Vec3F $vOrigin, Vec3F $vDirection): Vec3F {
 
         if (++$this->iRecursion > 4) {
             --$this->iRecursion;
@@ -459,5 +459,4 @@ class Raytrace extends Base {
         --$this->iRecursion;
         return $vRGB;
     }
-
 }

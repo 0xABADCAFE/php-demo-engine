@@ -63,7 +63,7 @@ class TapeLoader extends Base {
     /**
      * @inheritDoc
      */
-    public function setDisplay(PDE\IDisplay $oDisplay) : self {
+    public function setDisplay(PDE\IDisplay $oDisplay): self {
         $this->bCanRender =
             ($oDisplay instanceof PDE\Display\IPixelled) &&
             (($oDisplay->getFormat() & self::NEED_FORMAT) == self::NEED_FORMAT);
@@ -74,7 +74,7 @@ class TapeLoader extends Base {
     /**
      * @inheritDoc
      */
-    public function render(int $iFrameNumber, float $fTimeIndex) : self {
+    public function render(int $iFrameNumber, float $fTimeIndex): self {
         switch ($this->oParameters->iState) {
             case self::STATE_SYNC:
                 $this->renderSync($iFrameNumber, $fTimeIndex);
@@ -97,7 +97,7 @@ class TapeLoader extends Base {
     /**
      * @inheritDoc
      */
-    protected function parameterChange() {
+    protected function parameterChange(): void {
         $this->iSyncRGB1 = (int)base_convert($this->oParameters->sSyncRGB1, 16, 10) & 0xFFFFFF;
         $this->iSyncRGB2 = (int)base_convert($this->oParameters->sSyncRGB2, 16, 10) & 0xFFFFFF;
         $this->iLoadRGB1 = (int)base_convert($this->oParameters->sLoadRGB1, 16, 10) & 0xFFFFFF;
@@ -110,7 +110,7 @@ class TapeLoader extends Base {
      * @param int   $iFrameNumber
      * @param float $fTimeIndex
      */
-    private function renderIdle(int $iFrameNumber, float $fTimeIndex) {
+    private function renderIdle(int $iFrameNumber, float $fTimeIndex): void {
         $oPixels    = $this->oDisplay->getPixels();
         $sRawBuffer = &$this->oDisplay->getCharacterBuffer();
         $iWidth     = $this->oDisplay->getWidth();
@@ -152,7 +152,7 @@ class TapeLoader extends Base {
      * @param int   $iFrameNumber
      * @param float $fTimeIndex
      */
-    private function renderSync(int $iFrameNumber, float $fTimeIndex) {
+    private function renderSync(int $iFrameNumber, float $fTimeIndex): void {
         $oPixels    = $this->oDisplay->getPixels();
         $sRawBuffer = &$this->oDisplay->getCharacterBuffer();
         $iWidth     = $this->oDisplay->getWidth();
@@ -210,7 +210,7 @@ class TapeLoader extends Base {
      * @param int   $iFrameNumber
      * @param float $fTimeIndex
      */
-    private function renderLoad(int $iFrameNumber, float $fTimeIndex) {
+    private function renderLoad(int $iFrameNumber, float $fTimeIndex): void {
         $oPixels    = $this->oDisplay->getPixels();
         $sRawBuffer = &$this->oDisplay->getCharacterBuffer();
         $iWidth     = $this->oDisplay->getWidth();

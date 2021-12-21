@@ -78,7 +78,7 @@ class Context {
     /**
      * Run the thing.
      */
-    public function run() {
+    public function run(): void {
         $iFrameNumber   = 0;
         $fTimeIndex     = 0.0;
         //$oAudioProcess  = new PDE\Audio\Player();
@@ -101,7 +101,7 @@ class Context {
      *
      * @param Definition\Display[] $aDisplays
      */
-    private function initialiseDisplays(array $aDisplayDefinitions) {
+    private function initialiseDisplays(array $aDisplayDefinitions): void {
         $oDisplayFactory = PDE\Display\Factory::get();
         foreach ($aDisplayDefinitions as $sIdentity => $oDisplayDefinition) {
             $sIdentity = self::NS_DISPLAY . $sIdentity;
@@ -125,7 +125,7 @@ class Context {
      *
      * @param Definition\Routine[] $aRoutineDefinitions
      */
-    private function initialiseRoutines(array $aRoutineDefinitions, string $sBasePath) {
+    private function initialiseRoutines(array $aRoutineDefinitions, string $sBasePath): void {
         $oRoutineFactory = PDE\Routine\Factory::get();
         foreach ($aRoutineDefinitions as $sIdentity => $oRoutineDefinition) {
             $sIdentity = self::NS_ROUTINE . $sIdentity;
@@ -152,7 +152,7 @@ class Context {
      *
      * @param Definition\Event[] $aEventDefinitions
      */
-    private function initialiseTimeline(array $aEventDefinitions) {
+    private function initialiseTimeline(array $aEventDefinitions): void {
         $iFramesPerSecond = $this->oRateLimiter->getMaxFramesPerSecond();
         foreach ($aEventDefinitions as $oEvent) {
             $iFrameIndex = (int)($oEvent->fAtTimeIndex * $iFramesPerSecond);
@@ -170,7 +170,7 @@ class Context {
      * @param int   $iFrameNumber
      * @param float $fTimeIndex
      */
-    private function handleEvents(int $iFrameNumber, float $fTimeIndex) {
+    private function handleEvents(int $iFrameNumber, float $fTimeIndex): bool {
         if (!empty($this->aEventsByFrameIndex[$iFrameNumber])) {
             foreach ($this->aEventsByFrameIndex[$iFrameNumber] as $oEvent) {
                 if (Definition\Event::END == $oEvent->iAction) {
@@ -192,7 +192,7 @@ class Context {
      * @param int              $iFrameNumber
      * @param float            $fTimeIndex
      */
-    private function handleDisplayEvent(Definition\Event $oEvent, int $iFrameNumber, float $fTimeIndex) {
+    private function handleDisplayEvent(Definition\Event $oEvent, int $iFrameNumber, float $fTimeIndex): void {
         $oDisplay = $this->aDisplayInstances[$oEvent->sTarget];
         switch ($oEvent->iAction) {
             case Definition\Event::ENABLE:
@@ -219,7 +219,7 @@ class Context {
      * @param int              $iFrameNumber
      * @param float            $fTimeIndex
      */
-    private function handleRoutineEvent(Definition\Event $oEvent, int $iFrameNumber, float $fTimeIndex) {
+    private function handleRoutineEvent(Definition\Event $oEvent, int $iFrameNumber, float $fTimeIndex): void {
         $oRoutine = $this->aRoutineInstances[$oEvent->sTarget];
         switch ($oEvent->iAction) {
             case Definition\Event::ENABLE:
@@ -241,7 +241,7 @@ class Context {
      * @param int   $iFrameNumber
      * @param float $fTimeIndex
      */
-    private function runRoutines(int $iFrameNumber, float $fTimeIndex) {
+    private function runRoutines(int $iFrameNumber, float $fTimeIndex): void {
         foreach ($this->aRoutinePriorities as $sIdentity => $iPrority) {
             $oRoutine = $this->aRoutineInstances[$sIdentity];
             if ($oRoutine->canRender($iFrameNumber, $fTimeIndex)) {
@@ -249,5 +249,4 @@ class Context {
             }
         }
     }
-
 }

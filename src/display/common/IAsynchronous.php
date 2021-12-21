@@ -67,5 +67,4 @@ interface IAsynchronous {
             self::DATA_FORMAT_64 => 'Q*',
         ]
     ;
-
 }

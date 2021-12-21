@@ -34,7 +34,7 @@ trait TResourceLoader {
     /**
      * Sets the base path expectation for resource loads
      */
-    public function setBasePath(string $sBasePath) : self {
+    public function setBasePath(string $sBasePath): self {
         $this->sBasePath = $sBasePath;
         return $this;
     }
@@ -46,7 +46,7 @@ trait TResourceLoader {
      * @return string
      * @throws \Exception
      */
-    private function loadFile(string $sRelativePath) : string {
+    private function loadFile(string $sRelativePath): string {
         $sPath = $this->sBasePath . $sRelativePath;
         if (file_exists($sPath) && is_readable($sPath)) {
             return file_get_contents($sPath);
@@ -64,7 +64,7 @@ trait TResourceLoader {
      * @return Graphics\Image;
      * @throws \Exception
      */
-    protected function loadPNM(string $sPath) : Graphics\Image {
+    protected function loadPNM(string $sPath): Graphics\Image {
         $sRaw = $this->loadFile($sPath);
         $bRGB = (substr($sRaw, 0, 2) === 'P6');
         if (preg_match('/^(\d+)\s+(\d+)$/m', $sRaw, $aMatches)) {

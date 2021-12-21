@@ -84,5 +84,4 @@ interface ICustomChars {
         0xB0 => "\u{25FC}", //  [◼ ◼ ◼ ◼]
         0xB1 => "\u{25A0}", //  [■ ■ ■ ■]
     ];
-
 }

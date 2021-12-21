@@ -59,7 +59,7 @@ class Tunnel extends Base implements IResourceLoader {
         parent::__construct($oDisplay, $aParameters);
     }
 
-    public function preload() : self {
+    public function preload(): self {
         $iExpect = 1 << $this->oParameters->iTexDim;
         $oTexture = $this->loadPNM($this->oParameters->sTexPath);
         if (
@@ -75,7 +75,7 @@ class Tunnel extends Base implements IResourceLoader {
     /**
      * @inheritDoc
      */
-    public function setDisplay(PDE\IDisplay $oDisplay) : self {
+    public function setDisplay(PDE\IDisplay $oDisplay): self {
         if ($this->bCanRender = ($oDisplay instanceof PDE\Display\IPixelled)) {
             $this->initTables($oDisplay);
         }
@@ -86,7 +86,7 @@ class Tunnel extends Base implements IResourceLoader {
     /**
      * @inheritDoc
      */
-    public function render(int $iFrameNumber, float $fTimeIndex) : self {
+    public function render(int $iFrameNumber, float $fTimeIndex): self {
         $iWidth      = $this->oDisplay->getWidth();
         $iHeight     = $this->oDisplay->getHeight();
         $iTexShift   = $this->oParameters->iTexDim;
@@ -136,14 +136,14 @@ class Tunnel extends Base implements IResourceLoader {
     /**
      * @inheritDoc
      */
-    protected function parameterChange() {
+    protected function parameterChange(): void {
         $this->initTables($this->oDisplay);
     }
 
     /**
      * Initialise the required lookup tables for transformation
      */
-    private function initTables(PDE\IDisplay $oDisplay) {
+    private function initTables(PDE\IDisplay $oDisplay): void {
         $iWidth         = $oDisplay->getWidth();
         $iHeight        = $oDisplay->getHeight();
         $iSize          = $iWidth * $iHeight * 4;

@@ -53,7 +53,7 @@ class RGBFire extends Base {
     /**
      * @inheritDoc
      */
-    public function setDisplay(PDE\IDisplay $oDisplay) : self {
+    public function setDisplay(PDE\IDisplay $oDisplay): self {
         $this->bCanRender = ($oDisplay instanceof PDE\Display\IPixelled);
         $this->oDisplay   = $oDisplay;
         $iWidth           = $oDisplay->getWidth();
@@ -66,7 +66,7 @@ class RGBFire extends Base {
     /**
      * @inheritDoc
      */
-    public function render(int $iFrameNumber, float $fTimeIndex) : self {
+    public function render(int $iFrameNumber, float $fTimeIndex): self {
         if (! $this->oDisplay instanceof PDE\Display\IPixelled) {
             return $this;
         }
@@ -115,7 +115,7 @@ class RGBFire extends Base {
     /**
      * @inheritDoc
      */
-    protected function parameterChange() {
+    protected function parameterChange(): void {
 
     }
 }

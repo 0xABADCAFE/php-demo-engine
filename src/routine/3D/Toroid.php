@@ -114,7 +114,7 @@ class Toroid extends Base {
     /**
      * @inheritDoc
      */
-    public function setDisplay(PDE\IDisplay $oDisplay) : self {
+    public function setDisplay(PDE\IDisplay $oDisplay): self {
         $this->oDisplay  = $oDisplay;
         // Dimension related
         $this->iCentreX  = $oDisplay->getWidth() >> 1;
@@ -149,7 +149,7 @@ class Toroid extends Base {
     /**
      * @inheritDoc
      */
-    public function render(int $iFrameNumber, float $fTimeIndex) : self {
+    public function render(int $iFrameNumber, float $fTimeIndex): self {
         $iDrawMode = $this->iDrawMask & $this->oParameters->iDrawMode;
         if ($iDrawMode) {
 
@@ -246,7 +246,7 @@ class Toroid extends Base {
     /**
      * @inheritDoc
      */
-    protected function parameterChange() {
+    protected function parameterChange(): void {
 
     }
 
@@ -256,7 +256,7 @@ class Toroid extends Base {
      * @param int $iYPos
      * @param float $fLuma
      */
-    private function plotASCIIGrey(int $iBufferPos, int $iXPos, int $iYPos, float $fLuma) {
+    private function plotASCIIGrey(int $iBufferPos, int $iXPos, int $iYPos, float $fLuma): void {
         $iLuminance = (int)min((
             $this->oParameters->fMinLuma +
             $this->oParameters->fLumaFactor * $fLuma * $this->iCharMaxLuma
@@ -270,7 +270,7 @@ class Toroid extends Base {
      * @param int $iYPos
      * @param float $fLuma
      */
-    private function plotASCIIGreyDarkenBG(int $iBufferPos, int $iXPos, int $iYPos, float $fLuma) {
+    private function plotASCIIGreyDarkenBG(int $iBufferPos, int $iXPos, int $iYPos, float $fLuma): void {
         $this->plotASCIIGrey($iBufferPos, $iXPos, $iYPos, $fLuma);
         $iHalfRGB  = ($this->oPixelBuffer[$iBufferPos] >> 1) & 0x007F7F7F;
         $iQtrRGB   = ($iHalfRGB >> 1) & 0x007F7F7F;
@@ -283,7 +283,7 @@ class Toroid extends Base {
      * @param int $iYPos
      * @param float $fLuma
      */
-    private function plotASCIIRGB(int $iBufferPos, int $iXPos, int $iYPos, float $fLuma) {
+    private function plotASCIIRGB(int $iBufferPos, int $iXPos, int $iYPos, float $fLuma): void {
 
     }
 
@@ -293,7 +293,7 @@ class Toroid extends Base {
      * @param int $iYPos
      * @param float $fLuma
      */
-    private function plotASCIIRGBDarkenBG(int $iBufferPos, int $iXPos, int $iYPos, float $fLuma) {
+    private function plotASCIIRGBDarkenBG(int $iBufferPos, int $iXPos, int $iYPos, float $fLuma): void {
 
     }
 
@@ -303,7 +303,7 @@ class Toroid extends Base {
      * @param int $iYPos
      * @param float $fLuma
      */
-    private function plotBlockGrey(int $iBufferPos, $iXPos, int $iYPos, float $fLuma) {
+    private function plotBlockGrey(int $iBufferPos, $iXPos, int $iYPos, float $fLuma): void {
         $iLuminance = (int)min((
             $this->oParameters->fMinLuma +
             $this->oParameters->fLumaFactor * $fLuma * 255
@@ -317,7 +317,7 @@ class Toroid extends Base {
      * @param int $iYPos
      * @param float $fLuma
      */
-    private function plotBlockRGB(int $iBufferPos, int $iXPos, int $iYPos, float $fLuma) {
+    private function plotBlockRGB(int $iBufferPos, int $iXPos, int $iYPos, float $fLuma): void {
         $iPaletteIndex = (int)min((
             $this->oParameters->fMinLuma +
             $this->oParameters->fLumaFactor * $fLuma * self::PALETTE_SIZE

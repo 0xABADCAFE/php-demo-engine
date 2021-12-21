@@ -71,7 +71,7 @@ class Voxel extends Base implements IResourceLoader {
     /**
      * @inheritDoc
      */
-    public function setDisplay(PDE\IDisplay $oDisplay) : self {
+    public function setDisplay(PDE\IDisplay $oDisplay): self {
         $this->bCanRender = ($oDisplay instanceof PDE\Display\IPixelled);
         $this->oDisplay   = $oDisplay;
         return $this;
@@ -80,7 +80,7 @@ class Voxel extends Base implements IResourceLoader {
     /**
      * @inheritDoc
      */
-    public function render(int $iFrameNumber, float $fTimeIndex) : self {
+    public function render(int $iFrameNumber, float $fTimeIndex): self {
         $iViewWidth = $this->oDisplay->getWidth();
         $iMapWidth  = $this->oTexture->getWidth();
 
@@ -171,7 +171,7 @@ class Voxel extends Base implements IResourceLoader {
     /**
      * @inheritDoc
      */
-    protected function parameterChange() {
+    protected function parameterChange(): void {
 
     }
 

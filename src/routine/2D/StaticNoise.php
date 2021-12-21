@@ -45,7 +45,7 @@ class StaticNoise extends Base {
     /**
      * @inheritDoc
      */
-    public function setDisplay(PDE\IDisplay $oDisplay) : self {
+    public function setDisplay(PDE\IDisplay $oDisplay): self {
         $this->bCanRender = ($oDisplay instanceof PDE\Display\IASCIIArt);
         $this->oDisplay   = $oDisplay;
         $this->iWidth     = $oDisplay->getWidth();
@@ -56,7 +56,7 @@ class StaticNoise extends Base {
     /**
      * @inheritDoc
      */
-    public function render(int $iFrameNumber, float $fTimeIndex) : self {
+    public function render(int $iFrameNumber, float $fTimeIndex): self {
         $sCharBuffer = &$this->oDisplay->getCharacterBuffer();
         $iSpan       = $this->oDisplay->getCharacterWidth();
         $iMaxY       = $this->iHeight - $this->oParameters->iBorderV;
@@ -73,7 +73,7 @@ class StaticNoise extends Base {
     /**
      * @inheritDoc
      */
-    protected function parameterChange() {
+    protected function parameterChange(): void {
 
     }
 }

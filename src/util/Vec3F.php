@@ -55,14 +55,14 @@ final class Vec3F {
      * @param  self $oVec
      * @return float
      */
-    public function dot(self $oVec) : float {
+    public function dot(self $oVec): float {
         return $this->fX * $oVec->fX + $this->fY * $oVec->fY + $this->fZ * $oVec->fZ;
     }
 
     /**
      * Calculates the scalar magnitude of the current instance.
      */
-    public function magnitude() : float {
+    public function magnitude(): float {
         return sqrt(
             $this->fX * $this->fX +
             $this->fY * $this->fY +
@@ -75,7 +75,7 @@ final class Vec3F {
      *
      * @return self
      */
-    public function clone() : self {
+    public function clone(): self {
         return clone $this;
     }
 
@@ -85,14 +85,14 @@ final class Vec3F {
      *
      * @return self
      */
-    public function reverse() : self {
+    public function reverse(): self {
         $this->fX = -$this->fX;
         $this->fY = -$this->fY;
         $this->fZ = -$this->fZ;
         return $this;
     }
 
-    public function iReverse() : self {
+    public function iReverse(): self {
         $oRet = clone $this;
         $oRet->fX = -$this->fX;
         $oRet->fY = -$this->fY;
@@ -106,14 +106,14 @@ final class Vec3F {
      * @param  float $fScale
      * @return self
      */
-    public function scale(float $fScale) : self {
+    public function scale(float $fScale): self {
         $this->fX *= $fScale;
         $this->fY *= $fScale;
         $this->fZ *= $fScale;
         return $this;
     }
 
-    public function iScale(float $fScale) : self {
+    public function iScale(float $fScale): self {
         $oRet = clone $this;
         $oRet->fX *= $fScale;
         $oRet->fY *= $fScale;
@@ -127,14 +127,14 @@ final class Vec3F {
      * @param  self $oVec
      * @return self
      */
-    public function scaleVec(self $oVec) : self {
+    public function scaleVec(self $oVec): self {
         $this->fX *= $oVec->fX;
         $this->fY *= $oVec->fY;
         $this->fZ *= $oVec->fZ;
         return $this;
     }
 
-    public function iScaleVec(self $oVec) : self {
+    public function iScaleVec(self $oVec): self {
         $oRet = clone $this;
         $oRet->fX *= $oVec->fX;
         $oRet->fY *= $oVec->fY;
@@ -148,14 +148,14 @@ final class Vec3F {
      * @param  self $oVec
      * @return self
      */
-    public function add(self $oVec) : self {
+    public function add(self $oVec): self {
         $this->fX += $oVec->fX;
         $this->fY += $oVec->fY;
         $this->fZ += $oVec->fZ;
         return $this;
     }
 
-    public function iAdd(self $oVec) : self {
+    public function iAdd(self $oVec): self {
         $oRet = clone $this;
         $oRet->fX += $oVec->fX;
         $oRet->fY += $oVec->fY;
@@ -169,14 +169,14 @@ final class Vec3F {
      * @param  self $oVec
      * @return self
      */
-    public function sub(self $oVec) : self {
+    public function sub(self $oVec): self {
         $this->fX -= $oVec->fX;
         $this->fY -= $oVec->fY;
         $this->fZ -= $oVec->fZ;
         return $this;
     }
 
-    public function iSub(self $oVec) : self {
+    public function iSub(self $oVec): self {
         $oRet = clone $this;
         $oRet->fX -= $oVec->fX;
         $oRet->fY -= $oVec->fY;
@@ -190,7 +190,7 @@ final class Vec3F {
      * @param  self $oVec
      * @return self
      */
-    public function cross(self $oVec) : self {
+    public function cross(self $oVec): self {
         $fX = $this->fY * $oVec->fZ - $this->fZ * $oVec->fY;
         $fY = $this->fZ * $oVec->fX - $this->fX * $oVec->fZ;
         $fZ = $this->fX * $oVec->fY - $this->fY * $oVec->fX;
@@ -200,7 +200,7 @@ final class Vec3F {
         return $this;
     }
 
-    public function iCross(self $oVec) : self {
+    public function iCross(self $oVec): self {
         $oRet = clone $this;
         $oRet->fX = $this->fY * $oVec->fZ - $this->fZ * $oVec->fY;
         $oRet->fY = $this->fZ * $oVec->fX - $this->fX * $oVec->fZ;
@@ -213,7 +213,7 @@ final class Vec3F {
      *
      * @return self
      */
-    public function normalise() : self {
+    public function normalise(): self {
         $fInvMag = 1.0/sqrt(
             $this->fX * $this->fX +
             $this->fY * $this->fY +
@@ -225,7 +225,7 @@ final class Vec3F {
         return $this;
     }
 
-    public function iNormalise() : self {
+    public function iNormalise(): self {
         $fInvMag = 1.0/sqrt(
             $this->fX * $this->fX +
             $this->fY * $this->fY +

@@ -33,7 +33,7 @@ trait TDefinition {
      *
      * @param \stdClass $oRaw
      */
-    protected function mapFromRaw(\stdClass $oRaw) {
+    protected function mapFromRaw(\stdClass $oRaw): void {
         foreach ($oRaw as $sField => $mValue) {
             if (isset(self::DEFAULTS[$sField])) {
                 settype($mValue, gettype(self::DEFAULTS[$sField]));

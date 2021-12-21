@@ -37,7 +37,7 @@ class Palette {
         $this->oEntries = SPLFixedArray::fromArray(array_fill(0, $iSize, 0));
     }
 
-    public function size() : int {
+    public function size(): int {
         return $this->iSize;
     }
 
@@ -49,7 +49,7 @@ class Palette {
      *
      * @param int[] $aPoints
      */
-    public function gradient(array $aPoints) : SPLFixedArray {
+    public function gradient(array $aPoints): SPLFixedArray {
         $iCount = count($aPoints);
         if ($iCount < 2) {
             throw new \LengthException('A gradient requires at least 2 points');
@@ -101,7 +101,7 @@ class Palette {
     /**
      * Return the raw palette data.
      */
-    public function getEntries() : SPLFixedArray {
+    public function getEntries(): SPLFixedArray {
         return $this->oEntries;
     }
 }

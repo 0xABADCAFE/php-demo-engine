@@ -47,21 +47,21 @@ class Image implements IPixelBuffer {
     /**
      * @inheritDoc
      */
-    public function getWidth() : int {
+    public function getWidth(): int {
         return $this->iWidth;
     }
 
     /**
      * @inheritDoc
      */
-    public function getHeight() : int {
+    public function getHeight(): int {
         return $this->iHeight;
     }
 
     /**
      * @inheritDoc
      */
-    public function getPixels() : SPLFixedArray {
+    public function getPixels(): SPLFixedArray {
         return $this->oPixels;
     }
 }

@@ -41,7 +41,7 @@ trait TAsynchronous {
      * @param  int $iSize     - size of aditional data
      * @return string
      */
-    private function makeMessageHeader(int $iCommand, int $iSize) : string {
+    private function makeMessageHeader(int $iCommand, int $iSize): string {
         return pack(
             'V4',
             IAsynchronous::HEADER_MAGIC,
@@ -62,7 +62,7 @@ trait TAsynchronous {
         int    $iCommand,
         string $sRawData = '',
         int    $iProcess = IAsynchronous::ID_PARENT
-    ) {
+    ): void {
         $iSize = strlen($sRawData);
         $sMessageData = $this->makeMessageHeader($iCommand, $iSize) . $sRawData;
         socket_write($this->aSocketPair[$iProcess], $sMessageData, IAsynchronous::HEADER_SIZE + $iSize);
@@ -75,7 +75,7 @@ trait TAsynchronous {
      * @param  int $iProcess - which process is receiving the data
      * @return \stdClass|null { int $iMagic, $iCommand, $iSize, $iCheck }
      */
-    private function receiveMessageHeader(int $iProcess = IAsynchronous::ID_CHILD) : ?\stdClass {
+    private function receiveMessageHeader(int $iProcess = IAsynchronous::ID_CHILD): ?\stdClass {
         $sMessageData = $this->receiveData(IAsynchronous::HEADER_SIZE, $iProcess);
         if (empty($sMessageData)) {
             return null;
@@ -104,7 +104,7 @@ trait TAsynchronous {
      * @param int  $iAttempts     - number of retries on a short read
      * @param int  $iProcess      - which process is receiving the data
      */
-    private function receiveData(int $iExpectSize, int $iProcess = IAsynchronous::ID_CHILD) : string {
+    private function receiveData(int $iExpectSize, int $iProcess = IAsynchronous::ID_CHILD): string {
         $sMessageData     = socket_read($this->aSocketPair[$iProcess], $iExpectSize, PHP_BINARY_READ);
         $iGotSize  = strlen($sMessageData);
         $iAttempts = IAsynchronous::MAX_RETRIES;
@@ -126,7 +126,7 @@ trait TAsynchronous {
      * @param  int $iResponseCode - 32-bit integer response code
      * @param  int $iProcess      - which process is sending the response
      */
-    private function sendResponseCode(int $iResponseCode, int $iProcess = IAsynchronous::ID_CHILD) : self {
+    private function sendResponseCode(int $iResponseCode, int $iProcess = IAsynchronous::ID_CHILD): self {
         socket_write(
             $this->aSocketPair[$iProcess],
             pack('V', $iResponseCode)
@@ -137,7 +137,7 @@ trait TAsynchronous {
     /**
      * Initialise the asynchronous process and a socket pair for IPC.
      */
-    private function initAsyncProcess() {
+    private function initAsyncProcess(): void {
         if (!socket_create_pair(AF_UNIX, SOCK_STREAM, 0, $this->aSocketPair)) {
             throw new \Exception("Could not create socket pair");
         }
@@ -160,14 +160,14 @@ trait TAsynchronous {
     /**
      * Class that incorporates the trait needs to implement this.
      */
-    protected abstract function runSubprocess();
+    protected abstract function runSubprocess(): void;
 
     /**
      * Safely close and dispose of an enumerated socket.
      *
      * @param int $iProcess - which processes socket to close
      */
-    private function closeSocket(int $iProcess) {
+    private function closeSocket(int $iProcess): void {
         if (isset($this->aSocketPair[$iProcess])) {
             socket_close($this->aSocketPair[$iProcess]);
             unset($this->aSocketPair[$iProcess]);

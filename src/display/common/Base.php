@@ -51,7 +51,7 @@ abstract class Base implements PDE\IDisplay {
     /**
      * @inheritDoc
      */
-    public function reset() : self {
+    public function reset(): self {
         printf(IANSIControl::TERM_SIZE_TPL, $this->iHeight + 2, $this->iWidth + 1);
         $this->clear();
         echo IANSIControl::TERM_CLEAR . IANSIControl::CRSR_OFF;
@@ -61,21 +61,21 @@ abstract class Base implements PDE\IDisplay {
     /**
      * @inheritDoc
      */
-    public function getWidth() : int {
+    public function getWidth(): int {
         return $this->iWidth;
     }
 
     /**
      * @inheritDoc
      */
-    public function getHeight() : int {
+    public function getHeight(): int {
         return $this->iHeight;
     }
 
     /**
      * @inheritDoc
      */
-    public function waitForFrame() : PDE\IDisplay {
+    public function waitForFrame(): PDE\IDisplay {
         return $this;
     }
 
@@ -86,7 +86,7 @@ abstract class Base implements PDE\IDisplay {
      * @param  mixed[] $aParameters
      * @return \stdClass
      */
-    protected function filterRawParameters(array $aParameters) : \stdClass {
+    protected function filterRawParameters(array $aParameters): \stdClass {
         $aDefaults = static::DEFAULT_PARAMETERS;
         $aFiltered = [];
         foreach ($aParameters as $sParameterName => $mParameterValue) {

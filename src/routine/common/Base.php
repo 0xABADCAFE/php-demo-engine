@@ -61,7 +61,7 @@ abstract class Base implements PDE\IRoutine {
      * Each input value is key checked against the DEFAULT_PARAMETERS set and if the key matches the
      * value is first type cooerced then assigned.
      */
-    public function setParameters(array $aParameters) : self {
+    public function setParameters(array $aParameters): self {
         $bChanged  = false;
         $aDefaults = $this->mergeDefaultParameters();
         foreach ($aParameters as $sParameterName => $mParameterValue) {
@@ -83,7 +83,7 @@ abstract class Base implements PDE\IRoutine {
      * @inheritDoc
      * @implements IRoutine::enable()
      */
-    public function enable(int $iFrameNumber, float $fTimeIndex) : self {
+    public function enable(int $iFrameNumber, float $fTimeIndex): self {
         // Enable the routine if it can be rendered.
         if ( ($this->bEnabled = $this->bCanRender) ) {
             $this->fUntil = $this->oParameters->fDuration > 0.0 ?
@@ -96,7 +96,7 @@ abstract class Base implements PDE\IRoutine {
      * @inheritDoc
      * @implements IRoutine::disable()
      */
-    public function disable(int $iFrameNumber, float $fTimeIndex) : self {
+    public function disable(int $iFrameNumber, float $fTimeIndex): self {
         $this->bEnabled = false;
         return $this;
     }
@@ -108,7 +108,7 @@ abstract class Base implements PDE\IRoutine {
      * @param  float $fTimeIndex
      * @return bool
      */
-    public function canRender(int $iFrameNumber, float $fTimeIndex) : bool {
+    public function canRender(int $iFrameNumber, float $fTimeIndex): bool {
         $bWasEnabled   = $this->bEnabled;
         $bStillEnabled = $bWasEnabled && (
             $this->fUntil > 0.0 ?
@@ -125,12 +125,12 @@ abstract class Base implements PDE\IRoutine {
     /**
      * Hook function called if any of the parameters have changed during a call to SetParameters
      */
-    protected abstract function parameterChange();
+    protected abstract function parameterChange(): void;
 
     /**
      * @return mixed[] - associative key/value pair of the default parameters
      */
-    private function mergeDefaultParameters() : array {
+    private function mergeDefaultParameters(): array {
         return array_merge(self::COMMON_PARAMETERS, static::DEFAULT_PARAMETERS);
     }
 }

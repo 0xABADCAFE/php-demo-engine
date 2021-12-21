@@ -64,7 +64,7 @@ trait TPixelled {
     /**
      * @inheritDoc
      */
-    public function getPixels() : SPLFixedArray {
+    public function getPixels(): SPLFixedArray {
         return $this->oPixels;
     }
 

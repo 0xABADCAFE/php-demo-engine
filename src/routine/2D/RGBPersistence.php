@@ -42,7 +42,7 @@ class RGBPersistence extends Base {
      * Overridden from base class to capture the current buffer contents
      * of the display for the blend buffer.
      */
-    public function enable(int $iFrameNumber, float $fTimeIndex) : self {
+    public function enable(int $iFrameNumber, float $fTimeIndex): self {
         parent::enable($iFrameNumber, $fTimeIndex);
         if ($this->bEnabled) {
             $this->oLastBuffer = clone $this->oDisplay->getPixels();
@@ -53,7 +53,7 @@ class RGBPersistence extends Base {
     /**
      * @inheritDoc
      */
-    public function setDisplay(PDE\IDisplay $oDisplay) : self {
+    public function setDisplay(PDE\IDisplay $oDisplay): self {
         if ($this->bCanRender = ($oDisplay instanceof PDE\Display\IPixelled)) {
             $this->oLastBuffer = clone $oDisplay->getPixels();
         }
@@ -64,7 +64,7 @@ class RGBPersistence extends Base {
     /**
      * @inheritDoc
      */
-    public function render(int $iFrameNumber, float $fTimeIndex) : self {
+    public function render(int $iFrameNumber, float $fTimeIndex): self {
         if (! $this->oDisplay instanceof PDE\Display\IPixelled) {
             return $this;
         }
@@ -115,7 +115,7 @@ class RGBPersistence extends Base {
     /**
      * @inheritDoc
      */
-    protected function parameterChange() {
+    protected function parameterChange(): void {
 
     }
 }

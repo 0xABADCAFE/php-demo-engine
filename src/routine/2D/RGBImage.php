@@ -54,7 +54,7 @@ class RGBImage extends Base implements IResourceLoader {
         parent::__construct($oDisplay, $aParameters);
     }
 
-    public function preload() : self {
+    public function preload(): self {
         $this->oImage = $this->loadPNM($this->oParameters->sPath);
         $this->oBlitter->setSource($this->oImage);
         return $this;
@@ -63,7 +63,7 @@ class RGBImage extends Base implements IResourceLoader {
     /**
      * @inheritDoc
      */
-    public function setDisplay(PDE\IDisplay $oDisplay) : self {
+    public function setDisplay(PDE\IDisplay $oDisplay): self {
         if ($this->bCanRender  = ($oDisplay instanceof PDE\Display\IPixelled)) {
             $this->oBlitter->setTarget($oDisplay);
         }
@@ -74,7 +74,7 @@ class RGBImage extends Base implements IResourceLoader {
     /**
      * @inheritDoc
      */
-    public function render(int $iFrameNumber, float $fTimeIndex) : self {
+    public function render(int $iFrameNumber, float $fTimeIndex): self {
         $this->oBlitter
             ->setMode($this->oParameters->iMode)
             ->copy(
@@ -91,7 +91,7 @@ class RGBImage extends Base implements IResourceLoader {
     /**
      * @inheritDoc
      */
-    protected function parameterChange() {
+    protected function parameterChange(): void {
 
     }
 

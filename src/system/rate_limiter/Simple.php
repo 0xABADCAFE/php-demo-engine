@@ -58,14 +58,14 @@ class Simple implements System\IRateLimiter {
     /**
      * @inheritDoc
      */
-    public function getMaxFramesPerSecond() : int {
+    public function getMaxFramesPerSecond(): int {
         return $this->iMaxFramesPerSecond;
     }
 
     /**
      * @inheritDoc
      */
-    public function limit() : float {
+    public function limit(): float {
         ++$this->iFrameNumber;
         $fWakeAt = $this->fFirst + ($this->iFrameNumber * $this->fFrameDuration);
         $fSleepBegins = microtime(true);

@@ -38,7 +38,7 @@ class SimpleLine extends Base {
     /**
      * @inheritDoc
      */
-    public function setDisplay(PDE\IDisplay $oDisplay) : self {
+    public function setDisplay(PDE\IDisplay $oDisplay): self {
         $this->bCanRender = ($oDisplay instanceof PDE\Display\IASCIIArt);
         $this->oDisplay   = $oDisplay;
         return $this;
@@ -47,7 +47,7 @@ class SimpleLine extends Base {
     /**
      * @inheritDoc
      */
-    public function render(int $iFrameNumber, float $fTimeIndex) : self {
+    public function render(int $iFrameNumber, float $fTimeIndex): self {
         if (!$this->oDisplay instanceof PDE\Display\IASCIIArt) {
             return $this;
         }
@@ -72,7 +72,7 @@ class SimpleLine extends Base {
     /**
      * @inheritDoc
      */
-    protected function parameterChange() {
+    protected function parameterChange(): void {
 
     }
 }

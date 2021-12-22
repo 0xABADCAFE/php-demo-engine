@@ -140,8 +140,9 @@ trait TPolyphonicMachine {
      * @inheritDoc
      */
     public function setInsert(?Audio\Signal\IInsert $oInsert = null): self {
-        if ($this->oInsert = $oInsert) {
+        if (null !== $oInsert) {
             $oInsert->setInputStream($this->oMixer);
+            $this->oInsert =
             $this->oOutput = $oInsert;
         } else {
             $this->oOutput = $this->oMixer;

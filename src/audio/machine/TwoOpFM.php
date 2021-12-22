@@ -47,34 +47,25 @@ class TwoOpFM implements Audio\IMachine {
      */
     private static array $aWaveforms = [];
 
-    private array
-        /**
-         * @var Audio\Signal\IOScillator[] $aModulator
-         */
-        $aModulator    = [], // One per voice
+    /**
+     * @var Audio\Signal\Oscillator\Sound[] $aModulator
+     */
+    private array $aModulator    = []; // One per voice
 
-        /**
-         * @var Audio\Signal\IOScillator[] $aCarrier
-         */
-        $aCarrier      = [],  // One per voice
+    /**
+     * @var Audio\Signal\Oscillator\Sound[] $aCarrier
+     */
+    private array $aCarrier      = [];  // One per voice
 
-        /**
-         * @var Audio\Signal\FixedMixer[] $aVoice
-         */
-        $aVoice        = [],
+    /**
+     * @var Audio\Signal\FixedMixer[] $aVoice
+     */
+    private array $aVoice        = [];
 
-        /**
-         * @var float[] $aBaseFreq
-         */
-        $aBaseFreq     = []
-    ;
-
-    private ?Audio\Signal\IEnvelope
-        $oModulatorLevelEnv  = null,
-        $oModulatorPitchEnv  = null,
-        $oCarrierLevelEnv    = null,
-        $oCarrierPitchEnv    = null
-    ;
+    /**
+     * @var float[] $aBaseFreq
+     */
+    private array $aBaseFreq     = [];
 
     private Audio\Signal\Oscillator\LFO
         $oPitchLFO,
@@ -156,7 +147,7 @@ class TwoOpFM implements Audio\IMachine {
     /**
      * Set the rate of the Pitch LFO, in Hz.
      *
-     * @param  float $fDepth
+     * @param  float $fRate
      * @return self
      */
     public function setPitchLFORate(float $fRate): self {
@@ -191,7 +182,7 @@ class TwoOpFM implements Audio\IMachine {
     /**
      * Set the rate of the Level LFO, in Hz.
      *
-     * @param  float $fDepth
+     * @param  float $fRate
      * @return self
      */
     public function setLevelLFORate(float $fRate): self {
@@ -291,9 +282,8 @@ class TwoOpFM implements Audio\IMachine {
      * Set the volume envelope for the modulator oscillator
      */
     public function setModulatorLevelEnvelope(?Audio\Signal\IEnvelope $oEnvelope): self {
-        $this->oModulatorLevelEnv = $oEnvelope;
         foreach ($this->aModulator as $oModulator) {
-            $oModulator->setLevelEnvelope(clone $oEnvelope);
+            $oModulator->setLevelEnvelope($oEnvelope ? clone $oEnvelope : null);
         }
         return $this;
     }
@@ -302,9 +292,8 @@ class TwoOpFM implements Audio\IMachine {
      * Set the volume envelope for the modulator oscillator
      */
     public function setModulatorPitchEnvelope(?Audio\Signal\IEnvelope $oEnvelope): self {
-        $this->oModulatorPitchEnv = $oEnvelope;
         foreach ($this->aModulator as $oModulator) {
-            $oModulator->setPitchEnvelope(clone $oEnvelope);
+            $oModulator->setPitchEnvelope($oEnvelope ? clone $oEnvelope : null);
         }
         return $this;
     }
@@ -372,9 +361,8 @@ class TwoOpFM implements Audio\IMachine {
      * Set the volume envelope for the carrier oscillator
      */
     public function setCarrierLevelEnvelope(?Audio\Signal\IEnvelope $oEnvelope): self {
-        $this->oCarrierLevelEnv = $oEnvelope;
         foreach ($this->aCarrier as $oCarrier) {
-            $oCarrier->setLevelEnvelope(clone $oEnvelope);
+            $oCarrier->setLevelEnvelope($oEnvelope ? clone $oEnvelope : null);
         }
         return $this;
     }
@@ -383,9 +371,8 @@ class TwoOpFM implements Audio\IMachine {
      * Set the volume envelope for the modulator oscillator
      */
     public function setCarrierPitchEnvelope(?Audio\Signal\IEnvelope $oEnvelope): self {
-        $this->oCarrierPitchEnv = $oEnvelope;
         foreach ($this->aCarrier as $oCarrier) {
-            $oCarrier->setPitchEnvelope(clone $oEnvelope);
+            $oCarrier->setPitchEnvelope($oEnvelope ? clone $oEnvelope : null);
         }
         return $this;
     }

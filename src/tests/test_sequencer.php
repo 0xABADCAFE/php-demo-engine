@@ -43,9 +43,9 @@ $oChipMachine->setVoiceMaskEnvelope(15, new Audio\Signal\Envelope\Shape(
 
 $oChipMachine->setVoiceMaskWaveform(15, Audio\Signal\IWaveform::PULSE);
 
-
 $oChipMachine->setInsert(new Audio\Signal\Insert\DelayLoop(null, 123.0 * 3, 0.6));
 
+$oBassLine = new Audio\Machine\TBNaN();
 
 $oSequencer
     //->addMachine('marimba', $oFMMarimba)
@@ -125,12 +125,12 @@ $oSequencer->allocatePattern('drums', [4, 5, 6, 7, 10, 11])
 ;
 
 $oSequencer->allocatePattern('bass', [4, 5, 6, 7, 8, 9, 12, 13, 16, 17, 18, 19])
-    ->addEvent(Audio\Sequence\Event::noteOn('C3', 60), 0, 2, 4)
+    ->addEvent(Audio\Sequence\Event::noteOn('C2', 60), 0, 2, 4)
     ->addEvent(Audio\Sequence\Event::noteOff(), 0, 4, 4)
 ;
 
 $oSequencer->allocatePattern('bass', [10, 11, 14, 15])
-    ->addEvent(Audio\Sequence\Event::noteOn('F3', 50), 0, 2, 4)
+    ->addEvent(Audio\Sequence\Event::noteOn('F2', 50), 0, 2, 4)
     ->addEvent(Audio\Sequence\Event::noteOff(), 0, 4, 4)
 ;
 

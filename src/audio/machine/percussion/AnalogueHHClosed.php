@@ -48,7 +48,7 @@ class AnalogueHHClosed extends BandPassNoise {
     /**
      * @inheritDoc
      */
-    protected function setDefaults() {
+    protected function setDefaults(): void {
         $this->oFilter
             ->setCutoff(0.6)
             ->setResonance(0.5);

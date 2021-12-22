@@ -60,7 +60,7 @@ class Factory implements Audio\IFactory {
     /**
      * @inheritDoc
      */
-    public function createFrom(object $oDefinition): Audio\IMachine {
+    public function createFrom(\stdClass $oDefinition): Audio\IMachine {
         $sType    = $oDefinition->sType ?? '<none>';
         $sFactory = self::PRODUCT_TYPES[$sType] ?? null;
         if ($sFactory) {
@@ -73,22 +73,22 @@ class Factory implements Audio\IFactory {
     /**
      * Creates the Monophonic Bass Synth
      *
-     * @param  object $oDefinition
+     * @param  \stdClass $oDefinition
      * @param  string $sType
      * @return Audio\IMachine
      */
-    private function createMonoBass(object $oDefinition, string $sType): Audio\IMachine {
+    private function createMonoBass(\stdClass $oDefinition, string $sType): Audio\IMachine {
         return new TBNaN;
     }
 
     /**
      * Creates the Multi Operator FM synth
      *
-     * @param  object $oDefinition
+     * @param  \stdClass $oDefinition
      * @param  string $sType
      * @return Audio\IMachine
      */
-    private function createMultiOperatorFM(object $oDefinition, string $sType): Audio\IMachine {
+    private function createMultiOperatorFM(\stdClass $oDefinition, string $sType): Audio\IMachine {
         dprintf("Creating Multi Operator FM Machine...\n");
         if (!isset($oDefinition->aOperators) || !is_array($oDefinition->aOperators)) {#
             throw new \RuntimeException('Missing operators section for FM synth');
@@ -117,7 +117,7 @@ class Factory implements Audio\IFactory {
         return $oDexter;
     }
 
-    private function configureMultiFMOperator(DeXter $oDexter, int $iOperator, object $oDefinition, array& $aOperatorNames) {
+    private function configureMultiFMOperator(DeXter $oDexter, int $iOperator, \stdClass $oDefinition, array& $aOperatorNames): void {
         $oDexter->selectOperator($iOperator);
 
         dprintf(

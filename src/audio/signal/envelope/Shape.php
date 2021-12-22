@@ -131,7 +131,7 @@ class Shape extends Base {
     /**
      * Recalculate the internal process points
      */
-    private function recalculate() {
+    private function recalculate(): void {
         $this->aProcessPoints  = [];
         $this->aProcessIndexes = [];
         $iProcessRate = Audio\IConfig::PROCESS_RATE;
@@ -164,7 +164,7 @@ class Shape extends Base {
     /**
      * Calculate the interpolants for the current phase of the envelope
      */
-    private function updateInterpolants() {
+    private function updateInterpolants(): void {
         $iIndex  = $this->aProcessIndexes[$this->iSamplePosition];
         $oPointA = $this->aProcessPoints[$iIndex];
         $oPointB = $this->aProcessPoints[$iIndex + 1];

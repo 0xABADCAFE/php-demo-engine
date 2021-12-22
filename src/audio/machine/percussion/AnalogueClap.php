@@ -91,7 +91,7 @@ class AnalogueClap extends BandPassNoise {
     /**
      * @inheritDoc
      */
-    protected function setDefaults() {
+    protected function setDefaults(): void {
         $this->oFilter
             ->setCutoff(0.09)
             ->setResonance(0.1);

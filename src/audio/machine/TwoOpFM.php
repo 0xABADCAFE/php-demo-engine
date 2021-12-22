@@ -170,7 +170,7 @@ class TwoOpFM implements Audio\IMachine {
      * @param  int $iWaveform
      * @return self
      */
-    public function setLevelLFOWaveform(int $iWaveform) {
+    public function setLevelLFOWaveform(int $iWaveform): self {
         if (isset(self::$aWaveforms[$iWaveform])) {
             $this->oLevelLFO->setWaveform(self::$aWaveforms[$iWaveform]);
         }
@@ -426,7 +426,7 @@ class TwoOpFM implements Audio\IMachine {
     }
 
 
-    private static function initShared() {
+    private static function initShared(): void {
         if (empty(self::$aWaveforms)) {
             self::$aWaveforms = [
                 Audio\Signal\IWaveform::SINE     => new Audio\Signal\Waveform\Sine(),

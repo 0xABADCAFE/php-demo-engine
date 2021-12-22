@@ -125,6 +125,3 @@ class AnalogueKick implements IVoice {
     }
 
 }
-
-
-

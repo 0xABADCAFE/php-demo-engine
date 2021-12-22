@@ -140,7 +140,7 @@ class TBNaN implements Audio\IMachine {
     /**
      * @inheritDoc
      */
-    private function initWaveforms() {
+    private function initWaveforms(): void {
         $this->oPWM = new Audio\Signal\Oscillator\LFOZeroToOne(
             new Audio\Signal\Waveform\Sine(),
             4.9,
@@ -157,7 +157,7 @@ class TBNaN implements Audio\IMachine {
     /**
      * Initialise the internal oscillator
      */
-    private function initOscillator() {
+    private function initOscillator(): void {
         $this->oAEG = new Audio\Signal\Envelope\DecayPulse(
             0.8,
             0.07
@@ -169,7 +169,7 @@ class TBNaN implements Audio\IMachine {
     /**
      * Initialise the internal filter
      */
-    private function initFilter() {
+    private function initFilter(): void {
         $this->oFEG = new Audio\Signal\Envelope\DecayPulse(
             0.33,
             0.05

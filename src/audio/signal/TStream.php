@@ -34,7 +34,7 @@ trait TStream {
     /**
      * Static initialisation.
      */
-    protected static function initStreamTrait() {
+    protected static function initStreamTrait(): void {
         self::$oSilence = Packet::create();
     }
 

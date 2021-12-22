@@ -62,7 +62,7 @@ class Packet extends \SPLFixedArray {
     /**
      * Ensure the empty instance is created.
      */
-    public static function init() {
+    public static function init(): void {
         self::$oEmpty = new self();
     }
 

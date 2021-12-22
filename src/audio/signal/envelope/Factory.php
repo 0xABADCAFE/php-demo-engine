@@ -40,7 +40,7 @@ class Factory implements Audio\IFactory {
     /**
      * @inheritDoc
      */
-    public function createFrom(object $oDefinition): Audio\Signal\IEnvelope {
+    public function createFrom(\stdClass $oDefinition): Audio\Signal\IEnvelope {
         $sType    = $oDefinition->sType ?? '<none>';
         $sFactory = self::PRODUCT_TYPES[$sType] ?? null;
         if ($sFactory) {
@@ -53,11 +53,11 @@ class Factory implements Audio\IFactory {
     /**
      * Create the decay envelope type
      *
-     * @param  object $oDefinition
+     * @param  \stdClass $oDefinition
      * @param  string $sType
      * @return Audio\Signal\IEnvelope
      */
-    private function createDecay(object $oDefinition, string $sType): Audio\Signal\IEnvelope {
+    private function createDecay(\stdClass $oDefinition, string $sType): Audio\Signal\IEnvelope {
         $fInitial  = (float)($oDefinition->fInitial  ?? 1.0);
         $fTarget   = (float)($oDefinition->fTarget   ?? 0.0);
         $fHalfLife = (float)($oDefinition->fHalfLife ?? 1.0);
@@ -71,11 +71,11 @@ class Factory implements Audio\IFactory {
     /**
      * Create the shape envelope type
      *
-     * @param  object $oDefinition
+     * @param  \stdClass $oDefinition
      * @param  string $sType
      * @return Audio\Signal\IEnvelope
      */
-    private function createShape(object $oDefinition, string $sType): Audio\Signal\IEnvelope {
+    private function createShape(\stdClass $oDefinition, string $sType): Audio\Signal\IEnvelope {
         if (!isset($oDefinition->aPoints) || !is_array($oDefinition->aPoints)) {
             throw new \RuntimeException('Shape envelope must have non empty points array');
         }

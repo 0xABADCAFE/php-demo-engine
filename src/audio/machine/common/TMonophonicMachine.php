@@ -46,7 +46,7 @@ trait TMonophonicMachine {
      * @param Audio\Signal\IStream $oVoice
      * @param float                $fLevel
      */
-    protected function setVoiceSource(Audio\Signal\IStream $oVoice, float $fLevel) {
+    protected function setVoiceSource(Audio\Signal\IStream $oVoice, float $fLevel): void {
         $this->fAttenuation = $fLevel;
         $this->oOutput =
         $this->oVoice  = new Audio\Signal\LevelAdjust($oVoice, $this->fLevel);

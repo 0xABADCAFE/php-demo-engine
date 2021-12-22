@@ -127,7 +127,7 @@ class DecayPulse extends Base {
     /**
      * Recalculate the internal values
      */
-    protected function recalculateDecay() {
+    protected function recalculateDecay(): void {
 
         // First the easiest calculation which is the initial level to use.
         $this->fCurrent = ($this->fInitial * $this->fLevelScale) - $this->fTarget;

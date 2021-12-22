@@ -275,7 +275,7 @@ class Sequencer {
      * @param  $sMachineName
      * @throws OutOfBoundsException
      */
-    private function assertMachineExists(string $sMachineName) {
+    private function assertMachineExists(string $sMachineName): void {
         if (!isset($this->aMachines[$sMachineName])) {
             throw new OutOfBoundsException('Unrecognised machine name "' . $sMachineName . '"');
         }
@@ -383,7 +383,7 @@ class Sequencer {
     /**
      * Trigger the events on the selected line for the active patterns
      */
-    private function triggerLine(int $iLineNumber, array $aActivePatterns) {
+    private function triggerLine(int $iLineNumber, array $aActivePatterns): void {
         foreach ($aActivePatterns as $sMachineName => $oPattern) {
             $oMachine = $this->aMachines[$sMachineName];
             $oRow     = $oPattern->getLine($iLineNumber);

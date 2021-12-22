@@ -34,7 +34,7 @@ class None implements Audio\IPCMOutput {
      *
      * @throws \Exception
      */
-    public function open() {
+    public function open(): void {
 
     }
 
@@ -43,14 +43,14 @@ class None implements Audio\IPCMOutput {
      *
      * @param Signal\Packet $oPacket
      */
-    public function write(Audio\Signal\Packet $oPacket) {
+    public function write(Audio\Signal\Packet $oPacket): void {
 
     }
 
     /**
      * Close down the output handle and subprocess.
      */
-    public function close() {
+    public function close(): void {
 
     }
 }

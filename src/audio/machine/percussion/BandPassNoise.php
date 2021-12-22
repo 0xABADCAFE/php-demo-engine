@@ -65,5 +65,5 @@ abstract class BandPassNoise implements IVoice {
     /**
      * Set the appropriate default properties.
      */
-    protected abstract function setDefaults();
+    protected abstract function setDefaults(): void;
 }

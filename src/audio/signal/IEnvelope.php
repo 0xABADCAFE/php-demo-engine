@@ -43,7 +43,7 @@ interface IEnvelope extends IStream {
      * effects of higher notes having lower overall energy, or higher velocities having greater, etc. This should be
      * set whenever we start a new note.
      *
-     * @param  float $fTimeScale
+     * @param  float $fLevelScale
      * @return self
      */
     public function setLevelScale(float $fLevelScale): self;

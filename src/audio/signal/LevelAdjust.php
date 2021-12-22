@@ -27,10 +27,15 @@ use ABadCafe\PDE\Audio;
  *
  * Fixed level adjustment, for attenuation or amplification.
  */
+
+/**
+ * @template T of IStream
+ */
 class LevelAdjust implements IStream {
 
     use TStream;
 
+    /** @var T $oStream */
     private IStream $oStream;
 
     private float $fLevel;
@@ -38,8 +43,8 @@ class LevelAdjust implements IStream {
     /**
      * Constructor
      *
-     * @param IStream $oStream
-     * @param float   $fOutLevel
+     * @param T     $oStream
+     * @param float $fLevel
      */
     public function __construct(IStream $oStream, float $fLevel) {
         self::initStreamTrait();
@@ -48,7 +53,7 @@ class LevelAdjust implements IStream {
     }
 
     /**
-     * @return IStream
+     * @return T
      */
     public function getStream(): IStream {
         return $this->oStream;

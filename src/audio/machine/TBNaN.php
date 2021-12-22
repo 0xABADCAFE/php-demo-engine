@@ -36,12 +36,13 @@ class TBNaN implements Audio\IMachine {
 
     use TMonophonicMachine, TSimpleVelocity, TControllerless;
 
+    /** @var array<int, Audio\Signal\IWaveform> $aWaveforms */
     private array $aWaveforms = [];
 
-    private Audio\Signal\Oscillator\Sound $oOscillator;
-    private Audio\Signal\Oscillator\LFO   $oPWM;
-    private Audio\Signal\IFilter          $oFilter;
-    private Audio\Signal\IEnvelope        $oFEG, $oAEG;
+    private Audio\Signal\Oscillator\Sound    $oOscillator;
+    private Audio\Signal\Oscillator\LFO      $oPWM;
+    private Audio\Signal\IFilter             $oFilter;
+    private Audio\Signal\Envelope\DecayPulse $oFEG, $oAEG;
 
     /**
      * Constructor
@@ -68,7 +69,7 @@ class TBNaN implements Audio\IMachine {
     /**
      * Set the resonance limit for the LPF
      *
-     * @param  float $fCutoff
+     * @param  float $fResonance
      * @return self
      */
     public function setResonance(float $fResonance): self {
@@ -79,7 +80,7 @@ class TBNaN implements Audio\IMachine {
     /**
      * Set the amplitude decay
      *
-     * @param  float $fCutoff
+     * @param  float $fHalfLife
      * @return self
      */
     public function setLevelDecay(float $fHalfLife): self {
@@ -90,7 +91,7 @@ class TBNaN implements Audio\IMachine {
     /**
      * Set the amplitude decay
      *
-     * @param  float $fCutoff
+     * @param  float $fHalfLife
      * @return self
      */
     public function setCutoffDecay(float $fHalfLife): self {

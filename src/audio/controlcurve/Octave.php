@@ -50,7 +50,7 @@ class Octave implements Audio\IControlCurve {
     ) {
         $this->fCentreOutput      = $fCentreOutput;
         $fScalePerOctave         /= $fStepsPerOctave;
-        $this->fScalePerOctave    = ($fScalePerOctave > 0.0 ?: -1.0/$fScalePerOctave);
+        $this->fScalePerOctave    = ($fScalePerOctave > 0.0 ? $fScalePerOctave : -1.0/$fScalePerOctave);
         $this->fCentrePosition    = $fCentrePosition;
     }
 

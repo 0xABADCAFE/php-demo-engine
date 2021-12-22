@@ -111,7 +111,7 @@ trait TPolyphonicMachine {
      * @inheritDoc
      */
     public function getPosition(): int {
-        return $this->Output->getPosition();
+        return $this->oOutput->getPosition();
     }
 
     /**

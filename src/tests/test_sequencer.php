@@ -32,8 +32,24 @@ $oBassLine = Audio\Machine\Factory::get()
     ->createFrom(json_decode(file_get_contents('machines/multifm/recently.json')))
     ->setOutputLevel(0.35);
 
+$oChipMachine = new Audio\Machine\ChipTune(4);
+
+$oChipMachine->setVoiceMaskEnvelope(15, new Audio\Signal\Envelope\Shape(
+    0.6,
+    [
+        [0.0, 0.2]
+    ]
+));
+
+$oChipMachine->setVoiceMaskWaveform(15, Audio\Signal\IWaveform::PULSE);
+
+
+$oChipMachine->setInsert(new Audio\Signal\Insert\DelayLoop(null, 123.0 * 3, 0.6));
+
+
 $oSequencer
-    ->addMachine('marimba', $oFMMarimba)
+    //->addMachine('marimba', $oFMMarimba)
+    ->addMachine('marimba', $oChipMachine)
     ->addMachine('drums', $oDrumMachine)
     ->addMachine('bass', $oBassLine)
 ;

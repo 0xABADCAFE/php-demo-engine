@@ -42,7 +42,7 @@ class ChipTune implements Audio\IMachine {
     /** @var Audio\Signal\IWaveform[] $aWaveforms */
     private static array $aWaveforms = [];
 
-    /** @var Audio\Signal\LevelAdjust[] $aVoices - LevelAdjust decorated Oscillator */
+    /** @var Audio\Signal\LevelAdjust<Audio\Signal\Oscillator\Sound>[] $aVoices */
     private array        $aVoices = [];
 
     private int          $iVoiceMask;
@@ -132,7 +132,9 @@ class ChipTune implements Audio\IMachine {
     public function setVoiceMaskVibratoRate(int $iVoiceMask, float $fRateHz): self {
         $aVoices = $this->getSelectedVoices($iVoiceMask);
         foreach ($aVoices as $oVoice) {
-            $oVoice->getStream()->getPitchModulator()->setFrequency($fRateHz);
+            /** @var Audio\Signal\Oscillator\LFO $oModulator */
+            $oModulator = $oVoice->getStream()->getPitchModulator();
+            $oModulator->setFrequency($fRateHz);
         }
         return $this;
     }
@@ -141,13 +143,15 @@ class ChipTune implements Audio\IMachine {
      * Set the vibrato depth, in semitones, to use for a set of voices.
      *
      * @param  int   $iVoiceMask
-     * @param  float $fRateHz
+     * @param  float $fDepth
      * @return self
      */
     public function setVoiceMaskVibratoDepth(int $iVoiceMask, float $fDepth): self {
         $aVoices = $this->getSelectedVoices($iVoiceMask);
         foreach ($aVoices as $oVoice) {
-            $oVoice->getStream()->getPitchModulator()->setDepth($fDepth);
+            /** @var Audio\Signal\Oscillator\LFO $oModulator */
+            $oModulator = $oVoice->getStream()->getPitchModulator();
+            $oModulator->setDepth($fDepth);
         }
         return $this;
     }
@@ -162,7 +166,9 @@ class ChipTune implements Audio\IMachine {
     public function setVoiceMaskTremeloRate(int $iVoiceMask, float $fRateHz): self {
         $aVoices = $this->getSelectedVoices($iVoiceMask);
         foreach ($aVoices as $oVoice) {
-            $oVoice->getStream()->getLevelModulator()->setFrequency($fRateHz);
+            /** @var Audio\Signal\Oscillator\LFO $oModulator */
+            $oModulator = $oVoice->getStream()->getLevelModulator();
+            $oModulator->setFrequency($fRateHz);
         }
         return $this;
     }
@@ -171,13 +177,15 @@ class ChipTune implements Audio\IMachine {
      * Set the tremelo depth, in semitones, to use for a set of voices.
      *
      * @param  int   $iVoiceMask
-     * @param  float $fRateHz
+     * @param  float $fDepth
      * @return self
      */
     public function setVoiceMaskTremeloDepth(int $iVoiceMask, float $fDepth): self {
         $aVoices = $this->getSelectedVoices($iVoiceMask);
         foreach ($aVoices as $oVoice) {
-            $oVoice->getStream()->getPitchModulator()->setDepth($fDepth);
+            /** @var Audio\Signal\Oscillator\LFO $oModulator */
+            $oModulator = $oVoice->getStream()->getLevelModulator();
+            $oModulator->setDepth($fDepth);
         }
         return $this;
     }
@@ -199,6 +207,8 @@ class ChipTune implements Audio\IMachine {
 
     /**
      * Create an initial voice for a voice. Defaults to a triangle waveform with a small 4Hz vibrato.
+     *
+     * @return Audio\Signal\LevelAdjust<Audio\Signal\Oscillator\Sound>
      */
     private function createInitialVoice(): Audio\Signal\LevelAdjust {
         $iDefaultWaveform = Audio\Signal\IWaveform::TRIANGLE;
@@ -237,7 +247,7 @@ class ChipTune implements Audio\IMachine {
      * Returns an array of the selected voices implied by a voice mask.
      *
      * @param  int $iVoiceMask
-     * @return Audio\Signal\Oscillator\Sound[]
+     * @return Audio\Signal\LevelAdjust<Audio\Signal\Oscillator\Sound>[]
      */
     private function getSelectedVoices(int $iVoiceMask): array {
         $aResult = [];

@@ -53,7 +53,7 @@ class DeXter implements Audio\IMachine {
     /** @var FM\Operator[][] $aOperators - first index is operator number, second is voice */
     private array $aOperators = [];
 
-    /** @var string[] $aOperatorNames */
+    /** @var array<string, int> $aOperatorNames */
     private array $aOperatorNames = [];
 
     private int  $iNumOperators;
@@ -70,9 +70,10 @@ class DeXter implements Audio\IMachine {
         self::initShared();
         $this->initPolyphony($iNumVoices);
         $fMixLevel = 0.5 / $this->iNumVoices;
-
         $this->iNumOperators = max(min($iNumOperators, self::MAX_OPERATORS), self::MIN_OPERATORS);
-        $this->aOperators    = array_fill(0, $this->iNumOperators, array_fill(0, $this->iNumVoices, []));
+        /** @var FM\Operator[]*/
+        $aVoice = [];
+        $this->aOperators = array_fill(0, $this->iNumOperators, $aVoice);
 
         for ($i = 0; $i < $this->iNumVoices; ++$i) {
             $this->aBaseFreq[$i] = Audio\Note::CENTRE_FREQUENCY;
@@ -118,7 +119,7 @@ class DeXter implements Audio\IMachine {
     /**
      * Select the aliased operator to modify
      *
-     * @param  int $iOperator
+     * @param  string $sName
      * @return self
      */
     public function selectOperatorName(string $sName) {
@@ -198,7 +199,7 @@ class DeXter implements Audio\IMachine {
     public function setLevelEnvelope(?Audio\Signal\IEnvelope $oEnvelope): self {
         if (null !== $this->iUsingOperator) {
             foreach ($this->aOperators[$this->iUsingOperator] as $iVoice => $oOperator) {
-                $oOperator->setLevelEnvelope(clone $oEnvelope);
+                $oOperator->setLevelEnvelope($oEnvelope ? clone $oEnvelope : null);
             }
         }
         return $this;
@@ -231,7 +232,7 @@ class DeXter implements Audio\IMachine {
     public function setPitchEnvelope(?Audio\Signal\IEnvelope $oEnvelope): self {
         if (null !== $this->iUsingOperator) {
             foreach ($this->aOperators[$this->iUsingOperator] as $iVoice => $oOperator) {
-                $oOperator->setPitchEnvelope(clone $oEnvelope);
+                $oOperator->setPitchEnvelope($oEnvelope ? clone $oEnvelope : null);
             }
         }
         return $this;
@@ -242,7 +243,7 @@ class DeXter implements Audio\IMachine {
      * Set the mix to output level of the selected operator. All operators can mix to the output regardless of
      * their role as a carrier or modulator.
      *
-     * @param  float $fRatio
+     * @param  float $fLevel
      * @return self
      */
     public function setOutputMixLevel(float $fLevel): self {
@@ -290,7 +291,7 @@ class DeXter implements Audio\IMachine {
     }
 
     /**
-     * @param  float $fLevel
+     * @param  float $fDepth
      * @return self
      */
     public function setPitchLFODepth($fDepth): self {
@@ -341,7 +342,7 @@ class DeXter implements Audio\IMachine {
     }
 
     /**
-     * @param  float $fLevel
+     * @param  float $fDepth
      * @return self
      */
     public function setLevelLFODepth($fDepth): self {

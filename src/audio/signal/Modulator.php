@@ -38,7 +38,8 @@ class Modulator implements IStream {
     /**
      * Constructor
      *
-     * @param float $fOutLevel
+     * @param IStream $oStream1
+     * @param IStream $oStream2
      */
     public function __construct(IStream $oStream1, IStream $oStream2) {
         self::initStreamTrait();

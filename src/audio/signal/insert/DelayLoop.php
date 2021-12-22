@@ -28,6 +28,7 @@ use function \ceil;
  * DelayLoop
  *
  * A delay loop with low pass filter.
+ *
  */
 class DelayLoop implements Audio\Signal\IInsert {
 

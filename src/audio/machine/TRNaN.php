@@ -48,6 +48,7 @@ class TRNaN implements Audio\IMachine {
 
     use TPolyphonicMachine, TSimpleVelocity, TControllerless;
 
+    /** @var array<int, Percussion\IVoice> */
     private $aVoices = [];
 
     public function __construct() {
@@ -68,8 +69,9 @@ class TRNaN implements Audio\IMachine {
      * @inheritDoc
      */
     public function setVoiceNote(int $iVoiceNumber, string $sNoteName): self {
-        isset($this->aVoices[$iVoiceNumber]) &&
-        $this->aVoices[$iVoiceNumber]->setNote($sNoteName);
+        if (isset($this->aVoices[$iVoiceNumber])) {
+            $this->aVoices[$iVoiceNumber]->setNote($sNoteName);
+        }
         return $this;
     }
 
@@ -84,11 +86,12 @@ class TRNaN implements Audio\IMachine {
                     ->disable();
             }
         }
-        isset($this->aVoices[$iVoiceNumber]) &&
-        $this->aVoices[$iVoiceNumber]
-            ->getOutputStream()
-            ->reset()
-            ->enable();
+        if (isset($this->aVoices[$iVoiceNumber])) {
+            $this->aVoices[$iVoiceNumber]
+                ->getOutputStream()
+                ->reset()
+                ->enable();
+            }
         return $this;
     }
 
@@ -96,10 +99,11 @@ class TRNaN implements Audio\IMachine {
      * @inheritDoc
      */
     public function stopVoice(int $iVoiceNumber): self {
-        isset($this->aVoices[$iVoiceNumber]) &&
-        $this->aVoices[$iVoiceNumber]
-            ->getOutputStream()
-            ->disable();
+        if (isset($this->aVoices[$iVoiceNumber])) {
+            $this->aVoices[$iVoiceNumber]
+                ->getOutputStream()
+                ->disable();
+        }
         return $this;
     }
 }

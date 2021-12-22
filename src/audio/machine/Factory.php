@@ -20,7 +20,7 @@ declare(strict_types=1);
 
 namespace ABadCafe\PDE\Audio\Machine;
 use ABadCafe\PDE\Audio;
-use function ABadCafe\PDE\dprintf, \count, \get_class, \is_array, \is_object, \is_string;
+use function ABadCafe\PDE\dprintf, \count, \get_class, \is_array, \is_string;
 
 /**
  * Machine factory
@@ -64,6 +64,7 @@ class Factory implements Audio\IFactory {
         $sType    = $oDefinition->sType ?? '<none>';
         $sFactory = self::PRODUCT_TYPES[$sType] ?? null;
         if ($sFactory) {
+            /** @var callable $cCreator */
             $cCreator = [$this, $sFactory];
             return $cCreator($oDefinition, $sType);
         }
@@ -118,7 +119,7 @@ class Factory implements Audio\IFactory {
     }
 
     /**
-     * @param string[] $aOperatorNames
+     * @param array<string, int> $aOperatorNames
      */
     private function configureMultiFMOperator(DeXter $oDexter, int $iOperator, \stdClass $oDefinition, array& $aOperatorNames): void {
         $oDexter->selectOperator($iOperator);
@@ -134,7 +135,7 @@ class Factory implements Audio\IFactory {
             $aOperatorNames[(string)$oDefinition->sName] = $iOperator;
         }
         if (isset($oDefinition->Waveform)) {
-            if (is_object($oDefinition->Waveform)) {
+            if ($oDefinition->Waveform instanceof \stdClass) {
                 $oWaveform = Audio\Signal\Waveform\Factory::get()->createFrom($oDefinition->Waveform);
                 $oDexter->setWaveform($oWaveform);
 
@@ -210,7 +211,7 @@ class Factory implements Audio\IFactory {
         }
 
         // Level LFO
-        if (isset($oDefinition->LevelLFO) && is_object($oDefinition->LevelLFO)) {
+        if (isset($oDefinition->LevelLFO) && $oDefinition->LevelLFO instanceof \stdClass) {
             $fDepth = (float)($oDefinition->LevelLFO->fDepth ?? 0.5);
             $fRate  = (float)($oDefinition->LevelLFO->fRate ?? Audio\Signal\Oscillator\LFO::DEF_FREQUENCY);
             $oDexter
@@ -230,7 +231,7 @@ class Factory implements Audio\IFactory {
         }
 
         // Pitch LFO
-        if (isset($oDefinition->PitchLFO) && is_object($oDefinition->PitchLFO)) {
+        if (isset($oDefinition->PitchLFO) && $oDefinition->PitchLFO instanceof \stdClass) {
             $fDepth = (float)($oDefinition->PitchLFO->fDepth ?? 0.5);
             $fRate  = (float)($oDefinition->PitchLFO->fRate ?? Audio\Signal\Oscillator\LFO::DEF_FREQUENCY);
             $oDexter
@@ -250,14 +251,14 @@ class Factory implements Audio\IFactory {
         }
 
         // Level Envelope
-        if (isset($oDefinition->LevelEnv) && is_object($oDefinition->LevelEnv)) {
+        if (isset($oDefinition->LevelEnv) && $oDefinition->LevelEnv instanceof \stdClass) {
             $oEnvelope = Audio\Signal\Envelope\Factory::get()->createFrom($oDefinition->LevelEnv);
             $oDexter->setLevelEnvelope($oEnvelope);
 
             // Velocity Dynamics for the level envelope level
             if (
                 isset($oDefinition->LevelEnv->Velocity->Intensity) &&
-                is_object($oDefinition->LevelEnv->Velocity->Intensity)
+                $oDefinition->LevelEnv->Velocity->Intensity instanceof \stdClass
             ) {
                 $oCurve = Audio\ControlCurve\Factory::get()
                     ->createFrom($oDefinition->LevelEnv->Velocity->Intensity);
@@ -267,7 +268,7 @@ class Factory implements Audio\IFactory {
             // Velocity Dynamics for the level envelope speed
             if (
                 isset($oDefinition->LevelEnv->Velocity->Rate) &&
-                is_object($oDefinition->LevelEnv->Velocity->Rate)
+                $oDefinition->LevelEnv->Velocity->Rate instanceof \stdClass
             ) {
                 $oCurve = Audio\ControlCurve\Factory::get()
                     ->createFrom($oDefinition->LevelEnv->Velocity->Rate);
@@ -285,14 +286,14 @@ class Factory implements Audio\IFactory {
         }
 
         // Pitch Envelope
-        if (isset($oDefinition->PitchEnv) && is_object($oDefinition->PitchEnv)) {
+        if (isset($oDefinition->PitchEnv) && $oDefinition->PitchEnv instanceof \stdClass) {
             $oEnvelope = Audio\Signal\Envelope\Factory::get()->createFrom($oDefinition->PitchEnv);
             $oDexter->setLevelEnvelope($oEnvelope);
 
             // Velocity Dynamics for the pitch envelope level
             if (
                 isset($oDefinition->PitchEnv->Velocity->Intensity) &&
-                is_object($oDefinition->PitchEnv->Velocity->Intensity)
+                $oDefinition->PitchEnv->Velocity->Intensity instanceof \stdClass
             ) {
                 $oCurve = Audio\ControlCurve\Factory::get()
                     ->createFrom($oDefinition->PitchEnv->Velocity->Intensity);
@@ -302,7 +303,7 @@ class Factory implements Audio\IFactory {
             // Velocity Dynamics for the pitch envelope speed
             if (
                 isset($oDefinition->PitchEnv->Velocity->Rate) &&
-                is_object($oDefinition->PitchEnv->Velocity->Rate)
+                $oDefinition->PitchEnv->Velocity->Rate instanceof \stdClass
             ) {
                 $oCurve = Audio\ControlCurve\Factory::get()
                     ->createFrom($oDefinition->PitchEnv->Velocity->Rate);
@@ -325,7 +326,11 @@ class Factory implements Audio\IFactory {
                 "\t\t\tConfuguring modulators...\n"
             );
             foreach ($oDefinition->aModulators as $oModulator) {
-                if (is_object($oModulator) && isset($oModulator->sSource) && isset($oModulator->fIndex)) {
+                if (
+                    $oModulator instanceof \stdClass &&
+                    isset($oModulator->sSource) &&
+                    isset($oModulator->fIndex)
+                ) {
                     $sSource = (string)$oModulator->sSource;
                     $fIndex  = (float)$oModulator->fIndex;
                     $oDexter->setModulation($aOperatorNames[$sSource], $fIndex);

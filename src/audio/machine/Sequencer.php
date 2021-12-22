@@ -64,7 +64,7 @@ class Sequencer {
     private array $aMachinePatternLabels;
 
     /**
-     * @var int[][] $aMachineSequences
+     * @var Audio\Sequence\Pattern[][] $aMachineSequences
      */
     private array $aMachineSequences = [];
 
@@ -155,7 +155,7 @@ class Sequencer {
      * @param  string         $sMachineName
      * @param  Audio\IMachine $oMachine
      * @return self
-     * @throws LogicException Thrown if the machine name has already been assigned.
+     * @throws \LogicException Thrown if the machine name has already been assigned.
      */
     public function addMachine(string $sMachineName, Audio\IMachine $oMachine): self {
         if (!isset($this->aMachines[$sMachineName])) {
@@ -270,7 +270,7 @@ class Sequencer {
 
 
     /**
-     * @param  $sMachineName
+     * @param  string $sMachineName
      * @throws OutOfBoundsException
      */
     private function assertMachineExists(string $sMachineName): void {

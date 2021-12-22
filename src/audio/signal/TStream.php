@@ -27,7 +27,7 @@ use ABadCafe\PDE\Audio;
  */
 trait TStream {
 
-    private static ?Packet $oSilence;
+    private static Packet $oSilence;
 
     protected bool $bEnabled = true;
 

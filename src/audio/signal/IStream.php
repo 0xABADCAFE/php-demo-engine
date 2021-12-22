@@ -71,7 +71,7 @@ interface IStream {
      * one IStream implementation's output is consumed by multiple inputs.
      *
      * @param  int|null $iIndex
-     * @return IPacket
+     * @return Packet
      */
     public function emit(?int $iIndex = null): Packet;
 }

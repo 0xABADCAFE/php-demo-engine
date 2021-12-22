@@ -27,6 +27,9 @@ use ABadCafe\PDE\Audio;
  */
 abstract class Base implements Audio\Signal\IOscillator {
 
+    const MIN_FREQUENCY = 1.0;
+    const MAX_FREQUENCY = 24000.0;
+
     use Audio\Signal\TPacketIndexAware, Audio\Signal\TStream;
 
     protected ?Audio\Signal\IWaveform $oWaveform = null;

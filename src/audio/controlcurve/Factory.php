@@ -49,6 +49,7 @@ class Factory implements Audio\IFactory {
         $sType    = $oDefinition->sType ?? '<none>';
         $sFactory = self::PRODUCT_TYPES[$sType] ?? null;
         if ($sFactory) {
+            /** @var callable $cCreator */
             $cCreator = [$this, $sFactory];
             return $cCreator($oDefinition, $sType);
         }
@@ -60,7 +61,7 @@ class Factory implements Audio\IFactory {
      *
      * @param  \stdClass $oDefinition
      * @param  string $sType
-     * @return Audio\Signal\IControlCurve
+     * @return Audio\IControlCurve
      */
     private function createFlat(\stdClass $oDefinition, string $sType): Audio\IControlCurve {
         $fValue = (float)($oDefinition->fFixed ?? 0.5);
@@ -74,7 +75,7 @@ class Factory implements Audio\IFactory {
      *
      * @param  \stdClass $oDefinition
      * @param  string $sType
-     * @return Audio\Signal\IControlCurve
+     * @return Audio\IControlCurve
      */
     private function createRanged(\stdClass $oDefinition, string $sType): Audio\IControlCurve {
         $fMinOutput = (float)($oDefinition->fMinOutput ?? 0.0);
@@ -108,7 +109,7 @@ class Factory implements Audio\IFactory {
      *
      * @param  \stdClass $oDefinition
      * @param  string $sType
-     * @return Audio\Signal\IControlCurve
+     * @return Audio\IControlCurve
      */
     private function createOctave(\stdClass $oDefinition, string $sType): Audio\IControlCurve {
         $fCentreOutput   = (float)($oDefinition->fCentreOutput ?? 1.0);

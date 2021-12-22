@@ -39,31 +39,22 @@ class DeXter implements Audio\IMachine {
 
     use TPolyphonicMachine, TControllerless;
 
-    /**
-     * @var Audio\Signal\IWaveform[] $aWaveforms
-     */
+    /** @var Audio\Signal\IWaveform[] $aWaveforms */
     private static array $aWaveforms = [];
 
-    private array
-        // One each per voice
+    // One each per voice
 
-        /**
-         * @var Audio\Signal\FixedMixer[] $aVoice
-         */
-        $aVoice        = [],
+    /** @var Audio\Signal\FixedMixer[] $aVoice */
+    private array $aVoice = [];
 
-        /**
-         * @var float[] $aBaseFreq
-         */
-        $aBaseFreq     = [],
+    /** @var float[] $aBaseFreq */
+    private array $aBaseFreq = [];
 
-        /**
-         * @var FM\Operator[][] - first index is operator number, second is voice
-         */
-        $aOperators = [],
+    /** @var FM\Operator[][] $aOperators - first index is operator number, second is voice */
+    private array $aOperators = [];
 
-        $aOperatorNames = []
-    ;
+    /** @var string[] $aOperatorNames */
+    private array $aOperatorNames = [];
 
     private int  $iNumOperators;
 

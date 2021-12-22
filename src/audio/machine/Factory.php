@@ -117,6 +117,9 @@ class Factory implements Audio\IFactory {
         return $oDexter;
     }
 
+    /**
+     * @param string[] $aOperatorNames
+     */
     private function configureMultiFMOperator(DeXter $oDexter, int $iOperator, \stdClass $oDefinition, array& $aOperatorNames): void {
         $oDexter->selectOperator($iOperator);
 

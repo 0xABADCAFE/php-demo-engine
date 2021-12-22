@@ -30,9 +30,12 @@ use \SPLFixedArray;
  *
  * @see https://github.com/0xABADCAFE/random-proto-synth
  *
- * @implements SPLFixedArray<float>
  */
-class Packet extends \SPLFixedArray {
+
+/**
+ * @extends SPLFixedArray<float>
+ */
+class Packet extends SPLFixedArray {
 
     private static int $iNextIndex = 0;
 
@@ -136,7 +139,7 @@ class Packet extends \SPLFixedArray {
      */
     public function sumWith(self $oPacket): self {
         for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
-            $this[$i] += $oPacket[$i];
+            $this[$i] += $oPacket[$i]; // @phpstan-ignore-line : false positive
         }
         return $this;
     }
@@ -149,7 +152,7 @@ class Packet extends \SPLFixedArray {
      */
     public function modulateWith(self $oPacket): self {
         for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
-            $this[$i] *= $oPacket[$i];
+            $this[$i] *= $oPacket[$i]; // @phpstan-ignore-line : false positive
         }
         return $this;
     }

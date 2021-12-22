@@ -36,11 +36,11 @@ class Octave implements Audio\IControlCurve {
     /**
      * Constructor
      *
-     * @param $fCentreOutput   - Value at the centre reference
-     * @param $fScalePerOctave - Scaling factor: 1.0 results in a doubling per octave, 0.5 a doubling every 2 octaves, etc.
-     *                           Negative values invert the direction, i.e. -1.0 results in a halving per octave.
-     * @param $fStepsPerOctave - Number of whole number input steps in an octave.
-     * @param $fCentrePosition - Input value at which the output is $fCentreOutput
+     * @param float $fCentreOutput   - Value at the centre reference
+     * @param float $fScalePerOctave - Scaling factor: 1.0 results in a doubling per octave, 0.5 a doubling every 2 octaves, etc.
+     *                                 Negative values invert the direction, i.e. -1.0 results in a halving per octave.
+     * @param float $fStepsPerOctave - Number of whole number input steps in an octave.
+     * @param float $fCentrePosition - Input value at which the output is $fCentreOutput
      */
     public function __construct(
         float $fCentreOutput,

@@ -54,15 +54,13 @@ class Sequencer {
         $iNumMeasures         = 0
     ;
 
-    /**
-     * @var Audio\IMachine $oMachine[] $aMachines
-     */
+    /** @var Audio\IMachine[] $aMachines */
     private array $aMachines = [];
 
-    /**
-     * @var Audio\Sequence\Pattern[][] $aMachinePatterns
-     */
+    /** @var Audio\Sequence\Pattern[][] $aMachinePatterns */
     private array $aMachinePatterns = [];
+
+    /** @var int[] $aMachinePatternLabels */
     private array $aMachinePatternLabels;
 
     /**
@@ -382,6 +380,8 @@ class Sequencer {
 
     /**
      * Trigger the events on the selected line for the active patterns
+     *
+     * @param Audio\Sequence\Pattern[] $aActivePatterns
      */
     private function triggerLine(int $iLineNumber, array $aActivePatterns): void {
         foreach ($aActivePatterns as $sMachineName => $oPattern) {

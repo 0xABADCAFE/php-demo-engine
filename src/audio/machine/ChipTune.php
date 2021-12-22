@@ -39,9 +39,14 @@ class ChipTune implements Audio\IMachine {
         Audio\Signal\IWaveform::PULSE    => 0.25
     ];
 
+    /** @var Audio\Signal\IWaveform[] $aWaveforms */
     private static array $aWaveforms = [];
-    private int          $iVoiceMask;
+
+    /** @var Audio\Signal\LevelAdjust[] $aVoices - LevelAdjust decorated Oscillator */
     private array        $aVoices = [];
+
+    private int          $iVoiceMask;
+
 
     /**
      * Constructor. Sets the default polyphony level and allocates the various parts.
@@ -195,7 +200,7 @@ class ChipTune implements Audio\IMachine {
     /**
      * Create an initial voice for a voice. Defaults to a triangle waveform with a small 4Hz vibrato.
      */
-    private function createInitialVoice(): Audio\Signal\IStream {
+    private function createInitialVoice(): Audio\Signal\LevelAdjust {
         $iDefaultWaveform = Audio\Signal\IWaveform::TRIANGLE;
 
         $oOscillator = new Audio\Signal\Oscillator\Sound(self::$aWaveforms[$iDefaultWaveform]);

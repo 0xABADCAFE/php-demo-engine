@@ -41,7 +41,7 @@ class None implements Audio\IPCMOutput {
     /**
      * Write a signal packet. This involves scaling, quantising values and limiting them before writing.
      *
-     * @param Signal\Packet $oPacket
+     * @param Audio\Signal\Packet $oPacket
      */
     public function write(Audio\Signal\Packet $oPacket): void {
 

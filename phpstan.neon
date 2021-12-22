@@ -6,3 +6,5 @@ parameters:
         - src
     excludePaths:
         - 'src/tests/*'
+    universalObjectCratesClasses:
+        - ABadCafe\PDE\Audio\Sequence\Event

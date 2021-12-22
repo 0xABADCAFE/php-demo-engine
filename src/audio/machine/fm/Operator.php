@@ -56,8 +56,8 @@ class Operator implements Audio\Signal\IOscillator {
     /**
      * The core of the operator is a basic Oscillator that runs at some fixed ratio of the fundamental frequency.
      */
-    private Audio\Signal\IOScillator $oOscillator;
-    private float                    $fRatio = self::DEF_RATIO;
+    private Audio\Signal\Oscillator\Sound $oOscillator;
+    private float $fRatio = self::DEF_RATIO;
 
     /**
      * Operator modulation inputs are summed using a fixed mixer, where the level of each input corresponds to that
@@ -84,12 +84,12 @@ class Operator implements Audio\Signal\IOscillator {
     /**
      * Key scale control curves
      */
-    private ?Audio\IControlCurve
-        $oLevelIntensityKeyScaleCurve = null,
-        $oLevelRateKeyScaleCurve      = null,
-        $oPitchIntensityKeyScaleCurve = null,
-        $oPitchRateKeyScaleCurve      = null
-    ;
+//     private ?Audio\IControlCurve
+//         $oLevelIntensityKeyScaleCurve = null,
+//         $oLevelRateKeyScaleCurve      = null,
+//         $oPitchIntensityKeyScaleCurve = null,
+//         $oPitchRateKeyScaleCurve      = null
+//     ;
 
     /**
      * @var Operator[] $aModulators
@@ -259,7 +259,7 @@ class Operator implements Audio\Signal\IOscillator {
      * Set the Level LFO rate in Hz to use. Setting any value <= 0 disables the Level LFO but does not change
      * the assigned rate.
      *
-     * @param  float $fDepth
+     * @param  float $fRate
      * @return self
      */
     public function setLevelLFORate(float $fRate): self {
@@ -331,7 +331,7 @@ class Operator implements Audio\Signal\IOscillator {
      * Set the Pitch LFO rate in Hz to use. Setting any value <= 0 disables the Pitch LFO but does not change
      * the assigned rate.
      *
-     * @param  float $fDepth
+     * @param  float $fRate
      * @return self
      */
     public function setPitchLFORate(float $fRate): self {
@@ -412,6 +412,7 @@ class Operator implements Audio\Signal\IOscillator {
      */
     public function removeModulator(self $oModulator): self {
         $this->oModulation->removeInputStream($oModulator->sUniqueID);
+        return $this;
     }
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -488,10 +489,10 @@ class Operator implements Audio\Signal\IOscillator {
             $fLevelScale = 1.0;
             $fTimeScale  = 1.0;
             if ($this->oPitchIntensityVelocityCurve) {
-                $fLevelScale *= $this->oLevelIntensityVelocityCurve->map($fCurveInput);
+                $fLevelScale *= $this->oPitchIntensityVelocityCurve->map($fCurveInput);
             }
             if ($this->oPitchRateVelocityCurve) {
-                $fTimeScale *= $this->oLevelRateVelocityCurve->map($fCurveInput);
+                $fTimeScale *= $this->oPitchRateVelocityCurve->map($fCurveInput);
             }
             $oEnvelope
                 ->setLevelScale($fLevelScale)

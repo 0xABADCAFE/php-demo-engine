@@ -66,8 +66,8 @@ class AnalogueKick implements IVoice {
     ];
 
     private Audio\Signal\IOscillator $oOscillator;
-    private Audio\Signal\IEnvelope   $oVolumeEnv, $oPitchEnv;
-    private Audio\Signal\IStream     $oAutoMute;
+    private Audio\Signal\Envelope\DecayPulse $oVolumeEnv, $oPitchEnv;
+    private Audio\Signal\AutoMuteAfter       $oAutoMute;
 
     /**
      * Constructor

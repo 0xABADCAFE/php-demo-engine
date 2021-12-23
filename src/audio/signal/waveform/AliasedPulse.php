@@ -48,7 +48,7 @@ class AliasedPulse implements Signal\IWaveform {
     /**
      * Optional modulator for pulsewidth.
      */
-    protected ?Signal\IStream $oModulator = null;
+    protected ?Signal\IStream $oWidthModulator = null;
 
     /**
      * Constructor.
@@ -68,8 +68,12 @@ class AliasedPulse implements Signal\IWaveform {
      * @return self
      */
     public function setPulsewidth(float $fPulseWidth): self {
-        $fPulseWidth > self::MAX_WIDTH && $fPulseWidth = self::MAX_WIDTH;
-        $fPulseWidth < self::MIN_WIDTH && $fPulseWidth = self::MIN_WIDTH;
+        if ($fPulseWidth > self::MAX_WIDTH) {
+            $fPulseWidth = self::MAX_WIDTH;
+        }
+        if ($fPulseWidth < self::MIN_WIDTH) {
+            $fPulseWidth = self::MIN_WIDTH;
+        }
         $this->fPulseWidth = $fPulseWidth;
         return $this;
     }
@@ -107,10 +111,12 @@ class AliasedPulse implements Signal\IWaveform {
                 ->scaleBy(0.5 * $this->fPulseWidth)
                 ->biasBy(0.5);
             foreach ($oInput as $i => $fTime) {
+                /** @var float $fTime */
                 $oOutput[$i] = ((ceil($fTime) - $fTime) > $oWidth[$i]) ? 1.0 : -1.0;
             }
         } else {
             foreach ($oInput as $i => $fTime) {
+                /** @var float $fTime */
                 $oOutput[$i] = ((ceil($fTime) - $fTime) > $this->fPulseWidth) ? 1.0 : -1.0;
             }
         }

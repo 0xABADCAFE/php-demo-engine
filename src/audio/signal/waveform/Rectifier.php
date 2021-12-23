@@ -149,7 +149,7 @@ class Rectifier implements Signal\IWaveform {
      * @param float            $fMax    - High threshold for rectification
      * @param bool             $bFold   - Whether or not the waveform should be folded back at the rectification limit
      * @param float            $fScale  - How much to scale the output by
-     * @param float            fBias    - How much to offset the output by
+     * @param float            $fBias   - How much to offset the output by
      */
     public function __construct(
         Signal\IWaveform $oSource,

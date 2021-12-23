@@ -55,11 +55,21 @@ class Sound extends Base {
      */
     public function reset(): self {
         parent::reset();
-        $this->oPitchModulator && $this->oPitchModulator->reset();
-        $this->oPhaseModulator && $this->oPhaseModulator->reset();
-        $this->oLevelModulator && $this->oLevelModulator->reset();
-        $this->oLevelEnvelope  && $this->oLevelEnvelope->reset();
-        $this->oPitchEnvelope  && $this->oPitchEnvelope->reset();
+        if ($this->oPitchModulator) {
+            $this->oPitchModulator->reset();
+        }
+        if ($this->oPhaseModulator) {
+            $this->oPhaseModulator->reset();
+        }
+        if ($this->oLevelModulator) {
+            $this->oLevelModulator->reset();
+        }
+        if ($this->oLevelEnvelope) {
+            $this->oLevelEnvelope->reset();
+        }
+        if ($this->oPitchEnvelope) {
+            $this->oPitchEnvelope->reset();
+        }
         return $this;
     }
 
@@ -201,15 +211,19 @@ class Sound extends Base {
     /**
      * Calculates a new audio packet
      *
-     * @return Signal\Audio\Packet;
+     * @return Audio\Signal\Packet;
      */
     protected function emitNew(): Audio\Signal\Packet {
 
         if ($this->oPitchModulator || $this->oPitchEnvelope) {
             $oPitchShifts = Audio\Signal\Packet::create();
 
-            $this->oPitchModulator && $oPitchShifts->sumWith($this->oPitchModulator->emit($this->iLastIndex));
-            $this->oPitchEnvelope  && $oPitchShifts->sumWith($this->oPitchEnvelope->emit($this->iLastIndex));
+            if ($this->oPitchModulator) {
+                $oPitchShifts->sumWith($this->oPitchModulator->emit($this->iLastIndex));
+            }
+            if ($this->oPitchEnvelope) {
+                $oPitchShifts->sumWith($this->oPitchEnvelope->emit($this->iLastIndex));
+            }
 
             // Every sample point has a new frequency, but we can't just use the instantaneous Waveform value for
             // that as it would be the value that the function has if it was always at that frequency.
@@ -240,7 +254,7 @@ class Sound extends Base {
             }
         }
 
-        $this->oLastOutput = $this->oWaveform->map($this->oWaveformInput);
+        $this->oLastOutput = $this->oWaveform->map($this->oWaveformInput); // @phpstan-ignore-line : false positive
 
         if ($this->oLevelModulator) {
             $oLevel = clone $this->oLevelModulator->emit($this->iLastIndex);

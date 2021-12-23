@@ -40,6 +40,8 @@ class QuadrantMutator implements Audio\Signal\IWaveform {
         ];
 
     private Audio\Signal\IWaveform $oSource;
+
+    /** @var float[][] $aMutate */
     private array $aMutate;
     private float $fPeriodAdjust;
 
@@ -47,7 +49,7 @@ class QuadrantMutator implements Audio\Signal\IWaveform {
      * Constructor
      *
      * @param Audio\Signal\IWaveform $oSource
-     * @param float[4][3]|null $aMutate
+     * @param float[][]|null $aMutate
      */
     public function __construct(Audio\Signal\IWaveform $oSource, ?array $aMutate = null) {
         $this->oSource       = $oSource;

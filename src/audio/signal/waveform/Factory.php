@@ -50,6 +50,7 @@ class Factory implements Audio\IFactory {
         $sType    = $oDefinition->sType ?? '<none>';
         $sFactory = self::PRODUCT_TYPES[$sType] ?? null;
         if ($sFactory) {
+            /** @var callable $cCreator */
             $cCreator = [$this, $sFactory];
             return $cCreator($oDefinition, $sType);
         }
@@ -98,7 +99,10 @@ class Factory implements Audio\IFactory {
      * @return Audio\Signal\IWaveform
      */
     private function createRectifier(\stdClass $oDefinition, $sType): Audio\Signal\IWaveform {
-        if (empty($oDefinition->{self::STANDARD_KEY}) || !is_object($oDefinition->{self::STANDARD_KEY})) {
+        if (
+        empty($oDefinition->{self::STANDARD_KEY}) ||
+            !$oDefinition->{self::STANDARD_KEY} instanceof \stdClass
+        ) {
             throw new \RuntimeException('Rectifier requires a waveform');
         }
 
@@ -131,7 +135,10 @@ class Factory implements Audio\IFactory {
      * @return Audio\Signal\IWaveform
      */
     private function createMutator(\stdClass $oDefinition, $sType): Audio\Signal\IWaveform {
-        if (empty($oDefinition->{self::STANDARD_KEY}) || !is_object($oDefinition->{self::STANDARD_KEY})) {
+        if (
+            empty($oDefinition->{self::STANDARD_KEY}) ||
+            !$oDefinition->{self::STANDARD_KEY} instanceof \stdClass
+        ) {
             throw new \RuntimeException('Mutator requires a waveform');
         }
         return new QuadrantMutator(

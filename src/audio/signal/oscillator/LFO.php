@@ -65,13 +65,13 @@ class LFO extends Base {
     /**
      * Calculates a new audio packet
      *
-     * @return Signal\Audio\Packet;
+     * @return Audio\Signal\Packet;
      */
     protected function emitNew(): Audio\Signal\Packet {
         for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
             $this->oWaveformInput[$i] = $this->fScaleVal * $this->iSamplePosition++;
         }
-        return $this->oLastOutput = $this->oWaveform
+        return $this->oLastOutput = $this->oWaveform // @phpstan-ignore-line : false positive
             ->map($this->oWaveformInput)
             ->scaleBy($this->fDepth);
         ;

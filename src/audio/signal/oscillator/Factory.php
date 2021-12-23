@@ -47,6 +47,7 @@ class Factory implements Audio\IFactory {
         $sType    = $oDefinition->sType ?? '<none>';
         $sFactory = self::PRODUCT_TYPES[$sType] ?? null;
         if ($sFactory) {
+            /** @var callable $cCreator */
             $cCreator = [$this, $sFactory];
             return $cCreator($oDefinition, $sType);
         }
@@ -68,7 +69,7 @@ class Factory implements Audio\IFactory {
 
         if (
             !empty($oDefinition->{$sSubNodeKey}) &&
-            is_object($oDefinition->{$sSubNodeKey})
+            $oDefinition->{$sSubNodeKey} instanceof \stdClass
         ) {
             $oWaveform = Audio\Signal\Waveform\Factory::get()
                 ->createFrom($oDefinition->{$sSubNodeKey});
@@ -99,7 +100,7 @@ class Factory implements Audio\IFactory {
 
         if (
             !empty($oDefinition->{$sSubNodeKey}) &&
-            is_object($oDefinition->{$sSubNodeKey})
+            $oDefinition->{$sSubNodeKey} instanceof \stdClass
         ) {
             $oWaveform = Audio\Signal\Waveform\Factory::get()
                 ->createFrom($oDefinition->{$sSubNodeKey});

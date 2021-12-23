@@ -28,6 +28,7 @@ use ABadCafe\PDE\Audio;
 abstract class Base implements Audio\Signal\IOscillator {
 
     const MIN_FREQUENCY = 1.0;
+    const DEF_FREQUENCY = 440.0;
     const MAX_FREQUENCY = 24000.0;
 
     use Audio\Signal\TPacketIndexAware, Audio\Signal\TStream;
@@ -41,6 +42,7 @@ abstract class Base implements Audio\Signal\IOscillator {
     protected float
         $fFrequency        = 0.0,
         $fCurrentFrequency = 0.0,
+        $fPhaseOffset      = 0.0,
         $fPhaseCorrection  = 0.0,
         $fWaveformPeriod   = 1.0,
         $fTimeStep         = 0.0,
@@ -67,6 +69,7 @@ abstract class Base implements Audio\Signal\IOscillator {
         $this->oLastOutput    = Audio\Signal\Packet::create();
         $this->setWaveform($oWaveform);
         $this->setFrequency($fFrequency);
+        $this->fPhaseOffset = $this->fPhaseCorrection = $fPhase;
     }
 
     /**
@@ -80,9 +83,9 @@ abstract class Base implements Audio\Signal\IOscillator {
      * @inheritDoc
      */
     public function reset(): self {
-        $this->iSamplePosition  = 0;
-        $this->fCurrentFreqency = $this->fFrequency;
-        $this->fPhaseCorrection = 0;
+        $this->iSamplePosition   = 0;
+        $this->fCurrentFrequency = $this->fFrequency;
+        $this->fPhaseCorrection  = $this->fPhaseOffset;
         return $this;
     }
 

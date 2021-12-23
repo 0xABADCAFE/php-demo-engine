@@ -113,7 +113,7 @@ class DecayPulse extends Base {
     /**
      * Set the decay half life.
      *
-     * @param  float $fInitial
+     * @param  float $fHalfLife
      * @return self
      */
     public function setHalfLife(float $fHalfLife): self {

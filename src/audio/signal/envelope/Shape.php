@@ -33,7 +33,7 @@ class Shape extends Base {
         MAX_TIME = 100.0
     ;
 
-    /** @var float[2][] $aPoints */
+    /** @var array<int, float[]> $aPoints */
     private array $aPoints = [
         0 => [0, 0]
     ];
@@ -43,13 +43,11 @@ class Shape extends Base {
         $oFinalPacket   // Fixed packet filled with the final envelope value
     ;
 
-    private array
-        /** @var {int, float}[] $aProcessPoints : Envelope points, converted into Sample Position => Level pairs */
-        $aProcessPoints  = [],
+    /** @var \stdClass[] $aProcessPoints : Envelope points, converted into Sample Position => Level pairs */
+    private array $aProcessPoints  = [];
 
-        /** @var int[] $aProcessPoints : Indexes to the Process Points array, keyed by the Sample Position they start at  */
-        $aProcessIndexes = []
-    ;
+    /** @var int[] $aProcessIndexes : Indexes to the Process Points array, keyed by the Sample Position they start at  */
+    private array $aProcessIndexes = [];
 
     private int $iLastPosition   = 0;    // Used to early out and return the fixed packet
 
@@ -63,8 +61,8 @@ class Shape extends Base {
     /**
      * Constructor. Accepts an initial output level and an optional array of level/time pairs
      *
-     * @param float      $fInitial
-     * @param float[2][] $aPoints  - Array of level/time pairs
+     * @param float     $fInitial
+     * @param float[][] $aPoints  - Array of level/time pairs
      *
      */
     public function __construct(float $fInitial = 0, array $aPoints = []) {
@@ -77,8 +75,8 @@ class Shape extends Base {
     /**
      * Specify a new shape.
      *
-     * @param float      $fInitial
-     * @param float[2][] $aPoints
+     * @param float     $fInitial
+     * @param float[][] $aPoints
      */
     public function setShape(float $fInitial, array $aPoints): self {
         $this->aPoints = [
@@ -146,6 +144,8 @@ class Shape extends Base {
                 'fLevel' => $aPoint[0] * $this->fLevelScale
             ];
         }
+
+        /** @var \stdClass $oLastPoint */
         $oLastPoint = end($this->aProcessPoints);
 
         // Pad on the last point again with a slight time offset. This ensures the interpolant code is always acting between a pair

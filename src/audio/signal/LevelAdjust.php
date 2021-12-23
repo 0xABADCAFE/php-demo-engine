@@ -70,7 +70,7 @@ class LevelAdjust implements IStream {
      * Set the level adjustment to apply.
      *
      * @param  float $fLevel
-     * @return self
+     * @return self<T>
      */
     public function setLevel(float $fLevel): self {
         $this->fLevel  = $fLevel;
@@ -86,6 +86,8 @@ class LevelAdjust implements IStream {
 
     /**
      * @inheritDoc
+     *
+     * @return self<T>
      */
     public function reset(): self {
         $this->oStream->reset();

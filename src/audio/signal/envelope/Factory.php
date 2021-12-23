@@ -44,6 +44,7 @@ class Factory implements Audio\IFactory {
         $sType    = $oDefinition->sType ?? '<none>';
         $sFactory = self::PRODUCT_TYPES[$sType] ?? null;
         if ($sFactory) {
+            /** @var callable $cCreator */
             $cCreator = [$this, $sFactory];
             return $cCreator($oDefinition, $sType);
         }

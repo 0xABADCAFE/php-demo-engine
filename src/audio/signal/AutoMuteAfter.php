@@ -69,7 +69,7 @@ class AutoMuteAfter implements IStream {
      * Reports the stream position of the wrapped stream rather than the wrapper.
      */
     public function getPosition(): int {
-        return $this->oStream->getPosition;
+        return $this->oStream->getPosition();
     }
 
     /**

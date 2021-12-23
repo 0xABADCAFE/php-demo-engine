@@ -32,8 +32,13 @@ class FixedMixer implements IStream {
     use TStream, TPacketIndexAware;
 
     private int    $iPosition = 0;
+
+    /** @var array<string, IStream> $aStreams */
     private array  $aStreams  = [];
+
+    /** @var array<string, float> $aLevels */
     private array  $aLevels   = [];
+
     private float  $fOutLevel = 1.0;
     private Packet $oLastPacket;
 

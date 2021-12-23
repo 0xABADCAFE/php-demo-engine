@@ -63,10 +63,10 @@ abstract class Base implements Audio\Signal\IFilter {
         $fFeedback = 0.0
     ;
 
-    /** Selected filter function, depends on which parameters are fixed and varying */
+    /** @var callable $cFilterFunction : Selected filter function, depends on which parameters are fixed and varying */
     protected $cFilterFunction;
 
-    /** Set of possible filter functions */
+    /** @var string[] $aFilterFunctionNames : Set of possible filter functions */
     protected static $aFilterFunctionNames = [
         0 => 'applyFixedCutoffFixedResonance',
         1 => 'applyVaryingCutoffFixedResonance',
@@ -77,7 +77,7 @@ abstract class Base implements Audio\Signal\IFilter {
     /**
      * Constructor
      *
-     * @param Signal\Audio\IStream      $oInputStream - audio source
+     * @param Audio\Signal\IStream      $oInputStream - audio source
      * @param float                     $fFixedCutoff
      * @param float                     $fFixedResonance
      * @param Audio\Signal\IStream|null $oCutoffControl
@@ -114,8 +114,12 @@ abstract class Base implements Audio\Signal\IFilter {
         $this->iPosition  = 0;
         $this->iLastIndex = 0;
         $this->oLastOutputPacket->fillWith(0.0);
-        $this->oCutoffControl    && $this->oCutoffControl->reset();
-        $this->oResonanceControl && $this->oResonanceControl->reset();
+        if ($this->oCutoffControl) {
+            $this->oCutoffControl->reset();
+        }
+        if ($this->oResonanceControl) {
+            $this->oResonanceControl->reset();
+        }
         $this->oInputStream->reset();
         return $this;
     }
@@ -182,7 +186,10 @@ abstract class Base implements Audio\Signal\IFilter {
      */
     protected function chooseFilterFunction(): void {
         $iFunctionIndex = ($this->oCutoffControl ? 1 : 0) | ($this->oResonanceControl ? 2 : 0);
-        $this->cFilterFunction = [$this, self::$aFilterFunctionNames[$iFunctionIndex]];
+
+        /** @var callable $cFunction */
+        $cFunction =  [$this, self::$aFilterFunctionNames[$iFunctionIndex]];
+        $this->cFilterFunction = $cFunction;
     }
 
     /**

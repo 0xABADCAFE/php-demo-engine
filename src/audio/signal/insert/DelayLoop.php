@@ -37,7 +37,9 @@ class DelayLoop implements Audio\Signal\IInsert {
     private ?Audio\Signal\IStream    $oStream;
     private Audio\Signal\PacketRelay $oRelay;
     private Audio\Signal\IFilter     $oFilter;
-    private SPLDoublyLinkedList      $oQueue;
+
+    /** @var SPLDoublyLinkedList<Audio\Signal\Packet> $oQueue */
+    private SPLDoublyLinkedList $oQueue;
 
     private float
         $fFeedback,
@@ -87,7 +89,7 @@ class DelayLoop implements Audio\Signal\IInsert {
     }
 
     /**
-     * @param  float
+     * @param  float $fFeedback
      * @return self
      */
     public function setFeedback(float $fFeedback): self {
@@ -103,7 +105,7 @@ class DelayLoop implements Audio\Signal\IInsert {
     }
 
     /**
-     * @param  float
+     * @param  float $fCutoff
      * @return self
      */
     public function setCutoff(float $fCutoff): self {
@@ -120,7 +122,7 @@ class DelayLoop implements Audio\Signal\IInsert {
     }
 
     /**
-     * @param  float
+     * @param  float $fResonance
      * @return self
      */
     public function setResonance(float $fResonance): self {
@@ -163,14 +165,16 @@ class DelayLoop implements Audio\Signal\IInsert {
      * @inheritDoc
      */
     public function getPosition(): int {
-        return $this->oStream ? $this->oStream->getPosition(): 0;
+        return $this->oStream ? $this->oStream->getPosition() : 0;
     }
 
     /**
      * @inheritDoc
      */
     public function reset(): self {
-        $this->oStream && $this->oStream->reset();
+        if ($this->oStream) {
+            $this->oStream->reset();
+        }
         return $this;
     }
 

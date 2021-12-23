@@ -89,10 +89,11 @@ class Event {
      * @param  string $sNote
      * @return self
      */
-    public function setNote(string $sNote): self {
+    public static function setNote(string $sNote): self {
         if (!isset(self::$aSetNote[$sNote])) {
             $oEvent        = new self(self::SET_NOTE);
             $oEvent->sNote = $sNote;
+            self::$aSetNote[$sNote] = $oEvent;
         }
         return self::$aSetNote[$sNote];
     }

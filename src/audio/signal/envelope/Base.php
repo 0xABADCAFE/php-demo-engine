@@ -35,7 +35,7 @@ abstract class Base implements Audio\Signal\IEnvelope {
     /**
      * @inheritDoc
      */
-    public function setTimeScale(float $fTimeScale) : self {
+    public function setTimeScale(float $fTimeScale): self {
         $fTimeScale = max($fTimeScale, self::MIN_TIME_SCALE);
         if ($fTimeScale != $this->fTimeScale) {
             $this->fTimeScale = $fTimeScale;
@@ -47,7 +47,7 @@ abstract class Base implements Audio\Signal\IEnvelope {
     /**
      * @inheritDoc
      */
-    public function setLevelScale(float $fLevelScale) : self {
+    public function setLevelScale(float $fLevelScale): self {
         if ($fLevelScale != $this->fLevelScale) {
             $this->fLevelScale = $fLevelScale;
             $this->bParameterChanged = true;
@@ -58,7 +58,7 @@ abstract class Base implements Audio\Signal\IEnvelope {
     /**
      * @inheritDoc
      */
-    public function reset() : self {
+    public function reset(): self {
         $this->iSamplePosition   = 0;
         $this->bParameterChanged = true;
         return $this;
@@ -67,7 +67,7 @@ abstract class Base implements Audio\Signal\IEnvelope {
     /**
      * @inheritDoc
      */
-    public function getPosition() : int {
+    public function getPosition(): int {
         return $this->iSamplePosition;
     }
 }

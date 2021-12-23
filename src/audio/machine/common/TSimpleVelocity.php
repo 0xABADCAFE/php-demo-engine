@@ -28,12 +28,13 @@ use ABadCafe\PDE\Audio;
  */
 trait TSimpleVelocity {
 
-    protected static $fSimpleVelocityScale = 1.0 / 127.0;
+    protected static float $fSimpleVelocityScale = 1.0 / 127.0;
 
     /**
      * @inheritDoc
      */
-    public function setVoiceVelocity(int $iVoiceNumber, int $iVelocity) : self {
-        return $this->setVoiceLevel($iVoiceNumber, self::$fSimpleVelocityScale * $iVelocity);
+    public function setVoiceVelocity(int $iVoiceNumber, int $iVelocity): self {
+        $this->setVoiceLevel($iVoiceNumber, self::$fSimpleVelocityScale * $iVelocity);
+        return $this;
     }
 }

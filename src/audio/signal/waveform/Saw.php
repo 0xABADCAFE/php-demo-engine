@@ -42,7 +42,7 @@ class Saw extends AliasedSaw {
     /**
      * @inheritDoc
      */
-    public function map(Signal\Packet $oInput) : Signal\Packet {
+    public function map(Signal\Packet $oInput): Signal\Packet {
         $oOutput   = clone $oInput;
 
         // Avoid sharp transitions at the edges with a simple hamming filter.
@@ -52,6 +52,7 @@ class Saw extends AliasedSaw {
         $fPrev4  = $this->fPrev4;
 
         foreach ($oInput as $i => $fTime) {
+            /** @var float $fTime */
             $fSample = 2.0 * (ceil($fTime) - $fTime - 0.5);
             $oOutput[$i] = 0.1 * (
                 $fSample + $fPrev4 +

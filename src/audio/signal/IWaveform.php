@@ -44,7 +44,7 @@ interface IWaveform {
      *
      * @return float
      */
-    public function getPeriod() : float;
+    public function getPeriod(): float;
 
     /**
      * Calculate a Packets worth of output values for a Packets worth of input values
@@ -53,5 +53,5 @@ interface IWaveform {
      * @return Packet
      *
      */
-    public function map(Packet $oInput) : Packet;
+    public function map(Packet $oInput): Packet;
 }

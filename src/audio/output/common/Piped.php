@@ -31,9 +31,7 @@ abstract class Piped implements Audio\IPCMOutput {
 
     const BUFFER_SIZE = 1024;
 
-    /**
-     * var resource|null $rOutput
-     */
+    /** @var resource|null $rOutput  */
     private $rOutput = null;
 
     /** @var int[] $aOutputBuffer */
@@ -47,16 +45,15 @@ abstract class Piped implements Audio\IPCMOutput {
     ];
 
     /** @var resource[] $aPipes */
-    private array
-        $aPipes = []
-    ;
+    private array $aPipes = [];
 
+    /** @var class-string|null $sPlayerClass */
     private static ?string $sPlayerClass = null;
 
     /**
      * Factory for piped playback. Perfers APlay > Sox > None
      */
-    public static function create() : self {
+    public static function create(): self {
         while (null === self::$sPlayerClass) {
             $sAPlay = exec('which aplay');
             if (!empty($sAPlay)) {
@@ -73,7 +70,9 @@ abstract class Piped implements Audio\IPCMOutput {
             dprintf("No available pipe output\n");
             self::$sPlayerClass = None::class;
         }
-        return new self::$sPlayerClass;
+        /** @var self $oInstance */
+        $oInstance = new self::$sPlayerClass;
+        return $oInstance;
     }
 
 
@@ -98,23 +97,23 @@ abstract class Piped implements Audio\IPCMOutput {
      * @throws \Exception
      */
     public function open(): void {
-        $sCommand = $this->createOutputCommand();
-
-        if (
-            $this->rOutput ||
-            !($this->rOutput = proc_open($sCommand, $this->aPipeDescriptors, $this->aPipes))
-        ) {
-            throw new \Exception();
-        } else {
-            dprintf("Audio pipe: %s\n", $sCommand);
+        if (null === $this->rOutput) {
+            $sCommand = $this->createOutputCommand();
+            $rProc = proc_open($sCommand, $this->aPipeDescriptors, $this->aPipes);
+            if (is_resource($rProc)) {
+                $this->rOutput = $rProc;
+                dprintf("Audio pipe: %s\n", $sCommand);
+                $this->pushSilence();
+                return;
+            }
         }
-        $this->pushSilence();
+        throw new \Exception();
     }
 
     /**
      * Write a signal packet. This involves scaling, quantising values and limiting them before writing.
      *
-     * @param Signal\Packet<float> $oPacket
+     * @param Audio\Signal\Packet $oPacket
      */
     public function write(Audio\Signal\Packet $oPacket): void {
         // Quantize and clamp
@@ -134,9 +133,9 @@ abstract class Piped implements Audio\IPCMOutput {
      * Close down the output handle and subprocess.
      */
     public function close(): void {
-        if ($this->rOutput) {
+        if (null !== $this->rOutput) {
             $this->pushSilence();
-            proc_close($this->rOutput);
+            proc_close($this->rOutput); // @phpstan-ignore-line - false positive
             foreach ($this->aPipes as $rPipe) {
                 if (is_resource($rPipe)) {
                     fclose($rPipe);
@@ -162,5 +161,5 @@ abstract class Piped implements Audio\IPCMOutput {
      *
      * @return string
      */
-    protected abstract function createOutputCommand() : string;
+    protected abstract function createOutputCommand(): string;
 }

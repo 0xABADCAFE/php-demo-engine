@@ -28,6 +28,7 @@ use function \ceil;
  * DelayLoop
  *
  * A delay loop with low pass filter.
+ *
  */
 class DelayLoop implements Audio\Signal\IInsert {
 
@@ -36,7 +37,9 @@ class DelayLoop implements Audio\Signal\IInsert {
     private ?Audio\Signal\IStream    $oStream;
     private Audio\Signal\PacketRelay $oRelay;
     private Audio\Signal\IFilter     $oFilter;
-    private SPLDoublyLinkedList      $oQueue;
+
+    /** @var SPLDoublyLinkedList<Audio\Signal\Packet> $oQueue */
+    private SPLDoublyLinkedList $oQueue;
 
     private float
         $fFeedback,
@@ -81,15 +84,15 @@ class DelayLoop implements Audio\Signal\IInsert {
     /**
      * @return float
      */
-    public function getFeedback() : float {
+    public function getFeedback(): float {
         return $this->fFeedback;
     }
 
     /**
-     * @param  float
+     * @param  float $fFeedback
      * @return self
      */
-    public function setFeedback(float $fFeedback) : self {
+    public function setFeedback(float $fFeedback): self {
         $this->fFeedback = $fFeedback;
         return $this;
     }
@@ -97,15 +100,15 @@ class DelayLoop implements Audio\Signal\IInsert {
     /**
      * @return float
      */
-    public function getCutoff() : float {
+    public function getCutoff(): float {
         return $this->fCutoff;
     }
 
     /**
-     * @param  float
+     * @param  float $fCutoff
      * @return self
      */
-    public function setCutoff(float $fCutoff) : self {
+    public function setCutoff(float $fCutoff): self {
         $this->fCutoff = $fCutoff;
         $this->oFilter->setCutoff($fCutoff);
         return $this;
@@ -114,15 +117,15 @@ class DelayLoop implements Audio\Signal\IInsert {
     /**
      * @return float
      */
-    public function getResonance() : float {
+    public function getResonance(): float {
         return $this->fResonance;
     }
 
     /**
-     * @param  float
+     * @param  float $fResonance
      * @return self
      */
-    public function setResonance(float $fResonance) : self {
+    public function setResonance(float $fResonance): self {
         $this->fResonance = $fResonance;
         $this->oFilter->setResonance($fResonance);
         return $this;
@@ -131,14 +134,14 @@ class DelayLoop implements Audio\Signal\IInsert {
     /**
      * @inheritDoc
      */
-    public function getInputStream() : ?Audio\Signal\IStream {
+    public function getInputStream(): ?Audio\Signal\IStream {
         return $this->oStream;
     }
 
     /**
      * @inheritDoc
      */
-    public function setInputStream(?Audio\Signal\IStream $oStream) : self {
+    public function setInputStream(?Audio\Signal\IStream $oStream): self {
         $this->oStream = $oStream;
         return $this;
     }
@@ -146,14 +149,14 @@ class DelayLoop implements Audio\Signal\IInsert {
     /**
      * @inheritDoc
      */
-    public function getDryLevel() : float {
+    public function getDryLevel(): float {
         return $this->fDryLevel;
     }
 
     /**
      * @inheritDoc
      */
-    public function setDryLevel(float $fDryLevel) : self {
+    public function setDryLevel(float $fDryLevel): self {
         $this->fDryLevel = $fDryLevel;
         return $this;
     }
@@ -161,22 +164,24 @@ class DelayLoop implements Audio\Signal\IInsert {
     /**
      * @inheritDoc
      */
-    public function getPosition() : int {
+    public function getPosition(): int {
         return $this->oStream ? $this->oStream->getPosition() : 0;
     }
 
     /**
      * @inheritDoc
      */
-    public function reset() : self {
-        $this->oStream && $this->oStream->reset();
+    public function reset(): self {
+        if ($this->oStream) {
+            $this->oStream->reset();
+        }
         return $this;
     }
 
     /**
      * @inheritDoc
      */
-    public function emit(?int $iIndex = null) : Audio\Signal\Packet {
+    public function emit(?int $iIndex = null): Audio\Signal\Packet {
         if ($this->oStream && $this->bEnabled) {
             // Get the dry signal
             $oDry    = $this->oStream->emit($iIndex);
@@ -207,7 +212,7 @@ class DelayLoop implements Audio\Signal\IInsert {
      *
      * @param float $fDelayMs
      */
-    public function createQueue(float $fDelayMs) {
+    public function createQueue(float $fDelayMs): void {
         $this->oQueue      = new SPLDoublyLinkedList;
         $fPacketDurationMs = 1000.0 * Audio\IConfig::PACKET_PERIOD;
         $iMaxPackets       = (int)ceil($fDelayMs / $fPacketDurationMs);

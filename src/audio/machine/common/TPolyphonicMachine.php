@@ -47,7 +47,7 @@ trait TPolyphonicMachine {
      *
      * @param int $iNumVoices
      */
-    protected function initPolyphony(int $iNumVoices) : void {
+    protected function initPolyphony(int $iNumVoices): void {
         self::initStreamTrait();
         $this->iNumVoices = max(min($iNumVoices, Audio\IMachine::MAX_POLYPHONY), Audio\IMachine::MIN_POLYPHONY);
         $this->fOutScale  = $this->fOutLevel / $this->iNumVoices;
@@ -63,21 +63,21 @@ trait TPolyphonicMachine {
      * @param Audio\Signal\IStream $oStream
      * @param float                $fLevel
      */
-    protected function setVoiceSource(int $iVoiceNumber, Audio\Signal\IStream $oStream, float $fLevel = 1.0) : void {
+    protected function setVoiceSource(int $iVoiceNumber, Audio\Signal\IStream $oStream, float $fLevel = 1.0): void {
         $this->oMixer->addInputStream('v_' . $iVoiceNumber, $oStream, $fLevel);
     }
 
     /**
      * @inheritDoc
      */
-    public function getNumVoices() : int {
+    public function getNumVoices(): int {
         return $this->iNumVoices;
     }
 
     /**
      * @inheritDoc
      */
-    public function getVoiceLevel(int $iVoiceNumber) : float {
+    public function getVoiceLevel(int $iVoiceNumber): float {
         $sVoiceName = 'v_' . $iVoiceNumber;
         return $this->oMixer->getInputLevel($sVoiceName);
     }
@@ -85,7 +85,7 @@ trait TPolyphonicMachine {
     /**
      * @inheritDoc
      */
-    public function setVoiceLevel(int $iVoiceNumber, float $fVolume) : Audio\IMachine {
+    public function setVoiceLevel(int $iVoiceNumber, float $fVolume): Audio\IMachine {
         $sVoiceName = 'v_' . $iVoiceNumber;
         $this->oMixer->setInputLevel($sVoiceName, $fVolume);
         return $this;
@@ -94,14 +94,14 @@ trait TPolyphonicMachine {
     /**
      * @inheritDoc
      */
-    public function getOutputLevel() : float {
+    public function getOutputLevel(): float {
         return $this->fOutLevel;
     }
 
     /**
      * @inheritDoc
      */
-    public function setOutputLevel(float $fVolume) : Audio\IMachine {
+    public function setOutputLevel(float $fVolume): Audio\IMachine {
         $this->fOutLevel = $fVolume;
         $this->oMixer->setOutputLevel($this->fOutLevel * $this->fOutScale);
         return $this;
@@ -110,14 +110,14 @@ trait TPolyphonicMachine {
     /**
      * @inheritDoc
      */
-    public function getPosition() : int {
-        return $this->Output->getPosition();
+    public function getPosition(): int {
+        return $this->oOutput->getPosition();
     }
 
     /**
      * @inheritDoc
      */
-    public function reset() : Audio\Signal\IStream {
+    public function reset(): Audio\Signal\IStream {
         $this->oOutput->reset();
         return $this;
     }
@@ -125,23 +125,24 @@ trait TPolyphonicMachine {
     /**
      * @inheritDoc
      */
-    public function emit(?int $iIndex = null) : Audio\Signal\Packet {
+    public function emit(?int $iIndex = null): Audio\Signal\Packet {
         return $this->oOutput->emit($iIndex);
     }
 
     /**
      * @inheritDoc
      */
-    public function getInsert() : ?Audio\Signal\IInsert  {
+    public function getInsert(): ?Audio\Signal\IInsert  {
         return $this->oInsert;
     }
 
     /**
      * @inheritDoc
      */
-    public function setInsert(?Audio\Signal\IInsert $oInsert = null) : self {
-        if ($this->oInsert = $oInsert) {
+    public function setInsert(?Audio\Signal\IInsert $oInsert = null): self {
+        if (null !== $oInsert) {
             $oInsert->setInputStream($this->oMixer);
+            $this->oInsert =
             $this->oOutput = $oInsert;
         } else {
             $this->oOutput = $this->oMixer;

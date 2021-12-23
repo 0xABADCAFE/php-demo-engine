@@ -54,19 +54,17 @@ class Sequencer {
         $iNumMeasures         = 0
     ;
 
-    /**
-     * @var Audio\IMachine $oMachine[] $aMachines
-     */
+    /** @var Audio\IMachine[] $aMachines */
     private array $aMachines = [];
 
-    /**
-     * @var Audio\Sequence\Pattern[][] $aMachinePatterns
-     */
+    /** @var Audio\Sequence\Pattern[][] $aMachinePatterns */
     private array $aMachinePatterns = [];
+
+    /** @var int[] $aMachinePatternLabels */
     private array $aMachinePatternLabels;
 
     /**
-     * @var int[][] $aMachineSequences
+     * @var Audio\Sequence\Pattern[][] $aMachineSequences
      */
     private array $aMachineSequences = [];
 
@@ -77,7 +75,7 @@ class Sequencer {
      * @param  int $iTempoBeatsPerMinute
      * @return self
      */
-    public function setTempo(int $iTempoBeatsPerMinute) : self {
+    public function setTempo(int $iTempoBeatsPerMinute): self {
         $this->iTempoBeatsPerMinute = min(
             max($iTempoBeatsPerMinute, self::MIN_TEMPO_BPM),
             self::MAX_TEMPO_BPM
@@ -90,7 +88,7 @@ class Sequencer {
      *
      * @return int
      */
-    public function getTempo() : int {
+    public function getTempo(): int {
         return $this->iTempoBeatsPerMinute;
     }
 
@@ -100,7 +98,7 @@ class Sequencer {
      * @param  int $iBeatsPerMeasure
      * @return self
      */
-    public function setBeatsPerMeasure(int $iBeatsPerMeasure) : self {
+    public function setBeatsPerMeasure(int $iBeatsPerMeasure): self {
         $this->iBeatsPerMeasure = min(
             max($iBeatsPerMeasure, self::MIN_BEATS_PER_MEASURE),
             self::MAX_BEATS_PER_MEASURE
@@ -114,7 +112,7 @@ class Sequencer {
      *
      * @return int
      */
-    public function getBeatsPerMeasure() : int {
+    public function getBeatsPerMeasure(): int {
         return $this->iBasePatternLength;
     }
 
@@ -124,7 +122,7 @@ class Sequencer {
      * @param  int $iLinesPerBeat
      * @return self
      */
-    public function setLinesPerBeat(int $iLinesPerBeat) : self {
+    public function setLinesPerBeat(int $iLinesPerBeat): self {
         $this->iLinesPerBeat = min(
             max($iLinesPerBeat, self::MIN_LINES_PER_BEAT),
             self::MAX_LINES_PER_BEAT
@@ -138,7 +136,7 @@ class Sequencer {
      *
      * @return int
      */
-    public function getLinesPerBeat() : int {
+    public function getLinesPerBeat(): int {
         return $this->iLinesPerBeat;
     }
 
@@ -147,7 +145,7 @@ class Sequencer {
      *
      * @return int
      */
-    public function getLength() : int {
+    public function getLength(): int {
         return $this->iNumMeasures;
     }
 
@@ -157,9 +155,9 @@ class Sequencer {
      * @param  string         $sMachineName
      * @param  Audio\IMachine $oMachine
      * @return self
-     * @throws LogicException Thrown if the machine name has already been assigned.
+     * @throws \LogicException Thrown if the machine name has already been assigned.
      */
-    public function addMachine(string $sMachineName, Audio\IMachine $oMachine) : self {
+    public function addMachine(string $sMachineName, Audio\IMachine $oMachine): self {
         if (!isset($this->aMachines[$sMachineName])) {
             $this->aMachines[$sMachineName]             = $oMachine;
             $this->aMachinePatterns[$sMachineName]      = [];
@@ -182,7 +180,7 @@ class Sequencer {
      * @throws OutOfBoundsException   - When the machine name is not recognised
      * @throws RangeException         - When the Pattern length is less than 1 measure
      */
-    public function allocatePattern(string $sMachineName, ?array $aMeasures = null) : Audio\Sequence\Pattern {
+    public function allocatePattern(string $sMachineName, ?array $aMeasures = null): Audio\Sequence\Pattern {
         $this->assertMachineExists($sMachineName);
 
         // Create the Pattern.
@@ -221,7 +219,7 @@ class Sequencer {
         string $sMachineName,
         ?Audio\Sequence\Pattern $oPattern,
         array $aMeasures
-    ) : self {
+    ): self {
         $this->assertMachineExists($sMachineName);
 
         // Sanitise the sequence. Dedupe, cast to int and remove any negative measure positions
@@ -264,7 +262,7 @@ class Sequencer {
      * @return Audio\Sequence\Pattern[]
      * @throws OutOfBoundsException
      */
-    public function getSequence(string $sMachineName) : array {
+    public function getSequence(string $sMachineName): array {
         $this->assertMachineExists($sMachineName);
         return $this->aMachineSequences[$sMachineName];
     }
@@ -272,10 +270,10 @@ class Sequencer {
 
 
     /**
-     * @param  $sMachineName
+     * @param  string $sMachineName
      * @throws OutOfBoundsException
      */
-    private function assertMachineExists(string $sMachineName) {
+    private function assertMachineExists(string $sMachineName): void {
         if (!isset($this->aMachines[$sMachineName])) {
             throw new OutOfBoundsException('Unrecognised machine name "' . $sMachineName . '"');
         }
@@ -288,7 +286,7 @@ class Sequencer {
      * @param  Audio\Sequence\Pattern $oPattern
      * @return self
      */
-    public function addPattern(string $sMachineName, Audio\Sequence\Pattern $oPattern) : self {
+    public function addPattern(string $sMachineName, Audio\Sequence\Pattern $oPattern): self {
         if (isset($this->aMachinePatterns[$sMachineName])) {
             $this->aMachinePatterns[$sMachineName][] = $oPattern;
         } else {
@@ -311,7 +309,7 @@ class Sequencer {
         float $fGain       = 1.0,
         int $iStartMeasure = 0,
         int $iNumMeasures  = 0
-    ) : self {
+    ): self {
 
         // Sanity checks
         if ($iStartMeasure < 0 || $iStartMeasure >= $this->iNumMeasures) {
@@ -331,6 +329,9 @@ class Sequencer {
         foreach ($this->aMachines as $sMachineName => $oMachine) {
             $oMixer->addInputStream($sMachineName, $oMachine, 1.0);
         }
+
+        $fPlayTime    = microtime(true);
+        $fComputeTime = 0.0;
 
         $iLineOffset = 0;
         for ($iMeasure = $iStartMeasure; $iMeasure < $iLastMeasure; ++$iMeasure) {
@@ -357,18 +358,32 @@ class Sequencer {
                     $iLastLineNumber = $iLineNumber;
                     $this->triggerLine($iLineNumber, $aActivePatterns);
                 }
-                $oOutput->write($oMixer->emit());
+
+                $fStart  = microtime(true);
+                $oPacket = $oMixer->emit();
+                $fComputeTime += microtime(true) - $fStart;
+
+                $oOutput->write($oPacket);
             }
             $iLineOffset += $this->iBasePatternLength;
         }
+
+        $fPlayTime = microtime(true) - $fPlayTime;
+
+        printf(
+            "Audio Performance %.3f seconds generated in %.3f seconds\n",
+            $fPlayTime, $fComputeTime
+        );
 
         return $this;
     }
 
     /**
      * Trigger the events on the selected line for the active patterns
+     *
+     * @param Audio\Sequence\Pattern[] $aActivePatterns
      */
-    private function triggerLine(int $iLineNumber, array $aActivePatterns) {
+    private function triggerLine(int $iLineNumber, array $aActivePatterns): void {
         foreach ($aActivePatterns as $sMachineName => $oPattern) {
             $oMachine = $this->aMachines[$sMachineName];
             $oRow     = $oPattern->getLine($iLineNumber);
@@ -378,13 +393,13 @@ class Sequencer {
                 }
                 switch ($oEvent->iType) {
                     case Audio\Sequence\Event::NOTE_ON:
-                        dprintf("\tLn:%4d Mc:%5s Ch:%2d Ev:NoteOn %s V:%d\n",
-                            $iLineNumber,
-                            $sMachineName,
-                            $iChannel,
-                            $oEvent->sNote,
-                            $oEvent->iVelocity
-                        );
+//                         dprintf("\tLn:%4d Mc:%5s Ch:%2d Ev:NoteOn %s V:%d\n",
+//                             $iLineNumber,
+//                             $sMachineName,
+//                             $iChannel,
+//                             $oEvent->sNote,
+//                             $oEvent->iVelocity
+//                         );
 
                         $oMachine
                             ->setVoiceNote($iChannel, $oEvent->sNote)

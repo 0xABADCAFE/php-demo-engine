@@ -41,7 +41,7 @@ class Sound extends Base {
     ;
 
     protected ?Audio\Signal\IEnvelope
-        $oLevelEnvelope       = null,
+        $oLevelEnvelope  = null,
         $oPitchEnvelope  = null
     ;
 
@@ -53,13 +53,23 @@ class Sound extends Base {
     /**
      * @inheritDoc
      */
-    public function reset() : self {
+    public function reset(): self {
         parent::reset();
-        $this->oPitchModulator && $this->oPitchModulator->reset();
-        $this->oPhaseModulator && $this->oPhaseModulator->reset();
-        $this->oLevelModulator && $this->oLevelModulator->reset();
-        $this->oLevelEnvelope  && $this->oLevelEnvelope->reset();
-        $this->oPitchEnvelope  && $this->oPitchEnvelope->reset();
+        if ($this->oPitchModulator) {
+            $this->oPitchModulator->reset();
+        }
+        if ($this->oPhaseModulator) {
+            $this->oPhaseModulator->reset();
+        }
+        if ($this->oLevelModulator) {
+            $this->oLevelModulator->reset();
+        }
+        if ($this->oLevelEnvelope) {
+            $this->oLevelEnvelope->reset();
+        }
+        if ($this->oPitchEnvelope) {
+            $this->oPitchEnvelope->reset();
+        }
         return $this;
     }
 
@@ -71,7 +81,7 @@ class Sound extends Base {
      *
      * @param Audio\Signal\IStream|null $oModulator
      */
-    public function setPitchModulator(?Audio\Signal\IStream $oModulator) : self {
+    public function setPitchModulator(?Audio\Signal\IStream $oModulator): self {
         $this->oPitchModulator = $oModulator;
         return $this;
     }
@@ -79,7 +89,7 @@ class Sound extends Base {
     /**
      * @return Audio\Signal\IStream|null
      */
-    public function getPitchModulator() : ?Audio\Signal\IStream {
+    public function getPitchModulator(): ?Audio\Signal\IStream {
         return $this->oPitchModulator;
     }
 
@@ -93,7 +103,7 @@ class Sound extends Base {
      * @param  Audio\Signal\IStream|null $oModulator
      * @return self
      */
-    public function setPhaseModulator(?Audio\Signal\IStream $oModulator) : self {
+    public function setPhaseModulator(?Audio\Signal\IStream $oModulator): self {
         $this->oPhaseModulator = $oModulator;
         return $this;
     }
@@ -101,7 +111,7 @@ class Sound extends Base {
     /**
      * @return Audio\Signal\IStream|null
      */
-    public function getPhaseModulator() : ?Audio\Signal\IStream {
+    public function getPhaseModulator(): ?Audio\Signal\IStream {
         return $this->oPhaseModulator;
     }
 
@@ -111,7 +121,7 @@ class Sound extends Base {
      * @param  float $fModulationIndex
      * @return self
      */
-    public function setPhaseModulationIndex(float $fModulationIndex) : self {
+    public function setPhaseModulationIndex(float $fModulationIndex): self {
         $this->fPhaseModulationIndex = $fModulationIndex;
         return $this;
     }
@@ -119,7 +129,7 @@ class Sound extends Base {
     /**
      * @return float
      */
-    public function getPhaseModulationIndex() : float {
+    public function getPhaseModulationIndex(): float {
         return $this->fPhaseModulationIndex;
     }
 
@@ -132,7 +142,7 @@ class Sound extends Base {
      * @param  Audio\Signal\IStream $oModulator
      * @return self
      */
-    public function setLevelModulator(?Audio\Signal\IStream $oModulator) : self {
+    public function setLevelModulator(?Audio\Signal\IStream $oModulator): self {
         $this->oLevelModulator = $oModulator;
         return $this;
     }
@@ -140,7 +150,7 @@ class Sound extends Base {
     /**
      * @return Audio\Signal\IStream|null
      */
-    public function getLevelModulator() : ?Audio\Signal\IStream {
+    public function getLevelModulator(): ?Audio\Signal\IStream {
         return $this->oLevelModulator;
     }
 
@@ -150,7 +160,7 @@ class Sound extends Base {
      * @param  float $fModulationIndex
      * @return self
      */
-    public function setLevelModulationIndex(float $fModulationIndex) : self {
+    public function setLevelModulationIndex(float $fModulationIndex): self {
         $this->fLevelModulationIndex = $fModulationIndex;
         return $this;
     }
@@ -158,7 +168,7 @@ class Sound extends Base {
     /**
      * @return float
      */
-    public function getLevelModulationIndex() : float {
+    public function getLevelModulationIndex(): float {
         return $this->fLevelModulationIndex;
     }
 
@@ -168,7 +178,7 @@ class Sound extends Base {
      * @param  Audio\Signal\IEnvelope|null $oEnvelope
      * @return self
      */
-    public function setLevelEnvelope(?Audio\Signal\IEnvelope $oEnvelope) : self {
+    public function setLevelEnvelope(?Audio\Signal\IEnvelope $oEnvelope): self {
         $this->oLevelEnvelope = $oEnvelope;
         return $this;
     }
@@ -176,7 +186,7 @@ class Sound extends Base {
     /**
      * @return Audio\Signal\IEnvelope|null
      */
-    public function getLevelEnvelope() : ?Audio\Signal\IEnvelope {
+    public function getLevelEnvelope(): ?Audio\Signal\IEnvelope {
         return $this->oLevelEnvelope;
     }
 
@@ -186,7 +196,7 @@ class Sound extends Base {
      * @param  Audio\Signal\IEnvelope|null $oEnvelope
      * @return self
      */
-    public function setPitchEnvelope(?Audio\Signal\IEnvelope $oEnvelope) : self {
+    public function setPitchEnvelope(?Audio\Signal\IEnvelope $oEnvelope): self {
         $this->oPitchEnvelope = $oEnvelope;
         return $this;
     }
@@ -194,22 +204,26 @@ class Sound extends Base {
     /**
      * @return Audio\Signal\IEnvelope|null
      */
-    public function getPitchEnvelope() : ?Audio\Signal\IEnvelope {
+    public function getPitchEnvelope(): ?Audio\Signal\IEnvelope {
         return $this->oPitchEnvelope;
     }
 
     /**
      * Calculates a new audio packet
      *
-     * @return Signal\Audio\Packet;
+     * @return Audio\Signal\Packet;
      */
-    protected function emitNew() : Audio\Signal\Packet {
+    protected function emitNew(): Audio\Signal\Packet {
 
         if ($this->oPitchModulator || $this->oPitchEnvelope) {
             $oPitchShifts = Audio\Signal\Packet::create();
 
-            $this->oPitchModulator && $oPitchShifts->sumWith($this->oPitchModulator->emit($this->iLastIndex));
-            $this->oPitchEnvelope  && $oPitchShifts->sumWith($this->oPitchEnvelope->emit($this->iLastIndex));
+            if ($this->oPitchModulator) {
+                $oPitchShifts->sumWith($this->oPitchModulator->emit($this->iLastIndex));
+            }
+            if ($this->oPitchEnvelope) {
+                $oPitchShifts->sumWith($this->oPitchEnvelope->emit($this->iLastIndex));
+            }
 
             // Every sample point has a new frequency, but we can't just use the instantaneous Waveform value for
             // that as it would be the value that the function has if it was always at that frequency.
@@ -240,7 +254,7 @@ class Sound extends Base {
             }
         }
 
-        $this->oLastOutput = $this->oWaveform->map($this->oWaveformInput);
+        $this->oLastOutput = $this->oWaveform->map($this->oWaveformInput); // @phpstan-ignore-line : false positive
 
         if ($this->oLevelModulator) {
             $oLevel = clone $this->oLevelModulator->emit($this->iLastIndex);

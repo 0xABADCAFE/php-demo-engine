@@ -34,7 +34,7 @@ interface IInsert extends IStream {
      *
      * @return IStream|null
      */
-    public function getInputStream() : ?IStream;
+    public function getInputStream(): ?IStream;
 
     /**
      * Set the InputStream for this Insert. Until an input stream is set, the insert is disable()d.
@@ -42,14 +42,14 @@ interface IInsert extends IStream {
      * @param  IStream|null $oInputStream
      * @return self
      */
-    public function setInputStream(?IStream $oInputStream) : self;
+    public function setInputStream(?IStream $oInputStream): self;
 
     /**
      * Get the dry signal level for this Insert.
      *
      * @return float
      */
-    public function getDryLevel() : float;
+    public function getDryLevel(): float;
 
     /**
      * Set the dry signal level for this Insert. Should be in the range 0.0 ... 1.0 but this is not a strict requirement.
@@ -58,5 +58,5 @@ interface IInsert extends IStream {
      * @param  float $fDryLevel
      * @return self
      */
-    public function setDryLevel(float $fDryLevel) : self;
+    public function setDryLevel(float $fDryLevel): self;
 }

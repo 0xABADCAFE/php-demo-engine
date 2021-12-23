@@ -30,16 +30,19 @@ use \SPLFixedArray;
  *
  * @see https://github.com/0xABADCAFE/random-proto-synth
  *
- * @implements SPLFixedArray<float>
  */
-class Packet extends \SPLFixedArray {
+
+/**
+ * @extends SPLFixedArray<float>
+ */
+class Packet extends SPLFixedArray {
 
     private static int $iNextIndex = 0;
 
     /**
      * Simple index counter to be used by TPacketIndexAware implementations.
      */
-    public static function getNextIndex() : int {
+    public static function getNextIndex(): int {
         return ++self::$iNextIndex;
     }
 
@@ -62,7 +65,7 @@ class Packet extends \SPLFixedArray {
     /**
      * Ensure the empty instance is created.
      */
-    public static function init() {
+    public static function init(): void {
         self::$oEmpty = new self();
     }
 
@@ -71,7 +74,7 @@ class Packet extends \SPLFixedArray {
      *
      * @return self
      */
-    public static function create() : self {
+    public static function create(): self {
         return clone self::$oEmpty;
     }
 
@@ -81,7 +84,7 @@ class Packet extends \SPLFixedArray {
      * @param  float $fValue
      * @return self
      */
-    public function fillWith(float $fValue) : self {
+    public function fillWith(float $fValue): self {
         for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
             $this[$i] = $fValue;
         }
@@ -94,7 +97,7 @@ class Packet extends \SPLFixedArray {
      * @param  float $fValue
      * @return self
      */
-    public function scaleBy(float $fValue) : self {
+    public function scaleBy(float $fValue): self {
         for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
             $this[$i] *= $fValue;
         }
@@ -107,7 +110,7 @@ class Packet extends \SPLFixedArray {
      * @param  float $fValue
      * @return self
      */
-    public function biasBy(float $fValue) : self {
+    public function biasBy(float $fValue): self {
         for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
             $this[$i] += $fValue;
         }
@@ -121,7 +124,7 @@ class Packet extends \SPLFixedArray {
      * @param  float $fBias
      * @return self
      */
-    public function scaleAndBiasBy(float $fScale, float $fBias) : self {
+    public function scaleAndBiasBy(float $fScale, float $fBias): self {
         for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
             $this[$i] = ($this[$i] * $fScale) + $fBias;
         }
@@ -134,9 +137,9 @@ class Packet extends \SPLFixedArray {
      * @param  self $oPacket
      * @return self
      */
-    public function sumWith(self $oPacket) : self {
+    public function sumWith(self $oPacket): self {
         for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
-            $this[$i] += $oPacket[$i];
+            $this[$i] += $oPacket[$i]; // @phpstan-ignore-line : false positive
         }
         return $this;
     }
@@ -147,9 +150,9 @@ class Packet extends \SPLFixedArray {
      * @param  self $oPacket
      * @return self
      */
-    public function modulateWith(self $oPacket) : self {
+    public function modulateWith(self $oPacket): self {
         for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
-            $this[$i] *= $oPacket[$i];
+            $this[$i] *= $oPacket[$i]; // @phpstan-ignore-line : false positive
         }
         return $this;
     }
@@ -161,7 +164,7 @@ class Packet extends \SPLFixedArray {
      * @param  float $fValue
      * @return self
      */
-    public function accumulate(self $oPacket, float $fValue) : self {
+    public function accumulate(self $oPacket, float $fValue): self {
         for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
             $this[$i] += $oPacket[$i] * $fValue;
         }
@@ -188,7 +191,7 @@ trait TPacketIndexAware {
      * @param  int|null $iIndex
      * @return bool
      */
-    protected function useLast(?int $iIndex) : bool {
+    protected function useLast(?int $iIndex): bool {
         if (null === $iIndex) {
             $this->iLastIndex = Packet::getNextIndex();
             return false;

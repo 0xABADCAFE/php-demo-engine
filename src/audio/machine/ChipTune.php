@@ -39,9 +39,14 @@ class ChipTune implements Audio\IMachine {
         Audio\Signal\IWaveform::PULSE    => 0.25
     ];
 
+    /** @var Audio\Signal\IWaveform[] $aWaveforms */
     private static array $aWaveforms = [];
-    private int          $iVoiceMask;
+
+    /** @var Audio\Signal\LevelAdjust<Audio\Signal\Oscillator\Sound>[] $aVoices */
     private array        $aVoices = [];
+
+    private int          $iVoiceMask;
+
 
     /**
      * Constructor. Sets the default polyphony level and allocates the various parts.
@@ -61,7 +66,7 @@ class ChipTune implements Audio\IMachine {
     /**
      * @inheritDoc
      */
-    public function setVoiceNote(int $iVoiceNumber, string $sNoteName) : self {
+    public function setVoiceNote(int $iVoiceNumber, string $sNoteName): self {
         if (isset($this->aVoices[$iVoiceNumber])) {
             $fFrequency = Audio\Note::getFrequency($sNoteName);
             $this->aVoices[$iVoiceNumber]->getStream()->setFrequency($fFrequency);
@@ -72,15 +77,14 @@ class ChipTune implements Audio\IMachine {
     /**
      * @inheritDoc
      */
-    public function setVoiceVelocity(int $iVoiceNumber, int $iVelocity) : self {
-
+    public function setVoiceVelocity(int $iVoiceNumber, int $iVelocity): self {
         return $this;
     }
 
     /**
      * @inheritDoc
      */
-    public function startVoice(int $iVoiceNumber) : self {
+    public function startVoice(int $iVoiceNumber): self {
         if (isset($this->aVoices[$iVoiceNumber])) {
             $this->aVoices[$iVoiceNumber]
                 ->reset()
@@ -92,7 +96,7 @@ class ChipTune implements Audio\IMachine {
     /**
      * @inheritDoc
      */
-    public function stopVoice(int $iVoiceNumber) : self {
+    public function stopVoice(int $iVoiceNumber): self {
         if (isset($this->aVoices[$iVoiceNumber])) {
             $this->aVoices[$iVoiceNumber]->disable();
         }
@@ -106,7 +110,7 @@ class ChipTune implements Audio\IMachine {
      * @param  int  $iWaveform
      * @return self
      */
-    public function setVoiceMaskWaveform(int $iVoiceMask, int $iWaveform) : self {
+    public function setVoiceMaskWaveform(int $iVoiceMask, int $iWaveform): self {
         if (isset(self::$aWaveforms[$iWaveform])) {
             $oWaveform = self::$aWaveforms[$iWaveform];
             $aVoices   = $this->getSelectedVoices($iVoiceMask);
@@ -125,10 +129,12 @@ class ChipTune implements Audio\IMachine {
      * @param  float $fRateHz
      * @return self
      */
-    public function setVoiceMaskVibratoRate(int $iVoiceMask, float $fRateHz) : self {
+    public function setVoiceMaskVibratoRate(int $iVoiceMask, float $fRateHz): self {
         $aVoices = $this->getSelectedVoices($iVoiceMask);
         foreach ($aVoices as $oVoice) {
-            $oVoice->getStream()->getPitchModulator()->setFrequency($fRateHz);
+            /** @var Audio\Signal\Oscillator\LFO $oModulator */
+            $oModulator = $oVoice->getStream()->getPitchModulator();
+            $oModulator->setFrequency($fRateHz);
         }
         return $this;
     }
@@ -137,13 +143,15 @@ class ChipTune implements Audio\IMachine {
      * Set the vibrato depth, in semitones, to use for a set of voices.
      *
      * @param  int   $iVoiceMask
-     * @param  float $fRateHz
+     * @param  float $fDepth
      * @return self
      */
-    public function setVoiceMaskVibratoDepth(int $iVoiceMask, float $fDepth) : self {
+    public function setVoiceMaskVibratoDepth(int $iVoiceMask, float $fDepth): self {
         $aVoices = $this->getSelectedVoices($iVoiceMask);
         foreach ($aVoices as $oVoice) {
-            $oVoice->getStream()->getPitchModulator()->setDepth($fDepth);
+            /** @var Audio\Signal\Oscillator\LFO $oModulator */
+            $oModulator = $oVoice->getStream()->getPitchModulator();
+            $oModulator->setDepth($fDepth);
         }
         return $this;
     }
@@ -155,10 +163,12 @@ class ChipTune implements Audio\IMachine {
      * @param  float $fRateHz
      * @return self
      */
-    public function setVoiceMaskTremeloRate(int $iVoiceMask, float $fRateHz) : self {
+    public function setVoiceMaskTremeloRate(int $iVoiceMask, float $fRateHz): self {
         $aVoices = $this->getSelectedVoices($iVoiceMask);
         foreach ($aVoices as $oVoice) {
-            $oVoice->getStream()->getLevelModulator()->setFrequency($fRateHz);
+            /** @var Audio\Signal\Oscillator\LFO $oModulator */
+            $oModulator = $oVoice->getStream()->getLevelModulator();
+            $oModulator->setFrequency($fRateHz);
         }
         return $this;
     }
@@ -167,13 +177,15 @@ class ChipTune implements Audio\IMachine {
      * Set the tremelo depth, in semitones, to use for a set of voices.
      *
      * @param  int   $iVoiceMask
-     * @param  float $fRateHz
+     * @param  float $fDepth
      * @return self
      */
-    public function setVoiceMaskTremeloDepth(int $iVoiceMask, float $fDepth) : self {
+    public function setVoiceMaskTremeloDepth(int $iVoiceMask, float $fDepth): self {
         $aVoices = $this->getSelectedVoices($iVoiceMask);
         foreach ($aVoices as $oVoice) {
-            $oVoice->getStream()->getPitchModulator()->setDepth($fDepth);
+            /** @var Audio\Signal\Oscillator\LFO $oModulator */
+            $oModulator = $oVoice->getStream()->getLevelModulator();
+            $oModulator->setDepth($fDepth);
         }
         return $this;
     }
@@ -185,7 +197,7 @@ class ChipTune implements Audio\IMachine {
      * @param  Audio\Signal\IEnvelope $oEnvelope
      * @return self
      */
-    public function setVoiceMaskEnvelope(int $iVoiceMask, Audio\Signal\IEnvelope $oEnvelope) : self {
+    public function setVoiceMaskEnvelope(int $iVoiceMask, Audio\Signal\IEnvelope $oEnvelope): self {
         $aVoices = $this->getSelectedVoices($iVoiceMask);
         foreach ($aVoices as $oVoice) {
             $oVoice->getStream()->setLevelEnvelope(clone $oEnvelope);
@@ -195,8 +207,10 @@ class ChipTune implements Audio\IMachine {
 
     /**
      * Create an initial voice for a voice. Defaults to a triangle waveform with a small 4Hz vibrato.
+     *
+     * @return Audio\Signal\LevelAdjust<Audio\Signal\Oscillator\Sound>
      */
-    private function createInitialVoice() : Audio\Signal\IStream {
+    private function createInitialVoice(): Audio\Signal\LevelAdjust {
         $iDefaultWaveform = Audio\Signal\IWaveform::TRIANGLE;
 
         $oOscillator = new Audio\Signal\Oscillator\Sound(self::$aWaveforms[$iDefaultWaveform]);
@@ -233,9 +247,9 @@ class ChipTune implements Audio\IMachine {
      * Returns an array of the selected voices implied by a voice mask.
      *
      * @param  int $iVoiceMask
-     * @return Audio\Signal\Oscillator\Sound[]
+     * @return Audio\Signal\LevelAdjust<Audio\Signal\Oscillator\Sound>[]
      */
-    private function getSelectedVoices(int $iVoiceMask) : array {
+    private function getSelectedVoices(int $iVoiceMask): array {
         $aResult = [];
         if ($iVoiceMask & $this->iVoiceMask) {
             $iVoice = $this->iNumVoices - 1;
@@ -249,7 +263,7 @@ class ChipTune implements Audio\IMachine {
         return $aResult;
     }
 
-    private static function initShared() {
+    private static function initShared(): void {
         if (empty(self::$aWaveforms)) {
             self::$aWaveforms = [
                 Audio\Signal\IWaveform::SINE     => new Audio\Signal\Waveform\Sine(),

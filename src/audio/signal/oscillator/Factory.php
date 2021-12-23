@@ -43,10 +43,11 @@ class Factory implements Audio\IFactory {
     /**
      * @inheritDoc
      */
-    public function createFrom(object $oDefinition) : Audio\Signal\IOscillator {
+    public function createFrom(\stdClass $oDefinition): Audio\Signal\IOscillator {
         $sType    = $oDefinition->sType ?? '<none>';
         $sFactory = self::PRODUCT_TYPES[$sType] ?? null;
         if ($sFactory) {
+            /** @var callable $cCreator */
             $cCreator = [$this, $sFactory];
             return $cCreator($oDefinition, $sType);
         }
@@ -56,11 +57,11 @@ class Factory implements Audio\IFactory {
     /**
      * Create an LFO
      *
-     * @param  object $oDefinition
+     * @param  \stdClass $oDefinition
      * @param  string $sType
      * @return Audio\Signal\IOscillator
      */
-    private function createLFO(object $oDefinition, string $sType) : Audio\Signal\IOscillator {
+    private function createLFO(\stdClass $oDefinition, string $sType): Audio\Signal\IOscillator {
         $fDepth      = (float)($oDefinition->fDepth ?? 0.5);
         $fRate       = (float)($oDefinition->fRate  ?? LFO::DEF_FREQUENCY);
         $oWaveform   = null;
@@ -68,7 +69,7 @@ class Factory implements Audio\IFactory {
 
         if (
             !empty($oDefinition->{$sSubNodeKey}) &&
-            is_object($oDefinition->{$sSubNodeKey})
+            $oDefinition->{$sSubNodeKey} instanceof \stdClass
         ) {
             $oWaveform = Audio\Signal\Waveform\Factory::get()
                 ->createFrom($oDefinition->{$sSubNodeKey});
@@ -86,11 +87,11 @@ class Factory implements Audio\IFactory {
     /**
      * Create an audio oscillator
      *
-     * @param  object $oDefinition
+     * @param  \stdClass $oDefinition
      * @param  string $sType
      * @return Audio\Signal\IOscillator
      */
-    private function createSound(object $oDefinition, string $sType) :  Audio\Signal\IOscillator  {
+    private function createSound(\stdClass $oDefinition, string $sType):  Audio\Signal\IOscillator  {
         $oWaveform   = null;
         $sSubNodeKey = Audio\Signal\Waveform\Factory::STANDARD_KEY;
 
@@ -99,7 +100,7 @@ class Factory implements Audio\IFactory {
 
         if (
             !empty($oDefinition->{$sSubNodeKey}) &&
-            is_object($oDefinition->{$sSubNodeKey})
+            $oDefinition->{$sSubNodeKey} instanceof \stdClass
         ) {
             $oWaveform = Audio\Signal\Waveform\Factory::get()
                 ->createFrom($oDefinition->{$sSubNodeKey});

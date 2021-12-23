@@ -63,10 +63,10 @@ abstract class Base implements Audio\Signal\IFilter {
         $fFeedback = 0.0
     ;
 
-    /** Selected filter function, depends on which parameters are fixed and varying */
+    /** @var callable $cFilterFunction : Selected filter function, depends on which parameters are fixed and varying */
     protected $cFilterFunction;
 
-    /** Set of possible filter functions */
+    /** @var string[] $aFilterFunctionNames : Set of possible filter functions */
     protected static $aFilterFunctionNames = [
         0 => 'applyFixedCutoffFixedResonance',
         1 => 'applyVaryingCutoffFixedResonance',
@@ -77,7 +77,7 @@ abstract class Base implements Audio\Signal\IFilter {
     /**
      * Constructor
      *
-     * @param Signal\Audio\IStream      $oInputStream - audio source
+     * @param Audio\Signal\IStream      $oInputStream - audio source
      * @param float                     $fFixedCutoff
      * @param float                     $fFixedResonance
      * @param Audio\Signal\IStream|null $oCutoffControl
@@ -103,19 +103,23 @@ abstract class Base implements Audio\Signal\IFilter {
     /**
      * @inheritDoc
      */
-    public function getPosition() : int {
+    public function getPosition(): int {
         return $this->iPosition;
     }
 
     /**
      * @inheritDoc
      */
-    public function reset() : self {
+    public function reset(): self {
         $this->iPosition  = 0;
         $this->iLastIndex = 0;
         $this->oLastOutputPacket->fillWith(0.0);
-        $this->oCutoffControl    && $this->oCutoffControl->reset();
-        $this->oResonanceControl && $this->oResonanceControl->reset();
+        if ($this->oCutoffControl) {
+            $this->oCutoffControl->reset();
+        }
+        if ($this->oResonanceControl) {
+            $this->oResonanceControl->reset();
+        }
         $this->oInputStream->reset();
         return $this;
     }
@@ -123,7 +127,7 @@ abstract class Base implements Audio\Signal\IFilter {
     /**
      * @inheritDoc
      */
-    public function emit(?int $iIndex = null) : Audio\Signal\Packet {
+    public function emit(?int $iIndex = null): Audio\Signal\Packet {
         if (!$this->bEnabled) {
             return $this->emitSilence();
         }
@@ -136,7 +140,7 @@ abstract class Base implements Audio\Signal\IFilter {
     /**
      * @inheritDoc
      */
-    public function setCutoff(float $fCutoff) : self {
+    public function setCutoff(float $fCutoff): self {
         $this->fFixedCutoff = max($fCutoff, self::MIN_CUTOFF);
         return $this;
     }
@@ -144,7 +148,7 @@ abstract class Base implements Audio\Signal\IFilter {
     /**
      * @inheritDoc
      */
-    public function setCutoffControl(?Audio\Signal\IStream $oCutoffControl) : self {
+    public function setCutoffControl(?Audio\Signal\IStream $oCutoffControl): self {
         $this->oCutoffControl = $oCutoffControl;
         $this->chooseFilterFunction();
         return $this;
@@ -153,7 +157,7 @@ abstract class Base implements Audio\Signal\IFilter {
     /**
      * @inheritDoc
      */
-    public function setResonance(float $fResonance) : self {
+    public function setResonance(float $fResonance): self {
         $this->fFixedResonance = max($fResonance, self::MIN_RESONANCE);
         return $this;
     }
@@ -161,7 +165,7 @@ abstract class Base implements Audio\Signal\IFilter {
     /**
      * @inheritDoc
      */
-    public function setResonanceControl(?Audio\Signal\IStream $oResonanceControl) : self {
+    public function setResonanceControl(?Audio\Signal\IStream $oResonanceControl): self {
         $this->oResonanceControl = $oResonanceControl;
         $this->chooseFilterFunction();
         return $this;
@@ -170,7 +174,7 @@ abstract class Base implements Audio\Signal\IFilter {
     /**
      * @inheritDoc
      */
-    protected function emitNew() : Audio\Signal\Packet {
+    protected function emitNew(): Audio\Signal\Packet {
         $this->iPosition += Audio\IConfig::PACKET_SIZE;
         $cFilterFunction = $this->cFilterFunction;
         $cFilterFunction();
@@ -180,9 +184,12 @@ abstract class Base implements Audio\Signal\IFilter {
     /**
      * Based on what controllers are currently set, work out which filter function variant to use.
      */
-    protected function chooseFilterFunction() {
+    protected function chooseFilterFunction(): void {
         $iFunctionIndex = ($this->oCutoffControl ? 1 : 0) | ($this->oResonanceControl ? 2 : 0);
-        $this->cFilterFunction = [$this, self::$aFilterFunctionNames[$iFunctionIndex]];
+
+        /** @var callable $cFunction */
+        $cFunction =  [$this, self::$aFilterFunctionNames[$iFunctionIndex]];
+        $this->cFilterFunction = $cFunction;
     }
 
     /**
@@ -193,7 +200,7 @@ abstract class Base implements Audio\Signal\IFilter {
      * @param float $fCutoff
      * @param float $fResonance
      */
-    protected function filterSample(float $fInput, float $fCutoff, float $fResonance) {
+    protected function filterSample(float $fInput, float $fCutoff, float $fResonance): void {
         $fInputSH    = $fInput;
         $iOverSample = 2;
         $iInvCutoff  = 1.0 - $fCutoff;
@@ -218,20 +225,20 @@ abstract class Base implements Audio\Signal\IFilter {
     /**
      * Implementor to provide.
      */
-    protected abstract function applyFixedCutoffFixedResonance();
+    protected abstract function applyFixedCutoffFixedResonance(): void;
 
     /**
      * Implementor to provide.
      */
-    protected abstract function applyVaryingCutoffFixedResonance();
+    protected abstract function applyVaryingCutoffFixedResonance(): void;
 
     /**
      * Implementor to provide.
      */
-    protected abstract function applyFixedCutoffVaryingResonance();
+    protected abstract function applyFixedCutoffVaryingResonance(): void;
 
     /**
      * Implementor to provide.
      */
-    protected abstract function applyVaryingCutoffVaryingResonance();
+    protected abstract function applyVaryingCutoffVaryingResonance(): void;
 }

@@ -41,8 +41,10 @@ class Pattern {
 
     private string $sLabel = '';
 
+    /** @var array<int, array<int, Event>> $aChannels */
     private array $aChannels;
 
+    /** @var SPLFixedArray<Event|null> $oRow */
     private SPLFixedArray $oRow;
 
     /**
@@ -65,7 +67,7 @@ class Pattern {
      *
      * @return int
      */
-    public function getNumChannels() : int {
+    public function getNumChannels(): int {
         return $this->iNumChannels;
     }
 
@@ -74,11 +76,11 @@ class Pattern {
      *
      * @return int
      */
-    public function getLength() : int {
+    public function getLength(): int {
         return $this->iNumLines;
     }
 
-    public function getLabel() : string {
+    public function getLabel(): string {
         return $this->sLabel;
     }
 
@@ -86,9 +88,9 @@ class Pattern {
      * Return the enumerated line
      *
      * @param  int $iLineNumber
-     * @return SPLFixedArray
+     * @return SPLFixedArray<Event|null>
      */
-    public function getLine(int $iLineNumber) : SPLFixedArray {
+    public function getLine(int $iLineNumber): SPLFixedArray {
         $oRow = clone $this->oRow;
         foreach ($this->aChannels as $i => &$aChannelEvents) {
             $oRow[$i] = $aChannelEvents[$iLineNumber] ?? null;
@@ -107,7 +109,7 @@ class Pattern {
      * @return self
      * @throws \OutOfBoundsException
      */
-    public function addEvent(Event $oEvent, int $iChannel, int $iLineNumber, int $iEvery = 0, $iUntil = 0) : self {
+    public function addEvent(Event $oEvent, int $iChannel, int $iLineNumber, int $iEvery = 0, $iUntil = 0): self {
         if (
             $iChannel < 0    || $iChannel    >= $this->iNumChannels ||
             $iLineNumber < 0 || $iLineNumber >= $this->iNumLines
@@ -130,5 +132,4 @@ class Pattern {
         return $this;
     }
 }
-
 

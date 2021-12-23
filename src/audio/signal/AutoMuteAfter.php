@@ -58,7 +58,7 @@ class AutoMuteAfter implements IStream {
      * @param  float $fSeconds
      * @return self
      */
-    public function setDisableAfter(float $fSeconds) : self {
+    public function setDisableAfter(float $fSeconds): self {
         $this->iDisableAfter = $fSeconds > 0.0 ? ((int)($fSeconds * Audio\IConfig::PROCESS_RATE)) : 0;
         return $this;
     }
@@ -68,14 +68,14 @@ class AutoMuteAfter implements IStream {
      *
      * Reports the stream position of the wrapped stream rather than the wrapper.
      */
-    public function getPosition() : int {
-        return $this->oStream->getPosition;
+    public function getPosition(): int {
+        return $this->oStream->getPosition();
     }
 
     /**
      * @inheritDoc
      */
-    public function reset() : self {
+    public function reset(): self {
         $this->iPosition = 0;
         $this->oStream->reset();
         return $this;
@@ -84,7 +84,7 @@ class AutoMuteAfter implements IStream {
     /**
      * @inheritDoc
      */
-    public function emit(?int $iIndex = null) : Packet {
+    public function emit(?int $iIndex = null): Packet {
         $this->iPosition += Audio\IConfig::PACKET_SIZE;
 
         // Check to see if the stream needs disabling yet

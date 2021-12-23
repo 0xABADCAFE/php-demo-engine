@@ -43,7 +43,7 @@ class PacketRelay implements IStream {
     /**
      * @inheritDoc
      */
-    public function getPosition() : int {
+    public function getPosition(): int {
         return $this->iPosition;
     }
 
@@ -51,7 +51,7 @@ class PacketRelay implements IStream {
      * @param  Packet<float> $oPacket
      * @return self
      */
-    public function setPacket(Packet $oPacket) : self {
+    public function setPacket(Packet $oPacket): self {
         $this->oPacket = $oPacket;
         return $this;
     }
@@ -59,7 +59,7 @@ class PacketRelay implements IStream {
     /**
      * @inheritDoc
      */
-    public function reset() : self {
+    public function reset(): self {
         $this->iPosition = 0;
         return $this;
     }
@@ -67,7 +67,7 @@ class PacketRelay implements IStream {
     /**
      * @inheritDoc
      */
-    public function emit(?int $iIndex = null) : Packet {
+    public function emit(?int $iIndex = null): Packet {
         $this->iPosition += Audio\IConfig::PACKET_SIZE;
         return $this->oPacket;
     }
@@ -75,21 +75,21 @@ class PacketRelay implements IStream {
     /**
      * @inheritDoc
      */
-    public function enable() : IStream {
+    public function enable(): IStream {
         return $this;
     }
 
     /**
      * @inheritDoc
      */
-    public function disable() : IStream {
+    public function disable(): IStream {
         return $this;
     }
 
     /**
      * @inheritDoc
      */
-    public function isEnabled() : bool {
+    public function isEnabled(): bool {
         return true;
     }
 }

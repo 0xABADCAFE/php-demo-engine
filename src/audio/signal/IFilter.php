@@ -47,7 +47,7 @@ interface IFilter extends IStream {
      * @param  float $fCutoff
      * @return self
      */
-    public function setCutoff(float $fCutoff) : self;
+    public function setCutoff(float $fCutoff): self;
 
     /**
      * Set a control stream (envelope, LFO etc) for the cutoff control. Setting null clears any existing control.
@@ -55,7 +55,7 @@ interface IFilter extends IStream {
      * @param  Audio\Signal\IStream|null $oCutoffControl
      * @return self
      */
-    public function setCutoffControl(?Audio\Signal\IStream $oCutoffControl) : self;
+    public function setCutoffControl(?Audio\Signal\IStream $oCutoffControl): self;
 
     /**
      * Set the baseline resonance level. In the absence of a resonance controller, this is the fixed resonance.
@@ -66,7 +66,7 @@ interface IFilter extends IStream {
      * @param  float $fResonance
      * @return self
      */
-    public function setResonance(float $fResonance) : self;
+    public function setResonance(float $fResonance): self;
 
     /**
      * Set a control stream (envelope, LFO etc) for the resonance control. Setting null clears any existing control.
@@ -74,5 +74,5 @@ interface IFilter extends IStream {
      * @param  Audio\Signal\IStream|null $oResonanceControl
      * @return self
      */
-    public function setResonanceControl(?Audio\Signal\IStream $oResonanceControl) : self;
+    public function setResonanceControl(?Audio\Signal\IStream $oResonanceControl): self;
 }

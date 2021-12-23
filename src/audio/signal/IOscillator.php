@@ -33,7 +33,7 @@ interface IOscillator extends IStream {
      * @param  IWaveform|null $oWaveform
      * @return self
      */
-    public function setWaveform(?IWaveform $oWaveform) : self;
+    public function setWaveform(?IWaveform $oWaveform): self;
 
     /**
      * Set the baseline frequency to emit.
@@ -41,5 +41,5 @@ interface IOscillator extends IStream {
      * @param  float $fFrequency
      * @return self
      */
-    public function setFrequency(float $fFrequency) : self;
+    public function setFrequency(float $fFrequency): self;
 }

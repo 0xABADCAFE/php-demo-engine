@@ -31,9 +31,9 @@ interface IFactory {
      * Main factory method. Implementors should use covariance to constrain their return types to the expected
      * product interface. May throw if the definition is not parseable.
      *
-     * @param  object $oDefinition
+     * @param  \stdClass $oDefinition
      * @return object
      * @throws \RuntimeException
      */
-    public function createFrom(object $oDefinition) : object;
+    public function createFrom(\stdClass $oDefinition): object;
 }

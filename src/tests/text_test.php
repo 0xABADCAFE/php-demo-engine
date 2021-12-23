@@ -10,7 +10,6 @@ require_once '../PDE.php';
 $iWidth  = 120;
 $iHeight = 30;
 
-
 $oDisplay = Display\Factory::get()->create('PlainASCII', $iWidth, $iHeight);
 $oDisplay
     ->reset()

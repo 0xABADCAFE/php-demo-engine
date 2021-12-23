@@ -330,5 +330,4 @@ class Toroid extends Base {
         $this->oPixelBuffer[$iBufferPos] = $this->oPalette[$iPaletteIndex];
     }
 
-
 }

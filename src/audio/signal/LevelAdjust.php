@@ -27,10 +27,15 @@ use ABadCafe\PDE\Audio;
  *
  * Fixed level adjustment, for attenuation or amplification.
  */
+
+/**
+ * @template T of IStream
+ */
 class LevelAdjust implements IStream {
 
     use TStream;
 
+    /** @var T $oStream */
     private IStream $oStream;
 
     private float $fLevel;
@@ -38,8 +43,8 @@ class LevelAdjust implements IStream {
     /**
      * Constructor
      *
-     * @param IStream $oStream
-     * @param float   $fOutLevel
+     * @param T     $oStream
+     * @param float $fLevel
      */
     public function __construct(IStream $oStream, float $fLevel) {
         self::initStreamTrait();
@@ -48,16 +53,16 @@ class LevelAdjust implements IStream {
     }
 
     /**
-     * @return IStream
+     * @return T
      */
-    public function getStream() : IStream {
+    public function getStream(): IStream {
         return $this->oStream;
     }
 
     /**
      * @return float
      */
-    public function getLevel() : float {
+    public function getLevel(): float {
         return $this->fLevel;
     }
 
@@ -65,9 +70,9 @@ class LevelAdjust implements IStream {
      * Set the level adjustment to apply.
      *
      * @param  float $fLevel
-     * @return self
+     * @return self<T>
      */
-    public function setLevel(float $fLevel) : self {
+    public function setLevel(float $fLevel): self {
         $this->fLevel  = $fLevel;
         return $this;
     }
@@ -75,14 +80,16 @@ class LevelAdjust implements IStream {
     /**
      * @inheritDoc
      */
-    public function getPosition() : int {
+    public function getPosition(): int {
         return $this->oStream->getPosition();
     }
 
     /**
      * @inheritDoc
+     *
+     * @return self<T>
      */
-    public function reset() : self {
+    public function reset(): self {
         $this->oStream->reset();
         return $this;
     }
@@ -90,7 +97,7 @@ class LevelAdjust implements IStream {
     /**
      * @inheritDoc
      */
-    public function emit(?int $iIndex = null) : Packet {
+    public function emit(?int $iIndex = null): Packet {
         if ($this->bEnabled) {
             return $this->oStream
                 ->emit($iIndex)

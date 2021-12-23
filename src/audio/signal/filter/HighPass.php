@@ -34,11 +34,12 @@ class HighPass extends Base {
     /**
      * @inheritDoc
      */
-    protected function applyFixedCutoffFixedResonance() {
+    protected function applyFixedCutoffFixedResonance(): void {
         $oInputSamples  = $this->oInputStream->emit($this->iLastIndex);
         $oOutputSamples = $this->oLastOutputPacket;
         $fResonance     = $this->fFixedResonance * self::F_SCALE_MAX_Q;
         foreach ($oInputSamples as $i => $fInput) {
+            /** @var float $fInput */
             $this->filterSample($fInput, $this->fFixedCutoff, $fResonance);
             $oOutputSamples[$i] = $fInput - $this->fPole4 - $this->fPole1;
         }
@@ -47,12 +48,13 @@ class HighPass extends Base {
     /**
      * @inheritDoc
      */
-    protected function applyVaryingCutoffFixedResonance() {
+    protected function applyVaryingCutoffFixedResonance(): void {
         $oInputSamples  = $this->oInputStream->emit($this->iLastIndex);
         $oOutputSamples = $this->oLastOutputPacket;
-        $oCutoffValues  = $this->oCutoffControl->emit($this->iLastIndex);
+        $oCutoffValues  = $this->oCutoffControl->emit($this->iLastIndex); // @phpstan-ignore-line : false positive
         $fResonance     = $this->fFixedResonance * self::F_SCALE_MAX_Q;
         foreach ($oInputSamples as $i => $fInput) {
+            /** @var float $fInput */
             $this->filterSample($fInput, $oCutoffValues[$i] * $this->fFixedCutoff, $fResonance);
             $oOutputSamples[$i] = $fInput - $this->fPole4 - $this->fPole1;
         }
@@ -61,12 +63,13 @@ class HighPass extends Base {
     /**
      * @inheritDoc
      */
-    protected function applyFixedCutoffVaryingResonance() {
+    protected function applyFixedCutoffVaryingResonance(): void {
         $oInputSamples    = $this->oInputStream->emit($this->iLastIndex);
         $oOutputSamples   = $this->oLastOutputPacket;
-        $oResonanceValues = $this->oResonanceControl->emit($this->iLastIndex);
+        $oResonanceValues = $this->oResonanceControl->emit($this->iLastIndex); // @phpstan-ignore-line : false positive
         $fResonance       = $this->fFixedResonance * self::F_SCALE_MAX_Q;
         foreach ($oInputSamples as $i => $fInput) {
+            /** @var float $fInput */
             $this->filterSample($fInput, $this->fFixedCutoff, $fResonance * $oResonanceValues[$i]);
             $oOutputSamples[$i] = $fInput - $this->fPole4 - $this->fPole1;
         }
@@ -75,13 +78,14 @@ class HighPass extends Base {
     /**
      * @inheritDoc
      */
-    protected function applyVaryingCutoffVaryingResonance() {
+    protected function applyVaryingCutoffVaryingResonance(): void {
         $oInputSamples    = $this->oInputStream->emit($this->iLastIndex);
         $oOutputSamples   = $this->oLastOutputPacket;
-        $oCutoffValues    = $this->oCutoffControl->emit($this->iLastIndex);
-        $oResonanceValues = $this->oResonanceControl->emit($this->iLastIndex);
+        $oCutoffValues    = $this->oCutoffControl->emit($this->iLastIndex); // @phpstan-ignore-line : false positive
+        $oResonanceValues = $this->oResonanceControl->emit($this->iLastIndex); // @phpstan-ignore-line : false positive
         $fResonance       = $this->fFixedResonance * self::F_SCALE_MAX_Q;
         foreach ($oInputSamples as $i => $fInput) {
+            /** @var float $fInput */
             $this->filterSample($fInput, $oCutoffValues[$i] * $this->fFixedCutoff, $fResonance * $oResonanceValues[$i]);
             $oOutputSamples[$i] = $fInput - $this->fPole4 - $this->fPole1;
         }

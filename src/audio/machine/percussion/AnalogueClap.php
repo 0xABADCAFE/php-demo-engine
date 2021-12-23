@@ -66,7 +66,7 @@ class AnalogueClap extends BandPassNoise {
     /**
      * @inheritDoc
      */
-    public function setNote(string $sNote) : self {
+    public function setNote(string $sNote): self {
         $iNoteNumber = Audio\Note::getNumber($sNote);
         $iSemitone   = $iNoteNumber % Audio\Note::SEMIS_PER_OCTAVE;
         $iOctave     = (int)($iNoteNumber / Audio\Note::SEMIS_PER_OCTAVE);
@@ -84,14 +84,14 @@ class AnalogueClap extends BandPassNoise {
     /**
      * @inheritDoc
      */
-    public function setVelocity(int $iVelocity) : self {
+    public function setVelocity(int $iVelocity): self {
         return $this;
     }
 
     /**
      * @inheritDoc
      */
-    protected function setDefaults() {
+    protected function setDefaults(): void {
         $this->oFilter
             ->setCutoff(0.09)
             ->setResonance(0.1);

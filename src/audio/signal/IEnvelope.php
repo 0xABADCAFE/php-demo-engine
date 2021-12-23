@@ -36,15 +36,15 @@ interface IEnvelope extends IStream {
      * @param  float $fTimeScale
      * @return self
      */
-    public function setTimeScale(float $fTimeScale) : self;
+    public function setTimeScale(float $fTimeScale): self;
 
     /**
      * Set a scaling factor for envelope levels. A smaller value results in a quieter envelope. Use to simlulate the
      * effects of higher notes having lower overall energy, or higher velocities having greater, etc. This should be
      * set whenever we start a new note.
      *
-     * @param  float $fTimeScale
+     * @param  float $fLevelScale
      * @return self
      */
-    public function setLevelScale(float $fLevelScale) : self;
+    public function setLevelScale(float $fLevelScale): self;
 }

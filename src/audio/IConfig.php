@@ -20,7 +20,11 @@ declare(strict_types=1);
 
 namespace ABadCafe\PDE\Audio;
 
-/***/
+/**
+ * IConfig
+ *
+ * Basic fixed properties of the audio engine
+ */
 interface IConfig {
 
     const

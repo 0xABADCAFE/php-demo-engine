@@ -31,7 +31,7 @@ trait TControllerless {
     /**
      * @inheritDoc
      */
-    public function setVoiceControllerValue(int $iVoiceNumber, int $iController, int $iValue) : self {
+    public function setVoiceControllerValue(int $iVoiceNumber, int $iController, int $iValue): self {
         return $this;
     }
 

@@ -46,10 +46,11 @@ class Factory implements Audio\IFactory {
     /**
      * @inheritDoc
      */
-    public function createFrom(object $oDefinition) : Audio\Signal\IWaveform {
+    public function createFrom(\stdClass $oDefinition): Audio\Signal\IWaveform {
         $sType    = $oDefinition->sType ?? '<none>';
         $sFactory = self::PRODUCT_TYPES[$sType] ?? null;
         if ($sFactory) {
+            /** @var callable $cCreator */
             $cCreator = [$this, $sFactory];
             return $cCreator($oDefinition, $sType);
         }
@@ -59,11 +60,11 @@ class Factory implements Audio\IFactory {
     /**
      * Return one of the basic waveform types.
      *
-     * @param  object $oDefinition
+     * @param  \stdClass $oDefinition
      * @param  string $sType
      * @return Audio\Signal\IWaveform
      */
-    private function createSimple(object $oDefinition, $sType) : Audio\Signal\IWaveform {
+    private function createSimple(\stdClass $oDefinition, $sType): Audio\Signal\IWaveform {
         $bAliased = isset($oDefinition->bAliased) && $oDefinition->bAliased;
         switch ($sType) {
             case 'Sine':     return new Sine();
@@ -78,11 +79,11 @@ class Factory implements Audio\IFactory {
     /**
      * Return the PWM waveform.
      *
-     * @param  object $oDefinition
+     * @param  \stdClass $oDefinition
      * @param  string $sType
      * @return Audio\Signal\IWaveform
      */
-    private function createPulse(object $oDefinition, $sType) : Audio\Signal\IWaveform {
+    private function createPulse(\stdClass $oDefinition, $sType): Audio\Signal\IWaveform {
         $bAliased = isset($oDefinition->bAliased) && $oDefinition->bAliased;
 
         // TODO - check for a PWM modulator definition in here
@@ -93,12 +94,15 @@ class Factory implements Audio\IFactory {
     /**
      * Return a Rectifier based waveform.
      *
-     * @param  object $oDefinition
+     * @param  \stdClass $oDefinition
      * @param  string $sType
      * @return Audio\Signal\IWaveform
      */
-    private function createRectifier(object $oDefinition, $sType) : Audio\Signal\IWaveform {
-        if (empty($oDefinition->{self::STANDARD_KEY}) || !is_object($oDefinition->{self::STANDARD_KEY})) {
+    private function createRectifier(\stdClass $oDefinition, $sType): Audio\Signal\IWaveform {
+        if (
+        empty($oDefinition->{self::STANDARD_KEY}) ||
+            !$oDefinition->{self::STANDARD_KEY} instanceof \stdClass
+        ) {
             throw new \RuntimeException('Rectifier requires a waveform');
         }
 
@@ -126,12 +130,15 @@ class Factory implements Audio\IFactory {
     /**
      * Return a Mutator based waveform.
      *
-     * @param  object $oDefinition
+     * @param  \stdClass $oDefinition
      * @param  string $sType
      * @return Audio\Signal\IWaveform
      */
-    private function createMutator(object $oDefinition, $sType) : Audio\Signal\IWaveform {
-        if (empty($oDefinition->{self::STANDARD_KEY}) || !is_object($oDefinition->{self::STANDARD_KEY})) {
+    private function createMutator(\stdClass $oDefinition, $sType): Audio\Signal\IWaveform {
+        if (
+            empty($oDefinition->{self::STANDARD_KEY}) ||
+            !$oDefinition->{self::STANDARD_KEY} instanceof \stdClass
+        ) {
             throw new \RuntimeException('Mutator requires a waveform');
         }
         return new QuadrantMutator(

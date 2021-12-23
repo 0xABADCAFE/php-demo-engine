@@ -45,10 +45,11 @@ class Factory implements Audio\IFactory {
     /**
      * @inheritDoc
      */
-    public function createFrom(object $oDefinition) : Audio\IControlCurve {
+    public function createFrom(\stdClass $oDefinition): Audio\IControlCurve {
         $sType    = $oDefinition->sType ?? '<none>';
         $sFactory = self::PRODUCT_TYPES[$sType] ?? null;
         if ($sFactory) {
+            /** @var callable $cCreator */
             $cCreator = [$this, $sFactory];
             return $cCreator($oDefinition, $sType);
         }
@@ -58,11 +59,11 @@ class Factory implements Audio\IFactory {
     /**
      * Create the invariant flat curve.
      *
-     * @param  object $oDefinition
+     * @param  \stdClass $oDefinition
      * @param  string $sType
-     * @return Audio\Signal\IControlCurve
+     * @return Audio\IControlCurve
      */
-    private function createFlat(object $oDefinition, string $sType) : Audio\IControlCurve {
+    private function createFlat(\stdClass $oDefinition, string $sType): Audio\IControlCurve {
         $fValue = (float)($oDefinition->fFixed ?? 0.5);
         return new Flat($fValue);
     }
@@ -72,11 +73,11 @@ class Factory implements Audio\IFactory {
      * implementation instead of gamma wherever the gamma value is unset ot close to one. If the output
      * range is insignificant over the input range, returns a Flat implementation.
      *
-     * @param  object $oDefinition
+     * @param  \stdClass $oDefinition
      * @param  string $sType
-     * @return Audio\Signal\IControlCurve
+     * @return Audio\IControlCurve
      */
-    private function createRanged(object $oDefinition, string $sType) : Audio\IControlCurve {
+    private function createRanged(\stdClass $oDefinition, string $sType): Audio\IControlCurve {
         $fMinOutput = (float)($oDefinition->fMinOutput ?? 0.0);
         $fMaxOutput = (float)($oDefinition->fMaxOutput ?? 1.0);
 
@@ -106,11 +107,11 @@ class Factory implements Audio\IFactory {
     /**
      * Create an Octave curve.
      *
-     * @param  object $oDefinition
+     * @param  \stdClass $oDefinition
      * @param  string $sType
-     * @return Audio\Signal\IControlCurve
+     * @return Audio\IControlCurve
      */
-    private function createOctave(object $oDefinition, string $sType) : Audio\IControlCurve {
+    private function createOctave(\stdClass $oDefinition, string $sType): Audio\IControlCurve {
         $fCentreOutput   = (float)($oDefinition->fCentreOutput ?? 1.0);
         $fScalePerOctave = (float)($oDefinition->fScalePerOctave ?? 1.0);
         $fStepsPerOctave = (float)($oDefinition->fStepsPerOctave ?? Audio\Note::SEMIS_PER_OCTAVE);

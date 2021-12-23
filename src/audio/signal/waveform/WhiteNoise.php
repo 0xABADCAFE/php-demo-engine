@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 namespace ABadCafe\PDE\Audio\Signal\Waveform;
 use ABadCafe\PDE\Audio;
+use \SPLFixedArray;
 use function \mt_getrandmax, \mt_rand;
 
 /**
@@ -44,18 +45,18 @@ class WhiteNoise implements Audio\Signal\IWaveform {
     ;
 
     /**
-     * Shared buffer of random values.
+     * @var \SPLFixedArray<int> Shared buffer of random values.
      */
-    private static ?Audio\Signal\Packet $oRandom = null;
+    private static \SPLFixedArray $oRandom;
     private static float $fNormalise = 0.0;
 
     /**
      * Constructor
      */
     public function __construct() {
-        if (null === self::$oRandom) {
+        if (!self::$fNormalise) {
             self::$fNormalise = 2.0 / (float)mt_getrandmax();
-            self::$oRandom = Audio\Signal\Packet::create();
+            self::$oRandom = new \SPLFixedArray(Audio\IConfig::PACKET_SIZE);
             for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
                 self::$oRandom[$i] = mt_rand();
             }
@@ -65,14 +66,14 @@ class WhiteNoise implements Audio\Signal\IWaveform {
     /**
      * @inheritDoc
      */
-    public function getPeriod() : float {
+    public function getPeriod(): float {
         return self::PERIOD;
     }
 
     /**
      * @inheritDoc
      */
-    public function map(Audio\Signal\Packet $oInput) : Audio\Signal\Packet {
+    public function map(Audio\Signal\Packet $oInput): Audio\Signal\Packet {
         $fRandom = self::RAND_SCALE * mt_rand();
         $iMask   = 0x7FFFFFFF;
         $oOutput = clone $oInput;

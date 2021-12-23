@@ -25,17 +25,21 @@ use ABadCafe\PDE\Audio;
  * TMonophonicMachine
  *
  * Manages the common aspects of single voiced machines.
+ *
  */
 trait TMonophonicMachine {
 
     use Audio\Signal\TStream;
 
     private   Audio\Signal\IStream     $oOutput;
+
+    /** @var Audio\Signal\LevelAdjust<Audio\Signal\IStream> $oVoice */
     protected Audio\Signal\LevelAdjust $oVoice;
+
     protected ?Audio\Signal\IInsert    $oInsert = null;
 
     protected float
-        $fAttenuation = 0.1,
+        $fAttenuation = 0.2,
         $fVoiceLevel  = 1.0
     ;
 
@@ -46,30 +50,30 @@ trait TMonophonicMachine {
      * @param Audio\Signal\IStream $oVoice
      * @param float                $fLevel
      */
-    protected function setVoiceSource(Audio\Signal\IStream $oVoice, float $fLevel) {
-        $this->fAttenuation = $fLevel;
+    protected function setVoiceSource(Audio\Signal\IStream $oVoice, float $fLevel): void {
+        $this->fVoiceLevel = $fLevel;
         $this->oOutput =
-        $this->oVoice  = new Audio\Signal\LevelAdjust($oVoice, $this->fLevel);
+        $this->oVoice  = new Audio\Signal\LevelAdjust($oVoice, $this->fAttenuation * $this->fVoiceLevel);
     }
 
     /**
      * @inheritDoc
      */
-    public function getNumVoices() : int {
+    public function getNumVoices(): int {
         return 1;
     }
 
     /**
      * @inheritDoc
      */
-    public function getVoiceLevel(int $iVoiceNumber) : float {
+    public function getVoiceLevel(int $iVoiceNumber): float {
         return $this->fVoiceLevel;
     }
 
     /**
      * @inheritDoc
      */
-    public function setVoiceLevel(int $iVoiceNumber, float $fVolume) : Audio\IMachine {
+    public function setVoiceLevel(int $iVoiceNumber, float $fVolume): Audio\IMachine {
         $this->fVoiceLevel = $fVolume;
         $this->oVoice->setLevel($fVolume * $this->fAttenuation);
         return $this;
@@ -78,28 +82,28 @@ trait TMonophonicMachine {
     /**
      * @inheritDoc
      */
-    public function getOutputLevel() : float {
+    public function getOutputLevel(): float {
         return $this->fVoiceLevel;
     }
 
     /**
      * @inheritDoc
      */
-    public function setOutputLevel(float $fVolume) : Audio\IMachine {
+    public function setOutputLevel(float $fVolume): Audio\IMachine {
         return $this->setVoiceLevel(0, $fVolume);
     }
 
     /**
      * @inheritDoc
      */
-    public function getPosition() : int {
+    public function getPosition(): int {
         return $this->oOutput->getPosition();
     }
 
     /**
      * @inheritDoc
      */
-    public function reset() : Audio\Signal\IStream {
+    public function reset(): Audio\Signal\IStream {
         $this->oOutput->reset();
         return $this;
     }
@@ -107,23 +111,24 @@ trait TMonophonicMachine {
     /**
      * @inheritDoc
      */
-    public function emit(?int $iIndex = null) : Audio\Signal\Packet {
+    public function emit(?int $iIndex = null): Audio\Signal\Packet {
         return $this->oOutput->emit($iIndex);
     }
 
     /**
      * @inheritDoc
      */
-    public function getInsert() : ?Audio\Signal\IInsert {
+    public function getInsert(): ?Audio\Signal\IInsert {
         return $this->oInsert;
     }
 
     /**
      * @inheritDoc
      */
-    public function setInsert(?Audio\Signal\IInsert $oInsert = null) : self {
-        if ($this->oInsert = $oInsert) {
+    public function setInsert(?Audio\Signal\IInsert $oInsert = null): self {
+        if (null !== $oInsert) {
             $oInsert->setInputStream($this->oVoice);
+            $this->oInsert =
             $this->oOutput = $oInsert;
         } else {
             $this->oOutput = $this->oVoice;

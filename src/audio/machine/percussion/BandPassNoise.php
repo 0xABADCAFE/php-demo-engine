@@ -30,8 +30,8 @@ abstract class BandPassNoise implements IVoice {
 
     protected Audio\Signal\IOscillator $oNoise;
     protected Audio\Signal\IFilter     $oFilter;
-    protected Audio\Signal\IEnvelope   $oVolumeEnv;
-    protected Audio\Signal\IStream     $oAutoMute;
+    protected Audio\Signal\Envelope\DecayPulse $oVolumeEnv;
+    protected Audio\Signal\AutoMuteAfter       $oAutoMute;
 
     /**
      * Constructor. Constructs the key component parts and defers to an abstract method to parameterise them.
@@ -58,12 +58,12 @@ abstract class BandPassNoise implements IVoice {
     /**
      * @inheritDoc
      */
-    public function getOutputStream() : Audio\Signal\IStream {
+    public function getOutputStream(): Audio\Signal\IStream {
         return $this->oAutoMute;
     }
 
     /**
      * Set the appropriate default properties.
      */
-    protected abstract function setDefaults();
+    protected abstract function setDefaults(): void;
 }

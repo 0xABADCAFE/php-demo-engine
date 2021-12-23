@@ -42,7 +42,7 @@ class Square extends AliasedSquare {
     /**
      * @inheritDoc
      */
-    public function map(Signal\Packet $oInput) : Signal\Packet {
+    public function map(Signal\Packet $oInput): Signal\Packet {
         $oOutput = clone $oInput;
 
         // Avoid sharp transitions at the edges with a simple hamming filter.
@@ -51,7 +51,7 @@ class Square extends AliasedSquare {
         $fPrev3  = $this->fPrev3;
         $fPrev4  = $this->fPrev4;
         foreach ($oInput as $i => $fTime) {
-            $fSample = (int)floor($fTime) & 1 ? -1.0 : 1.0;
+            $fSample = (int)floor($fTime) & 1 ? -1.0 : 1.0; // @phpstan-ignore-line - false positive
             $oOutput[$i] = 0.1 * (
                 $fSample + $fPrev4 +
                 2.0 * ($fPrev1 + $fPrev3)

@@ -48,6 +48,7 @@ class TRNaN implements Audio\IMachine {
 
     use TPolyphonicMachine, TSimpleVelocity, TControllerless;
 
+    /** @var array<int, Percussion\IVoice> */
     private $aVoices = [];
 
     public function __construct() {
@@ -67,16 +68,17 @@ class TRNaN implements Audio\IMachine {
     /**
      * @inheritDoc
      */
-    public function setVoiceNote(int $iVoiceNumber, string $sNoteName) : self {
-        isset($this->aVoices[$iVoiceNumber]) &&
-        $this->aVoices[$iVoiceNumber]->setNote($sNoteName);
+    public function setVoiceNote(int $iVoiceNumber, string $sNoteName): self {
+        if (isset($this->aVoices[$iVoiceNumber])) {
+            $this->aVoices[$iVoiceNumber]->setNote($sNoteName);
+        }
         return $this;
     }
 
     /**
      * @inheritDoc
      */
-    public function startVoice(int $iVoiceNumber) : self {
+    public function startVoice(int $iVoiceNumber): self {
         if (isset(self::MUTE_GROUPS[$iVoiceNumber])) {
             foreach (self::MUTE_GROUPS[$iVoiceNumber] as $iMuteNumber) {
                 $this->aVoices[$iMuteNumber]
@@ -84,22 +86,24 @@ class TRNaN implements Audio\IMachine {
                     ->disable();
             }
         }
-        isset($this->aVoices[$iVoiceNumber]) &&
-        $this->aVoices[$iVoiceNumber]
-            ->getOutputStream()
-            ->reset()
-            ->enable();
+        if (isset($this->aVoices[$iVoiceNumber])) {
+            $this->aVoices[$iVoiceNumber]
+                ->getOutputStream()
+                ->reset()
+                ->enable();
+            }
         return $this;
     }
 
     /**
      * @inheritDoc
      */
-    public function stopVoice(int $iVoiceNumber) : self {
-        isset($this->aVoices[$iVoiceNumber]) &&
-        $this->aVoices[$iVoiceNumber]
-            ->getOutputStream()
-            ->disable();
+    public function stopVoice(int $iVoiceNumber): self {
+        if (isset($this->aVoices[$iVoiceNumber])) {
+            $this->aVoices[$iVoiceNumber]
+                ->getOutputStream()
+                ->disable();
+        }
         return $this;
     }
 }

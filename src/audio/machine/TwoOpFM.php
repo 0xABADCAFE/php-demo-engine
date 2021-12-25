@@ -73,8 +73,8 @@ class TwoOpFM implements Audio\IMachine {
     ;
 
     private float
-        $fModulatorRatio  = 1.001, // Modulator frequency multiplier
-        $fModulatorMix    = 0.0,  // Modulator to output mix level
+        $fModulatorRatio  = 1.0, // Modulator frequency multiplier
+        $fModulatorMix    = 0.0, // Modulator to output mix level
         $fCarrierRatio    = 1.0, // Carrier frequency multiplier
         $fModulationIndex = 0.5, // Carrier modulation index
         $fCarrierMix      = 1.0  // Carrier to output mix level

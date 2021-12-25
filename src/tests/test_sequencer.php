@@ -10,25 +10,24 @@ $oSequencer = new Audio\Machine\Sequencer();
 $oSequencer->setBeatsPerMeasure(8);
 
 
-// $oFMMarimba = new Audio\Machine\TwoOpFM(4);
-// $oFMMarimba
-//     ->setModulatorWaveform(Audio\Signal\IWaveform::SINE)
-//     ->setModulatorRatio(7.01)
-//     ->setModulatorLevelEnvelope(
-//         new Audio\Signal\Envelope\DecayPulse(1.0, 0.016)
-//     )
-//     ->setModulationIndex(0.2)
-//     ->setModulatorMix(0.15)
-//     ->setCarrierWaveform(Audio\Signal\IWaveform::SINE)
-//     ->setCarrierRatio(1.99)
-//     ->setCarrierLevelEnvelope(
-//         new Audio\Signal\Envelope\DecayPulse(1.0, 0.1)
-//     )
-//     ->setOutputLevel(0.35)
-// ;
-//
-//
-// $oFMMarimba->setInsert(new Audio\Signal\Insert\DelayLoop(null, 123.0 * 3, 0.6));
+$oFMMarimba = new Audio\Machine\TwoOpFM(2);
+$oFMMarimba
+    ->setModulatorWaveform(Audio\Signal\IWaveform::SINE)
+    ->setModulatorRatio(7.01)
+    ->setModulatorLevelEnvelope(
+        new Audio\Signal\Envelope\DecayPulse(1.0, 0.016)
+    )
+    ->setModulationIndex(0.2)
+    ->setModulatorMix(0.15)
+    ->setCarrierWaveform(Audio\Signal\IWaveform::SINE)
+    ->setCarrierRatio(1.99)
+    ->setCarrierLevelEnvelope(
+        new Audio\Signal\Envelope\DecayPulse(1.0, 0.1)
+    )
+    ->setOutputLevel(0.125)
+;
+
+
 
 $oDrumMachine = new Audio\Machine\TRNaN();
 $oDrumMachine->setOutputLevel(1.25);
@@ -52,15 +51,20 @@ $oChipMachine->setVoiceMaskEnvelope(4, new Audio\Signal\Envelope\Shape(
 ));
 
 
-$oChipMachine->setVoiceMaskWaveform(3, Audio\Signal\IWaveform::PULSE);
-$oChipMachine->setVoiceMaskWaveform(4, Audio\Signal\IWaveform::TRIANGLE);
-
-$oChipMachine->setVoiceMaskVibratoRate(15, 6.0);
-$oChipMachine->setVoiceMaskVibratoDepth(15, 0.1);
-$oChipMachine->setOutputLevel(0.5);
-$oChipMachine->setInsert(new Audio\Signal\Insert\DelayLoop(null, 123.0 * 3, 0.6));
+$oChipMachine
+    ->enablePulseWidthLFO()
+    ->setVoiceMaskWaveform(3, Audio\Signal\IWaveform::PULSE)
+    ->setVoiceMaskWaveform(4, Audio\Signal\IWaveform::TRIANGLE)
+    ->setVoiceMaskVibratoRate(15, 6.0)
+    ->setVoiceMaskVibratoDepth(15, 0.1)
+    ->setOutputLevel(0.5)
+    ->setInsert(new Audio\Signal\Insert\DelayLoop(null, 123.0 * 3, 0.6))
+;
 
 $oBassLine = new Audio\Machine\TBNaN();
+$oBassLine->setResonance(0.4);
+$oBassLine->setCutoff(0.95);
+
 
 $oFMPad = new Audio\Machine\TwoOpFM(4);
 $oFMPad
@@ -99,8 +103,17 @@ $oSequencer
     ->addMachine('drums', $oDrumMachine)
     ->addMachine('bass', $oBassLine)
     ->addMachine('pad', $oFMPad)
+    ->addMachine('marimba', $oFMMarimba);
 ;
-$oSequencer->allocatePattern('chip', [0, 2, 4, 6])
+
+$oSequencer->allocatePattern('marimba', [8,9,10,11])
+    ->addEvent(Audio\Sequence\Event::noteOn('C4', 30), 0, 2, 4)
+    ->addEvent(Audio\Sequence\Event::noteOn('G3', 30), 1, 2, 4)
+    ->addEvent(Audio\Sequence\Event::noteOn('A#3', 30), 0, 12, 16)
+;
+
+
+$oSequencer->allocatePattern('chip', [0, 2, 4, 6, 10, 12])
     ->addEvent(Audio\Sequence\Event::noteOn('C2', 50), 2, 0)
     ->addEvent(Audio\Sequence\Event::noteOn('C2', 50), 2, 4)
     ->addEvent(Audio\Sequence\Event::noteOn('D#2', 50), 2, 16 + 12)
@@ -124,7 +137,7 @@ $oSequencer->allocatePattern('chip', [0, 2, 4, 6])
     ->addEvent(Audio\Sequence\Event::noteOn('F3', 40), 0, 16 + 13)
     ->addEvent(Audio\Sequence\Event::noteOn('D#3', 38), 1, 16 + 14);
 
-$oSequencer->allocatePattern('chip', [1, 3, 5, 7])
+$oSequencer->allocatePattern('chip', [1, 3, 5, 7, 11, 13])
     ->addEvent(Audio\Sequence\Event::noteOn('F2', 50), 2, 0)
     ->addEvent(Audio\Sequence\Event::noteOn('F1', 50), 2, 4)
     ->addEvent(Audio\Sequence\Event::noteOn('D#2', 50), 2, 16 + 12)
@@ -164,12 +177,16 @@ $oSequencer->allocatePattern('chip', [1, 3, 5, 7])
 ;
 
 
-$oSequencer->allocatePattern('drums', [2, 8, 9])
+$oSequencer->allocatePattern('drums', [2, 8, 12, 13])
     ->addEvent(Audio\Sequence\Event::noteOn('A4', 100), 0, 0, 4)
     ->addEvent(Audio\Sequence\Event::noteOn('F4', 50), 4, 31, 0)
 ;
 
-$oSequencer->allocatePattern('drums', [3])
+$oSequencer->allocatePattern('drums', [14])
+    ->addEvent(Audio\Sequence\Event::noteOn('A4', 100), 0, 0, 0)
+;
+
+$oSequencer->allocatePattern('drums', [3, 9])
     ->addEvent(Audio\Sequence\Event::noteOn('A4', 100), 0, 0, 4)
     ->addEvent(Audio\Sequence\Event::noteOn('A4', 60), 2, 1, 4)
     ->addEvent(Audio\Sequence\Event::noteOn('A4', 50), 3, 2, 4)
@@ -179,14 +196,13 @@ $oSequencer->allocatePattern('drums', [3])
 ;
 
 
-$oSequencer->allocatePattern('drums', [4, 5, 6, 7])
+$oSequencer->allocatePattern('drums', [4, 5, 6, 7, 10, 11])
     ->addEvent(Audio\Sequence\Event::noteOn('A4', 100), 0, 0, 4)
     ->addEvent(Audio\Sequence\Event::noteOn('A4', 60), 2, 1, 4)
     ->addEvent(Audio\Sequence\Event::noteOn('A4', 50), 3, 2, 4)
     ->addEvent(Audio\Sequence\Event::noteOn('A4', 30), 2, 3, 4)
     ->addEvent(Audio\Sequence\Event::noteOn('A3', 100), 1, 4, 8)
     ->addEvent(Audio\Sequence\Event::noteOn('A4', 70), 1, 15, 0)
-
 ;
 
 
@@ -195,12 +211,64 @@ $oSequencer->allocatePattern('bass', [4, 5, 6, 8])
     ->addEvent(Audio\Sequence\Event::noteOff(), 0, 4, 4)
 ;
 
-$oSequencer->allocatePattern('bass', [7])
+$oSequencer->allocatePattern('bass', [7, 9])
     ->addEvent(Audio\Sequence\Event::noteOn('F2', 50), 0, 2, 4)
+    ->addEvent(Audio\Sequence\Event::noteOn('F2', 30), 0, 3, 4)
     ->addEvent(Audio\Sequence\Event::noteOff(), 0, 4, 4)
 ;
 
-$oSequencer->allocatePattern('pad', [6])
+$oSequencer->allocatePattern('bass', [10, 12])
+    ->addEvent(Audio\Sequence\Event::noteOn('D#2', 60), 0, 0)
+    ->addEvent(Audio\Sequence\Event::noteOn('C2', 60), 0, 1)
+    ->addEvent(Audio\Sequence\Event::noteOff(), 0, 2)
+    ->addEvent(Audio\Sequence\Event::noteOn('C2', 60), 0, 4)
+    ->addEvent(Audio\Sequence\Event::noteOff(), 0, 6)
+    ->addEvent(Audio\Sequence\Event::noteOn('C2', 60), 0, 7)
+    ->addEvent(Audio\Sequence\Event::noteOn('A#1', 60), 0, 8)
+    ->addEvent(Audio\Sequence\Event::noteOn('C2', 60), 0, 9)
+    ->addEvent(Audio\Sequence\Event::noteOff(), 0, 10)
+    ->addEvent(Audio\Sequence\Event::noteOn('C2', 60), 0, 11)
+    ->addEvent(Audio\Sequence\Event::noteOff(), 0, 13)
+    ->addEvent(Audio\Sequence\Event::noteOn('D#2', 60), 0, 15)
+    ->addEvent(Audio\Sequence\Event::noteOn('F2', 60), 0, 16)
+    ->addEvent(Audio\Sequence\Event::noteOn('D#2', 60), 0, 18)
+    ->addEvent(Audio\Sequence\Event::noteOff(), 0, 19)
+    ->addEvent(Audio\Sequence\Event::noteOn('C2', 60), 0, 20)
+    ->addEvent(Audio\Sequence\Event::noteOn('G1', 60), 0, 21)
+    ->addEvent(Audio\Sequence\Event::noteOn('A#1', 60), 0, 22)
+    ->addEvent(Audio\Sequence\Event::noteOn('C2', 60), 0, 23)
+    ->addEvent(Audio\Sequence\Event::noteOff(), 0, 25)
+    ->addEvent(Audio\Sequence\Event::noteOn('D#2', 60), 0, 28)
+    ->addEvent(Audio\Sequence\Event::noteOff(), 0, 30)
+
+;
+
+$oSequencer->allocatePattern('bass', [11, 13])
+    ->addEvent(Audio\Sequence\Event::noteOn('F2', 60), 0, 0)
+    ->addEvent(Audio\Sequence\Event::noteOff(), 0, 2)
+    ->addEvent(Audio\Sequence\Event::noteOn('F2', 60), 0, 3)
+    ->addEvent(Audio\Sequence\Event::noteOff(), 0, 5)
+    ->addEvent(Audio\Sequence\Event::noteOn('F1', 60), 0, 6)
+    ->addEvent(Audio\Sequence\Event::noteOff(), 0, 10)
+    ->addEvent(Audio\Sequence\Event::noteOn('D#2', 60), 0, 14)
+    ->addEvent(Audio\Sequence\Event::noteOn('F2', 60), 0, 15)
+    ->addEvent(Audio\Sequence\Event::noteOn('G2', 60), 0, 16)
+    ->addEvent(Audio\Sequence\Event::noteOn('F2', 60), 0, 17)
+    ->addEvent(Audio\Sequence\Event::noteOn('D#2', 60), 0, 18)
+    ->addEvent(Audio\Sequence\Event::noteOn('C2', 60), 0, 20)
+    ->addEvent(Audio\Sequence\Event::noteOff(), 0, 22)
+    ->addEvent(Audio\Sequence\Event::noteOn('G2', 60), 0, 23)
+    ->addEvent(Audio\Sequence\Event::noteOff(), 0, 24)
+    ->addEvent(Audio\Sequence\Event::noteOn('F2', 60), 0, 25)
+    ->addEvent(Audio\Sequence\Event::noteOn('D#2', 60), 0, 26)
+    ->addEvent(Audio\Sequence\Event::noteOff(), 0, 27)
+    ->addEvent(Audio\Sequence\Event::noteOn('C2', 60), 0, 28)
+    ->addEvent(Audio\Sequence\Event::noteOff(), 0, 30)
+    ->addEvent(Audio\Sequence\Event::noteOn('C2', 60), 0, 31)
+;
+
+
+$oSequencer->allocatePattern('pad', [6, 8, 10])
     ->addEvent(Audio\Sequence\Event::noteOn('C3', 50), 0, 0)
     ->addEvent(Audio\Sequence\Event::noteOn('E3', 50), 1, 0)
     ->addEvent(Audio\Sequence\Event::noteOn('G3', 50), 2, 0)
@@ -208,14 +276,15 @@ $oSequencer->allocatePattern('pad', [6])
 ;
 
 
-$oSequencer->allocatePattern('pad', [7])
+$oSequencer->allocatePattern('pad', [7, 9, 11])
     ->addEvent(Audio\Sequence\Event::setNote('D#3'), 1, 0)
-    ->addEvent(Audio\Sequence\Event::setNote('A#3'), 3, 0)
+    //->addEvent(Audio\Sequence\Event::setNote('A#3'), 3, 0)
 
 ;
 
 
 $oOutput = Audio\Output\Piped::create();
+//$oOutput = new Audio\Output\Wav("sequence.wav");
 $oOutput->open();
 
 $oSequencer->playSequence(

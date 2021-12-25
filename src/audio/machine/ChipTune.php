@@ -31,6 +31,9 @@ class ChipTune implements Audio\IMachine {
 
     use TPolyphonicMachine, TSimpleVelocity, TControllerless;
 
+    /**
+     * @const array<int, float> LEVEL_ADJUST
+     */
     const LEVEL_ADJUST = [
         Audio\Signal\IWaveform::SINE     => 1.0,
         Audio\Signal\IWaveform::TRIANGLE => 0.9,
@@ -39,13 +42,26 @@ class ChipTune implements Audio\IMachine {
         Audio\Signal\IWaveform::PULSE    => 0.25
     ];
 
+    /**
+     * @const array<int, class-string> WAVE_TYPES
+     */
+    const WAVE_TYPES = [
+        Audio\Signal\IWaveform::SINE     => Audio\Signal\Waveform\Sine::class,
+        Audio\Signal\IWaveform::TRIANGLE => Audio\Signal\Waveform\Triangle::class,
+        Audio\Signal\IWaveform::SAW      => Audio\Signal\Waveform\Saw::class,
+        Audio\Signal\IWaveform::SQUARE   => Audio\Signal\Waveform\Square::class,
+        Audio\Signal\IWaveform::PULSE    => Audio\Signal\Waveform\Pulse::class
+    ];
+
+    private Audio\Signal\Oscillator\LFO $oPulseWidthModulator;
+
     /** @var Audio\Signal\IWaveform[] $aWaveforms */
-    private static array $aWaveforms = [];
+    private array $aWaveforms = [];
 
     /** @var Audio\Signal\LevelAdjust<Audio\Signal\Oscillator\Sound>[] $aVoices */
-    private array        $aVoices = [];
+    private array $aVoices = [];
 
-    private int          $iVoiceMask;
+    private int   $iVoiceMask;
 
 
     /**
@@ -54,14 +70,52 @@ class ChipTune implements Audio\IMachine {
      * @param int $iNumVoices
      */
     public function __construct(int $iNumVoices) {
-        self::initShared();
+        $this->initWaves();
         $this->initPolyphony($iNumVoices);
         $this->iVoiceMask = (1 << $this->iNumVoices) - 1;
         for ($i = 0; $i < $this->iNumVoices; ++$i) {
             $this->aVoices[$i] = $oVoice = $this->createInitialVoice();
             $this->setVoiceSource($i, $oVoice);
         }
+        $this->oPulseWidthModulator = new Audio\Signal\Oscillator\LFOZeroToOne(
+            new Audio\Signal\Waveform\Sine(),
+            1,
+            0.75
+        );
+
     }
+
+    public function setPulseWidth(float $fDuty): self {
+        /** @var Audio\Signal\Waveform\Pulse $oWaveform */
+        $oWaveform = $this->aWaveforms[Audio\Signal\IWaveform::PULSE];
+        $oWaveform->setPulsewidth($fDuty);
+        return $this;
+    }
+
+    public function enablePulseWidthLFO(): self {
+        /** @var Audio\Signal\Waveform\Pulse $oWaveform */
+        $oWaveform = $this->aWaveforms[Audio\Signal\IWaveform::PULSE];
+        $oWaveform->setPulsewidthModulator($this->oPulseWidthModulator);
+        return $this;
+    }
+
+    public function disablePulseWidthLFO(): self {
+        /** @var Audio\Signal\Waveform\Pulse $oWaveform */
+        $oWaveform = $this->aWaveforms[Audio\Signal\IWaveform::PULSE];
+        $oWaveform->setPulsewidthModulator(null);
+        return $this;
+    }
+
+    public function setPulseWidthLFORate(float $fRateHz): self {
+        $this->oPulseWidthModulator->setFrequency($fRateHz);
+        return $this;
+    }
+
+    public function setPulseWidthLFODepth(float $fDepth): self {
+        $this->oPulseWidthModulator->setDepth($fDepth);
+        return $this;
+    }
+
 
     /**
      * @inheritDoc
@@ -111,8 +165,8 @@ class ChipTune implements Audio\IMachine {
      * @return self
      */
     public function setVoiceMaskWaveform(int $iVoiceMask, int $iWaveform): self {
-        if (isset(self::$aWaveforms[$iWaveform])) {
-            $oWaveform = self::$aWaveforms[$iWaveform];
+        if (isset($this->aWaveforms[$iWaveform])) {
+            $oWaveform = $this->aWaveforms[$iWaveform];
             $aVoices   = $this->getSelectedVoices($iVoiceMask);
             foreach ($aVoices as $oVoice) {
                 $oVoice->setLevel(self::LEVEL_ADJUST[$iWaveform]);
@@ -213,7 +267,7 @@ class ChipTune implements Audio\IMachine {
     private function createInitialVoice(): Audio\Signal\LevelAdjust {
         $iDefaultWaveform = Audio\Signal\IWaveform::TRIANGLE;
 
-        $oOscillator = new Audio\Signal\Oscillator\Sound(self::$aWaveforms[$iDefaultWaveform]);
+        $oOscillator = new Audio\Signal\Oscillator\Sound($this->aWaveforms[$iDefaultWaveform]);
         $oOscillator->setPitchModulator(
             new Audio\Signal\Oscillator\LFO(
                 new Audio\Signal\Waveform\Sine(),
@@ -263,15 +317,9 @@ class ChipTune implements Audio\IMachine {
         return $aResult;
     }
 
-    private static function initShared(): void {
-        if (empty(self::$aWaveforms)) {
-            self::$aWaveforms = [
-                Audio\Signal\IWaveform::SINE     => new Audio\Signal\Waveform\Sine(),
-                Audio\Signal\IWaveform::TRIANGLE => new Audio\Signal\Waveform\Triangle(),
-                Audio\Signal\IWaveform::SAW      => new Audio\Signal\Waveform\Saw(),
-                Audio\Signal\IWaveform::SQUARE   => new Audio\Signal\Waveform\Square(),
-                Audio\Signal\IWaveform::PULSE    => new Audio\Signal\Waveform\Pulse(),
-            ];
+    private function initWaves(): void {
+        foreach (self::WAVE_TYPES as $iType => $sClass) {
+            $this->aWaveforms[$iType] = new $sClass;
         }
     }
 }

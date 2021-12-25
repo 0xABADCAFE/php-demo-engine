@@ -29,15 +29,21 @@ use ABadCafe\PDE\Audio;
 class AnalogueCowbell implements IVoice {
 
     const
-        DEF_RATIO   = 869.4 / 587.3,
-        CENTRE_FREQ = 580,
-        SEMI_SCALE  = 0.25 * Audio\Note::FACTOR_PER_SEMI
+        DEF_RATIO         = 869.4 / 587.3,
+        CENTRE_FREQ       = 580,
+        SEMI_SCALE        = 0.25 * Audio\Note::FACTOR_PER_SEMI,
+        OSC_LO_DUTY_CYCLE = 0.43,
+        OSC_HI_DUTY_CYCLE = 0.27,
+        OSC_HI_PHASE_MOD  = 0.165,
+        FILTER_CUTOFF     = 0.052,
+        FILTER_RESONANCE  = 0.65,
+        AUTO_MUTE_AFTER   = 0.6
     ;
 
-    private Audio\Signal\IOscillator $oOscillator1, $oOscillator2;
-    private Audio\Signal\IEnvelope   $oEnvelope;
-    private Audio\Signal\IFilter     $oFilter;
-    private Audio\Signal\IStream     $oAutoMute;
+    private Audio\Signal\IOscillator   $oOscillator1, $oOscillator2;
+    private Audio\Signal\IEnvelope     $oEnvelope;
+    private Audio\Signal\IFilter       $oFilter;
+    private Audio\Signal\AutoMuteAfter $oAutoMute;
 
     /**
      * Constructor
@@ -54,18 +60,18 @@ class AnalogueCowbell implements IVoice {
         $fBase = self::CENTRE_FREQ;
 
         $this->oOscillator1 = new Audio\Signal\Oscillator\Sound(
-            new Audio\Signal\Waveform\AliasedPulse(0.43),
+            new Audio\Signal\Waveform\AliasedPulse(self::OSC_LO_DUTY_CYCLE),
             $fBase
         );
         $this->oOscillator2 = new Audio\Signal\Oscillator\Sound(
-            new Audio\Signal\Waveform\AliasedPulse(0.27),
+            new Audio\Signal\Waveform\AliasedPulse(self::OSC_HI_DUTY_CYCLE),
             $fBase * self::DEF_RATIO
         );
         $this->oOscillator1->setLevelEnvelope($this->oEnvelope);
         $this->oOscillator2
             ->setLevelEnvelope($this->oEnvelope)
             ->setPhaseModulator($this->oOscillator1)
-            ->setPhaseModulationIndex(0.165)
+            ->setPhaseModulationIndex(self::OSC_HI_PHASE_MOD)
         ;
         $oMixer = new Audio\Signal\FixedMixer();
         $oMixer
@@ -74,10 +80,10 @@ class AnalogueCowbell implements IVoice {
             ->setOutputLevel(0.5);
         $this->oFilter = new Audio\Signal\Filter\BandPass(
             $oMixer,
-            0.052,
-            0.65
+            self::FILTER_CUTOFF,
+            self::FILTER_RESONANCE
         );
-        $this->oAutoMute = new Audio\Signal\AutoMuteAfter($this->oFilter, 0.6);
+        $this->oAutoMute = new Audio\Signal\AutoMuteAfter($this->oFilter, self::AUTO_MUTE_AFTER);
         $this->oAutoMute->disable();
     }
 

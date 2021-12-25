@@ -28,8 +28,8 @@ use ABadCafe\PDE\Audio;
  */
 abstract class BandPassNoise implements IVoice {
 
-    protected Audio\Signal\IOscillator $oNoise;
-    protected Audio\Signal\IFilter     $oFilter;
+    protected Audio\Signal\IOscillator         $oNoise;
+    protected Audio\Signal\IFilter             $oFilter;
     protected Audio\Signal\Envelope\DecayPulse $oVolumeEnv;
     protected Audio\Signal\AutoMuteAfter       $oAutoMute;
 

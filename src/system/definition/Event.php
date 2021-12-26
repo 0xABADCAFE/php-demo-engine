@@ -54,6 +54,8 @@ class Event {
     /** @var mixed[] $aParameters */
     public array  $aParameters = [];
 
+    public static float $fLastTimeIndex = 0;
+
     /**
      * Constructor
      *
@@ -61,17 +63,25 @@ class Event {
      */
     public function __construct(\stdClass $oRaw) {
         if (
-            !isset($oRaw->at) ||
+            (!isset($oRaw->at) && !isset($oRaw->after)) ||
             !isset($oRaw->do) ||
             !isset(self::DO_ACTIONS[(string)$oRaw->do])
         ) {
             throw new \Exception("Missing expected/valid 'at' or 'do' directive");
         }
+
         // When?
-        $this->fAtTimeIndex = (float)$oRaw->at;
+        if (!isset($oRaw->at)) {
+            $this->fAtTimeIndex = self::$fLastTimeIndex + (float)$oRaw->after;
+        }
+        else {
+            $this->fAtTimeIndex = (float)$oRaw->at;
+        }
+
+        self::$fLastTimeIndex = $this->fAtTimeIndex;
 
         // What?
-        $this->iAction      = self::DO_ACTIONS[(string)$oRaw->do];
+        $this->iAction = self::DO_ACTIONS[(string)$oRaw->do];
 
         // Whom?
         if (isset($oRaw->on)) {

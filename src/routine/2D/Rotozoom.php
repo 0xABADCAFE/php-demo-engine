@@ -35,11 +35,17 @@ class Rotozoom extends Base implements IResourceLoader {
 
     private float $fAngle = 0;
 
+    const ANGLE_STEP = M_PI / 100.0;
+
     const DEFAULT_PARAMETERS = [
         'sPath'   => 'required',
+        'fStep'   => self::ANGLE_STEP,
+        'fZoom'   => 1.0,
+        'fDist'   => 1.0,
+        'fOfsU'   => 50.0,
+        'fOfsV'   => 0.0
     ];
 
-    const ANGLE_STEP = M_PI / 200.0;
 
     /**
      * @inheritDoc
@@ -76,7 +82,7 @@ class Rotozoom extends Base implements IResourceLoader {
     public function render(int $iFrameNumber, float $fTimeIndex): self {
         $fCos = cos($this->fAngle);
         $fSin = sin($this->fAngle);
-        $this->fAngle += self::ANGLE_STEP;
+        $this->fAngle += $this->oParameters->fStep;
 
         $iWidth  = $this->oDisplay->getWidth();
         $iHeight = $this->oDisplay->getHeight();
@@ -86,18 +92,42 @@ class Rotozoom extends Base implements IResourceLoader {
         $iImgWidth  = $this->oImage->getWidth();
         $iImgHeight = $this->oImage->getHeight();
 
+        $iMaskRGB = 0x3F3F3F3F;
+
         $iDstIndex  = 0;
-        $fScale     = $fSin + 1.0;
+        $fScale     = $fSin * $this->oParameters->fZoom + $this->oParameters->fDist;
+        $fOfsU      = $this->oParameters->fOfsU;
+        $fOfsV      = $this->oParameters->fOfsV;
+
         for ($iYPos = 0; $iYPos < $iHeight; ++$iYPos) {
             for ($iXPos = 0; $iXPos < $iWidth; ++$iXPos) {
-                $iTexU = (int)abs((($iXPos * $fCos - $iYPos * $fSin) * $fScale) % $iImgWidth);
-                $iTexV = (int)abs((($iXPos * $fSin + $iYPos * $fCos) * $fScale) % $iImgHeight);
 
-                $iTexIndex = $iTexU + $iTexV * $iImgWidth;
-                $oPixels[$iDstIndex++] = $oTexels[$iTexIndex];
+                // Do a spot of anti aliasing
+                $iTexU = (int)abs((($iXPos * $fCos - $iYPos * $fSin) * $fScale + $fOfsU) % $iImgWidth);
+                $iTexV = (int)abs((($iXPos * $fSin + $iYPos * $fCos) * $fScale + $fOfsV) % $iImgHeight);
+                $iTexIndex0 = $iTexU + $iTexV * $iImgWidth;
+
+                $fXPos = $iXPos + 0.5;
+                $iTexU = (int)abs((($fXPos * $fCos - $iYPos * $fSin) * $fScale + $fOfsU) % $iImgWidth);
+                $iTexV = (int)abs((($fXPos * $fSin + $iYPos * $fCos) * $fScale + $fOfsV) % $iImgHeight);
+                $iTexIndex1 = $iTexU + $iTexV * $iImgWidth;
+
+                $fYPos = $iYPos + 0.5;
+                $iTexU = (int)abs((($iXPos * $fCos - $fYPos * $fSin) * $fScale + $fOfsU) % $iImgWidth);
+                $iTexV = (int)abs((($iXPos * $fSin + $fYPos * $fCos) * $fScale + $fOfsV) % $iImgHeight);
+                $iTexIndex2 = $iTexU + $iTexV * $iImgWidth;
+
+                $iTexU = (int)abs((($fXPos * $fCos - $fYPos * $fSin) * $fScale + $fOfsU) % $iImgWidth);
+                $iTexV = (int)abs((($fXPos * $fSin + $fYPos * $fCos) * $fScale + $fOfsV) % $iImgHeight);
+                $iTexIndex3 = $iTexU + $iTexV * $iImgWidth;
+
+                $oPixels[$iDstIndex++] =
+                    (($oTexels[$iTexIndex0] >> 2) & $iMaskRGB) +
+                    (($oTexels[$iTexIndex1] >> 2) & $iMaskRGB) +
+                    (($oTexels[$iTexIndex2] >> 2) & $iMaskRGB) +
+                    (($oTexels[$iTexIndex3] >> 2) & $iMaskRGB);
             }
         }
-
         return $this;
     }
 

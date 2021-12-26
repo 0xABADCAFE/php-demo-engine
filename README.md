@@ -28,6 +28,7 @@ A bit of fun. An ASCII/ANSI terminal display with stackable routines, sequenced 
 
 * PHP 7.4.15 or higher.
     * Lower versions of 7.4 may work but 7.4.3 is know not to due to buggy covariant return support.
+    * Required packages: php-cli, php-json, php-process. Check your OS for installation requirements.
 * A terminal that supports arbitrary RGB ANSI escape sequences and UTF8 blockmode characters.
     * To check if your terminal is likely to work, download the [test card](./docs/testcard.txt) textfile, cat it in your termimal anc compare it to the expected reference output [image](./docs/testcard.png).
 * APlay or Sox Play installed for audio output.

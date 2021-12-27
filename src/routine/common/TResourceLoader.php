@@ -62,10 +62,15 @@ trait TResourceLoader {
      * can't be parsed.
      *
      * @param  string $sPath
+     * @param  bool $bCached
      * @return Graphics\Image;
      * @throws \Exception
      */
-    protected function loadPNM(string $sPath): Graphics\Image {
+    protected function loadPNM(string $sPath, bool $bCached = true): Graphics\Image {
+        if ($bCached && Graphics\ImageCache::has($sPath)) {
+            return Graphics\ImageCache::get($sPath);
+        }
+
         $sRaw = $this->loadFile($sPath);
         $bRGB = (substr($sRaw, 0, 2) === 'P6');
         if (preg_match('/^(\d+)\s+(\d+)$/m', $sRaw, $aMatches)) {
@@ -88,6 +93,9 @@ trait TResourceLoader {
                     $iGrey = ord($sData[$iDataOffset++]);
                     $oPixels[$i] = ($iGrey << 24) | ($iGrey << 8) | ($iGrey);
                 }
+            }
+            if ($bCached) {
+                Graphics\ImageCache::set($sPath, $oImage);
             }
             return $oImage;
         } else {

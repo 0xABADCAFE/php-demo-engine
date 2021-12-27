@@ -37,6 +37,7 @@ class Factory {
         '2D/RGBPersistence' => RGBPersistence::class,
         '2D/RGBImage'       => RGBImage::class,
         '2D/RGBFire'        => RGBFire::class,
+        '2D/Rotozoom'       => Rotozoom::class,
         '2D/TapeLoader'     => TapeLoader::class,
         '3D/Toroid'         => Toroid::class,
         '3D/Voxel'          => Voxel::class,

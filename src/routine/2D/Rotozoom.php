@@ -42,7 +42,7 @@ class Rotozoom extends Base implements IResourceLoader {
         'fStep'   => self::ANGLE_STEP,
         'fZoom'   => 1.0,
         'fDist'   => 1.0,
-        'fOfsU'   => 50.0,
+        'fOfsU'   => 0.0,
         'fOfsV'   => 0.0
     ];
 
@@ -92,8 +92,7 @@ class Rotozoom extends Base implements IResourceLoader {
         $iImgWidth  = $this->oImage->getWidth();
         $iImgHeight = $this->oImage->getHeight();
 
-        $iMaskRGB = 0x3F3F3F3F;
-
+        $iMaskRGB   = 0x3F3F3F3F;
         $iDstIndex  = 0;
         $fScale     = $fSin * $this->oParameters->fZoom + $this->oParameters->fDist;
         $fOfsU      = $this->oParameters->fOfsU;

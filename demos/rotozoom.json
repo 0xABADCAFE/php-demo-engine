@@ -12,7 +12,8 @@
             "sType": "2D/Rotozoom",
             "iPriority": 1,
             "aParameters": {
-                "sPath": "images/slipped_disc_1.ppm"
+                "sPath": "images/slipped_disc_1.ppm",
+                "fOfsU": 50
             }
         }
 

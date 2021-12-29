@@ -41,10 +41,10 @@ class Pattern {
 
     private string $sLabel = '';
 
-    /** @var array<int, array<int, Event>> $aChannels */
+    /** @var array<int, array<int, Event[]>> $aChannels */
     private array $aChannels;
 
-    /** @var SPLFixedArray<Event|null> $oRow */
+    /** @var SPLFixedArray<Event[]|null> $oRow */
     private SPLFixedArray $oRow;
 
     /**
@@ -88,7 +88,7 @@ class Pattern {
      * Return the enumerated line
      *
      * @param  int $iLineNumber
-     * @return SPLFixedArray<Event|null>
+     * @return SPLFixedArray<Event[]|null>
      */
     public function getLine(int $iLineNumber): SPLFixedArray {
         $oRow = clone $this->oRow;
@@ -123,11 +123,20 @@ class Pattern {
                 $iUntil = $this->iNumLines;
             }
             while ($iLineNumber < $iUntil) {
-                $aChannelEvents[$iLineNumber] = $oEvent;
+                if (isset($aChannelEvents[$iLineNumber])) {
+                    $aChannelEvents[$iLineNumber][] = $oEvent;
+                } else {
+                    $aChannelEvents[$iLineNumber] = [$oEvent];
+                }
                 $iLineNumber += $iEvery;
             }
         } else {
-            $aChannelEvents[$iLineNumber] = $oEvent;
+            if (isset($aChannelEvents[$iLineNumber])) {
+                $aChannelEvents[$iLineNumber][] = $oEvent;
+            } else {
+                $aChannelEvents[$iLineNumber] = [$oEvent];
+
+            }
         }
         return $this;
     }

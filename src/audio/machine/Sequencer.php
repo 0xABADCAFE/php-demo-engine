@@ -387,41 +387,44 @@ class Sequencer {
         foreach ($aActivePatterns as $sMachineName => $oPattern) {
             $oMachine = $this->aMachines[$sMachineName];
             $oRow     = $oPattern->getLine($iLineNumber);
-            foreach ($oRow as $iChannel => $oEvent) {
-                if (!$oEvent) {
+            foreach ($oRow as $iChannel => $aEventSets) {
+                if (empty($aEventSets)) {
                     continue;
                 }
-                switch ($oEvent->iType) {
-                    case Audio\Sequence\Event::NOTE_ON:
-//                         dprintf("\tLn:%4d Mc:%5s Ch:%2d Ev:NoteOn %s V:%d\n",
-//                             $iLineNumber,
-//                             $sMachineName,
-//                             $iChannel,
-//                             $oEvent->sNote,
-//                             $oEvent->iVelocity
-//                         );
 
-                        $oMachine
-                            ->setVoiceNote($iChannel, $oEvent->sNote)
-                            ->setVoiceVelocity($iChannel, $oEvent->iVelocity)
-                            ->startVoice($iChannel);
-                        break;
+                foreach ($aEventSets as $oEvent) {
+                    switch ($oEvent->iType) {
+                        case Audio\Sequence\Event::NOTE_ON:
+    //                         dprintf("\tLn:%4d Mc:%5s Ch:%2d Ev:NoteOn %s V:%d\n",
+    //                             $iLineNumber,
+    //                             $sMachineName,
+    //                             $iChannel,
+    //                             $oEvent->sNote,
+    //                             $oEvent->iVelocity
+    //                         );
 
-                    case Audio\Sequence\Event::SET_NOTE:
-                        $oMachine
-                            ->setVoiceNote($iChannel, $oEvent->sNote);
-                        break;
+                            $oMachine
+                                ->setVoiceNote($iChannel, $oEvent->sNote)
+                                ->setVoiceVelocity($iChannel, $oEvent->iVelocity)
+                                ->startVoice($iChannel);
+                            break;
 
-                    case Audio\Sequence\Event::NOTE_OFF:
-                        $oMachine
-                            ->stopVoice($iChannel);
-                        break;
+                        case Audio\Sequence\Event::SET_NOTE:
+                            $oMachine
+                                ->setVoiceNote($iChannel, $oEvent->sNote);
+                            break;
 
-                    case Audio\Sequence\Event::SET_CTRL:
-                        $oMachine
-                            ->setVoiceControllerValue($iChannel, $oEvent->iController, $oEvent->iValue);
-                    default:
-                        break;
+                        case Audio\Sequence\Event::NOTE_OFF:
+                            $oMachine
+                                ->stopVoice($iChannel);
+                            break;
+
+                        case Audio\Sequence\Event::SET_CTRL:
+                            $oMachine
+                                ->setVoiceControllerValue($iChannel, $oEvent->iController, $oEvent->iValue);
+                        default:
+                            break;
+                    }
                 }
             }
         }

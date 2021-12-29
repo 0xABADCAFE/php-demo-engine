@@ -219,6 +219,7 @@ $oSequencer->allocatePattern('bass', [7, 9])
 ;
 
 $oSequencer->allocatePattern('bass', [10, 12])
+//    ->addEvent(Event::setCtrl(Audio\Machine\TBNaN::CTRL_LPF_RESONANCE, 32), 0, 0)
     ->addEvent(Event::noteOn('D#2', 60), 0, 0)
     ->addEvent(Event::noteOn('C2', 60), 0, 1)
     ->addEvent(Event::noteOff(), 0, 2)

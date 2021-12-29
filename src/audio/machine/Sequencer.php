@@ -406,14 +406,20 @@ class Sequencer {
                             ->setVoiceVelocity($iChannel, $oEvent->iVelocity)
                             ->startVoice($iChannel);
                         break;
+
                     case Audio\Sequence\Event::SET_NOTE:
                         $oMachine
                             ->setVoiceNote($iChannel, $oEvent->sNote);
                         break;
+
                     case Audio\Sequence\Event::NOTE_OFF:
                         $oMachine
                             ->stopVoice($iChannel);
                         break;
+
+                    case Audio\Sequence\Event::SET_CTRL:
+                        $oMachine
+                            ->setVoiceControllerValue($iChannel, $oEvent->iController, $oEvent->iValue);
                     default:
                         break;
                 }

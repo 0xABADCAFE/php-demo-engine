@@ -38,7 +38,8 @@ class Event {
         NOTHING  = 0,
         NOTE_ON  = 1,
         SET_NOTE = 2,
-        NOTE_OFF = 3
+        NOTE_OFF = 3,
+        SET_CTRL = 4
     ;
 
     public int $iType = self::NOTHING;
@@ -49,14 +50,19 @@ class Event {
     private static ?self $oNoteOff = null;
 
     /**
-     * @var self[] $aNoteOn - flyweight for note on events
+     * @var array<string, self> $aNoteOn - flyweight for note on events, keyed by note/velocity
      */
     private static array $aNoteOn  = [];
 
     /**
-     * @var self[] $aSetNote - flyweight for set not events
+     * @var self[] $aSetNote - flyweight for set not events, keyed by note
      */
     private static array $aSetNote = [];
+
+    /**
+     * @var array<string, self> $aSetCtrl - flyweight for controller set events, keyed by ctrl/value
+     */
+    private static array $aSetCtrl = [];
 
     /**
      * Don't allow arbitary construction of these.
@@ -109,4 +115,23 @@ class Event {
         }
         return self::$oNoteOff;
     }
+
+    /**
+     * Return a set controller event
+     *
+     * @param  int $iController
+     * @param  int $iValue
+     * @return self
+     */
+    public static function setCtrl(int $iController, int $iValue): self {
+        $sKey = $iController . ':' . $iValue;
+        if (!isset(self::$aSetCtrl[$sKey])) {
+            $oEvent = new self(self::SET_CTRL);
+            $oEvent->iController   = $iController;
+            $oEvent->iValue        = $iValue;
+            self::$aSetCtrl[$sKey] = $oEvent;
+        }
+        return self::$aSetCtrl[$sKey];
+    }
+
 }

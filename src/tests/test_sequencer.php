@@ -60,12 +60,12 @@ $oChipMachine
     ->setVoiceMaskVibratoRate(15, 6.0)
     ->setVoiceMaskVibratoDepth(15, 0.1)
     ->setOutputLevel(0.5)
-    ->setInsert(new Audio\Signal\Insert\DelayLoop(null, 123.0 * 3, 0.6))
+    ->setInsert(new Audio\Signal\Insert\DelayLoop(null, 123.0 * 3, 0.5))
 ;
 
 $oBassLine = new Audio\Machine\TBNaN();
 $oBassLine->setResonance(0.4);
-$oBassLine->setCutoff(0.95);
+$oBassLine->setCutoff(0.30);
 
 
 $oFMPad = new Audio\Machine\TwoOpFM(4);
@@ -279,8 +279,6 @@ $oSequencer->allocatePattern('pad', [6, 8, 10])
 
 $oSequencer->allocatePattern('pad', [7, 9, 11])
     ->addEvent(Event::setNote('D#3'), 1, 0)
-    //->addEvent(Event::setNote('A#3'), 3, 0)
-
 ;
 
 

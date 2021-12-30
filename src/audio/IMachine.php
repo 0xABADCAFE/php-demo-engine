@@ -27,13 +27,21 @@ interface IMachine extends Signal\IStream {
 
     const
         MIN_POLYPHONY = 1,
-        MAX_POLYPHONY = 8
+        MAX_POLYPHONY = 8,
+
+        VOICE_ATTENUATE = 1.0 / self::MAX_POLYPHONY
     ;
 
     const
         CTRL_PITCH       = 1,
         CTRL_VOLUME      = 2,
-        CTRL_CUSTOM      = 128
+        CTRL_CUSTOM      = 128,
+
+        CTRL_MIN_INPUT_VALUE  = 0,
+        CTRL_MAX_INPUT_VALUE  = 255,
+        CTRL_MIN_INPUT_DELTA  = -128,
+        CTRL_MAX_INPUT_DELTA  = 127
+
     ;
 
     /**

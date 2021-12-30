@@ -26,7 +26,7 @@ $oFMMarimba
     ->setCarrierLevelEnvelope(
         new Audio\Signal\Envelope\DecayPulse(1.0, 0.1)
     )
-    ->setOutputLevel(0.125)
+    ->setOutputLevel(0.3)
 ;
 
 
@@ -59,8 +59,8 @@ $oChipMachine
     ->setVoiceMaskWaveform(4, Audio\Signal\IWaveform::TRIANGLE)
     ->setVoiceMaskVibratoRate(15, 6.0)
     ->setVoiceMaskVibratoDepth(15, 0.1)
-    ->setOutputLevel(0.5)
-    ->setInsert(new Audio\Signal\Insert\DelayLoop(null, 123.0 * 3, 0.5))
+    ->setOutputLevel(1.2)
+    ->setInsert(new Audio\Signal\Insert\DelayLoop(null, 123.0 * 3, 0.6))
 ;
 
 $oBassLine = new Audio\Machine\TBNaN();
@@ -93,7 +93,7 @@ $oFMPad
         )
     )
     ->setCarrierMix(0.25)
-    ->setOutputLevel(0.075)
+    ->setOutputLevel(0.15)
     ->setPitchLFODepth(0.06)
     ->setPitchLFORate(4.5)
     ->enablePitchLFO(true, true)
@@ -219,7 +219,7 @@ $oSequencer->allocatePattern('bass', [7, 9])
 ;
 
 $oSequencer->allocatePattern('bass', [10, 12])
-//    ->addEvent(Event::setCtrl(Audio\Machine\TBNaN::CTRL_LPF_RESONANCE, 32), 0, 0)
+//    ->addEvent(Event::setCtrl(Audio\Machine\TBNaN::CTRL_LPF_CUTOFF, 32), 0, 0)
     ->addEvent(Event::noteOn('D#2', 60), 0, 0)
     ->addEvent(Event::noteOn('C2', 60), 0, 1)
     ->addEvent(Event::noteOff(), 0, 2)
@@ -283,8 +283,12 @@ $oSequencer->allocatePattern('pad', [7, 9, 11])
 ;
 
 
-$oOutput = Audio\Output\Piped::create();
-//$oOutput = new Audio\Output\Wav("sequence.wav");
+if (!empty($_SERVER['argv'][2])) {
+    $oOutput = new Audio\Output\Wav($_SERVER['argv'][2] . '.wav');
+} else {
+    $oOutput = Audio\Output\Piped::create();
+}
+
 $oOutput->open();
 
 $oSequencer->playSequence(

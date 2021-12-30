@@ -39,7 +39,8 @@ class Event {
         NOTE_ON  = 1,
         SET_NOTE = 2,
         NOTE_OFF = 3,
-        SET_CTRL = 4
+        SET_CTRL = 4,
+        MOD_CTRL = 5
     ;
 
     public int $iType = self::NOTHING;
@@ -63,6 +64,12 @@ class Event {
      * @var array<string, self> $aSetCtrl - flyweight for controller set events, keyed by ctrl/value
      */
     private static array $aSetCtrl = [];
+
+    /**
+     * @var array<string, self> $aModCtrl - flyweight for controller modify events, keyed by ctrl/delta
+     */
+    private static array $aModCtrl = [];
+
 
     /**
      * Don't allow arbitary construction of these.
@@ -132,6 +139,24 @@ class Event {
             self::$aSetCtrl[$sKey] = $oEvent;
         }
         return self::$aSetCtrl[$sKey];
+    }
+
+    /**
+     * Return a modify controller event
+     *
+     * @param  int $iController
+     * @param  int $iDelta
+     * @return self
+     */
+    public static function modCtrl(int $iController, int $iDelta): self {
+        $sKey = $iController . ':' . $iDelta;
+        if (!isset(self::$aModCtrl[$sKey])) {
+            $oEvent = new self(self::MOD_CTRL);
+            $oEvent->iController   = $iController;
+            $oEvent->iDelta        = $iDelta;
+            self::$aModCtrl[$sKey] = $oEvent;
+        }
+        return self::$aModCtrl[$sKey];
     }
 
 }

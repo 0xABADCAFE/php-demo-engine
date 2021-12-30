@@ -336,6 +336,7 @@ class Sequencer {
         $iLineOffset = 0;
         for ($iMeasure = $iStartMeasure; $iMeasure < $iLastMeasure; ++$iMeasure) {
             $aActivePatterns = [];
+            echo "Measure ", $iMeasure, "\n";
             foreach ($this->aMachineSequences as $sMachineName => $aSequence) {
                 if (isset($aSequence[$iMeasure])) {
                     $oPattern = $aSequence[$iMeasure];
@@ -422,6 +423,13 @@ class Sequencer {
                         case Audio\Sequence\Event::SET_CTRL:
                             $oMachine
                                 ->setVoiceControllerValue($iChannel, $oEvent->iController, $oEvent->iValue);
+                            break;
+
+                        case Audio\Sequence\Event::MOD_CTRL:
+                            $oMachine
+                                ->adjustVoiceControllerValue($iChannel, $oEvent->iController, $oEvent->iDelta);
+                            break;
+
                         default:
                             break;
                     }

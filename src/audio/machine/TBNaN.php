@@ -40,7 +40,8 @@ class TBNaN implements Audio\IMachine {
         DEFAULT_AEG_DECAY_RATE = 0.07,
         DEFAULT_FEG_DECAY_RATE = 0.05,
         DEFAULT_CUTOFF         = 1.0,
-        DEFAULT_RESONANCE      = 0.7
+        DEFAULT_RESONANCE      = 0.7,
+        LFO_RATE_MAX           = 32
     ;
 
 
@@ -49,16 +50,26 @@ class TBNaN implements Audio\IMachine {
      * Controllers 0x80 - 0xFF are reserved for machine specific applocations.
      */
     const
-        CTRL_WAVE_SELECT      = 0x80,
-        CTRL_PWM_WIDTH        = 0x81,
-        CTRL_AEG_DECAY_RATE   = 0x82,
-        CTRL_AEG_DECAY_LEVEL  = 0x83,
-        CTRL_LPF_CUTOFF       = 0x84,
-        CTRL_LPF_RESONANCE    = 0x85,
-        CTRL_FEG_DECAY_RATE   = 0x86,
-        CTRL_FEG_DECAY_LEVEL  = 0x87,
-        CTRL_MIN_INPUT_VALUE  = 0,
-        CTRL_MAX_INPUT_VALUE  = 255
+        CTRL_WAVE_SELECT      = self::CTRL_CUSTOM + 0,  // Value is enumerated waveform
+        CTRL_PWM_WIDTH        = self::CTRL_CUSTOM + 1,  // Value is 0 - 255, ControlCurve mapped
+        CTRL_AEG_DECAY_RATE   = self::CTRL_CUSTOM + 2,  // Value is 0 - 255, ControlCurve mapped
+        CTRL_AEG_DECAY_LEVEL  = self::CTRL_CUSTOM + 3,  // Value is 0 - 255, ControlCurve mapped
+        CTRL_LPF_CUTOFF       = self::CTRL_CUSTOM + 4,  // Value is 0 - 255, ControlCurve mapped
+        CTRL_LPF_RESONANCE    = self::CTRL_CUSTOM + 5,  // Value is 0 - 255, ControlCurve mapped
+        CTRL_FEG_DECAY_RATE   = self::CTRL_CUSTOM + 6,  // Value is 0 - 255, ControlCurve mapped
+        CTRL_FEG_DECAY_LEVEL  = self::CTRL_CUSTOM + 7,  // Value is 0 - 255, ControlCurve mapped
+        CTRL_PWM_LFO_DEPTH    = self::CTRL_CUSTOM + 8,  // Value is 0 - 255, ControlCurve mapped
+        CTRL_PWM_LFO_RATE     = self::CTRL_CUSTOM + 9,  // Value is 0 - 255, ControlCurve mapped
+        CTRL_AMP_LFO_DEPTH    = self::CTRL_CUSTOM + 10, // Value is 0 - 255, ControlCurve mapped
+        CTRL_AMP_LFO_RATE     = self::CTRL_CUSTOM + 11, // Value is 0 - 255, ControlCurve mapped
+        CTRL_AMP_LPF_DEPTH    = self::CTRL_CUSTOM + 12, // Value is 0 - 255, ControlCurve mapped
+        CTRL_AMP_LPF_RATE     = self::CTRL_CUSTOM + 13, // Value is 0 - 255, ControlCurve mapped
+        CTRL_LFO_ENABLE       = self::CTRL_CUSTOM + 14, // Value is bitmask of enabled LFOs
+
+        // Bitmask for LFO
+        LFO_BIT_PWM = 1,
+        LFO_BIT_AMP = 2,
+        LFO_BIT_LPF = 4
     ;
 
 
@@ -74,13 +85,30 @@ class TBNaN implements Audio\IMachine {
     private array $aWaveforms = [];
 
     private Audio\Signal\Oscillator\Sound    $oOscillator;
-    private Audio\Signal\Oscillator\LFO      $oPWM;
+    private Audio\Signal\Oscillator\LFO      $oPWM, $oTremolo, $oVibrato;
     private Audio\Signal\IFilter             $oFilter;
     private Audio\Signal\Envelope\DecayPulse $oFEG, $oAEG;
     private Audio\ControlCurve\Linear        $oDefaultControlCurve;
 
     /** @var array<int, Audio\IControlCurve> */
     private array $aControlCurves = [];
+
+    /** @var array<int, int> $aControlValues */
+    private array $aControlValues = [
+        self::CTRL_PWM_WIDTH        => 0,
+        self::CTRL_AEG_DECAY_RATE   => 0,
+        self::CTRL_AEG_DECAY_LEVEL  => 0,
+        self::CTRL_LPF_CUTOFF       => 0,
+        self::CTRL_LPF_RESONANCE    => 0,
+        self::CTRL_FEG_DECAY_RATE   => 0,
+        self::CTRL_FEG_DECAY_LEVEL  => 0,
+        self::CTRL_PWM_LFO_DEPTH    => 0,
+        self::CTRL_PWM_LFO_RATE     => 0,
+        self::CTRL_AMP_LFO_DEPTH    => 0,
+        self::CTRL_AMP_LFO_RATE     => 0,
+        self::CTRL_AMP_LPF_DEPTH    => 0,
+        self::CTRL_AMP_LPF_RATE     => 0,
+    ];
 
     /**
      * Constructor
@@ -90,7 +118,7 @@ class TBNaN implements Audio\IMachine {
         $this->initOscillator();
         $this->initFilter();
         $this->initControllers();
-        $this->setVoiceSource($this->oFilter, 0.125);
+        $this->setVoiceSource($this->oFilter, 1.0);
         $this->oVoice->disable();
     }
 
@@ -98,6 +126,8 @@ class TBNaN implements Audio\IMachine {
      * @inheritDoc
      */
     public function setVoiceControllerValue(int $iVoiceNumber, int $iController, int $iValue): self {
+        $iValue = min(max($iValue, self::CTRL_MIN_INPUT_VALUE), self::CTRL_MAX_INPUT_VALUE);
+        $this->aControlValues[$iController] = $iValue;
         switch ($iController) {
             case self::CTRL_WAVE_SELECT:
                 $this->setWaveform($iValue);
@@ -130,6 +160,20 @@ class TBNaN implements Audio\IMachine {
                 $this->setCutoffTarget($this->aControlCurves[$iController]->map((float)$iValue));
                 break;
 
+            // TODO
+            case self::CTRL_PWM_LFO_DEPTH:
+                break;
+            case self::CTRL_PWM_LFO_RATE:
+                break;
+            case self::CTRL_AMP_LFO_DEPTH:
+                break;
+            case self::CTRL_AMP_LFO_RATE:
+                break;
+            case self::CTRL_AMP_LPF_DEPTH:
+                break;
+            case self::CTRL_AMP_LPF_RATE:
+                break;
+
         }
         return $this;
     }
@@ -138,6 +182,12 @@ class TBNaN implements Audio\IMachine {
      * @inheritDoc
      */
     public function adjustVoiceControllerValue(int $iVoiceNumber, int $iController, int $iDelta) : self {
+        $iDelta = min(max($iDelta, self::CTRL_MIN_INPUT_DELTA), self::CTRL_MAX_INPUT_DELTA);
+        $this->setVoiceControllerValue(
+            $iVoiceNumber,
+            $iController,
+            $this->aControlValues[$iController] + $iDelta
+        );
         return $this;
     }
 
@@ -156,7 +206,7 @@ class TBNaN implements Audio\IMachine {
             $oControlCurve = $oCurve ?? $this->oDefaultControlCurve;
             $this->aControlCurves[$iController] = $oControlCurve;
         } else {
-            throw new \OutOfBoundsException('Invalud controller number #' . $iController);
+            throw new \OutOfBoundsException('Invalid controller number #' . $iController);
         }
         return $this;
     }
@@ -339,6 +389,12 @@ class TBNaN implements Audio\IMachine {
             self::CTRL_LPF_RESONANCE    => $this->oDefaultControlCurve,
             self::CTRL_FEG_DECAY_RATE   => $this->oDefaultControlCurve,
             self::CTRL_FEG_DECAY_LEVEL  => $this->oDefaultControlCurve,
+            self::CTRL_PWM_LFO_DEPTH    => $this->oDefaultControlCurve,
+            self::CTRL_PWM_LFO_RATE     => $this->oDefaultControlCurve,
+            self::CTRL_AMP_LFO_DEPTH    => $this->oDefaultControlCurve,
+            self::CTRL_AMP_LFO_RATE     => $this->oDefaultControlCurve,
+            self::CTRL_AMP_LPF_DEPTH    => $this->oDefaultControlCurve,
+            self::CTRL_AMP_LPF_RATE     => $this->oDefaultControlCurve,
         ];
     }
 }

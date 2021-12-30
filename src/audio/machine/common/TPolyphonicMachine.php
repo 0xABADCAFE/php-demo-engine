@@ -38,7 +38,6 @@ trait TPolyphonicMachine {
     protected Audio\Signal\FixedMixer $oMixer;
     protected ?Audio\Signal\IInsert   $oInsert = null;
     protected float
-        $fOutScale = 1.0,
         $fOutLevel = 1.0
     ;
 
@@ -50,7 +49,6 @@ trait TPolyphonicMachine {
     protected function initPolyphony(int $iNumVoices): void {
         self::initStreamTrait();
         $this->iNumVoices = max(min($iNumVoices, Audio\IMachine::MAX_POLYPHONY), Audio\IMachine::MIN_POLYPHONY);
-        $this->fOutScale  = $this->fOutLevel / $this->iNumVoices;
         $this->oOutput    =
         $this->oMixer     = new Audio\Signal\FixedMixer();
         $this->setOutputLevel($this->fOutLevel);
@@ -103,7 +101,7 @@ trait TPolyphonicMachine {
      */
     public function setOutputLevel(float $fVolume): Audio\IMachine {
         $this->fOutLevel = $fVolume;
-        $this->oMixer->setOutputLevel($this->fOutLevel * $this->fOutScale);
+        $this->oMixer->setOutputLevel($this->fOutLevel * Audio\IMachine::VOICE_ATTENUATE);
         return $this;
     }
 

@@ -59,17 +59,8 @@ class TBNaN implements Audio\IMachine {
         CTRL_FEG_DECAY_RATE   = self::CTRL_CUSTOM + 6,  // Value is 0 - 255, ControlCurve mapped
         CTRL_FEG_DECAY_LEVEL  = self::CTRL_CUSTOM + 7,  // Value is 0 - 255, ControlCurve mapped
         CTRL_PWM_LFO_DEPTH    = self::CTRL_CUSTOM + 8,  // Value is 0 - 255, ControlCurve mapped
-        CTRL_PWM_LFO_RATE     = self::CTRL_CUSTOM + 9,  // Value is 0 - 255, ControlCurve mapped
-        CTRL_AMP_LFO_DEPTH    = self::CTRL_CUSTOM + 10, // Value is 0 - 255, ControlCurve mapped
-        CTRL_AMP_LFO_RATE     = self::CTRL_CUSTOM + 11, // Value is 0 - 255, ControlCurve mapped
-        CTRL_AMP_LPF_DEPTH    = self::CTRL_CUSTOM + 12, // Value is 0 - 255, ControlCurve mapped
-        CTRL_AMP_LPF_RATE     = self::CTRL_CUSTOM + 13, // Value is 0 - 255, ControlCurve mapped
-        CTRL_LFO_ENABLE       = self::CTRL_CUSTOM + 14, // Value is bitmask of enabled LFOs
+        CTRL_PWM_LFO_RATE     = self::CTRL_CUSTOM + 9   // Value is 0 - 255, ControlCurve mapped
 
-        // Bitmask for LFO
-        LFO_BIT_PWM = 1,
-        LFO_BIT_AMP = 2,
-        LFO_BIT_LPF = 4
     ;
 
 
@@ -112,6 +103,7 @@ class TBNaN implements Audio\IMachine {
             self::CTRL_WAVE_SELECT => (object)[
                 'iType'  => self::CTRL_TYPE_SWITCH,
                 'iInit'  => Audio\Signal\IWaveform::PULSE,
+                'sInfo'  => "Waveform selection",
                 'cApply' => function(int $iVoice, int $iValue): void {
                     $this->setWaveform($iValue);
                 }
@@ -120,6 +112,7 @@ class TBNaN implements Audio\IMachine {
             self::CTRL_LPF_CUTOFF => (object)[
                 'iType'  => self::CTRL_TYPE_KNOB,
                 'iInit'  => 255,
+                'sInfo'  => "LPF Cutoff",
                 'fMin'   => 0.0,
                 'fMax'   => 1.0,
                 'cApply' => function(int $iVoice, float $fValue): void {
@@ -129,6 +122,7 @@ class TBNaN implements Audio\IMachine {
             self::CTRL_LPF_RESONANCE => (object)[
                 'iType' => self::CTRL_TYPE_KNOB,
                 'iInit' => 179,
+                'sInfo'  => "LPF Resonance",
                 'fMin'  => 0.0,
                 'fMax'  => 1.0,
                 'cApply' => function(int $iVoice, float $fValue): void {

@@ -38,9 +38,9 @@ $oSequencer->allocatePattern('drums', [0, 1, 2, 3, 4, 5, 6, 7])
 ;
 
 $oSequencer->allocatePattern('bass', [0])
+    ->addEvent(Event::setCtrl(Audio\Machine\TBNaN::CTRL_WAVE_SELECT, Audio\Signal\IWaveform::PULSE), 0, 0)
     ->addEvent(Event::setCtrl(Audio\Machine\TBNaN::CTRL_LPF_CUTOFF, 20), 0, 0)
     ->addEvent(Event::setCtrl(Audio\Machine\TBNaN::CTRL_LPF_RESONANCE, 20), 0, 0)
-
     ->addEvent(Event::modCtrl(Audio\Machine\TBNaN::CTRL_LPF_CUTOFF, 2), 0, 1, 1)
 
     ->addEvent(Event::noteOn('C2', 60), 0, 0, 8)

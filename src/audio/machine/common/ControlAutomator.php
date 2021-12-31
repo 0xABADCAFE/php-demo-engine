@@ -28,6 +28,8 @@ use function \max, \min;
  *
  * Created from an IMachine instance, creates the necessary mapping and state tracking for any automatable
  * controls. This is then used to implement ISequenceControllable for the machine as a delegate.
+ *
+ * TODO - Allow redefinition of control curves.
  */
 class ControlAutomator implements ISequenceControllable {
 
@@ -49,6 +51,8 @@ class ControlAutomator implements ISequenceControllable {
     public function __construct(Audio\IMachine $oMachine) {
         $aControllers   = $oMachine->getControllerDefs();
 
+        echo "Configuring control automation for ", get_class($oMachine), "\n";
+
         // For each TYPE_KNOB controller, initialise a control curve that will map the controller range
         // to the expected input range for that controller.
         foreach ($aControllers as $iControlNumber => $oControlInfo) {
@@ -60,8 +64,18 @@ class ControlAutomator implements ISequenceControllable {
                     (float)ISequenceControllable::CTRL_MIN_INPUT_VALUE,
                     (float)ISequenceControllable::CTRL_MAX_INPUT_VALUE
                 );
+                echo
+                    "\tAssigned Controller #", $iControlNumber,
+                    " as knob controlling ", $oControlInfo->sInfo,
+                    " over range ", $oControlInfo->fMin,
+                    " to ", $oControlInfo->fMax, "\n";
+
             } else {
                 $this->aSwitches[$iControlNumber] = $oControlInfo->cApply;
+                echo
+                    "\tAssigned Controller #", $iControlNumber,
+                    " as switch controlling ", $oControlInfo->sInfo, "\n";
+
             }
         }
 

@@ -93,6 +93,7 @@ $oSequencer->allocatePattern('bass', [3])
 ;
 
 $oSequencer->allocatePattern('bass', [4, 5, 6, 7])
+    ->addEvent(Event::modCtrl(Audio\Machine\TBNaN::CTRL_LPF_CUTOFF, -1), 0, 0, 2)
     ->addEvent(Event::noteOn('C2', 60), 0, 0, 8)
     ->addEvent(Event::noteOn('C3', 40), 0, 1, 8)
     ->addEvent(Event::noteOn('C2', 60), 0, 2, 8)
@@ -104,8 +105,8 @@ $oSequencer->allocatePattern('bass', [4, 5, 6, 7])
 ;
 
 
-if (!empty($_SERVER['argv'][2])) {
-    $oOutput = new Audio\Output\Wav($_SERVER['argv'][2] . '.wav');
+if (!empty($_SERVER['argv'][1])) {
+    $oOutput = new Audio\Output\Wav($_SERVER['argv'][1] . '.wav');
 } else {
     $oOutput = Audio\Output\Piped::create();
 }

@@ -85,30 +85,11 @@ class TBNaN implements Audio\IMachine {
     private array $aWaveforms = [];
 
     private Audio\Signal\Oscillator\Sound    $oOscillator;
-    private Audio\Signal\Oscillator\LFO      $oPWM, $oTremolo, $oVibrato;
+    private Audio\Signal\Oscillator\LFO      $oPWM;
     private Audio\Signal\IFilter             $oFilter;
     private Audio\Signal\Envelope\DecayPulse $oFEG, $oAEG;
-    private Audio\ControlCurve\Linear        $oDefaultControlCurve;
 
-    /** @var array<int, Audio\IControlCurve> */
-    private array $aControlCurves = [];
-
-    /** @var array<int, int> $aControlValues */
-    private array $aControlValues = [
-        self::CTRL_PWM_WIDTH        => 0,
-        self::CTRL_AEG_DECAY_RATE   => 0,
-        self::CTRL_AEG_DECAY_LEVEL  => 0,
-        self::CTRL_LPF_CUTOFF       => 0,
-        self::CTRL_LPF_RESONANCE    => 0,
-        self::CTRL_FEG_DECAY_RATE   => 0,
-        self::CTRL_FEG_DECAY_LEVEL  => 0,
-        self::CTRL_PWM_LFO_DEPTH    => 0,
-        self::CTRL_PWM_LFO_RATE     => 0,
-        self::CTRL_AMP_LFO_DEPTH    => 0,
-        self::CTRL_AMP_LFO_RATE     => 0,
-        self::CTRL_AMP_LPF_DEPTH    => 0,
-        self::CTRL_AMP_LPF_RATE     => 0,
-    ];
+    private ControlAutomator $oControlAutomator;
 
     /**
      * Constructor
@@ -117,64 +98,52 @@ class TBNaN implements Audio\IMachine {
         $this->initWaveforms();
         $this->initOscillator();
         $this->initFilter();
-        $this->initControllers();
         $this->setVoiceSource($this->oFilter, 1.0);
         $this->oVoice->disable();
+        $this->oControlAutomator = new ControlAutomator($this);
     }
+
+
+    /**
+     * @inheritDoc
+     */
+    public function getControllerDefs(): array {
+        return [
+            self::CTRL_WAVE_SELECT => (object)[
+                'iType'  => self::CTRL_TYPE_SWITCH,
+                'iInit'  => Audio\Signal\IWaveform::PULSE,
+                'cApply' => function(int $iVoice, int $iValue): void {
+                    $this->setWaveform($iValue);
+                }
+
+            ],
+            self::CTRL_LPF_CUTOFF => (object)[
+                'iType'  => self::CTRL_TYPE_KNOB,
+                'iInit'  => 255,
+                'fMin'   => 0.0,
+                'fMax'   => 1.0,
+                'cApply' => function(int $iVoice, float $fValue): void {
+                    $this->setCutoff($fValue);
+                }
+            ],
+            self::CTRL_LPF_RESONANCE => (object)[
+                'iType' => self::CTRL_TYPE_KNOB,
+                'iInit' => 179,
+                'fMin'  => 0.0,
+                'fMax'  => 1.0,
+                'cApply' => function(int $iVoice, float $fValue): void {
+                    $this->setResonance($fValue);
+                }
+            ]
+        ];
+    }
+
 
     /**
      * @inheritDoc
      */
     public function setVoiceControllerValue(int $iVoiceNumber, int $iController, int $iValue): self {
-        $iValue = min(max($iValue, self::CTRL_MIN_INPUT_VALUE), self::CTRL_MAX_INPUT_VALUE);
-        $this->aControlValues[$iController] = $iValue;
-        switch ($iController) {
-            case self::CTRL_WAVE_SELECT:
-                $this->setWaveform($iValue);
-                break;
-
-            case self::CTRL_PWM_WIDTH:
-                $this->setPWMWidth($this->aControlCurves[$iController]->map((float)$iValue));
-                break;
-
-            case self::CTRL_AEG_DECAY_RATE:
-                $this->setLevelDecay($this->aControlCurves[$iController]->map((float)$iValue));
-                break;
-
-            case self::CTRL_AEG_DECAY_LEVEL:
-                $this->setLevelTarget($this->aControlCurves[$iController]->map((float)$iValue));
-                break;
-
-            case self::CTRL_LPF_CUTOFF:
-                $this->setCutoff($this->aControlCurves[$iController]->map((float)$iValue));
-                break;
-
-            case self::CTRL_LPF_RESONANCE:
-                $this->setResonance($this->aControlCurves[$iController]->map((float)$iValue));
-                break;
-
-            case self::CTRL_FEG_DECAY_RATE:
-                $this->setCutoffDecay($this->aControlCurves[$iController]->map((float)$iValue));
-
-            case self::CTRL_FEG_DECAY_LEVEL:
-                $this->setCutoffTarget($this->aControlCurves[$iController]->map((float)$iValue));
-                break;
-
-            // TODO
-            case self::CTRL_PWM_LFO_DEPTH:
-                break;
-            case self::CTRL_PWM_LFO_RATE:
-                break;
-            case self::CTRL_AMP_LFO_DEPTH:
-                break;
-            case self::CTRL_AMP_LFO_RATE:
-                break;
-            case self::CTRL_AMP_LPF_DEPTH:
-                break;
-            case self::CTRL_AMP_LPF_RATE:
-                break;
-
-        }
+        $this->oControlAutomator->setVoiceControllerValue($iVoiceNumber, $iController, $iValue);
         return $this;
     }
 
@@ -182,32 +151,7 @@ class TBNaN implements Audio\IMachine {
      * @inheritDoc
      */
     public function adjustVoiceControllerValue(int $iVoiceNumber, int $iController, int $iDelta) : self {
-        $iDelta = min(max($iDelta, self::CTRL_MIN_INPUT_DELTA), self::CTRL_MAX_INPUT_DELTA);
-        $this->setVoiceControllerValue(
-            $iVoiceNumber,
-            $iController,
-            $this->aControlValues[$iController] + $iDelta
-        );
-        return $this;
-    }
-
-    /**
-     * Set the control curve for the enumerated controller. Setting a null control curve will revert to
-     * the built-in machine default. If the enumerated controller does not manage a continuous controller
-     * value, \OutOfBoundsException is thrown.
-     *
-     * @param  int $iController
-     * @param  Audio\IControlCurve|null $oCurve
-     * @return self
-     * @throws \OutOfBoundsException
-     */
-    public function setControllerCurve(int $iController, ?Audio\IControlCurve $oCurve): self {
-        if (isset($this->aControlCurves[$iController])) {
-            $oControlCurve = $oCurve ?? $this->oDefaultControlCurve;
-            $this->aControlCurves[$iController] = $oControlCurve;
-        } else {
-            throw new \OutOfBoundsException('Invalid controller number #' . $iController);
-        }
+        $this->oControlAutomator->adjustVoiceControllerValue($iVoiceNumber, $iController, $iDelta);
         return $this;
     }
 
@@ -369,34 +313,6 @@ class TBNaN implements Audio\IMachine {
         );
     }
 
-    /**
-     * Initialise the curves for the controllers. The default is set to a linear output of 0.0 - 1.0 over the input
-     * range 0 - 255.
-     */
-    private function initControllers(): void {
-        $this->oDefaultControlCurve = new Audio\ControlCurve\Linear(
-            0.0,
-            1.0,
-            (float)self::CTRL_MIN_INPUT_VALUE,
-            (float)self::CTRL_MAX_INPUT_VALUE
-        );
-
-        $this->aControlCurves = [
-            self::CTRL_PWM_WIDTH        => $this->oDefaultControlCurve,
-            self::CTRL_AEG_DECAY_RATE   => $this->oDefaultControlCurve,
-            self::CTRL_AEG_DECAY_LEVEL  => $this->oDefaultControlCurve,
-            self::CTRL_LPF_CUTOFF       => $this->oDefaultControlCurve,
-            self::CTRL_LPF_RESONANCE    => $this->oDefaultControlCurve,
-            self::CTRL_FEG_DECAY_RATE   => $this->oDefaultControlCurve,
-            self::CTRL_FEG_DECAY_LEVEL  => $this->oDefaultControlCurve,
-            self::CTRL_PWM_LFO_DEPTH    => $this->oDefaultControlCurve,
-            self::CTRL_PWM_LFO_RATE     => $this->oDefaultControlCurve,
-            self::CTRL_AMP_LFO_DEPTH    => $this->oDefaultControlCurve,
-            self::CTRL_AMP_LFO_RATE     => $this->oDefaultControlCurve,
-            self::CTRL_AMP_LPF_DEPTH    => $this->oDefaultControlCurve,
-            self::CTRL_AMP_LPF_RATE     => $this->oDefaultControlCurve,
-        ];
-    }
 }
 
 

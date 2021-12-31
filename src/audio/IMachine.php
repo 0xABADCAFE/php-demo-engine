@@ -23,25 +23,13 @@ namespace ABadCafe\PDE\Audio;
 /**
  * Interface for machines (synthesis units).
  */
-interface IMachine extends Signal\IStream {
+interface IMachine extends Signal\IStream, Machine\ISequenceControllable {
 
     const
         MIN_POLYPHONY = 1,
         MAX_POLYPHONY = 8,
 
         VOICE_ATTENUATE = 1.0 / self::MAX_POLYPHONY
-    ;
-
-    const
-        CTRL_PITCH       = 1,
-        CTRL_VOLUME      = 2,
-        CTRL_CUSTOM      = 128,
-
-        CTRL_MIN_INPUT_VALUE  = 0,
-        CTRL_MAX_INPUT_VALUE  = 255,
-        CTRL_MIN_INPUT_DELTA  = -128,
-        CTRL_MAX_INPUT_DELTA  = 127
-
     ;
 
     /**
@@ -101,27 +89,6 @@ interface IMachine extends Signal\IStream {
      * @return self
      */
     public function setVoiceVelocity(int $iVoiceNumber, int $iVelocity): self;
-
-
-    /**
-     * Sets a controller to a specific value. Controllers are typically machine specific.
-     *
-     * @param  int  $iVoiceNumber
-     * @param  int  $iController
-     * @param  int  $iValue
-     * @return self
-     */
-    public function setVoiceControllerValue(int $iVoiceNumber, int $iController, int $iValue): self;
-
-    /**
-     * Modifies a controller value.
-     *
-     * @param  int  $iVoiceNumber
-     * @param  int  $iController
-     * @param  int  $iDelta
-     * @return self
-     */
-    public function adjustVoiceControllerValue(int $iVoiceNumber, int $iController, int $iDelta): self;
 
     /**
      * Starts the specified voice playing. Does nothing if the voice number is out of range.

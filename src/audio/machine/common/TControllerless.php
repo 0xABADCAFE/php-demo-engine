@@ -24,9 +24,16 @@ use ABadCafe\PDE\Audio;
 /**
  * TControllerless
  *
- * Empty controllers
+ * Empty stub implementation for ISequenceControllable
  */
 trait TControllerless {
+
+    /**
+     * @inheritDoc
+     */
+    public function getControllerDefs(): array {
+        return [];
+    }
 
     /**
      * @inheritDoc

@@ -23,7 +23,7 @@ namespace ABadCafe\PDE\Audio;
 /**
  * Interface for machines (synthesis units).
  */
-interface IMachine extends Signal\IStream, Machine\ISequenceControllable {
+interface IMachine extends Signal\IStream, Machine\Control\IAutomatable {
 
     const
         MIN_POLYPHONY = 1,

@@ -18,34 +18,17 @@
 
 declare(strict_types=1);
 
-namespace ABadCafe\PDE\Audio\Machine;
-use ABadCafe\PDE\Audio;
+namespace ABadCafe\PDE\Audio\Machine\Control;
 
-/**
- * TControllerless
- *
- * Empty stub implementation for IAutomatable
- */
-trait TControllerless {
+class Switcher extends Definition {
 
-    /**
-     * @inheritDoc
-     */
-    public function getControllerDefs(): array {
-        return [];
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setVoiceControllerValue(int $iVoiceNumber, int $iController, int $iValue): self {
-        return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function adjustVoiceControllerValue(int $iVoiceNumber, int $iController, int $iDelta) : self {
-        return $this;
+    public function __construct(
+        int      $iControllerNumber,
+        callable $cApplicator,
+        int      $iInitial = 0
+    ) {
+        $this->iControllerNumber = $iControllerNumber;
+        $this->cApplicator       = $cApplicator;
+        $this->iInitial          = $iInitial;
     }
 }

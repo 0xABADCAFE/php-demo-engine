@@ -41,7 +41,8 @@ class TBNaN implements Audio\IMachine {
         DEFAULT_FEG_DECAY_RATE = 0.05,
         DEFAULT_CUTOFF         = 1.0,
         DEFAULT_RESONANCE      = 0.7,
-        LFO_RATE_MAX           = 32
+        LFO_RATE_MAX           = 32,
+        LFO_RATE_MIN           = 0.125
     ;
 
 
@@ -58,8 +59,7 @@ class TBNaN implements Audio\IMachine {
         CTRL_LPF_RESONANCE    = self::CTRL_CUSTOM + 5,  // Value is 0 - 255, ControlCurve mapped
         CTRL_FEG_DECAY_RATE   = self::CTRL_CUSTOM + 6,  // Value is 0 - 255, ControlCurve mapped
         CTRL_FEG_DECAY_LEVEL  = self::CTRL_CUSTOM + 7,  // Value is 0 - 255, ControlCurve mapped
-        CTRL_PWM_LFO_DEPTH    = self::CTRL_CUSTOM + 8,  // Value is 0 - 255, ControlCurve mapped
-        CTRL_PWM_LFO_RATE     = self::CTRL_CUSTOM + 9   // Value is 0 - 255, ControlCurve mapped
+        CTRL_PWM_LFO_RATE     = self::CTRL_CUSTOM + 8   // Value is 0 - 255, ControlCurve mapped
 
     ;
 
@@ -80,7 +80,7 @@ class TBNaN implements Audio\IMachine {
     private Audio\Signal\IFilter             $oFilter;
     private Audio\Signal\Envelope\DecayPulse $oFEG, $oAEG;
 
-    private ControlAutomator $oControlAutomator;
+    private Control\Automator $oControlAutomator;
 
     /**
      * Constructor
@@ -91,7 +91,7 @@ class TBNaN implements Audio\IMachine {
         $this->initFilter();
         $this->setVoiceSource($this->oFilter, 1.0);
         $this->oVoice->disable();
-        $this->oControlAutomator = new ControlAutomator($this);
+        $this->oControlAutomator = new Control\Automator($this);
     }
 
 
@@ -100,35 +100,74 @@ class TBNaN implements Audio\IMachine {
      */
     public function getControllerDefs(): array {
         return [
-            self::CTRL_WAVE_SELECT => (object)[
-                'iType'  => self::CTRL_TYPE_SWITCH,
-                'iInit'  => Audio\Signal\IWaveform::PULSE,
-                'sInfo'  => "Waveform selection",
-                'cApply' => function(int $iVoice, int $iValue): void {
+            // Waveform
+            new Control\Switcher(
+                self::CTRL_WAVE_SELECT,
+                function(int $iVoice, int $iValue): void {
                     $this->setWaveform($iValue);
+                },
+                Audio\Signal\IWaveform::PULSE
+            ),
+            new Control\Knob(
+                self::CTRL_PWM_WIDTH,
+                function(int $iVoice, float $fValue): void {
+                    $this->setPWMWidth($fValue);
                 }
+            ),
 
-            ],
-            self::CTRL_LPF_CUTOFF => (object)[
-                'iType'  => self::CTRL_TYPE_KNOB,
-                'iInit'  => 255,
-                'sInfo'  => "LPF Cutoff",
-                'fMin'   => 0.0,
-                'fMax'   => 1.0,
-                'cApply' => function(int $iVoice, float $fValue): void {
+            // Amp Envelope
+            new Control\Knob(
+                self::CTRL_AEG_DECAY_RATE,
+                function(int $iVoice, float $fValue): void {
+                    $this->setLevelDecay($fValue);
+                }
+            ),
+            new Control\Knob(
+                self::CTRL_AEG_DECAY_LEVEL,
+                function(int $iVoice, float $fValue): void {
+                    $this->setLevelTarget($fValue);
+                }
+            ),
+
+            // Filter
+            new Control\Knob(
+                self::CTRL_LPF_CUTOFF,
+                function(int $iVoice, float $fValue): void {
                     $this->setCutoff($fValue);
                 }
-            ],
-            self::CTRL_LPF_RESONANCE => (object)[
-                'iType' => self::CTRL_TYPE_KNOB,
-                'iInit' => 179,
-                'sInfo'  => "LPF Resonance",
-                'fMin'  => 0.0,
-                'fMax'  => 1.0,
-                'cApply' => function(int $iVoice, float $fValue): void {
+            ),
+            new Control\Knob(
+                self::CTRL_LPF_RESONANCE,
+                function(int $iVoice, float $fValue): void {
                     $this->setResonance($fValue);
                 }
-            ]
+            ),
+
+            // Filter Envelope
+            new Control\Knob(
+                self::CTRL_FEG_DECAY_RATE,
+                function(int $iVoice, float $fValue): void {
+                    $this->setCutoffDecay($fValue);
+                }
+            ),
+            new Control\Knob(
+                self::CTRL_FEG_DECAY_LEVEL,
+                function(int $iVoice, float $fValue): void {
+                    $this->setCutoffTarget($fValue);
+                }
+            ),
+
+            // PWM LFO
+            new Control\Knob(
+                self::CTRL_PWM_LFO_RATE,
+                function(int $iVoice, float $fValue): void {
+                    $this->oPWM->setFrequency($fValue);
+                },
+                0,
+                self::LFO_RATE_MIN,
+                self::LFO_RATE_MAX
+            ),
+
         ];
     }
 

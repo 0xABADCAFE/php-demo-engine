@@ -18,20 +18,20 @@
 
 declare(strict_types=1);
 
-namespace ABadCafe\PDE\Audio\Machine;
+namespace ABadCafe\PDE\Audio\Machine\Control;
 use ABadCafe\PDE\Audio;
 
 use function \max, \min;
 
 /**
- * ControlAutomator
+ * Automator
  *
  * Created from an IMachine instance, creates the necessary mapping and state tracking for any automatable
  * controls. This is then used to implement ISequenceControllable for the machine as a delegate.
  *
  * TODO - Allow redefinition of control curves.
  */
-class ControlAutomator implements ISequenceControllable {
+class Automator implements IAutomatable {
 
     /** @var array<int, Audio\IControlCurve> $aControlCurves */
     private array $aControlCurves = [];
@@ -39,51 +39,61 @@ class ControlAutomator implements ISequenceControllable {
     /** @var array<int, array<int, int>> $aPerVoiceControllerValues */
     private array $aPerVoiceControllerValues = [];
 
-    /** @var array<int, callable> $aKnobs */
-    private array $aKnobs = [];
+    /** @var array<int, callable> $aKnobCallbacks */
+    private array $aKnobCallbacks = [];
 
-    /** @var array<int, callable> $aSwitches */
-    private array $aSwitches = [];
+    /** @var array<int, callable> $aSwitchCallbacks */
+    private array $aSwitchCallbacks = [];
 
     /**
      * @param Audio\IMachine $oMachine
      */
     public function __construct(Audio\IMachine $oMachine) {
-        $aControllers   = $oMachine->getControllerDefs();
+        $aControlDefinitions = $oMachine->getControllerDefs();
 
         echo "Configuring control automation for ", get_class($oMachine), "\n";
 
         // For each TYPE_KNOB controller, initialise a control curve that will map the controller range
         // to the expected input range for that controller.
-        foreach ($aControllers as $iControlNumber => $oControlInfo) {
-            if (ISequenceControllable::CTRL_TYPE_KNOB === $oControlInfo->iType) {
-                $this->aKnobs[$iControlNumber] = $oControlInfo->cApply;
-                $this->aControlCurves[$iControlNumber] = new Audio\ControlCurve\Linear(
-                    $oControlInfo->fMin,
-                    $oControlInfo->fMax,
-                    (float)ISequenceControllable::CTRL_MIN_INPUT_VALUE,
-                    (float)ISequenceControllable::CTRL_MAX_INPUT_VALUE
+        foreach ($aControlDefinitions as $oControlDefinition) {
+            if ($oControlDefinition instanceof Knob) {
+                $this->aKnobCallbacks[
+                    $oControlDefinition->iControllerNumber
+                ] = $oControlDefinition->cApplicator;
+
+                // Create the control curve
+                $this->aControlCurves[
+                    $oControlDefinition->iControllerNumber
+                ] = new Audio\ControlCurve\Linear(
+                    $oControlDefinition->fMinOutput,
+                    $oControlDefinition->fMaxOutput,
+                    (float)self::CTRL_MIN_INPUT_VALUE,
+                    (float)self::CTRL_MAX_INPUT_VALUE
                 );
                 echo
-                    "\tAssigned Controller #", $iControlNumber,
-                    " as knob controlling ", $oControlInfo->sInfo,
-                    " over range ", $oControlInfo->fMin,
-                    " to ", $oControlInfo->fMax, "\n";
+                    "\tAssigned Controller #", $oControlDefinition->iControllerNumber,
+                    " as Knob with range ", $oControlDefinition->fMinOutput,
+                    " to ", $oControlDefinition->fMaxOutput, "\n";
 
-            } else {
-                $this->aSwitches[$iControlNumber] = $oControlInfo->cApply;
+            } else if ($oControlDefinition instanceof Switcher) {
+                $this->aSwitchCallbacks[
+                    $oControlDefinition->iControllerNumber
+                ] = $oControlDefinition->cApplicator;
                 echo
-                    "\tAssigned Controller #", $iControlNumber,
-                    " as switch controlling ", $oControlInfo->sInfo, "\n";
-
+                    "\tAssigned Controller #", $oControlDefinition->iControllerNumber,
+                    " as Switch\n";
+            } else {
+                throw new \TypeError();
             }
         }
 
         $iNumVoices = $oMachine->getNumVoices();
         for ($iVoice = 0; $iVoice < $iNumVoices; ++$iVoice) {
             $this->aPerVoiceControllerValues[$iVoice] = [];
-            foreach ($aControllers as $iControlNumber => $oControlInfo) {
-                $this->aPerVoiceControllerValues[$iVoice][$iControlNumber] = $oControlInfo->iInit ?? 0;
+            foreach ($aControlDefinitions as $oControlDefinition) {
+                $this->aPerVoiceControllerValues[$iVoice][
+                    $oControlDefinition->iControllerNumber
+                ] = $oControlDefinition->iInitial;
             }
         }
     }
@@ -99,13 +109,13 @@ class ControlAutomator implements ISequenceControllable {
         if ($iValue !== $this->aPerVoiceControllerValues[$iVoiceNumber][$iController]) {
             $this->aPerVoiceControllerValues[$iVoiceNumber][$iController] = $iValue;
 
-            if (isset($this->aKnobs[$iController])) {
+            if (isset($this->aKnobCallbacks[$iController])) {
                 // Knob controls need the input value mapping to some controller specific range...
-                $cKnob = $this->aKnobs[$iController];
+                $cKnob = $this->aKnobCallbacks[$iController];
                 $cKnob($iVoiceNumber, $this->aControlCurves[$iController]->map((float)$iValue));
-            } else if (isset($this->aSwitches[$iController])) {
+            } else if (isset($this->aSwitchCallbacks[$iController])) {
                 // Switch controls can accept the input value directly
-                $cSwitch = $this->aSwitches[$iController];
+                $cSwitch = $this->aSwitchCallbacks[$iController];
                 $cSwitch($iVoiceNumber, $iValue);
             }
         }
@@ -129,5 +139,4 @@ class ControlAutomator implements ISequenceControllable {
     public function getControllerDefs(): array {
         return [];
     }
-
 }

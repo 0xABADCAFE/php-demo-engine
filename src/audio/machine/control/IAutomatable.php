@@ -18,15 +18,15 @@
 
 declare(strict_types=1);
 
-namespace ABadCafe\PDE\Audio\Machine;
+namespace ABadCafe\PDE\Audio\Machine\Control;
 
 /**
- * ISequenceControllable
+ * IAutomatable
  *
  * Main interface for Sequenced controller automation. Events such as SET_CTRL and MOD_CTRL are actioned through this
  * interface.
  */
-interface ISequenceControllable {
+interface IAutomatable {
 
     const
         /**
@@ -56,7 +56,7 @@ interface ISequenceControllable {
     /**
      * Obtain the set of sequence controllable controllers, keyed by Controller Number
      *
-     * @return array<int, \stdClass>
+     * @return Definition[]
      */
     public function getControllerDefs(): array;
 

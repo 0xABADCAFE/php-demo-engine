@@ -80,6 +80,8 @@ class TwoOpFM implements Audio\IMachine {
         $fCarrierMix      = 1.0  // Carrier to output mix level
     ;
 
+    //private Control\Automator $oControlAutomator;
+
     /**
      * Constructor
      *

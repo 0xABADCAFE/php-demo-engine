@@ -60,7 +60,6 @@ class TBNaN implements Audio\IMachine {
         CTRL_FEG_DECAY_RATE   = self::CTRL_CUSTOM + 6,  // Value is 0 - 255, ControlCurve mapped
         CTRL_FEG_DECAY_LEVEL  = self::CTRL_CUSTOM + 7,  // Value is 0 - 255, ControlCurve mapped
         CTRL_PWM_LFO_RATE     = self::CTRL_CUSTOM + 8   // Value is 0 - 255, ControlCurve mapped
-
     ;
 
 

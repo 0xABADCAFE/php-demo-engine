@@ -91,8 +91,6 @@ class TwoOpFM implements Audio\IMachine {
         self::initShared();
         $this->initPolyphony($iNumVoices);
 
-        $fMixLevel = 0.5 / $this->iNumVoices;
-
         for ($i = 0; $i < $this->iNumVoices; ++$i) {
 
             // Create the fixed topology.
@@ -115,7 +113,7 @@ class TwoOpFM implements Audio\IMachine {
             $this->aCarrier[$i]   = $oCarrier;
             $this->aVoice[$i]     = $oMixer;
             $this->aBaseFreq[$i]  = Audio\Note::CENTRE_FREQUENCY;
-            $this->setVoiceSource($i, $oMixer, $fMixLevel);
+            $this->setVoiceSource($i, $oMixer, 1.0);
         }
 
         $this->oPitchLFO = new Audio\Signal\Oscillator\LFO(self::$aWaveforms[Audio\Signal\IWaveform::SINE]);
@@ -231,18 +229,12 @@ class TwoOpFM implements Audio\IMachine {
      * rectifiers can be applied.
      *
      * @param  int $iWaveform
-     * @param  int $iModifier
      * @return self
      */
-    public function setModulatorWaveform(int $iWaveform, int $iModifier = Audio\Signal\Waveform\Rectifier::NONE): self {
+    public function setModulatorWaveform(int $iWaveform): self {
         if (isset(self::$aWaveforms[$iWaveform])) {
             foreach ($this->aModulator as $oModulator) {
-                $oModulator->setWaveform(
-                    Audio\Signal\Waveform\Rectifier::createStandard(
-                        self::$aWaveforms[$iWaveform],
-                        $iModifier
-                    )
-                );
+                $oModulator->setWaveform(self::$aWaveforms[$iWaveform]);
             }
         }
         return $this;
@@ -316,18 +308,12 @@ class TwoOpFM implements Audio\IMachine {
      * rectifiers can be applied.
      *
      * @param  int $iWaveform
-     * @param  int $iModifier
      * @return self
      */
-    public function setCarrierWaveform(int $iWaveform, int $iModifier = Audio\Signal\Waveform\Rectifier::NONE): self {
+    public function setCarrierWaveform(int $iWaveform): self {
         if (isset(self::$aWaveforms[$iWaveform])) {
             foreach ($this->aCarrier as $oCarrier) {
-                $oCarrier->setWaveform(
-                    Audio\Signal\Waveform\Rectifier::createStandard(
-                        self::$aWaveforms[$iWaveform],
-                        $iModifier
-                    )
-                );
+                $oCarrier->setWaveform(self::$aWaveforms[$iWaveform]);
             }
         }
         return $this;
@@ -418,10 +404,15 @@ class TwoOpFM implements Audio\IMachine {
     private static function initShared(): void {
         if (empty(self::$aWaveforms)) {
             self::$aWaveforms = [
-                Audio\Signal\IWaveform::SINE     => new Audio\Signal\Waveform\Sine(),
-                Audio\Signal\IWaveform::TRIANGLE => new Audio\Signal\Waveform\Triangle(),
-                Audio\Signal\IWaveform::SAW      => new Audio\Signal\Waveform\Saw(),
-                Audio\Signal\IWaveform::SQUARE   => new Audio\Signal\Waveform\Square()
+                Audio\Signal\IWaveform::SINE               => new Audio\Signal\Waveform\Sine(),
+                Audio\Signal\IWaveform::SINE_HALF_RECT     => new Audio\Signal\Waveform\SineHalfRect(),
+                Audio\Signal\IWaveform::SINE_FULL_RECT     => new Audio\Signal\Waveform\SineFullRect(),
+                Audio\Signal\IWaveform::SINE_SAW           => new Audio\Signal\Waveform\SineSaw(),
+                Audio\Signal\IWaveform::SINE_PINCH         => new Audio\Signal\Waveform\SinePinch(),
+                Audio\Signal\IWaveform::TRIANGLE           => new Audio\Signal\Waveform\Triangle(),
+                Audio\Signal\IWaveform::TRIANGLE_HALF_RECT => new Audio\Signal\Waveform\TriangleHalfRect(),
+                Audio\Signal\IWaveform::SAW                => new Audio\Signal\Waveform\Saw(),
+                Audio\Signal\IWaveform::SQUARE             => new Audio\Signal\Waveform\Square()
             ];
         }
     }

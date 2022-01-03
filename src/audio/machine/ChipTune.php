@@ -63,7 +63,6 @@ class ChipTune implements Audio\IMachine {
 
     private int   $iVoiceMask;
 
-
     /**
      * Constructor. Sets the default polyphony level and allocates the various parts.
      *
@@ -276,10 +275,10 @@ class ChipTune implements Audio\IMachine {
             )
         );
         $oOscillator->setLevelModulator(
-            new Audio\Signal\Oscillator\LFOZeroToOne(
+            new Audio\Signal\Oscillator\LFOOneToZero(
                 new Audio\Signal\Waveform\Sine(),
-                4.0,
-                0.0
+                2.0,
+                0.1
             )
         );
         $oOscillator->setLevelEnvelope(

@@ -26,7 +26,6 @@ use ABadCafe\PDE\Audio;
  *
  * Monophonic bassline.
  * Features:
- *    Saw / Square / Pulse waveforms
  *    Resonant Low Pass Filter with adjustable cutoff and resonance
  *    Decay Pulse Level Envelope with selectable rate and target level
  *    Decay Pulse Filter Envelope with selectable rate and target level
@@ -310,9 +309,17 @@ class TBNaN implements Audio\IMachine {
             0.9
         );
         $this->aWaveforms = [
-            Audio\Signal\IWaveform::SAW    => new Audio\Signal\Waveform\Saw(),
-            Audio\Signal\IWaveform::SQUARE => new Audio\Signal\Waveform\Square(),
-            Audio\Signal\IWaveform::PULSE  => new Audio\Signal\Waveform\Pulse(0.25),
+            Audio\Signal\IWaveform::SINE               => new Audio\Signal\Waveform\Sine() ,
+            Audio\Signal\IWaveform::SINE_HALF_RECT     => new Audio\Signal\Waveform\SineHalfRect(),
+            Audio\Signal\IWaveform::SINE_FULL_RECT     => new Audio\Signal\Waveform\SineFullRect(),
+            Audio\Signal\IWaveform::SINE_SAW           => new Audio\Signal\Waveform\SineSaw(),
+            Audio\Signal\IWaveform::SINE_PINCH         => new Audio\Signal\Waveform\SinePinch(),
+            Audio\Signal\IWaveform::TRIANGLE           => new Audio\Signal\Waveform\Triangle(),
+            Audio\Signal\IWaveform::TRIANGLE_HALF_RECT => new Audio\Signal\Waveform\TriangleHalfRect(),
+            Audio\Signal\IWaveform::SAW                => new Audio\Signal\Waveform\Saw(),
+            Audio\Signal\IWaveform::SAW_HALF_RECT      => new Audio\Signal\Waveform\Saw(),
+            Audio\Signal\IWaveform::SQUARE             => new Audio\Signal\Waveform\Square(),
+            Audio\Signal\IWaveform::PULSE              => new Audio\Signal\Waveform\Pulse(0.25),
         ];
         $this->aWaveforms[Audio\Signal\IWaveform::PULSE]->setPulsewidthModulator($this->oPWM);
     }

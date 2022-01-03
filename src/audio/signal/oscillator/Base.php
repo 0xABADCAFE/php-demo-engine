@@ -119,6 +119,10 @@ abstract class Base implements Audio\Signal\IOscillator {
         return $this;
     }
 
+    public function getWaveform(): ?Audio\Signal\IWaveform {
+        return $this->oWaveform;
+    }
+
     /**
      * @inheritDoc
      */

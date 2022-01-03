@@ -18,46 +18,41 @@
 
 declare(strict_types=1);
 
-namespace ABadCafe\PDE\Audio\Signal;
+namespace ABadCafe\PDE\Audio\Signal\Waveform;
+use ABadCafe\PDE\Audio\Signal;
 
-use ABadCafe\PDE\Audio;
+use function \sin;
 
 /**
- * IWaveform
+ * SineFullRect
+ *
+ * Sinrwave implementation of IWaveform
  *
  * @see https://github.com/0xABADCAFE/random-proto-synth
  */
-interface IWaveform {
-
-    const
-        // Basic waveform enumerations
-        SINE               = 0,
-        SINE_HALF_RECT     = 1,
-        SINE_FULL_RECT     = 2,
-        SINE_SAW           = 3,
-        SINE_PINCH         = 4,
-        TRIANGLE           = 10,
-        TRIANGLE_HALF_RECT = 11,
-        SAW                = 20,
-        SAW_HALF_RECT      = 21,
-        SQUARE             = 30,
-        PULSE              = 40,
-        NOISE              = 50
-    ;
+class SineFullRect implements Signal\IWaveform {
 
     /**
-     * Returns the period of this function, i.e. the numeric interval after which it's output cycles.
-     *
-     * @return float
+     * Waveform period (interval after which it repeats).
      */
-    public function getPeriod(): float;
+    const PERIOD = 2.0 * M_PI;
 
     /**
-     * Calculate a Packets worth of output values for a Packets worth of input values
-     *
-     * @param  Packet $oInput
-     * @return Packet
-     *
+     * @inheritDoc
      */
-    public function map(Packet $oInput): Packet;
+    public function getPeriod(): float {
+        return self::PERIOD;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function map(Signal\Packet $oInput): Signal\Packet {
+        $oOutput = clone $oInput;
+        foreach ($oInput as $i => $fTime) {
+            $fSin = sin($fTime); // @phpstan-ignore-line - false positive
+            $oOutput[$i] = 2.0*($fSin > 0.0 ? $fSin : -$fSin) - 1.0;
+        }
+        return $oOutput;
+    }
 }

@@ -79,7 +79,7 @@ class SinePinch implements Signal\IWaveform {
         // Mutate the quadrant bias
         for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
             $fPhase      = $oInput[$i];
-            $fSin        = sin($oRephase[$i]);
+            $fSin        = sin($oRephase[$i]); // @phpstan-ignore-line - false positive
             $iQuadrant   = ((int)$fPhase) & 3;
             $oOutput[$i] = ($fSin * $aTransform[$iQuadrant][2]) + $aTransform[$iQuadrant][1];
         }

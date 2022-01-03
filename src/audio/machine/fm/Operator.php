@@ -182,6 +182,14 @@ class Operator implements Audio\Signal\IOscillator {
     /**
      * @inheritDoc
      */
+    public function getWaveform(): ?Audio\Signal\IWaveform {
+        return $this->oOscillator->getWaveform();
+    }
+
+
+    /**
+     * @inheritDoc
+     */
     public function setFrequency(float $fFrequency): self {
         $this->oOscillator->setFrequency($fFrequency * $this->fRatio);
         // Don't propagate to modulators

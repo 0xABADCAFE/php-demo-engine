@@ -26,16 +26,9 @@ use ABadCafe\PDE\Audio;
  */
 class Shaper implements Audio\Signal\IWaveform {
 
-    const
-        PERIOD   = 4.0,
-        MUTATION = [
-            // quadrant/bias/scale
-            [ 3.0,  1.0, 1.0],
-            [ 1.0,  1.0, 1.0],
-            [-1.0, -1.0, 1.0],
-            [-3.0, -1.0, 1.0]
-        ];
+    const PERIOD   = 4.0;
 
+    // Presets
     const
         UNCHANGED               = 0, // No effect on input waveform
 
@@ -52,8 +45,6 @@ class Shaper implements Audio\Signal\IWaveform {
         // Other configurations
         PINCH = 9
     ;
-
-
 
     private Audio\Signal\IWaveform $oSource;
 
@@ -73,9 +64,9 @@ class Shaper implements Audio\Signal\IWaveform {
      *
      * @param Audio\Signal\IWaveform $oSource
      */
-    public function __construct(Audio\Signal\IWaveform $oSource) {
+    public function __construct(Audio\Signal\IWaveform $oSource, int $iTransform = self::UNCHANGED) {
         $this->oSource       = $oSource;
-        $this->aTransform       = self::STANDARD_VARIANTS[self::UNCHANGED];
+        $this->aTransform    = self::PRESET_TRANSFORMATIONS[$iTransform];
         $this->fPeriodAdjust = $oSource->getPeriod() / self::PERIOD;
     }
 
@@ -93,7 +84,7 @@ class Shaper implements Audio\Signal\IWaveform {
 
         $oAdjust = clone $oInput;
 
-        // Mutate the quadrant phase
+        // Transform the quadrant phase
         for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
             $fPhase      = $oInput[$i];
             $iQuadrant   = ((int)$fPhase) & 3;
@@ -104,12 +95,13 @@ class Shaper implements Audio\Signal\IWaveform {
 
         $oOutput = $this->oSource->map($oAdjust);
 
+        // Smoothing to eliminate hard transients introduced by the transform
         $fPrev1  = $this->fPrev1;
         $fPrev2  = $this->fPrev2;
         $fPrev3  = $this->fPrev3;
         $fPrev4  = $this->fPrev4;
 
-        // Mutate the quadrant bias
+        // Transform the quadrant bias
         for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
             $fPhase    = $oInput[$i];
             $iQuadrant = ((int)$fPhase) & 3;
@@ -125,66 +117,85 @@ class Shaper implements Audio\Signal\IWaveform {
             $fPrev1 = $fSample;
         }
 
+        $this->fPrev1 = $fPrev1;
+        $this->fPrev2 = $fPrev2;
+        $this->fPrev3 = $fPrev3;
+        $this->fPrev4 = $fPrev4;
         return $oOutput;
+    }
+
+    /**
+     * @return int[]
+     */
+    public static function getPresetTransformations(): array {
+        return array_keys(self::PRESET_TRANSFORMATIONS);
+    }
+
+    public function setPresetTransformation(int $iTransform): self {
+        if (!isset(self::PRESET_TRANSFORMATIONS[$iTransform])) {
+            throw new \OutOfBoundsException();
+        }
+        $this->aTransform = self::PRESET_TRANSFORMATIONS[$iTransform];
+        return $this;
     }
 
     /**
      * @const array<int, float[][]>
      */
-    private const STANDARD_VARIANTS = [
+    private const PRESET_TRANSFORMATIONS = [
         self::UNCHANGED => [
             [ 0.0,  0.0,  1.0],
-            [ 1.0,  0.0,  1.0],
-            [ 2.0,  0.0,  1.0],
-            [ 3.0,  0.0,  1.0]
+            [ 0.0,  0.0,  1.0],
+            [ 0.0,  0.0,  1.0],
+            [ 0.0,  0.0,  1.0]
         ],
         self::RECTIFIED_POS_HALF => [
             [ 0.0,  0.0,  1.0],
-            [ 1.0,  0.0,  1.0],
-            [ 2.0,  0.0,  0.0],
-            [ 3.0,  0.0,  0.0]
+            [ 0.0,  0.0,  1.0],
+            [ 0.0,  0.0,  0.0],
+            [ 0.0,  0.0,  0.0]
         ],
         self::RECTIFIED_POS_HALF_NORM => [
             [ 0.0, -1.0,  2.0],
-            [ 1.0, -1.0,  2.0],
-            [ 2.0, -1.0,  0.0],
-            [ 3.0, -1.0,  0.0]
+            [ 0.0, -1.0,  2.0],
+            [ 0.0, -1.0,  0.0],
+            [ 0.0, -1.0,  0.0]
         ],
         self::RECTIFIED_POS_FULL => [
             [ 0.0,  0.0,  1.0],
-            [ 1.0,  0.0,  1.0],
-            [ 2.0,  0.0, -1.0],
-            [ 3.0,  0.0, -1.0]
+            [ 0.0,  0.0,  1.0],
+            [ 0.0,  0.0, -1.0],
+            [ 0.0,  0.0, -1.0]
         ],
         self::RECTIFIED_POS_FULL_NORM => [
             [ 0.0, -1.0,  2.0],
-            [ 1.0, -1.0,  2.0],
-            [ 2.0, -1.0, -2.0],
-            [ 3.0, -1.0, -2.0]
+            [ 0.0, -1.0,  2.0],
+            [ 0.0, -1.0, -2.0],
+            [ 0.0, -1.0, -2.0]
         ],
         self::RECTIFIED_NEG_HALF => [
             [ 0.0,  0.0,  0.0],
-            [ 1.0,  0.0,  0.0],
-            [ 2.0,  0.0,  1.0],
-            [ 3.0,  0.0,  1.0]
+            [ 0.0,  0.0,  0.0],
+            [ 0.0,  0.0,  1.0],
+            [ 0.0,  0.0,  1.0]
         ],
         self::RECTIFIED_NEG_HALF_NORM => [
             [ 0.0,  1.0,  0.0],
-            [ 1.0,  1.0,  0.0],
-            [ 2.0,  1.0,  2.0],
-            [ 3.0,  1.0,  2.0]
+            [ 0.0,  1.0,  0.0],
+            [ 0.0,  1.0,  2.0],
+            [ 0.0,  1.0,  2.0]
         ],
         self::RECTIFIED_NEG_FULL => [
             [ 0.0,  0.0, -1.0],
-            [ 1.0,  0.0, -1.0],
-            [ 2.0,  0.0,  1.0],
-            [ 3.0,  0.0,  1.0]
+            [ 0.0,  0.0, -1.0],
+            [ 0.0,  0.0,  1.0],
+            [ 0.0,  0.0,  1.0]
         ],
         self::RECTIFIED_NEG_FULL_NORM => [
             [ 0.0,  1.0, -2.0],
-            [ 1.0,  1.0, -2.0],
-            [ 2.0,  1.0,  2.0],
-            [ 3.0,  1.0,  2.0]
+            [ 0.0,  1.0, -2.0],
+            [ 0.0,  1.0,  2.0],
+            [ 0.0,  1.0,  2.0]
         ],
 
         self::PINCH => [

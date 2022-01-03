@@ -43,6 +43,7 @@ class Factory implements Audio\IFactory {
         'Mutator'   => 'createMutator'
     ];
 
+
     /**
      * @inheritDoc
      */

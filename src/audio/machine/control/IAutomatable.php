@@ -49,8 +49,30 @@ interface IAutomatable {
         CTRL_COMMON = 0,    // Controller numbers 0-127 are reserved for universal controllers.
         CTRL_CUSTOM = 128,  // Controller numbers 128-255 are rreserved for machine-specific controllser
 
+        /**
+         * Common controllers
+         */
+        CTRL_VOLUME = 0, // Overall output level, not velocity. Channel is ignored.
         CTRL_PITCH  = 1,
-        CTRL_VOLUME = 2
+
+        CTRL_VIBRATO_RATE  = 10,
+        CTRL_VIBRATO_DEPTH = 11,
+        CTRL_TREMOLO_RATE  = 12,
+        CTRL_TREMOLO_DEPTH = 13,
+
+        // Waveform select, per oscillator up to a maximu, of 8 oscillators
+        CTRL_OSC_1_WAVE    = 20,
+        CTRL_OSC_2_WAVE    = 21,
+        CTRL_OSC_3_WAVE    = 22,
+        CTRL_OSC_4_WAVE    = 23,
+        CTRL_OSC_5_WAVE    = 24,
+        CTRL_OSC_6_WAVE    = 25,
+        CTRL_OSC_7_WAVE    = 26,
+        CTRL_OSC_8_WAVE    = 27,
+
+        // Standard ranges
+        CTRL_DEF_LFO_RATE_MIN = 0.125,
+        CTRL_DEF_LFO_RATE_MAX = 32.0
     ;
 
     /**

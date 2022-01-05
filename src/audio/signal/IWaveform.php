@@ -40,8 +40,11 @@ interface IWaveform {
         TRIANGLE_HALF_RECT = 11,
         SAW                = 20,
         SAW_HALF_RECT      = 21,
+        SAW_ALIASED        = 22,
         SQUARE             = 30,
+        SQUARE_ALIASED     = 31,
         PULSE              = 40,
+        PULSE_ALIASED      = 41,
         NOISE              = 50
     ;
 

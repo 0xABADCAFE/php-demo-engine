@@ -5,6 +5,7 @@ declare(strict_types = 1);
 namespace ABadCafe\PDE;
 
 use ABadCafe\PDE\Audio\Sequence\Event;
+use ABadCafe\PDE\Audio\Machine\Control\IAutomatable;
 
 require_once '../PDE.php';
 
@@ -55,10 +56,14 @@ $oChipMachine->setVoiceMaskEnvelope(4, new Audio\Signal\Envelope\Shape(
 
 $oChipMachine
     ->enablePulseWidthLFO()
-    ->setVoiceMaskWaveform(3, Audio\Signal\IWaveform::PULSE)
-    ->setVoiceMaskWaveform(4, Audio\Signal\IWaveform::TRIANGLE)
-    ->setVoiceMaskVibratoRate(15, 6.0)
-    ->setVoiceMaskVibratoDepth(15, 0.1)
+    ->setVoiceWaveform(0, Audio\Signal\IWaveform::PULSE)
+    ->setVoiceWaveform(1, Audio\Signal\IWaveform::PULSE)
+    ->setVoiceWaveform(2, Audio\Signal\IWaveform::TRIANGLE)
+    ->setVoiceVibratoRate(0, 6.0)
+    ->setVoiceVibratoDepth(0, 0.1)
+    ->setVoiceVibratoRate(1, 6.0)
+    ->setVoiceVibratoDepth(1, 0.1)
+
     ->setOutputLevel(0.5)
     ->setInsert(new Audio\Signal\Insert\DelayLoop(null, 123.0 * 3, 0.6))
 ;
@@ -217,7 +222,7 @@ $oSequencer->allocatePattern('bass', [7, 9])
     ->addEvent(Event::noteOff(), 0, 4, 4)
 ;
 
-$oSequencer->allocatePattern('bass', [10, 12, 16, 18])
+$oSequencer->allocatePattern('bass', [10, 12, 14, 16, 18])
 //    ->addEvent(Event::setCtrl(Audio\Machine\TBNaN::CTRL_LPF_CUTOFF, 32), 0, 0)
     ->addEvent(Event::noteOn('D#2', 60), 0, 0)
     ->addEvent(Event::noteOn('C2', 60), 0, 1)
@@ -244,7 +249,7 @@ $oSequencer->allocatePattern('bass', [10, 12, 16, 18])
 
 ;
 
-$oSequencer->allocatePattern('bass', [11, 13, 17, 19])
+$oSequencer->allocatePattern('bass', [11, 13, 15, 17, 19])
     ->addEvent(Event::noteOn('F2', 60), 0, 0)
     ->addEvent(Event::noteOff(), 0, 2)
     ->addEvent(Event::noteOn('F2', 60), 0, 3)

@@ -82,6 +82,7 @@ const CLASS_MAP = [
   'ABadCafe\\PDE\\Audio\\Signal\\Waveform\\Pulse' => '/audio/signal/waveform/Pulse.php',
   'ABadCafe\\PDE\\Audio\\Signal\\Waveform\\AliasedSaw' => '/audio/signal/waveform/AliasedSaw.php',
   'ABadCafe\\PDE\\Audio\\Signal\\Waveform\\Factory' => '/audio/signal/waveform/Factory.php',
+  'ABadCafe\\PDE\\Audio\\Signal\\Waveform\\Flyweight' => '/audio/signal/waveform/Flyweight.php',
   'ABadCafe\\PDE\\Audio\\Signal\\Waveform\\Saw' => '/audio/signal/waveform/Saw.php',
   'ABadCafe\\PDE\\Audio\\Signal\\Waveform\\SineFullRect' => '/audio/signal/waveform/SineFullRect.php',
   'ABadCafe\\PDE\\Audio\\Signal\\Waveform\\Shaper' => '/audio/signal/waveform/Shaper.php',

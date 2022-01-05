@@ -105,6 +105,8 @@ class Automator implements IAutomatable {
         // Clamp the value
         $iValue = min(max($iValue, self::CTRL_MIN_INPUT_VALUE), self::CTRL_MAX_INPUT_VALUE);
 
+        echo __METHOD__, " (", $iVoiceNumber, ", ", $iController, ", ", $iValue, ")\n";
+
         // If the value is different, adjust the corresponding control
         if ($iValue !== $this->aPerVoiceControllerValues[$iVoiceNumber][$iController]) {
             $this->aPerVoiceControllerValues[$iVoiceNumber][$iController] = $iValue;

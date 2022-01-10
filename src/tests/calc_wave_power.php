@@ -14,12 +14,13 @@ const WAVETABLE = [
     Audio\Signal\IWaveform::SINE_FULL_RECT     => "Sine Full Rectified, normalised",
     Audio\Signal\IWaveform::SINE_SAW           => "Sine Saw",
     Audio\Signal\IWaveform::SINE_PINCH         => "Sine Pinch",
+    Audio\Signal\IWaveform::SINE_CUT           => "Sine Cut",
     Audio\Signal\IWaveform::TRIANGLE           => "Triangle",
     Audio\Signal\IWaveform::TRIANGLE_HALF_RECT => "Triangle Half Rectified, normalised",
     Audio\Signal\IWaveform::SAW                => "Saw",
     Audio\Signal\IWaveform::SQUARE             => "Square",
     Audio\Signal\IWaveform::PULSE              => "Pulse, 25% duty",
-    //Audio\Signal\IWaveform::NOISE              => "White noise"
+    Audio\Signal\IWaveform::NOISE              => "White noise"
 ];
 
 const MIN_FREQ = 20.0;
@@ -29,23 +30,23 @@ const MIN_DB   = -96.0;
 const PHON_40_CONTOUR = [
 
     // Hz   SPL dB
-//     [20,	99.85],
-//     [25,	93.94],
-//     [31.5,	88.17],
-//     [40,	82.63],
-//     [50,	77.78],
-//     [63,	73.08],
-//     [80,	68.48],
-//     [100,	64.37],
-//     [125,	60.59],
-//     [160,	56.70],
-//     [200,	53.41],
-//     [250,	50.40],
-//     [315,	47.58],
-//     [400,	44.98],
-//     [500,	43.05],
-//     [630,	41.34],
-//     [800,	40.06],
+    [20,	99.85],
+    [25,	93.94],
+    [31.5,	88.17],
+    [40,	82.63],
+    [50,	77.78],
+    [63,	73.08],
+    [80,	68.48],
+    [100,	64.37],
+    [125,	60.59],
+    [160,	56.70],
+    [200,	53.41],
+    [250,	50.40],
+    [315,	47.58],
+    [400,	44.98],
+    [500,	43.05],
+    [630,	41.34],
+    [800,	40.06],
 
     [1000,	40.00], // Reference value
     [1250,	41.82],
@@ -62,7 +63,7 @@ const PHON_40_CONTOUR = [
 ];
 
 function calculatePerceivedLoudness(float $fFrequency, float $fDecibel): float {
-    if ($fFrequency < 1000.0 || $fFrequency > 125000) {
+    if ($fFrequency < 20.0 || $fFrequency > 125000) {
         return $fDecibel;
     }
 
@@ -111,7 +112,7 @@ foreach (WAVETABLE as $iEnum => $sName) {
                 break;
             }
 
-            //$fDecibel = calculatePerceivedLoudness($fFrequency, $fDecibel);
+            $fDecibel = calculatePerceivedLoudness($fFrequency, $fDecibel);
 
             $fPower += sqrt(10.0 ** ($fDecibel * 0.1));
         }

@@ -18,41 +18,38 @@
 
 declare(strict_types=1);
 
-namespace ABadCafe\PDE\Audio\Signal\Waveform;
-use ABadCafe\PDE\Audio\Signal;
-
-use function \sin;
+namespace ABadCafe\PDE\Audio\Machine;
+use ABadCafe\PDE\Audio;
 
 /**
- * SineFullRect
+ * TAutomated
  *
- * Sinrwave implementation of IWaveform
- *
- * @see https://github.com/0xABADCAFE/random-proto-synth
+ * Stub implementation for IAutomatable
  */
-class SineFullRect implements Signal\IWaveform {
+trait TAutomated {
+
+    private Control\Automator $oControlAutomator;
 
     /**
-     * Waveform period (interval after which it repeats).
+     * Initialise the trait
      */
-    const PERIOD = M_PI;
-
-    /**
-     * @inheritDoc
-     */
-    public function getPeriod(): float {
-        return self::PERIOD;
+    public function initAutomated(): void {
+        $this->oControlAutomator = new Control\Automator($this);
     }
 
     /**
      * @inheritDoc
      */
-    public function map(Signal\Packet $oInput): Signal\Packet {
-        $oOutput = clone $oInput;
-        foreach ($oInput as $i => $fTime) {
-            $fSin = sin($fTime); // @phpstan-ignore-line - false positive
-            $oOutput[$i] = 2.0*($fSin > 0.0 ? $fSin : -$fSin) - 1.0;
-        }
-        return $oOutput;
+    public function setVoiceControllerValue(int $iVoiceNumber, int $iController, int $iValue): self {
+        $this->oControlAutomator->setVoiceControllerValue($iVoiceNumber, $iController, $iValue);
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function adjustVoiceControllerValue(int $iVoiceNumber, int $iController, int $iDelta) : self {
+        $this->oControlAutomator->adjustVoiceControllerValue($iVoiceNumber, $iController, $iDelta);
+        return $this;
     }
 }

@@ -56,25 +56,17 @@ class TBNaN implements Audio\IMachine {
      * Controllers 0x80 - 0xFF are reserved for machine specific applocations.
      */
     const
-        CTRL_WAVE_SELECT      = self::CTRL_CUSTOM + 0,  // Value is enumerated waveform
-        CTRL_PWM_WIDTH        = self::CTRL_CUSTOM + 1,  // Value is 0 - 255, ControlCurve mapped
-        CTRL_AEG_DECAY_RATE   = self::CTRL_CUSTOM + 2,  // Value is 0 - 255, ControlCurve mapped
-        CTRL_AEG_DECAY_LEVEL  = self::CTRL_CUSTOM + 3,  // Value is 0 - 255, ControlCurve mapped
-        CTRL_LPF_CUTOFF       = self::CTRL_CUSTOM + 4,  // Value is 0 - 255, ControlCurve mapped
-        CTRL_LPF_RESONANCE    = self::CTRL_CUSTOM + 5,  // Value is 0 - 255, ControlCurve mapped
-        CTRL_FEG_DECAY_RATE   = self::CTRL_CUSTOM + 6,  // Value is 0 - 255, ControlCurve mapped
-        CTRL_FEG_DECAY_LEVEL  = self::CTRL_CUSTOM + 7,  // Value is 0 - 255, ControlCurve mapped
-        CTRL_PWM_LFO_RATE     = self::CTRL_CUSTOM + 8   // Value is 0 - 255, ControlCurve mapped
+        CTRL_PWM_WIDTH        = self::CTRL_CUSTOM + 0,  // Value is 0 - 255, ControlCurve mapped
+        CTRL_AEG_DECAY_RATE   = self::CTRL_CUSTOM + 1,  // Value is 0 - 255, ControlCurve mapped
+        CTRL_AEG_DECAY_LEVEL  = self::CTRL_CUSTOM + 2,  // Value is 0 - 255, ControlCurve mapped
+        CTRL_LPF_CUTOFF       = self::CTRL_CUSTOM + 3,  // Value is 0 - 255, ControlCurve mapped
+        CTRL_LPF_RESONANCE    = self::CTRL_CUSTOM + 4,  // Value is 0 - 255, ControlCurve mapped
+        CTRL_FEG_DECAY_RATE   = self::CTRL_CUSTOM + 5,  // Value is 0 - 255, ControlCurve mapped
+        CTRL_FEG_DECAY_LEVEL  = self::CTRL_CUSTOM + 6,  // Value is 0 - 255, ControlCurve mapped
+        CTRL_PWM_LFO_RATE     = self::CTRL_CUSTOM + 7   // Value is 0 - 255, ControlCurve mapped
     ;
 
-
-//     private const LEVEL_ADJUST = [
-//         Audio\Signal\IWaveform::SAW      => 0.33,
-//         Audio\Signal\IWaveform::SQUARE   => 0.25,
-//         Audio\Signal\IWaveform::PULSE    => 0.25
-//     ];
-
-    use TMonophonicMachine, TSimpleVelocity;
+    use TMonophonicMachine, TSimpleVelocity, TAutomated;
 
     /** @var array<int, Audio\Signal\IWaveform> $aWaveforms */
     private array $aWaveforms = [];
@@ -83,8 +75,6 @@ class TBNaN implements Audio\IMachine {
     private Audio\Signal\Oscillator\LFO      $oPWM;
     private Audio\Signal\IFilter             $oFilter;
     private Audio\Signal\Envelope\DecayPulse $oFEG, $oAEG;
-
-    private Control\Automator $oControlAutomator;
 
     /**
      * Constructor
@@ -95,7 +85,7 @@ class TBNaN implements Audio\IMachine {
         $this->initFilter();
         $this->setVoiceSource($this->oFilter, 1.0);
         $this->oVoice->disable();
-        $this->oControlAutomator = new Control\Automator($this);
+        $this->initAutomated();
     }
 
 
@@ -106,7 +96,7 @@ class TBNaN implements Audio\IMachine {
         return [
             // Waveform
             new Control\Switcher(
-                self::CTRL_WAVE_SELECT,
+                self::CTRL_OSC_1_WAVE,
                 function(int $iVoice, int $iValue): void {
                     $this->setWaveform($iValue);
                 },
@@ -173,23 +163,6 @@ class TBNaN implements Audio\IMachine {
             ),
 
         ];
-    }
-
-
-    /**
-     * @inheritDoc
-     */
-    public function setVoiceControllerValue(int $iVoiceNumber, int $iController, int $iValue): self {
-        $this->oControlAutomator->setVoiceControllerValue($iVoiceNumber, $iController, $iValue);
-        return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function adjustVoiceControllerValue(int $iVoiceNumber, int $iController, int $iDelta) : self {
-        $this->oControlAutomator->adjustVoiceControllerValue($iVoiceNumber, $iController, $iDelta);
-        return $this;
     }
 
     /**

@@ -20,10 +20,16 @@ declare(strict_types=1);
 
 namespace ABadCafe\PDE\Audio\Machine\Control;
 
+/**
+ * Boris.
+ */
 class Knob extends Definition {
 
     public float $fMinOutput, $fMaxOutput;
 
+    /**
+     * @param callable $cApplicator - callback defined by the machine exporting the control that applies the change.
+     */
     public function __construct(
         int      $iControllerNumber,
         callable $cApplicator,

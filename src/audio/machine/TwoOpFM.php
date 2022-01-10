@@ -41,6 +41,7 @@ class TwoOpFM implements Audio\IMachine {
         Audio\Signal\IWaveform::SINE_FULL_RECT,
         Audio\Signal\IWaveform::SINE_SAW,
         Audio\Signal\IWaveform::SINE_PINCH,
+        Audio\Signal\IWaveform::SINE_CUT,
         Audio\Signal\IWaveform::TRIANGLE,
         Audio\Signal\IWaveform::TRIANGLE_HALF_RECT,
         Audio\Signal\IWaveform::SAW,
@@ -52,7 +53,17 @@ class TwoOpFM implements Audio\IMachine {
         MAX_RATIO = 16.0
     ;
 
-    use TPolyphonicMachine, TSimpleVelocity, TControllerless;
+    const
+        CTRL_MODULATOR_RATIO  = self::CTRL_CUSTOM + 0,
+        CTRL_MODULATOR_DETUNE = self::CTRL_CUSTOM + 1,
+        CTRL_MODULATOR_MIX    = self::CTRL_CUSTOM + 2,
+        CTRL_MODULATION_INDEX = self::CTRL_CUSTOM + 3,
+        CTRL_CARRIER_RATIO    = self::CTRL_CUSTOM + 4,
+        CTRL_CARRIER_DETUNE   = self::CTRL_CUSTOM + 5,
+        CTRL_CARRIER_MIX      = self::CTRL_CUSTOM + 6
+    ;
+
+    use TPolyphonicMachine, TSimpleVelocity, TAutomated;
 
     /**
      * @var Audio\Signal\IWaveform[] $aWaveforms
@@ -92,8 +103,6 @@ class TwoOpFM implements Audio\IMachine {
         $fCarrierMix      = 1.0  // Carrier to output mix level
     ;
 
-    //private Control\Automator $oControlAutomator;
-
     /**
      * Constructor
      *
@@ -131,6 +140,95 @@ class TwoOpFM implements Audio\IMachine {
 
         $this->oPitchLFO = new Audio\Signal\Oscillator\LFO($this->aWaveforms[Audio\Signal\IWaveform::SINE]);
         $this->oLevelLFO = new Audio\Signal\Oscillator\LFOOneToZero($this->aWaveforms[Audio\Signal\IWaveform::SINE]);
+        $this->initAutomated();
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getControllerDefs(): array {
+        return [
+            new Control\Switcher(
+                self::CTRL_OSC_1_WAVE,
+                function(int $iVoice, int $iValue): void {
+                    $this->setCarrierWaveform($iValue);
+                },
+                Audio\Signal\IWaveform::SINE
+            ),
+            new Control\Switcher(
+                self::CTRL_OSC_2_WAVE,
+                function(int $iVoice, int $iValue): void {
+                    $this->setModulatorWaveform($iValue);
+                },
+                Audio\Signal\IWaveform::SINE
+            ),
+            new Control\Knob(
+                self::CTRL_MODULATION_INDEX,
+                function(int $iVoice, float $fValue): void {
+                    $this->setModulationIndex($fValue);
+                },
+                0
+            ),
+            new Control\Knob(
+                self::CTRL_MODULATOR_RATIO,
+                function(int $iVoice, float $fValue): void {
+                    echo "Modulator: ", $fValue, "\n";
+                    $this->setModulatorRatio($fValue);
+                },
+                16,
+                self::MIN_RATIO,
+                self::MAX_RATIO
+            ),
+            new Control\Knob(
+                self::CTRL_MODULATOR_DETUNE,
+                function(int $iVoice, float $fValue): void {
+                    echo "Modulator (detune): ", $fValue, "\n";
+                    //$this->setModulatorRatio($fValue);
+                },
+                128,
+                -self::MIN_RATIO,
+                self::MIN_RATIO * (127.0/128.0)
+            ),
+            new Control\Knob(
+                self::CTRL_MODULATOR_MIX,
+                function(int $iVoice, float $fValue): void {
+                    $this->setModulatorMix($fValue);
+                },
+                0
+            ),
+
+            new Control\Knob(
+                self::CTRL_CARRIER_RATIO,
+                function(int $iVoice, float $fValue): void {
+                    echo "Carrier: ", $fValue, "\n";
+                    $this->setCarrierRatio($fValue);
+                },
+                16,
+                self::MIN_RATIO,
+                self::MAX_RATIO
+            ),
+            new Control\Knob(
+                self::CTRL_CARRIER_DETUNE,
+                function(int $iVoice, float $fValue): void {
+                    echo "Carrier (detune): ", $fValue, "\n";
+                    //$this->setModulatorRatio($fValue);
+                },
+                128,
+                -self::MIN_RATIO,
+                self::MIN_RATIO * (127.0/128.0)
+            ),
+
+
+            new Control\Knob(
+                self::CTRL_CARRIER_MIX,
+                function(int $iVoice, float $fValue): void {
+                    $this->setCarrierMix($fValue);
+                },
+                0
+            ),
+
+
+        ];
     }
 
     /**

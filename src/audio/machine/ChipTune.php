@@ -29,18 +29,7 @@ use ABadCafe\PDE\Audio;
  */
 class ChipTune implements Audio\IMachine {
 
-    use TPolyphonicMachine, TSimpleVelocity;
-
-    /**
-     * @const array<int, float> LEVEL_ADJUST
-     */
-    const LEVEL_ADJUST = [
-        Audio\Signal\IWaveform::SINE     => 1.0,
-        Audio\Signal\IWaveform::TRIANGLE => 0.9,
-        Audio\Signal\IWaveform::SAW      => 0.33,
-        Audio\Signal\IWaveform::SQUARE   => 0.25,
-        Audio\Signal\IWaveform::PULSE    => 0.25
-    ];
+    use TPolyphonicMachine, TSimpleVelocity, TAutomated;
 
     /**
      * @const array<int, class-string> WAVE_TYPES
@@ -55,8 +44,6 @@ class ChipTune implements Audio\IMachine {
 
     private Audio\Signal\Oscillator\LFO $oPulseWidthModulator;
 
-    private Control\Automator $oControlAutomator;
-
     /** @var Audio\Signal\IWaveform[] $aWaveforms */
     private array $aWaveforms = [];
 
@@ -64,8 +51,6 @@ class ChipTune implements Audio\IMachine {
     private array $aVoices = [];
 
     private int   $iVoiceMask;
-
-
 
     /**
      * Constructor. Sets the default polyphony level and allocates the various parts.
@@ -85,7 +70,7 @@ class ChipTune implements Audio\IMachine {
             1,
             0.75
         );
-        $this->oControlAutomator = new Control\Automator($this);
+        $this->initAutomated();
     }
 
     /**
@@ -123,22 +108,6 @@ class ChipTune implements Audio\IMachine {
                 0
             ),
         ];
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function setVoiceControllerValue(int $iVoiceNumber, int $iController, int $iValue): self {
-        $this->oControlAutomator->setVoiceControllerValue($iVoiceNumber, $iController, $iValue);
-        return $this;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function adjustVoiceControllerValue(int $iVoiceNumber, int $iController, int $iDelta) : self {
-        $this->oControlAutomator->adjustVoiceControllerValue($iVoiceNumber, $iController, $iDelta);
-        return $this;
     }
 
     public function setPulseWidth(float $fDuty): self {
@@ -219,7 +188,7 @@ class ChipTune implements Audio\IMachine {
             isset($this->aVoices[$iVoice]) &&
             isset($this->aWaveforms[$iWaveform])
         ) {
-            $this->aVoices[$iVoice]->setLevel(self::LEVEL_ADJUST[$iWaveform]);
+            $this->aVoices[$iVoice]->setLevel(Audio\Signal\IWaveform::ROOT_SPECTRAL_POWER[$iWaveform]);
             $this->aVoices[$iVoice]->getStream()->setWaveform($this->aWaveforms[$iWaveform]);
         }
         return $this;
@@ -341,7 +310,7 @@ class ChipTune implements Audio\IMachine {
                 ]
             )
         );
-        $oLevelAdjust = new Audio\Signal\LevelAdjust($oOscillator, self::LEVEL_ADJUST[$iDefaultWaveform]);
+        $oLevelAdjust = new Audio\Signal\LevelAdjust($oOscillator, Audio\Signal\IWaveform::ROOT_SPECTRAL_POWER[$iDefaultWaveform]);
         $oLevelAdjust->disable();
         return $oLevelAdjust;
     }

@@ -39,6 +39,7 @@ class Flyweight {
         IWaveform::SINE_FULL_RECT     => SineFullRect::class,
         IWaveform::SINE_SAW           => SineSaw::class,
         IWaveform::SINE_PINCH         => SinePinch::class,
+        IWaveform::SINE_CUT           => SineCut::class,
         IWaveform::TRIANGLE           => Triangle::class,
         IWaveform::TRIANGLE_HALF_RECT => TriangleHalfRect::class,
         IWaveform::SAW                => Saw::class,

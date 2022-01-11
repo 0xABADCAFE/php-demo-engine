@@ -34,9 +34,6 @@ $oFMMarimba
 
 $oDrumMachine = new Audio\Machine\TRNaN();
 $oDrumMachine->setOutputLevel(1.25);
-// $oBassLine = Audio\Machine\Factory::get()
-//     ->createFrom(json_decode(file_get_contents('machines/multifm/recently.json')))
-//     ->setOutputLevel(0.35);
 
 $oChipMachine = new Audio\Machine\ChipTune(3);
 $oChipMachine->setVoiceMaskEnvelope(3, new Audio\Signal\Envelope\Shape(
@@ -63,8 +60,7 @@ $oChipMachine
     ->setVoiceVibratoDepth(0, 0.1)
     ->setVoiceVibratoRate(1, 6.0)
     ->setVoiceVibratoDepth(1, 0.1)
-
-    ->setOutputLevel(0.5)
+    ->setOutputLevel(0.4)
     ->setInsert(new Audio\Signal\Insert\DelayLoop(null, 123.0 * 3, 0.6))
 ;
 
@@ -113,17 +109,25 @@ $oSequencer
     ->addMachine('marimba', $oFMMarimba);
 ;
 
-$oSequencer->allocatePattern('marimba', [8,9,10,11, 16, 17, 18, 19])
+$oSequencer->allocatePattern('marimba', [8, 9, 10, 11, 12, 13, 14, 16, 17, 18])
     ->addEvent(Event::noteOn('C4', 30), 0, 2, 4)
     ->addEvent(Event::noteOn('G3', 30), 1, 2, 4)
     ->addEvent(Event::noteOn('A#3', 30), 0, 12, 16)
 ;
 
+$oSequencer->allocatePattern('marimba', [15, 19])
+    ->addEvent(Event::noteOn('C4', 30), 0, 2, 4)
+    ->addEvent(Event::noteOn('G3', 30), 1, 2, 4)
+    ->addEvent(Event::noteOn('A#3', 30), 1, 12, 16)
+    ->addEvent(Event::noteOn('D4', 20), 0, 12, 16)
+;
+
+
 
 $oSequencer->allocatePattern('chip', [0, 2, 4, 6, 10, 12])
-    ->addEvent(Event::noteOn('C2', 50-10), 2, 0)
-    ->addEvent(Event::noteOn('C2', 50-10), 2, 4)
-    ->addEvent(Event::noteOn('D#2', 50-10), 2, 16 + 12)
+    ->addEvent(Event::noteOn('C2', 50), 2, 0)
+    ->addEvent(Event::noteOn('C2', 50), 2, 4)
+    ->addEvent(Event::noteOn('D#2', 50), 2, 16 + 12)
 
     ->addEvent(Event::noteOn('C3', 50-10), 0, 0)
     ->addEvent(Event::noteOn('C3', 30-10), 1, 2)
@@ -145,9 +149,9 @@ $oSequencer->allocatePattern('chip', [0, 2, 4, 6, 10, 12])
     ->addEvent(Event::noteOn('D#3', 38-10), 1, 16 + 14);
 
 $oSequencer->allocatePattern('chip', [1, 3, 5, 7, 11, 13])
-    ->addEvent(Event::noteOn('F2', 50-10), 2, 0)
-    ->addEvent(Event::noteOn('F1', 50-10), 2, 4)
-    ->addEvent(Event::noteOn('D#2', 50-10), 2, 16 + 12)
+    ->addEvent(Event::noteOn('F2', 50), 2, 0)
+    ->addEvent(Event::noteOn('F1', 50), 2, 4)
+    ->addEvent(Event::noteOn('D#2', 50), 2, 16 + 12)
 
     ->addEvent(Event::noteOn('D#3', 30-10), 0, 0)
     ->addEvent(Event::noteOn('F3', 32-10), 1, 1)
@@ -223,7 +227,7 @@ $oSequencer->allocatePattern('bass', [7, 9])
 ;
 
 $oSequencer->allocatePattern('bass', [10, 12, 14, 16, 18])
-//    ->addEvent(Event::setCtrl(Audio\Machine\TBNaN::CTRL_LPF_CUTOFF, 32), 0, 0)
+    //->addEvent(Event::setCtrl(Audio\Machine\TBNaN::CTRL_FEG_DECAY_RATE, 16), 0, 0)
     ->addEvent(Event::noteOn('D#2', 60), 0, 0)
     ->addEvent(Event::noteOn('C2', 60), 0, 1)
     ->addEvent(Event::noteOff(), 0, 2)

@@ -100,7 +100,14 @@ class TwoOpFM implements Audio\IMachine {
         $fModulatorMix    = 0.0, // Modulator to output mix level
         $fCarrierRatio    = 1.0, // Carrier frequency multiplier
         $fModulationIndex = 0.5, // Carrier modulation index
-        $fCarrierMix      = 1.0  // Carrier to output mix level
+        $fCarrierMix      = 1.0,  // Carrier to output mix level
+
+        // Modifiers used by the sequence controls
+        $fCtrlModulatorRatioCoarse = 1.0, // 1/16 resolution
+        $fCtrlModulatorRatioFine   = 0.0, // Divides coarse by 256 steps
+        $fCtrlCarrierRatioCoarse   = 1.0,
+        $fCtrlCarrierRatioFine     = 0.0
+
     ;
 
     /**
@@ -172,8 +179,8 @@ class TwoOpFM implements Audio\IMachine {
             new Control\Knob(
                 self::CTRL_MODULATOR_RATIO,
                 function(int $iVoice, float $fValue): void {
-                    echo "Modulator: ", $fValue, "\n";
-                    $this->setModulatorRatio($fValue);
+                    $this->fCtrlModulatorRatioCoarse = $fValue;
+                    $this->setModulatorRatio($fValue + $this->fCtrlModulatorRatioFine);
                 },
                 16,
                 self::MIN_RATIO,
@@ -182,12 +189,12 @@ class TwoOpFM implements Audio\IMachine {
             new Control\Knob(
                 self::CTRL_MODULATOR_DETUNE,
                 function(int $iVoice, float $fValue): void {
-                    echo "Modulator (detune): ", $fValue, "\n";
-                    //$this->setModulatorRatio($fValue);
+                    $this->fCtrlModulatorRatioFine = $fValue;
+                    $this->setModulatorRatio($fValue + $this->fCtrlModulatorRatioCoarse);
                 },
-                128,
-                -self::MIN_RATIO,
-                self::MIN_RATIO * (127.0/128.0)
+                0,
+                0.0,
+                self::MIN_RATIO * (255.0/256.0)
             ),
             new Control\Knob(
                 self::CTRL_MODULATOR_MIX,
@@ -200,8 +207,8 @@ class TwoOpFM implements Audio\IMachine {
             new Control\Knob(
                 self::CTRL_CARRIER_RATIO,
                 function(int $iVoice, float $fValue): void {
-                    echo "Carrier: ", $fValue, "\n";
-                    $this->setCarrierRatio($fValue);
+                    $this->fCtrlCarrierRatioCoarse = $fValue;
+                    $this->setCarrierRatio($fValue + $this->fCtrlCarrierRatioFine);
                 },
                 16,
                 self::MIN_RATIO,
@@ -210,12 +217,12 @@ class TwoOpFM implements Audio\IMachine {
             new Control\Knob(
                 self::CTRL_CARRIER_DETUNE,
                 function(int $iVoice, float $fValue): void {
-                    echo "Carrier (detune): ", $fValue, "\n";
-                    //$this->setModulatorRatio($fValue);
+                    $this->fCtrlCarrierRatioFine = $fValue;
+                    $this->setCarrierRatio($fValue + $this->fCtrlCarrierRatioCoarse);
                 },
-                128,
-                -self::MIN_RATIO,
-                self::MIN_RATIO * (127.0/128.0)
+                0,
+                0.0,
+                self::MIN_RATIO * (255.0/256.0)
             ),
 
 
@@ -359,6 +366,9 @@ class TwoOpFM implements Audio\IMachine {
      */
     public function setModulatorRatio(float $fRatio): self {
         $this->fModulatorRatio = min(max($fRatio, self::MIN_RATIO), self::MAX_RATIO);
+
+        echo "Mod Ratio: ", $this->fModulatorRatio, "\n";
+
         foreach ($this->aModulator as $i => $oModulator) {
             $oModulator->setFrequency($this->aBaseFreq[$i] * $this->fModulatorRatio);
         }

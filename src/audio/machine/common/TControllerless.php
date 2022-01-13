@@ -38,6 +38,13 @@ trait TControllerless {
     /**
      * @inheritDoc
      */
+    public function getControllerNames(): array {
+        return [];
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function setVoiceControllerValue(int $iVoiceNumber, int $iController, int $iValue): self {
         return $this;
     }

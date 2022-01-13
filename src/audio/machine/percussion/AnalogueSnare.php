@@ -34,9 +34,9 @@ class AnalogueSnare implements IVoice {
         SEMI_SCALE  = 0.25 * Audio\Note::FACTOR_PER_SEMI
     ;
 
-    private Audio\Signal\IOscillator $oNoise, $oOscillator1, $oOscillator2;
-    private Audio\Signal\IEnvelope   $oVolumeEnv;
-    private Audio\Signal\IStream     $oAutoMute;
+    private Audio\Signal\IOscillator     $oNoise, $oOscillator1, $oOscillator2;
+    private Audio\Signal\IEnvelope       $oVolumeEnv;
+    private Audio\Signal\AutoMuteSilence $oAutoMute;
 
     /**
      * Constructor
@@ -57,7 +57,7 @@ class AnalogueSnare implements IVoice {
         );
         $this->oVolumeEnv = new Audio\Signal\Envelope\DecayPulse(
             0.8,
-            0.025
+            0.05
         );
 
         $oMixer = new Audio\Signal\FixedMixer();
@@ -67,7 +67,7 @@ class AnalogueSnare implements IVoice {
             ->addInputStream('n', $this->oNoise, 1.0);
         $oVCA = new Audio\Signal\Modulator($oMixer, $this->oVolumeEnv);
 
-        $this->oAutoMute = new Audio\Signal\AutoMuteAfter($oVCA, 0.3);
+        $this->oAutoMute = new Audio\Signal\AutoMuteSilence($oVCA, 0.02, 1.0/512.0);
 
         $this->oAutoMute->disable();
     }

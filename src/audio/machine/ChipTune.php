@@ -110,6 +110,13 @@ class ChipTune implements Audio\IMachine {
         ];
     }
 
+    /**
+     * @inheritDoc
+     */
+    public function getControllerNames(): array {
+        return self::CTRL_NAMES;
+    }
+
     public function setPulseWidth(float $fDuty): self {
         /** @var Audio\Signal\Waveform\Pulse $oWaveform */
         $oWaveform = $this->aWaveforms[Audio\Signal\IWaveform::PULSE];
@@ -183,7 +190,6 @@ class ChipTune implements Audio\IMachine {
     }
 
     public function setVoiceWaveform(int $iVoice, int $iWaveform): self {
-        echo __METHOD__, "(", $iVoice, ", ", $iWaveform, ")\n";
         if (
             isset($this->aVoices[$iVoice]) &&
             isset($this->aWaveforms[$iWaveform])
@@ -202,7 +208,6 @@ class ChipTune implements Audio\IMachine {
      * @return self
      */
     public function setVoiceVibratoRate(int $iVoice, float $fRateHz): self {
-        echo __METHOD__, "(", $iVoice, ", ", $fRateHz, ")\n";
         if (isset($this->aVoices[$iVoice])) {
             /** @var Audio\Signal\Oscillator\LFO $oModulator */
             $oModulator = $this->aVoices[$iVoice]->getStream()->getPitchModulator();
@@ -219,7 +224,6 @@ class ChipTune implements Audio\IMachine {
      * @return self
      */
     public function setVoiceVibratoDepth(int $iVoice, float $fDepth): self {
-        echo __METHOD__, "(", $iVoice, ", ", $fDepth, ")\n";
         if (isset($this->aVoices[$iVoice])) {
             /** @var Audio\Signal\Oscillator\LFO $oModulator */
             $oModulator = $this->aVoices[$iVoice]->getStream()->getPitchModulator();
@@ -236,7 +240,6 @@ class ChipTune implements Audio\IMachine {
      * @return self
      */
     public function setVoiceTremoloRate(int $iVoice, float $fRateHz): self {
-        echo __METHOD__, "(", $iVoice, ", ", $fRateHz, ")\n";
         if (isset($this->aVoices[$iVoice])) {
             /** @var Audio\Signal\Oscillator\LFO $oModulator */
             $oModulator = $this->aVoices[$iVoice]->getStream()->getLevelModulator();
@@ -253,7 +256,6 @@ class ChipTune implements Audio\IMachine {
      * @return self
      */
     public function setVoiceTremoloDepth(int $iVoice, float $fDepth): self {
-        echo __METHOD__, "(", $iVoice, ", ", $fDepth, ")\n";
         if (isset($this->aVoices[$iVoice])) {
             /** @var Audio\Signal\Oscillator\LFO $oModulator */
             $oModulator = $this->aVoices[$iVoice]->getStream()->getLevelModulator();

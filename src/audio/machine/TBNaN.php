@@ -66,6 +66,17 @@ class TBNaN implements Audio\IMachine {
         CTRL_PWM_LFO_RATE     = self::CTRL_CUSTOM + 7   // Value is 0 - 255, ControlCurve mapped
     ;
 
+    const CTRL_CUSTOM_NAMES = [
+        self::CTRL_PWM_WIDTH        => 'PWM Width',  // Value is 0 - 255, ControlCurve mapped
+        self::CTRL_AEG_DECAY_RATE   => 'AEG Decay Rate',  // Value is 0 - 255, ControlCurve mapped
+        self::CTRL_AEG_DECAY_LEVEL  => 'AEG Decay Final',  // Value is 0 - 255, ControlCurve mapped
+        self::CTRL_LPF_CUTOFF       => 'LPF Cutoff',  // Value is 0 - 255, ControlCurve mapped
+        self::CTRL_LPF_RESONANCE    => 'LPF Resonance',  // Value is 0 - 255, ControlCurve mapped
+        self::CTRL_FEG_DECAY_RATE   => 'FEG Decay Rate',  // Value is 0 - 255, ControlCurve mapped
+        self::CTRL_FEG_DECAY_LEVEL  => 'FEG Decay Final',  // Value is 0 - 255, ControlCurve mapped
+        self::CTRL_PWM_LFO_RATE     => 'PWM LFO Rate'   // Value is 0 - 255, ControlCurve mapped
+
+    ];
     use TMonophonicMachine, TSimpleVelocity, TAutomated;
 
     /** @var array<int, Audio\Signal\IWaveform> $aWaveforms */
@@ -163,6 +174,13 @@ class TBNaN implements Audio\IMachine {
             ),
 
         ];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getControllerNames(): array {
+        return self::CTRL_NAMES + self::CTRL_CUSTOM_NAMES;
     }
 
     /**

@@ -14,7 +14,7 @@ $oSequencer->setBeatsPerMeasure(8);
 
 $oFM = new Audio\Machine\TwoOpFM(5);
 $oFM
-    ->setModulatorWaveform(Audio\Signal\IWaveform::SINE_HALF_RECT)
+    ->setModulatorWaveform(Audio\Signal\IWaveform::SINE)
     ->setModulatorRatio(1)
     ->setModulatorLevelEnvelope(
         new Audio\Signal\Envelope\Shape(
@@ -49,12 +49,6 @@ $oSequencer
 ;
 
 $oSequencer->allocatePattern('fm', [0])
-    ->addEvent(Event::setCtrl(Audio\Machine\TwoOpFM::CTRL_MODULATOR_RATIO, 15), 0, 0)
-    ->addEvent(Event::setCtrl(Audio\Machine\TwoOpFM::CTRL_MODULATOR_DETUNE, 0), 0, 0)
-    ->addEvent(Event::setCtrl(Audio\Machine\TwoOpFM::CTRL_CARRIER_RATIO, 15), 0, 0)
-    //->addEvent(Event::modCtrl(Audio\Machine\TwoOpFM::CTRL_MODULATOR_RATIO, 8), 0, 4, 4)
-    //->addEvent(Event::modCtrl(Audio\Machine\TwoOpFM::CTRL_MODULATOR_DETUNE, 32), 0, 4, 1)
-
     ->addEvent(Event::noteOn('C2', 50), 4, 0)
     ->addEvent(Event::noteOn('C4', 50), 0, 0)
     ->addEvent(Event::noteOn('E4', 50), 1, 0)
@@ -65,6 +59,7 @@ $oSequencer->allocatePattern('fm', [0])
 
 $oSequencer->allocatePattern('fm', [1])
     ->addEvent(Event::setNote('D#4'), 1, 0)
+    ->addEvent(Event::noteOn('D#2', 50), 4, 0)
 ;
 
 if (!empty($_SERVER['argv'][2])) {

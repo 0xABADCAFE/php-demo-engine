@@ -63,6 +63,16 @@ class TwoOpFM implements Audio\IMachine {
         CTRL_CARRIER_MIX      = self::CTRL_CUSTOM + 6
     ;
 
+    const CTRL_CUSTOM_NAMES = [
+        self::CTRL_MODULATOR_RATIO  => 'Modulator Ratio',
+        self::CTRL_MODULATOR_DETUNE => 'Modulator Detune',
+        self::CTRL_MODULATOR_MIX    => 'Modulator Mix',
+        self::CTRL_MODULATION_INDEX => 'Modulation Index',
+        self::CTRL_CARRIER_RATIO    => 'Carrier Ratio',
+        self::CTRL_CARRIER_DETUNE   => 'Carrier Detune',
+        self::CTRL_CARRIER_MIX      => 'Carrier Mix',
+    ];
+
     use TPolyphonicMachine, TSimpleVelocity, TAutomated;
 
     /**
@@ -94,6 +104,7 @@ class TwoOpFM implements Audio\IMachine {
         $oPitchLFO,
         $oLevelLFO
     ;
+
 
     private float
         $fModulatorRatio  = 1.0, // Modulator frequency multiplier
@@ -142,7 +153,12 @@ class TwoOpFM implements Audio\IMachine {
             $this->aCarrier[$i]   = $oCarrier;
             $this->aVoice[$i]     = $oMixer;
             $this->aBaseFreq[$i]  = Audio\Note::CENTRE_FREQUENCY;
-            $this->setVoiceSource($i, $oMixer, 1.0);
+
+            $this->setVoiceSource(
+                $i,
+                $oMixer,
+                1.0
+            );
         }
 
         $this->oPitchLFO = new Audio\Signal\Oscillator\LFO($this->aWaveforms[Audio\Signal\IWaveform::SINE]);
@@ -155,13 +171,42 @@ class TwoOpFM implements Audio\IMachine {
      */
     public function getControllerDefs(): array {
         return [
-            new Control\Switcher(
-                self::CTRL_OSC_1_WAVE,
-                function(int $iVoice, int $iValue): void {
-                    $this->setCarrierWaveform($iValue);
+            // Vibrato
+            new Control\Knob(
+                self::CTRL_VIBRATO_RATE,
+                function (int $iVoice, float $fRateHz): void {
+                    $this->setPitchLFORate($fRateHz);
                 },
-                Audio\Signal\IWaveform::SINE
+                0,
+                self::CTRL_DEF_LFO_RATE_MIN,
+                self::CTRL_DEF_LFO_RATE_MAX
             ),
+            new Control\Knob(
+                self::CTRL_VIBRATO_DEPTH,
+                function (int $iVoice, float $fDepth): void {
+                    $this->setPitchLFODepth($fDepth);
+                },
+                0
+            ),
+            // Tremolo
+            new Control\Knob(
+                self::CTRL_TREMOLO_RATE,
+                function (int $iVoice, float $fRateHz): void {
+                    $this->setLevelLFORate($fRateHz);
+                },
+                0,
+                self::CTRL_DEF_LFO_RATE_MIN,
+                self::CTRL_DEF_LFO_RATE_MAX
+            ),
+            new Control\Knob(
+                self::CTRL_TREMOLO_DEPTH,
+                function (int $iVoice, float $fDepth): void {
+                    $this->setLevelLFODepth($fDepth);
+                },
+                0
+            ),
+
+            // Modulator
             new Control\Switcher(
                 self::CTRL_OSC_2_WAVE,
                 function(int $iVoice, int $iValue): void {
@@ -194,7 +239,7 @@ class TwoOpFM implements Audio\IMachine {
                 },
                 0,
                 0.0,
-                self::MIN_RATIO * (255.0/256.0)
+                (255.0/256.0)
             ),
             new Control\Knob(
                 self::CTRL_MODULATOR_MIX,
@@ -204,6 +249,14 @@ class TwoOpFM implements Audio\IMachine {
                 0
             ),
 
+            // Carrier
+            new Control\Switcher(
+                self::CTRL_OSC_1_WAVE,
+                function(int $iVoice, int $iValue): void {
+                    $this->setCarrierWaveform($iValue);
+                },
+                Audio\Signal\IWaveform::SINE
+            ),
             new Control\Knob(
                 self::CTRL_CARRIER_RATIO,
                 function(int $iVoice, float $fValue): void {
@@ -222,10 +275,8 @@ class TwoOpFM implements Audio\IMachine {
                 },
                 0,
                 0.0,
-                self::MIN_RATIO * (255.0/256.0)
+                255.0/256.0
             ),
-
-
             new Control\Knob(
                 self::CTRL_CARRIER_MIX,
                 function(int $iVoice, float $fValue): void {
@@ -236,6 +287,13 @@ class TwoOpFM implements Audio\IMachine {
 
 
         ];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getControllerNames(): array {
+        return self::CTRL_NAMES + self::CTRL_CUSTOM_NAMES;
     }
 
     /**
@@ -366,9 +424,6 @@ class TwoOpFM implements Audio\IMachine {
      */
     public function setModulatorRatio(float $fRatio): self {
         $this->fModulatorRatio = min(max($fRatio, self::MIN_RATIO), self::MAX_RATIO);
-
-        echo "Mod Ratio: ", $this->fModulatorRatio, "\n";
-
         foreach ($this->aModulator as $i => $oModulator) {
             $oModulator->setFrequency($this->aBaseFreq[$i] * $this->fModulatorRatio);
         }

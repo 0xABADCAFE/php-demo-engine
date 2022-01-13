@@ -75,6 +75,23 @@ interface IAutomatable {
         CTRL_DEF_LFO_RATE_MAX = 32.0
     ;
 
+    const CTRL_NAMES = [
+        self::CTRL_VOLUME        => 'Volume',
+        self::CTRL_PITCH         => 'Pitch Bend',
+        self::CTRL_VIBRATO_RATE  => 'Vibrato Rate',
+        self::CTRL_VIBRATO_DEPTH => 'Vibrato Depth',
+        self::CTRL_TREMOLO_RATE  => 'Tremolo Rate',
+        self::CTRL_TREMOLO_DEPTH => 'Tremolo Depth',
+        self::CTRL_OSC_1_WAVE    => 'Osc 1 Waveform',
+        self::CTRL_OSC_2_WAVE    => 'Osc 2 Waveform',
+        self::CTRL_OSC_3_WAVE    => 'Osc 3 Waveform',
+        self::CTRL_OSC_4_WAVE    => 'Osc 4 Waveform',
+        self::CTRL_OSC_5_WAVE    => 'Osc 5 Waveform',
+        self::CTRL_OSC_6_WAVE    => 'Osc 6 Waveform',
+        self::CTRL_OSC_7_WAVE    => 'Osc 7 Waveform',
+        self::CTRL_OSC_8_WAVE    => 'Osc 8 Waveform',
+    ];
+
     /**
      * Obtain the set of sequence controllable controllers, keyed by Controller Number
      *
@@ -82,6 +99,10 @@ interface IAutomatable {
      */
     public function getControllerDefs(): array;
 
+    /**
+     * @return array<int, string>
+     */
+    public function getControllerNames(): array;
 
     /**
      * Sets a controller to a specific value. Controllers are typically machine specific.

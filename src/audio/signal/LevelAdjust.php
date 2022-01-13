@@ -40,6 +40,8 @@ class LevelAdjust implements IStream {
 
     private float $fLevel;
 
+    private bool  $bMuted = false;
+
     /**
      * Constructor
      *
@@ -74,6 +76,7 @@ class LevelAdjust implements IStream {
      */
     public function setLevel(float $fLevel): self {
         $this->fLevel  = $fLevel;
+        $this->bMuted  = abs($fLevel) < 1e-5;
         return $this;
     }
 
@@ -98,7 +101,7 @@ class LevelAdjust implements IStream {
      * @inheritDoc
      */
     public function emit(?int $iIndex = null): Packet {
-        if ($this->bEnabled) {
+        if ($this->bEnabled && !$this->bMuted) {
             return $this->oStream
                 ->emit($iIndex)
                 ->scaleBy($this->fLevel);

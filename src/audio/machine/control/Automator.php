@@ -50,6 +50,7 @@ class Automator implements IAutomatable {
      */
     public function __construct(Audio\IMachine $oMachine) {
         $aControlDefinitions = $oMachine->getControllerDefs();
+        $aControllerNames    = $oMachine->getControllerNames();
 
         echo "Configuring control automation for ", get_class($oMachine), "\n";
 
@@ -71,8 +72,10 @@ class Automator implements IAutomatable {
                     (float)self::CTRL_MAX_INPUT_VALUE
                 );
                 echo
-                    "\tAssigned Controller #", $oControlDefinition->iControllerNumber,
-                    " as Knob with range ", $oControlDefinition->fMinOutput,
+                    "\tAssigned Controller #", $oControlDefinition->iControllerNumber, " [", (
+                        $aControllerNames[$oControlDefinition->iControllerNumber] ?? 'Custom'
+                    ),
+                    "] as type Knob with output range ", $oControlDefinition->fMinOutput,
                     " to ", $oControlDefinition->fMaxOutput, "\n";
 
             } else if ($oControlDefinition instanceof Switcher) {
@@ -80,8 +83,10 @@ class Automator implements IAutomatable {
                     $oControlDefinition->iControllerNumber
                 ] = $oControlDefinition->cApplicator;
                 echo
-                    "\tAssigned Controller #", $oControlDefinition->iControllerNumber,
-                    " as Switch\n";
+                    "\tAssigned Controller #", $oControlDefinition->iControllerNumber, " [", (
+                        $aControllerNames[$oControlDefinition->iControllerNumber] ?? 'Custom'
+                    ),
+                    "] as type Switch\n";
             } else {
                 throw new \TypeError();
             }
@@ -104,8 +109,6 @@ class Automator implements IAutomatable {
     public function setVoiceControllerValue(int $iVoiceNumber, int $iController, int $iValue): self {
         // Clamp the value
         $iValue = min(max($iValue, self::CTRL_MIN_INPUT_VALUE), self::CTRL_MAX_INPUT_VALUE);
-
-        echo __METHOD__, " (", $iVoiceNumber, ", ", $iController, ", ", $iValue, ")\n";
 
         // If the value is different, adjust the corresponding control
         if ($iValue !== $this->aPerVoiceControllerValues[$iVoiceNumber][$iController]) {
@@ -139,6 +142,10 @@ class Automator implements IAutomatable {
      * Dummy. We don't implement this.
      */
     public function getControllerDefs(): array {
+        return [];
+    }
+
+    public function getControllerNames(): array {
         return [];
     }
 }

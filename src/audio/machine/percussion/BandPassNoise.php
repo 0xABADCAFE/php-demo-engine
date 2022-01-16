@@ -31,7 +31,9 @@ abstract class BandPassNoise implements IVoice {
     protected Audio\Signal\IOscillator         $oNoise;
     protected Audio\Signal\IFilter             $oFilter;
     protected Audio\Signal\Envelope\DecayPulse $oVolumeEnv;
-    protected Audio\Signal\AutoMuteSilence     $oAutoMute;
+
+    /** @var Audio\Signal\AutoMuteSilence<Audio\Signal\Modulator> $oAutoMute */
+    protected Audio\Signal\AutoMuteSilence $oAutoMute;
 
     /**
      * Constructor. Constructs the key component parts and defers to an abstract method to parameterise them.

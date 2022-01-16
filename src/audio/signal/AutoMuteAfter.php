@@ -29,10 +29,15 @@ use ABadCafe\PDE\Audio;
  * duration that sound generators run for, especially one-shot sounds. This prevents wasting of CPU when a generator
  * would otherwise be calculating (near) silence.
  */
+
+/**
+ * @template T of IStream
+ */
 class AutoMuteAfter implements IStream {
 
     use TStream;
 
+    /** @var T $oStream */
     private IStream $oStream;
 
     private int
@@ -43,8 +48,8 @@ class AutoMuteAfter implements IStream {
     /**
      * Constructor
      *
-     * @param IStream $oStream
-     * @param float   $fSeconds
+     * @param T     $oStream
+     * @param float $fSeconds
      */
     public function __construct(IStream $oStream, float $fSeconds) {
         self::initStreamTrait();
@@ -56,7 +61,7 @@ class AutoMuteAfter implements IStream {
      * Set the duration, in seconds, after which the wrapped IStream will be disabled. Values <= 0 will never disable.
      *
      * @param  float $fSeconds
-     * @return self
+     * @return self<T>
      */
     public function setDisableAfter(float $fSeconds): self {
         $this->iDisableAfter = $fSeconds > 0.0 ? ((int)($fSeconds * Audio\IConfig::PROCESS_RATE)) : 0;
@@ -74,6 +79,8 @@ class AutoMuteAfter implements IStream {
 
     /**
      * @inheritDoc
+     *
+     * @return self<T>
      */
     public function reset(): self {
         $this->iPosition = 0;
@@ -99,5 +106,12 @@ class AutoMuteAfter implements IStream {
         } else {
             return $this->emitSilence();
         }
+    }
+
+    /**
+     * @return T
+     */
+    public function getStream(): IStream {
+        return $this->oStream;
     }
 }

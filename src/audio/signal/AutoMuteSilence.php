@@ -28,6 +28,10 @@ use ABadCafe\PDE\Audio;
  * Wrapper for another IStream that automatically disables itself when its input streams output sigal strength falls
  * below a given threshold for a certain time.
  */
+
+/**
+ * @template T of IStream
+ */
 class AutoMuteSilence implements IStream {
 
     const DEF_THRESHOLD = 0.001;
@@ -39,6 +43,7 @@ class AutoMuteSilence implements IStream {
 
     use TStream;
 
+    /** @var T $oStream */
     private IStream $oStream;
 
     private float $fThresholdSquared;
@@ -51,7 +56,7 @@ class AutoMuteSilence implements IStream {
     /**
      * Constructor
      *
-     * @param IStream $oStream
+     * @param T       $oStream
      * @param float   $fSeconds   - How long the stresm output is below the threshold before muting
      * @param float   $fThreshold - Normalised RMS level below which a stream is considered silent
      */
@@ -64,14 +69,17 @@ class AutoMuteSilence implements IStream {
 
     /**
      * @param  float $fSeconds
-     * @return self
+     * @return self<T>
      */
     public function setDisableAfter(float $fSeconds): self {
         $this->iSilentPacketLimit = $fSeconds > 0.0 ? ((int)($fSeconds * Audio\IConfig::PROCESS_RATE / Audio\IConfig::PACKET_SIZE)) : 0;
-        echo "Packets before mute ", $this->iSilentPacketLimit, "\n";
         return $this;
     }
 
+    /**
+     * @param  float $fThreshold
+     * @return self<T>
+     */
     public function setThreshold(float $fThreshold): self {
         $this->fThresholdSquared = $fThreshold * $fThreshold;
         return $this;
@@ -88,6 +96,8 @@ class AutoMuteSilence implements IStream {
 
     /**
      * @inheritDoc
+     *
+     * @return self<T>
      */
     public function reset(): self {
         $this->oStream->reset();
@@ -120,6 +130,9 @@ class AutoMuteSilence implements IStream {
         }
     }
 
+    /**
+     * @return T
+     */
     public function getStream(): IStream {
         return $this->oStream;
     }

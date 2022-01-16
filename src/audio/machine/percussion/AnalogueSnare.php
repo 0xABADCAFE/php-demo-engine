@@ -36,6 +36,8 @@ class AnalogueSnare implements IVoice {
 
     private Audio\Signal\IOscillator     $oNoise, $oOscillator1, $oOscillator2;
     private Audio\Signal\IEnvelope       $oVolumeEnv;
+
+    /** @var Audio\Signal\AutoMuteSilence<Audio\Signal\Modulator> $oAutoMute */
     private Audio\Signal\AutoMuteSilence $oAutoMute;
 
     /**

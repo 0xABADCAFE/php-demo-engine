@@ -42,6 +42,8 @@ class AnalogueCowbell implements IVoice {
     private Audio\Signal\IOscillator     $oOscillator1, $oOscillator2;
     private Audio\Signal\IEnvelope       $oEnvelope;
     private Audio\Signal\IFilter         $oFilter;
+
+    /** @var Audio\Signal\AutoMuteSilence<Audio\Signal\Filter\BandPass> $oAutoMute */
     private Audio\Signal\AutoMuteSilence $oAutoMute;
 
     /**

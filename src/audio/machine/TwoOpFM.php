@@ -91,7 +91,7 @@ class TwoOpFM implements Audio\IMachine {
     private array $aCarrier      = [];  // One per voice
 
     /**
-     * @var Audio\Signal\FixedMixer[] $aVoice
+     * @var Audio\Signal\AutoMuteSilence<Audio\Signal\FixedMixer>[] $aVoice
      */
     private array $aVoice        = [];
 
@@ -147,16 +147,19 @@ class TwoOpFM implements Audio\IMachine {
             $oMixer
                 ->addInputStream('M', $oModulator, $this->fModulatorMix)
                 ->addInputStream('C', $oCarrier, $this->fCarrierMix)
-                ->disable()
             ;
+
+            $oMute = new Audio\Signal\AutoMuteSilence($oMixer, 0.05, 1.0/512.0);
+            $oMute->disable();
+
             $this->aModulator[$i] = $oModulator;
             $this->aCarrier[$i]   = $oCarrier;
-            $this->aVoice[$i]     = $oMixer;
+            $this->aVoice[$i]     = $oMute;
             $this->aBaseFreq[$i]  = Audio\Note::CENTRE_FREQUENCY;
 
             $this->setVoiceSource(
                 $i,
-                $oMixer,
+                $oMute,
                 1.0
             );
         }
@@ -443,7 +446,7 @@ class TwoOpFM implements Audio\IMachine {
     public function setModulatorMix(float $fMix): self {
         $this->fModulatorMix = $fMix;
         foreach ($this->aVoice as $i => $oMixer) {
-            $oMixer->setInputLevel('M', $fMix);
+            $oMixer->getStream()->setInputLevel('M', $fMix);
         }
         return $this;
     }

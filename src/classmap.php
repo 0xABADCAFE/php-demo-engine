@@ -116,6 +116,7 @@ const CLASS_MAP = [
   'ABadCafe\\PDE\\Audio\\Machine\\Sequencer' => '/audio/machine/Sequencer.php',
   'ABadCafe\\PDE\\Audio\\Machine\\TwoOpFM' => '/audio/machine/TwoOpFM.php',
   'ABadCafe\\PDE\\Audio\\Machine\\Factory' => '/audio/machine/Factory.php',
+  'ABadCafe\\PDE\\Audio\\Machine\\PHProphpet' => '/audio/machine/PHProphpet.php',
   'ABadCafe\\PDE\\Audio\\Machine\\TRNaN' => '/audio/machine/TRNaN.php',
   'ABadCafe\\PDE\\Audio\\Machine\\DeXter' => '/audio/machine/DeXter.php',
   'ABadCafe\\PDE\\Audio\\Machine\\Control\\Automator' => '/audio/machine/control/Automator.php',

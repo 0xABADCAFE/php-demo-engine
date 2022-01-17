@@ -20,10 +20,9 @@ declare(strict_types=1);
 
 namespace ABadCafe\PDE\Audio\Machine;
 use ABadCafe\PDE\Audio;
-use function \max, \min;
 
 /**
- * PHProphpet
+ * ProPHPet
  *
  * A two oscillator per voice subtractive synth. Each oscillator has a selectable waveform and envelope generators.
  * The oscillators can both be set to arbitrary multiples of the note frequency. VCO1 can modulate both the phase
@@ -41,8 +40,7 @@ use function \max, \min;
  *              |                                   |                           |
  *              +-------------- Level LFO-----------+          Resonance LFO ---+
  */
-class PHProphpet implements Audio\IMachine {
-
+class ProPHPet implements Audio\IMachine {
 
     /**
      * Enumerated parameter targets
@@ -79,11 +77,6 @@ class PHProphpet implements Audio\IMachine {
     ];
 
     const
-        MIN_RATIO = 1.0/16.0,
-        MAX_RATIO = 16.0
-    ;
-
-    const
         CTRL_OSC_1_RATIO   = self::CTRL_CUSTOM + 0,
         CTRL_OSC_1_DETUNE  = self::CTRL_CUSTOM + 1,
         CTRL_OSC_1_MIX     = self::CTRL_CUSTOM + 2,
@@ -108,45 +101,19 @@ class PHProphpet implements Audio\IMachine {
     use TPolyphonicMachine, TSimpleVelocity, TAutomated;
 
     /**
-     * @var Audio\Signal\IWaveform[] $aWaveforms
+     * @var array<int, Audio\Signal\IWaveform> $aWaveforms
      */
     private array $aWaveforms = [];
 
     /**
-     * @var Audio\Signal\Oscillator\Sound[] $aOscillator1
-     */
-    private array $aOscillator1 = []; // One per voice
-
-    /**
-     * @var Audio\Signal\Oscillator\Sound[] $aOscillator2
-     */
-    private array $aOscillator2 = [];  // One per voice
-
-    /**
-     * @var array<int, array<int, Audio\Signal\IFilter>> $aFilter
-     */
-    private array $aFilter = [];
-
-    /**
-     * @var Audio\Signal\AutoMuteSilence<Audio\Signal\FixedMixer>[] $aVoice
+     * @var array<int, Subtractive\Voice> $aVoice
      */
     private array $aVoice = [];
-
-    /**
-     * @var float[] $aBaseFreq
-     */
-    private array $aBaseFreq = [];
 
     /**
      * @var array<int, Audio\Signal\Oscillator\LFO> $aLFO
      */
     private array $aLFO = [];
-
-    /**
-     * @var array<int, Audio\Signal\IOscillator> $aWaveAssignable
-     */
-    private array $aWaveAssignable = [];
-
 
     private float
         $fOscillator1Ratio  = 1.0, // Oscillator1 frequency multiplier
@@ -160,8 +127,12 @@ class PHProphpet implements Audio\IMachine {
         $fCtrlOscillator1RatioFine   = 0.0, // Divides coarse by 256 steps
         $fCtrlOscillator2RatioCoarse = 1.0,
         $fCtrlOscillator2RatioFine   = 0.0
-
     ;
+
+    private const VOICE_TARGET_MAP = [
+        self::TARGET_OSC_1 => Subtractive\Voice::ID_OSC_1,
+        self::TARGET_OSC_2 => Subtractive\Voice::ID_OSC_2,
+    ];
 
     /**
      * Constructor
@@ -174,44 +145,10 @@ class PHProphpet implements Audio\IMachine {
         $this->initPolyphony($iNumVoices);
 
         for ($i = 0; $i < $this->iNumVoices; ++$i) {
-
-            // Create the fixed topology.
-            $oOscillator1 = new Audio\Signal\Oscillator\Sound(
-                $this->aWaveforms[Audio\Signal\IWaveform::SINE]
-            );
-            $oOscillator2   = new Audio\Signal\Oscillator\Sound(
-                $this->aWaveforms[Audio\Signal\IWaveform::SINE]
-            );
-            $oOscillator2
-                ->setPhaseModulator($oOscillator1)
-                ->setPhaseModulationIndex($this->fModulationIndex);
-            $oMixer = new Audio\Signal\FixedMixer();
-            $oMixer
-                ->addInputStream('M', $oOscillator1, $this->fOscillator1Mix)
-                ->addInputStream('C', $oOscillator2, $this->fOscillator2Mix)
-            ;
-
-            $aFilters = [
-                self::FILTER_LOWPASS  => new Audio\Signal\Filter\LowPass($oMixer),
-                self::FILTER_BANDPASS => new Audio\Signal\Filter\BandPass($oMixer),
-                self::FILTER_HIGHPASS => new Audio\Signal\Filter\HighPass($oMixer)
-            ];
-
-
-            $oMute = new Audio\Signal\AutoMuteSilence($oMixer, 0.05, 1.0/512.0);
-            $oMute->disable();
-
-            $this->aOscillator1[$i] = $oOscillator1;
-            $this->aOscillator2[$i] = $oOscillator2;
-
-            $this->aFilter[$i]      = $aFilters;
-
-            $this->aVoice[$i]       = $oMute;
-            $this->aBaseFreq[$i]    = Audio\Note::CENTRE_FREQUENCY;
-
+            $this->aVoice[$i] = new Subtractive\Voice();
             $this->setVoiceSource(
                 $i,
-                $oMute,
+                $this->aVoice[$i],
                 1.0
             );
         }
@@ -226,15 +163,6 @@ class PHProphpet implements Audio\IMachine {
             self::TARGET_PITCH_LFO     => $oPitchLFO,
             self::TARGET_CUTOFF_LFO    => $oCutoffLFO,
             self::TARGET_RESONANCE_LFO => $oResonanceLFO
-        ];
-
-        $this->aWaveAssignable = [
-            self::TARGET_OSC_1         => $this->aOscillator1,
-            self::TARGET_OSC_2         => $this->aOscillator2,
-            self::TARGET_LEVEL_LFO     => [$oLevelLFO],
-            self::TARGET_PITCH_LFO     => [$oPitchLFO],
-            self::TARGET_CUTOFF_LFO    => [$oCutoffLFO],
-            self::TARGET_RESONANCE_LFO => [$oResonanceLFO]
         ];
 
         $this->initAutomated();
@@ -378,13 +306,70 @@ class PHProphpet implements Audio\IMachine {
      * @return self
      */
     public function assignWaveform(int $iWaveform, int $iTarget): self {
-        if (
-            isset($this->aWaveforms[$iWaveform]) &&
-            isset($this->aWaveAssignable[$iTarget])
-        ) {
+        if (isset($this->aWaveforms[$iWaveform])) {
             $oWaveform = $this->aWaveforms[$iWaveform];
-            foreach ($this->aWaveAssignable[$iTarget] as $oOscillator) {
-                $oOscillator->setWaveform($oWaveform);
+            if (isset(self::VOICE_TARGET_MAP[$iTarget])) {
+                // Voices
+                $iTarget = self::VOICE_TARGET_MAP[$iTarget];
+                foreach ($this->aVoice as $oVoice) {
+                    $oVoice->setWaveform($iTarget, $oWaveform);
+                }
+            } else if (isset($this->aLFO[$iTarget])) {
+                // LFOs
+                $this->aLFO[$iTarget]->setWaveform($oWaveform);
+            }
+        }
+        return $this;
+    }
+
+    public function setLevel(float $fLevel, int $iTarget): self {
+        if (isset(self::VOICE_TARGET_MAP[$iTarget])) {
+            $iTarget = self::VOICE_TARGET_MAP[$iTarget];
+            foreach ($this->aVoice as $oVoice) {
+                $oVoice->setMixLevel($iTarget, $fLevel);
+            }
+        } else if (isset($this->aLFO[$iTarget])) {
+            $this->aLFO[$iTarget]->setDepth($fLevel);
+        }
+        return $this;
+    }
+
+    public function setFrequencyRatio(float $fRatio, int $iTarget): self {
+        if (isset(self::VOICE_TARGET_MAP[$iTarget])) {
+            $iTarget = self::VOICE_TARGET_MAP[$iTarget];
+            foreach ($this->aVoice as $oVoice) {
+                $oVoice->setFrequencyRatio($iTarget, $fRatio);
+            }
+        }
+        return $this;
+    }
+
+    public function setFrequencyRatioSemitones(float $fSemitones, int $iTarget): self {
+        if (isset(self::VOICE_TARGET_MAP[$iTarget])) {
+            $iTarget = self::VOICE_TARGET_MAP[$iTarget];
+            $fRatio  = 2.0 ** ($fSemitones * Audio\Note::FACTOR_PER_SEMI);
+            foreach ($this->aVoice as $oVoice) {
+                $oVoice->setFrequencyRatio($iTarget, $fRatio);
+            }
+        }
+        return $this;
+    }
+
+    public function assignLevelEnvelope(?Audio\Signal\IEnvelope $oEnvelope, int $iTarget): self {
+        if (isset(self::VOICE_TARGET_MAP[$iTarget])) {
+            $iTarget = self::VOICE_TARGET_MAP[$iTarget];
+            foreach ($this->aVoice as $oVoice) {
+                $oVoice->setLevelEnvelope($iTarget, $oEnvelope);
+            }
+        }
+        return $this;
+    }
+
+    public function assignPitchEnvelope(?Audio\Signal\IEnvelope $oEnvelope, int $iTarget): self {
+        if (isset(self::VOICE_TARGET_MAP[$iTarget])) {
+            $iTarget = self::VOICE_TARGET_MAP[$iTarget];
+            foreach ($this->aVoice as $oVoice) {
+                $oVoice->setPitchEnvelope($iTarget, $oEnvelope);
             }
         }
         return $this;
@@ -400,8 +385,6 @@ class PHProphpet implements Audio\IMachine {
     public function setLFODepth(float $fDepth, $iTarget): self {
         if (isset($this->aLFO[$iTarget])) {
             $this->aLFO[$iTarget]->setDepth($fDepth);
-        } else {
-            echo "Invalid LFO Target ", $iTarget, "n";
         }
         return $this;
     }
@@ -413,7 +396,7 @@ class PHProphpet implements Audio\IMachine {
      * @param  int   $iTarget
      * @return self
      */
-    public function setLFORate(float $fRateHz, $iTarget): self {
+    public function setLFORate(float $fRateHz, int $iTarget): self {
         if (isset($this->aLFO[$iTarget])) {
             $this->aLFO[$iTarget]->setFrequency($fRateHz);
         }
@@ -421,90 +404,73 @@ class PHProphpet implements Audio\IMachine {
     }
 
     /**
-     * Enable the Pitch LFO, separately for Oscillator1 and Oscillator2.
+     * Enable the Pitch LFO. Valid targets are TARGET_OSC_1 and TARGET_OSC_2
      *
-     * @param  bool $bOscillator1
-     * @param  bool $bOscillator2
+     * @param  int $iTarget
      * @return self
      */
-    public function enablePitchLFO(bool $bOscillator1, bool $bOscillator2): self {
-        $oOscillator1LFO = $bOscillator1 ? $this->aLFO[self::TARGET_PITCH_LFO] : null;
-        $oOscillator2LFO = $bOscillator2 ? $this->aLFO[self::TARGET_PITCH_LFO] : null;
-        for ($i = 0; $i < $this->iNumVoices; ++$i) {
-            $this->aOscillator1[$i]->setPitchModulator($oOscillator1LFO);
-            $this->aOscillator2[$i]->setPitchModulator($oOscillator2LFO);
-        }
+    public function enablePitchLFO(int $iTarget): self {
+        $this->applyPitchLFO($iTarget, $this->aLFO[self::TARGET_PITCH_LFO]);
         return $this;
     }
 
     /**
-     * Enable the Level LFO, separately for Oscillator1 and Oscillator2.
+     * Disable the Pitch LFO. Valid targets are TARGET_OSC_1 and TARGET_OSC_2
      *
-     * @param  bool $bOscillator1
-     * @param  bool $bOscillator2
+     * @param  int $iTarget
      * @return self
      */
-    public function enableLevelLFO(bool $bOscillator1, bool $bOscillator2): self {
-        $oOscillator1LFO = $bOscillator1 ? $this->aLFO[self::TARGET_LEVEL_LFO] : null;
-        $oOscillator2LFO = $bOscillator2 ? $this->aLFO[self::TARGET_LEVEL_LFO] : null;
-        for ($i = 0; $i < $this->iNumVoices; ++$i) {
-            $this->aOscillator1[$i]->setLevelModulator($oOscillator1LFO);
-            $this->aOscillator2[$i]->setLevelModulator($oOscillator2LFO);
-        }
+    public function disablePitchLFO(int $iTarget): self {
+        $this->applyPitchLFO($iTarget, null);
         return $this;
     }
 
-    public function assignEnvelope(?Audio\Signal\IEnvelope $oEnvelope, int $iTarget): self {
-
-    }
     /**
-     * Set the modulator frequency multiplier as an absolute ratio.
+     * Enable the Level LFO. Valid targets are TARGET_OSC_1 and TARGET_OSC_2
      *
-     * @param  float $fRatio
+     * @param  int $iTarget
      * @return self
      */
-    public function setOscillator1Ratio(float $fRatio): self {
-        $this->fOscillator1Ratio = min(max($fRatio, self::MIN_RATIO), self::MAX_RATIO);
-        foreach ($this->aOscillator1 as $i => $oOscillator1) {
-            $oOscillator1->setFrequency($this->aBaseFreq[$i] * $this->fOscillator1Ratio);
-        }
+    public function enableLevelLFO(int $iTarget): self {
+        $this->applyLevelLFO($iTarget, $this->aLFO[self::TARGET_LEVEL_LFO]);
         return $this;
     }
 
     /**
-     * Set the modulator frequency multiplier as a relative semitone value.
+     * Disable the Level LFO. Valid targets are TARGET_OSC_1 and TARGET_OSC_2
+     *
+     * @param  int $iTarget
+     * @return self
      */
-    public function setOscillator1RatioSemitones(float $fSemitones): self {
-        return $this->setOscillator1Ratio(2.0 ** ($fSemitones * Audio\Note::FACTOR_PER_SEMI));
+    public function disableLevelLFO(int $iTarget): self {
+        $this->applyLevelLFO($iTarget, null);
+        return $this;
     }
 
-    /**
-     * Set the output mix level for the modulator oscillator
-     */
-    public function setOscillator1Mix(float $fMix): self {
-        $this->fOscillator1Mix = $fMix;
-        foreach ($this->aVoice as $i => $oMixer) {
-            $oMixer->getStream()->setInputLevel('M', $fMix);
+    public function enableCutoffLFO(): self {
+        foreach ($this->aVoice as $oVoice) {
+            $oVoice->setFilterCutoffLFO($this->aLFO[self::TARGET_CUTOFF_LFO]);
         }
         return $this;
     }
 
-    /**
-     * Set the volume envelope for the modulator oscillator
-     */
-    public function setOscillator1LevelEnvelope(?Audio\Signal\IEnvelope $oEnvelope): self {
-        foreach ($this->aOscillator1 as $oOscillator1) {
-            $oOscillator1->setLevelEnvelope($oEnvelope ? clone $oEnvelope : null);
+    public function disableCutoffLFO(): self {
+        foreach ($this->aVoice as $oVoice) {
+            $oVoice->setFilterCutoffLFO(null);
         }
         return $this;
     }
 
-    /**
-     * Set the volume envelope for the modulator oscillator
-     */
-    public function setOscillator1PitchEnvelope(?Audio\Signal\IEnvelope $oEnvelope): self {
-        foreach ($this->aOscillator1 as $oOscillator1) {
-            $oOscillator1->setPitchEnvelope($oEnvelope ? clone $oEnvelope : null);
+    public function enableResonanceLFO(): self {
+        foreach ($this->aVoice as $oVoice) {
+            $oVoice->setFilterResonanceLFO($this->aLFO[self::TARGET_RESONANCE_LFO]);
+        }
+        return $this;
+    }
+
+    public function disableResonanceLFO(): self {
+        foreach ($this->aVoice as $oVoice) {
+            $oVoice->setFilterResonanceLFO(null);
         }
         return $this;
     }
@@ -513,9 +479,8 @@ class PHProphpet implements Audio\IMachine {
      * Set the modulation index, i.e. how strongly the modulator output affects the carrier.
      */
     public function setPhaseModulationIndex(float $fIndex): self {
-        $this->fModulationIndex = $fIndex;
-        foreach ($this->aOscillator2 as $oOscillator2) {
-            $oOscillator2->setPhaseModulationIndex($this->fModulationIndex);
+        foreach ($this->aVoice as $oVoice) {
+            $oVoice->setPhaseModulationIndex($fIndex);
         }
         return $this;
     }
@@ -524,68 +489,41 @@ class PHProphpet implements Audio\IMachine {
      * Set the modulation index, i.e. how strongly the modulator output affects the carrier.
      */
     public function setRingModulationIndex(float $fIndex): self {
-        $this->fModulationIndex = $fIndex;
-        foreach ($this->aOscillator2 as $oOscillator2) {
-            $oOscillator2->setPhaseModulationIndex($this->fModulationIndex);
+        foreach ($this->aVoice as $oVoice) {
+            $oVoice->setRingModulationIndex($fIndex);
         }
         return $this;
     }
 
-    /**
-     * Set the carrier frequency multiplier as an absolute.
-     */
-    public function setOscillator2Ratio(float $fRatio): self {
-        $this->fOscillator2Ratio = min(max($fRatio, self::MIN_RATIO), self::MAX_RATIO);
-        foreach ($this->aOscillator2 as $i => $oOscillator2) {
-            $oOscillator2->setFrequency($this->aBaseFreq[$i] * $this->fOscillator2Ratio);
+    public function setFilterMode(int $iMode): self {
+        if ($iMode >= self::FILTER_OFF && $iMode <= self::FILTER_HIGHPASS) {
+            foreach ($this->aVoice as $oVoice) {
+                $oVoice->setFilterMode($iMode);
+            }
         }
         return $this;
     }
 
-    /**
-     * Set the carrier frequency multiplier as a relative semitone value.
-     */
-    public function setOscillator2RatioSemitones(float $fSemitones): self {
-        return $this->setOscillator2Ratio(2.0 ** ($fSemitones * Audio\Note::FACTOR_PER_SEMI));
-    }
-
-    /**
-     * Set the output mix level for the carrier oscillator
-     */
-    public function setOscillator2Mix(float $fMix): self {
-        $this->fOscillator2Mix = $fMix;
-        return $this;
-    }
-
-    /**
-     * Set the volume envelope for the carrier oscillator
-     */
-    public function setOscillator2LevelEnvelope(?Audio\Signal\IEnvelope $oEnvelope): self {
-        foreach ($this->aOscillator2 as $oOscillator2) {
-            $oOscillator2->setLevelEnvelope($oEnvelope ? clone $oEnvelope : null);
+    public function setFilterCutoff(float $fCutoff): self {
+        foreach ($this->aVoice as $oVoice) {
+            $oVoice->setFilterCutoff($fCutoff);
         }
         return $this;
     }
 
-    /**
-     * Set the volume envelope for the modulator oscillator
-     */
-    public function setOscillator2PitchEnvelope(?Audio\Signal\IEnvelope $oEnvelope): self {
-        foreach ($this->aOscillator2 as $oOscillator2) {
-            $oOscillator2->setPitchEnvelope($oEnvelope ? clone $oEnvelope : null);
+    public function setFilterResonance(float $fResonance): self {
+        foreach ($this->aVoice as $oVoice) {
+            $oVoice->setFilterResonance($fResonance);
         }
         return $this;
     }
-
 
     /**
      * @inheritDoc
      */
     public function setVoiceNote(int $iVoiceNumber, string $sNoteName): self {
         if (isset($this->aVoice[$iVoiceNumber])) {
-            $this->aBaseFreq[$iVoiceNumber] = $fFrequency = Audio\Note::getFrequency($sNoteName);
-            $this->aOscillator2[$iVoiceNumber]->setFrequency($fFrequency * $this->fOscillator2Ratio);
-            $this->aOscillator1[$iVoiceNumber]->setFrequency($fFrequency * $this->fOscillator1Ratio);
+            $this->aVoice[$iVoiceNumber]->setFrequency(Audio\Note::getFrequency($sNoteName));
         }
         return $this;
     }
@@ -610,5 +548,23 @@ class PHProphpet implements Audio\IMachine {
             $this->aVoice[$iVoiceNumber]->disable();
         }
         return $this;
+    }
+
+    private function applyPitchLFO(int $iTarget, ?Audio\Signal\Oscillator\LFO $oLFO): void {
+        if (isset(self::VOICE_TARGET_MAP[$iTarget])) {
+            $iTarget = self::VOICE_TARGET_MAP[$iTarget];
+            foreach ($this->aVoice as $oVoice) {
+                $oVoice->setPitchLFO($iTarget, $oLFO);
+            }
+        }
+    }
+
+    private function applyLevelLFO(int $iTarget, ?Audio\Signal\Oscillator\LFO $oLFO): void {
+        if (isset(self::VOICE_TARGET_MAP[$iTarget])) {
+            $iTarget = self::VOICE_TARGET_MAP[$iTarget];
+            foreach ($this->aVoice as $oVoice) {
+                $oVoice->setLevelLFO($iTarget, $oLFO);
+            }
+        }
     }
 }

@@ -24,7 +24,7 @@ use ABadCafe\PDE\Audio;
 use function \min, \max;
 
 /**
- * Voice (PHProphpet)
+ * Voice (ProPHPet)
  *
  * Contains a pair of audio oscillators that can each be set to some multiple of the base frequency.
  * Oscillator 1 can also be set to modulate the phase and/or amplitude of Oscillator 2. The mixed
@@ -134,6 +134,7 @@ class Voice implements Audio\Signal\IStream {
         /** @var Audio\Signal\IStream $oStream */
         $oStream = $this->oMixer;
         $this->oOutput = new Audio\Signal\AutoMuteSilence($oStream, 0.05, 1.0/512.0);
+        $this->oOutput->disable();
     }
 
     /**
@@ -187,6 +188,7 @@ class Voice implements Audio\Signal\IStream {
 
     public function setLevelEnvelope(int $iOsc, ?Audio\Signal\IEnvelope $oEnvelope): self {
         if (isset($this->aOscillator[$iOsc])) {
+            $oEnvelope = $oEnvelope ? clone $oEnvelope : null;
             $this->aOscillator[$iOsc]->setLevelEnvelope($oEnvelope);
         }
         return $this;
@@ -201,6 +203,7 @@ class Voice implements Audio\Signal\IStream {
 
     public function setPitchEnvelope(int $iOsc, ?Audio\Signal\IEnvelope $oEnvelope): self {
         if (isset($this->aOscillator[$iOsc])) {
+            $oEnvelope = $oEnvelope ? clone $oEnvelope : null;
             $this->aOscillator[$iOsc]->setPitchEnvelope($oEnvelope);
         }
         return $this;
@@ -298,7 +301,7 @@ class Voice implements Audio\Signal\IStream {
     public function setFilterCutoffEnvelope(?Audio\Signal\IEnvelope $oEnvelope): self {
         // If the envelope has changed only...
         if ($oEnvelope !== $this->oCutoffEnvelope) {
-            $this->oCutoffEnvelope = $oEnvelope;
+            $this->oCutoffEnvelope = $oEnvelope ? clone $oEnvelope : null;
             if (!$this->oCutoffLFO) {
                 // If there is no LFO, apply only the envelope
                 $this->setFilterCutoffControl($this->oCutoffEnvelope);
@@ -363,7 +366,7 @@ class Voice implements Audio\Signal\IStream {
     public function setFilterResonanceEnvelope(?Audio\Signal\IEnvelope $oEnvelope): self {
         // If the envelope has changed only...
         if ($oEnvelope !== $this->oResonanceEnvelope) {
-            $this->oResonanceEnvelope = $oEnvelope;
+            $this->oResonanceEnvelope = $oEnvelope ? clone $oEnvelope : null;
             if (!$this->oResonanceLFO) {
                 // If there is no LFO, apply only the envelope
                 $this->setFilterResonanceControl($this->oResonanceEnvelope);
@@ -421,7 +424,7 @@ class Voice implements Audio\Signal\IStream {
      */
     public function reset(): self {
         $this->aOscillator[self::ID_OSC_1]->reset();
-        $this->aOscillator[self::ID_OSC_1]->reset();
+        $this->aOscillator[self::ID_OSC_2]->reset();
         $this->oLowPassFilter->reset();
         $this->oBandPassFilter->reset();
         $this->oHighPassFilter->reset();

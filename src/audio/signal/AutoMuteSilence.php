@@ -131,6 +131,15 @@ class AutoMuteSilence implements IStream {
     }
 
     /**
+     * @param  T $oStream
+     * @return self<T>
+     */
+    public function setStream(IStream $oStream): self {
+        $this->oStream = $oStream;
+        return $this;
+    }
+
+    /**
      * @return T
      */
     public function getStream(): IStream {

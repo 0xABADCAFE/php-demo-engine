@@ -56,6 +56,8 @@ class Voice implements Audio\Signal\IStream {
 
     private Audio\Signal\FixedMixer       $oMixer;
     private Audio\Signal\Modulator        $oRingModulator;
+
+    /** @var Audio\Signal\AutoMuteSilence<Audio\Signal\IStream> $oOutput */
     private Audio\Signal\AutoMuteSilence  $oOutput;
 
     // Filter stuff
@@ -128,7 +130,10 @@ class Voice implements Audio\Signal\IStream {
             self::FILTER_HP  => $this->oHighPassFilter
         ];
         // Filter off by default
-        $this->oOutput = new Audio\Signal\AutoMuteSilence($this->oMixer, 0.05, 1.0/512.0);
+
+        /** @var Audio\Signal\IStream $oStream */
+        $oStream = $this->oMixer;
+        $this->oOutput = new Audio\Signal\AutoMuteSilence($oStream, 0.05, 1.0/512.0);
     }
 
     /**
@@ -189,7 +194,7 @@ class Voice implements Audio\Signal\IStream {
 
     public function setLevelLFO(int $iOsc, ?Audio\Signal\Oscillator\LFO $oLFO): self {
         if (isset($this->aOscillator[$iOsc])) {
-            $this->aOscillator[$iOsc]->setLevelLFO($oLFO);
+            $this->aOscillator[$iOsc]->setLevelModulator($oLFO);
         }
         return $this;
     }
@@ -203,7 +208,7 @@ class Voice implements Audio\Signal\IStream {
 
     public function setPitchLFO(int $iOsc, ?Audio\Signal\Oscillator\LFO $oLFO): self {
         if (isset($this->aOscillator[$iOsc])) {
-            $this->aOscillator[$iOsc]->setPitchLFO($oLFO);
+            $this->aOscillator[$iOsc]->setPitchModulator($oLFO);
         }
         return $this;
     }
@@ -385,6 +390,7 @@ class Voice implements Audio\Signal\IStream {
      * @return self
      */
     public function enable(): self {
+        $this->oOutput->enable();
         return $this;
     }
 
@@ -392,6 +398,7 @@ class Voice implements Audio\Signal\IStream {
      * @inheritDoc
      */
     public function disable(): self {
+        $this->oOutput->disable();
         return $this;
     }
 
@@ -399,22 +406,22 @@ class Voice implements Audio\Signal\IStream {
      * @inheritDoc
      */
     public function isEnabled(): bool {
-        return true;
+        return $this->oOutput->isEnabled();
     }
 
     /**
      * @inheritDoc
      */
     public function getPosition(): int {
-        return $this->oOscillator1->getPosition();
+        return $this->oOutput->getPosition();
     }
 
     /**
      * @inheritDoc
      */
     public function reset(): self {
-        $this->oOscillator1->reset();
-        $this->oOscillator2->reset();
+        $this->aOscillator[self::ID_OSC_1]->reset();
+        $this->aOscillator[self::ID_OSC_1]->reset();
         $this->oLowPassFilter->reset();
         $this->oBandPassFilter->reset();
         $this->oHighPassFilter->reset();
@@ -428,13 +435,13 @@ class Voice implements Audio\Signal\IStream {
         return $this->oOutput->emit($iIndex);
     }
 
-    private function setFilterCutoffControl(?Audio\Signal\IStream $oControl) {
+    private function setFilterCutoffControl(?Audio\Signal\IStream $oControl): void {
         $this->oLowPassFilter->setCutoffControl($oControl);
         $this->oBandPassFilter->setCutoffControl($oControl);
         $this->oHighPassFilter->setCutoffControl($oControl);
     }
 
-    private function setFilterResonanceControl(?Audio\Signal\IStream $oControl) {
+    private function setFilterResonanceControl(?Audio\Signal\IStream $oControl): void {
         $this->oLowPassFilter->setResonanceControl($oControl);
         $this->oBandPassFilter->setResonanceControl($oControl);
         $this->oHighPassFilter->setResonanceControl($oControl);

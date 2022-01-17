@@ -274,7 +274,7 @@ class Voice implements Audio\Signal\IStream {
     public function setFilterCutoffLFO(?Audio\Signal\Oscillator\LFO $oLFO): self {
         // If the LFO has changed only...
         if ($oLFO !== $this->oCutoffLFO) {
-            $this->oCutoffLFO = $oLFO;
+            $this->oCutoffLFO = $oLFO ? clone $oLFO : null;
             if (!$this->oCutoffEnvelope) {
                 // If there is no envelope, apply only the LFO
                 $this->setFilterCutoffControl($this->oCutoffLFO);
@@ -339,7 +339,7 @@ class Voice implements Audio\Signal\IStream {
     public function setFilterResonanceLFO(?Audio\Signal\Oscillator\LFO $oLFO): self {
         // If the LFO has changed only...
         if ($oLFO !== $this->oResonanceLFO) {
-            $this->oResonanceLFO = $oLFO;
+            $this->oResonanceLFO = $oLFO ? clone $oLFO : null;
             if (!$this->oResonanceEnvelope) {
                 // If there is no envelope, apply only the LFO
                 $this->setFilterResonanceControl($this->oCutoffLFO);

@@ -81,7 +81,7 @@ class ProPHPet implements Audio\IMachine {
         CTRL_OSC_1_DETUNE  = self::CTRL_CUSTOM + 1,
         CTRL_OSC_1_MIX     = self::CTRL_CUSTOM + 2,
         CTRL_PHASE_MOD_IDX = self::CTRL_CUSTOM + 3,
-        CTRL_AMP_MOD_IDX   = self::CTRL_CUSTOM + 4,
+        CTRL_RING_MOD_IDX  = self::CTRL_CUSTOM + 4,
         CTRL_OSC_2_RATIO   = self::CTRL_CUSTOM + 5,
         CTRL_OSC_2_DETUNE  = self::CTRL_CUSTOM + 6,
         CTRL_OSC_2_MIX     = self::CTRL_CUSTOM + 7
@@ -92,7 +92,7 @@ class ProPHPet implements Audio\IMachine {
         self::CTRL_OSC_1_DETUNE  => 'Oscillator1 Detune',
         self::CTRL_OSC_1_MIX     => 'Oscillator1 Mix',
         self::CTRL_PHASE_MOD_IDX => 'Phase Modulation',
-        self::CTRL_AMP_MOD_IDX   => 'Ring Modulation',
+        self::CTRL_RING_MOD_IDX  => 'Ring Modulation',
         self::CTRL_OSC_2_RATIO   => 'Oscillator2 Ratio',
         self::CTRL_OSC_2_DETUNE  => 'Oscillator2 Detune',
         self::CTRL_OSC_2_MIX     => 'Oscillator2 Mix',
@@ -173,29 +173,31 @@ class ProPHPet implements Audio\IMachine {
      */
     public function getControllerDefs(): array {
         return [
-/*
+
             // Vibrato
             new Control\Knob(
                 self::CTRL_VIBRATO_RATE,
                 function (int $iVoice, float $fRateHz): void {
-                    $this->setPitchLFORate($fRateHz);
+                    $this->setLFORate($fRateHz, self::TARGET_PITCH_LFO);
                 },
                 0,
                 self::CTRL_DEF_LFO_RATE_MIN,
                 self::CTRL_DEF_LFO_RATE_MAX
             ),
+
             new Control\Knob(
                 self::CTRL_VIBRATO_DEPTH,
                 function (int $iVoice, float $fDepth): void {
-                    $this->setPitchLFODepth($fDepth);
+                    $this->setLevel($fDepth, self::TARGET_PITCH_LFO);
                 },
                 0
             ),
+
             // Tremolo
             new Control\Knob(
                 self::CTRL_TREMOLO_RATE,
                 function (int $iVoice, float $fRateHz): void {
-                    $this->setLevelLFORate($fRateHz);
+                    $this->setLFORate($fRateHz, self::TARGET_LEVEL_LFO);
                 },
                 0,
                 self::CTRL_DEF_LFO_RATE_MIN,
@@ -204,11 +206,25 @@ class ProPHPet implements Audio\IMachine {
             new Control\Knob(
                 self::CTRL_TREMOLO_DEPTH,
                 function (int $iVoice, float $fDepth): void {
-                    $this->setLevelLFODepth($fDepth);
+                    $this->setLevel($fDepth, self::TARGET_LEVEL_LFO);
                 },
                 0
             ),
-
+            new Control\Knob(
+                self::CTRL_PHASE_MOD_IDX,
+                function(int $iVoice, float $fValue): void {
+                    $this->setPhaseModulationIndex($fValue);
+                },
+                0
+            ),
+            new Control\Knob(
+                self::CTRL_RING_MOD_IDX,
+                function(int $iVoice, float $fValue): void {
+                    $this->setRingModulationIndex($fValue);
+                },
+                0
+            ),
+/*
             // Oscillator1
             new Control\Switcher(
                 self::CTRL_OSC_1_WAVE,

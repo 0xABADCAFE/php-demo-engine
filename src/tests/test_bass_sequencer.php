@@ -168,3 +168,5 @@ $oSequencer->playSequence(
 );
 
 $oOutput->close();
+
+Audio\Signal\Oscillator\Base::printPacketStats();

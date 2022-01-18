@@ -30,12 +30,10 @@ $oFMMarimba
     ->setOutputLevel(0.35)
 ;
 
-
-
 $oDrumMachine = new Audio\Machine\TRNaN();
 $oDrumMachine->setOutputLevel(1.25);
 
-$oChipMachine = new Audio\Machine\ChipTune(3);
+$oChipMachine = new Audio\Machine\WhyAYeSID(3);
 $oChipMachine->setVoiceMaskEnvelope(3, new Audio\Signal\Envelope\Shape(
     0.6,
     [
@@ -52,6 +50,7 @@ $oChipMachine->setVoiceMaskEnvelope(4, new Audio\Signal\Envelope\Shape(
 
 
 $oChipMachine
+    ->setPulseWidthLFORate(0.125)
     ->enablePulseWidthLFO()
     ->setVoiceWaveform(0, Audio\Signal\IWaveform::PULSE)
     ->setVoiceWaveform(1, Audio\Signal\IWaveform::PULSE)
@@ -291,8 +290,8 @@ $oSequencer->allocatePattern('pad', [7, 9, 11, 17, 19])
 ;
 
 
-if (!empty($_SERVER['argv'][2])) {
-    $oOutput = new Audio\Output\Wav($_SERVER['argv'][2] . '.wav');
+if (!empty($_SERVER['argv'][1])) {
+    $oOutput = new Audio\Output\Wav($_SERVER['argv'][1] . '.wav');
 } else {
     $oOutput = Audio\Output\Piped::create();
 }
@@ -305,3 +304,5 @@ $oSequencer->playSequence(
 );
 
 $oOutput->close();
+
+Audio\Signal\Oscillator\Base::printPacketStats();

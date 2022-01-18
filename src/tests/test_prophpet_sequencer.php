@@ -179,7 +179,9 @@ $oOutput->open();
 
 $oSequencer->playSequence(
     $oOutput,
-    4.0
+    5.0
 );
 
 $oOutput->close();
+
+Audio\Signal\Oscillator\Base::printPacketStats();

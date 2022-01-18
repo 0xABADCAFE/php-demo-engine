@@ -68,12 +68,15 @@ class ProPHPet implements Audio\IMachine {
         Audio\Signal\IWaveform::SINE_HALF_RECT,
         Audio\Signal\IWaveform::SINE_FULL_RECT,
         Audio\Signal\IWaveform::SINE_SAW,
+        Audio\Signal\IWaveform::SINE_SAW_HARD,
         Audio\Signal\IWaveform::SINE_PINCH,
         Audio\Signal\IWaveform::SINE_CUT,
         Audio\Signal\IWaveform::TRIANGLE,
         Audio\Signal\IWaveform::TRIANGLE_HALF_RECT,
         Audio\Signal\IWaveform::SAW,
         Audio\Signal\IWaveform::SQUARE,
+        Audio\Signal\IWaveform::POKEY,
+        Audio\Signal\IWaveform::NOISE
     ];
 
     const

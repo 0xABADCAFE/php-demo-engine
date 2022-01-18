@@ -188,7 +188,7 @@ class Voice implements Audio\Signal\IStream {
 
     public function setLevelEnvelope(int $iOsc, ?Audio\Signal\IEnvelope $oEnvelope): self {
         if (isset($this->aOscillator[$iOsc])) {
-            $oEnvelope = $oEnvelope ? clone $oEnvelope : null;
+            $oEnvelope = $oEnvelope ? $oEnvelope->share() : null;
             $this->aOscillator[$iOsc]->setLevelEnvelope($oEnvelope);
         }
         return $this;
@@ -203,7 +203,7 @@ class Voice implements Audio\Signal\IStream {
 
     public function setPitchEnvelope(int $iOsc, ?Audio\Signal\IEnvelope $oEnvelope): self {
         if (isset($this->aOscillator[$iOsc])) {
-            $oEnvelope = $oEnvelope ? clone $oEnvelope : null;
+            $oEnvelope = $oEnvelope ? $oEnvelope->share() : null;
             $this->aOscillator[$iOsc]->setPitchEnvelope($oEnvelope);
         }
         return $this;
@@ -211,6 +211,7 @@ class Voice implements Audio\Signal\IStream {
 
     public function setPitchLFO(int $iOsc, ?Audio\Signal\Oscillator\LFO $oLFO): self {
         if (isset($this->aOscillator[$iOsc])) {
+            $oLFO = $oLFO ? $oLFO->share() : null;
             $this->aOscillator[$iOsc]->setPitchModulator($oLFO);
         }
         return $this;
@@ -274,7 +275,7 @@ class Voice implements Audio\Signal\IStream {
     public function setFilterCutoffLFO(?Audio\Signal\Oscillator\LFO $oLFO): self {
         // If the LFO has changed only...
         if ($oLFO !== $this->oCutoffLFO) {
-            $this->oCutoffLFO = $oLFO ? clone $oLFO : null;
+            $this->oCutoffLFO = $oLFO ? $oLFO->share() : null;
             if (!$this->oCutoffEnvelope) {
                 // If there is no envelope, apply only the LFO
                 $this->setFilterCutoffControl($this->oCutoffLFO);
@@ -301,7 +302,7 @@ class Voice implements Audio\Signal\IStream {
     public function setFilterCutoffEnvelope(?Audio\Signal\IEnvelope $oEnvelope): self {
         // If the envelope has changed only...
         if ($oEnvelope !== $this->oCutoffEnvelope) {
-            $this->oCutoffEnvelope = $oEnvelope ? clone $oEnvelope : null;
+            $this->oCutoffEnvelope = $oEnvelope ? $oEnvelope->share() : null;
             if (!$this->oCutoffLFO) {
                 // If there is no LFO, apply only the envelope
                 $this->setFilterCutoffControl($this->oCutoffEnvelope);
@@ -339,7 +340,7 @@ class Voice implements Audio\Signal\IStream {
     public function setFilterResonanceLFO(?Audio\Signal\Oscillator\LFO $oLFO): self {
         // If the LFO has changed only...
         if ($oLFO !== $this->oResonanceLFO) {
-            $this->oResonanceLFO = $oLFO ? clone $oLFO : null;
+            $this->oResonanceLFO = $oLFO ? $oLFO->share() : null;
             if (!$this->oResonanceEnvelope) {
                 // If there is no envelope, apply only the LFO
                 $this->setFilterResonanceControl($this->oCutoffLFO);
@@ -366,7 +367,7 @@ class Voice implements Audio\Signal\IStream {
     public function setFilterResonanceEnvelope(?Audio\Signal\IEnvelope $oEnvelope): self {
         // If the envelope has changed only...
         if ($oEnvelope !== $this->oResonanceEnvelope) {
-            $this->oResonanceEnvelope = $oEnvelope ? clone $oEnvelope : null;
+            $this->oResonanceEnvelope = $oEnvelope ? $oEnvelope->share() : null;
             if (!$this->oResonanceLFO) {
                 // If there is no LFO, apply only the envelope
                 $this->setFilterResonanceControl($this->oResonanceEnvelope);

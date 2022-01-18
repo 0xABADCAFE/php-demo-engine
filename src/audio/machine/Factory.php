@@ -45,18 +45,6 @@ class Factory implements Audio\IFactory {
         'Noise'      => Audio\Signal\IWaveform::NOISE,
     ];
 
-    const MODIFIER_NAMES = [
-        'None'               => Audio\Signal\Waveform\Rectifier::NONE,
-        'HalfWavePos'        => Audio\Signal\Waveform\Rectifier::HALF_RECT_P,
-        'HalfWavePosScaled'  => Audio\Signal\Waveform\Rectifier::HALF_RECT_P_FS,
-        'HalfWaveNeg'        => Audio\Signal\Waveform\Rectifier::HALF_RECT_N,
-        'HalfWaveNegScaled'  => Audio\Signal\Waveform\Rectifier::HALF_RECT_N_FS,
-        'FullWavePos'        => Audio\Signal\Waveform\Rectifier::FULL_RECT_P,
-        'FullWavePosScaled'  => Audio\Signal\Waveform\Rectifier::FULL_RECT_P_FS,
-        'FullWaveNeg'        => Audio\Signal\Waveform\Rectifier::FULL_RECT_N,
-        'FullWaveNegScaled'  => Audio\Signal\Waveform\Rectifier::FULL_RECT_N_FS
-    ];
-
     /**
      * @inheritDoc
      */
@@ -148,22 +136,22 @@ class Factory implements Audio\IFactory {
                 is_string($oDefinition->Waveform) &&
                 isset(self::WAVEFORM_NAMES[$oDefinition->Waveform])
             ) {
-                $iWaveform = self::WAVEFORM_NAMES[$oDefinition->Waveform];
-                $iModifier = Audio\Signal\Waveform\Rectifier::NONE;
-                if (
-                    isset($oDefinition->sModifier) &&
-                    is_string($oDefinition->sModifier) &&
-                    isset(self::MODIFIER_NAMES[$oDefinition->sModifier])
-                ) {
-                    $iModifier = self::MODIFIER_NAMES[$oDefinition->sModifier];
-                }
-                $oDexter->setEnumeratedWaveform($iWaveform, $iModifier);
-
-                dprintf(
-                    "\t\t\tSet custom Waveform #%d with modifier #%d.\n",
-                    $iWaveform,
-                    $iModifier
-                );
+//                 $iWaveform = self::WAVEFORM_NAMES[$oDefinition->Waveform];
+//                 $iModifier = Audio\Signal\Waveform\Rectifier::NONE;
+//                 if (
+//                     isset($oDefinition->sModifier) &&
+//                     is_string($oDefinition->sModifier) &&
+//                     isset(self::MODIFIER_NAMES[$oDefinition->sModifier])
+//                 ) {
+//                     $iModifier = self::MODIFIER_NAMES[$oDefinition->sModifier];
+//                 }
+//                 $oDexter->setEnumeratedWaveform($iWaveform, $iModifier);
+//
+//                 dprintf(
+//                     "\t\t\tSet custom Waveform #%d with modifier #%d.\n",
+//                     $iWaveform,
+//                     $iModifier
+//                 );
 
             }
         } else {

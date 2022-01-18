@@ -22,23 +22,25 @@ namespace ABadCafe\PDE\Audio\Machine;
 use ABadCafe\PDE\Audio;
 
 /**
- * ChipTune
+ * WhyAYeSID
  *
  * Simple multivoice chip tune machine. Each voice has a basic oscillator with it's own waveform, vibrato, tremelo
- * and envelope settings.
+ * and envelope settings. Basic waveforms common to 8-bit machines are supported.
  */
-class ChipTune implements Audio\IMachine {
+class WhyAYeSID implements Audio\IMachine {
 
     use TPolyphonicMachine, TSimpleVelocity, TAutomated;
 
     /**
-     * @const array<int, class-string> WAVE_TYPES
+     * @const int[] WAVE_TYPES
      */
     const WAVETABLE = [
         Audio\Signal\IWaveform::SINE,
         Audio\Signal\IWaveform::TRIANGLE,
         Audio\Signal\IWaveform::SAW,
+        Audio\Signal\IWaveform::SINE_SAW_HARD,
         Audio\Signal\IWaveform::SQUARE,
+        Audio\Signal\IWaveform::POKEY,
         Audio\Signal\IWaveform::PULSE
     ];
 
@@ -274,7 +276,7 @@ class ChipTune implements Audio\IMachine {
     public function setVoiceMaskEnvelope(int $iVoiceMask, Audio\Signal\IEnvelope $oEnvelope): self {
         $aVoices = $this->getSelectedVoices($iVoiceMask);
         foreach ($aVoices as $oVoice) {
-            $oVoice->getStream()->setLevelEnvelope(clone $oEnvelope);
+            $oVoice->getStream()->setLevelEnvelope($oEnvelope->share());
         }
         return $this;
     }
@@ -312,7 +314,10 @@ class ChipTune implements Audio\IMachine {
                 ]
             )
         );
-        $oLevelAdjust = new Audio\Signal\LevelAdjust($oOscillator, Audio\Signal\IWaveform::ROOT_SPECTRAL_POWER[$iDefaultWaveform]);
+        $oLevelAdjust = new Audio\Signal\LevelAdjust(
+            $oOscillator,
+            Audio\Signal\IWaveform::ROOT_SPECTRAL_POWER[$iDefaultWaveform]
+        );
         $oLevelAdjust->disable();
         return $oLevelAdjust;
     }

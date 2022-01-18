@@ -24,7 +24,7 @@ use ABadCafe\PDE\Audio;
 /**
  * TRNaN
  *
- * Basic analogish sounding drum machine
+ * Basic analogish sounding drum machine. Each drum voice is assigned to a separate channel.
  */
 class TRNaN implements Audio\IMachine {
 

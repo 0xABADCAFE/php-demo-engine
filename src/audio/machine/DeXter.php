@@ -25,7 +25,8 @@ use function \array_column, \array_fill, \max, \min;
 /**
  * DeXter
  *
- * Polyphonic FM synth with 2 to 8 operators. Matrix style modulation rather than fixed algorithm.
+ * Polyphonic FM synth with 2 to 8 operators per voice. Matrix style modulation rather than fixed algorithm. It's
+ * a... bloody murder... to program.
  *
  * Uses the FM\Operator type as the basic operator unit.
  */
@@ -131,15 +132,11 @@ class DeXter implements Audio\IMachine {
      * Select a standard enumerated waveform for the operator
      *
      * @param  int $iWaveform
-     * @param  int $iModifier
      * @return self
      */
-    public function setEnumeratedWaveform(int $iWaveform, int $iModifier = Audio\Signal\Waveform\Rectifier::NONE): self {
+    public function setEnumeratedWaveform(int $iWaveform): self {
         if (null !== $this->iUsingOperator && isset(self::$aWaveforms[$iWaveform])) {
-            $oWaveform = Audio\Signal\Waveform\Rectifier::createStandard(
-                self::$aWaveforms[$iWaveform],
-                $iModifier
-            );
+            $oWaveform = self::$aWaveforms[$iWaveform];
             foreach ($this->aOperators[$this->iUsingOperator] as $iVoice => $oOperator) {
                 $oOperator->setWaveform($oWaveform);
             }

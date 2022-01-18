@@ -40,26 +40,17 @@ class Flyweight {
         IWaveform::SINE_SAW           => SineSaw::class,
         IWaveform::SINE_PINCH         => SinePinch::class,
         IWaveform::SINE_CUT           => SineCut::class,
+        IWaveform::SINE_SAW_HARD      => SineSawHard::class,
         IWaveform::TRIANGLE           => Triangle::class,
         IWaveform::TRIANGLE_HALF_RECT => TriangleHalfRect::class,
         IWaveform::SAW                => Saw::class,
-        //IWaveform::SAW_HALF_RECT      => SawHalfRect::class,
         IWaveform::SAW_ALIASED        => AliasedSaw::class,
         IWaveform::SQUARE             => Square::class,
         IWaveform::SQUARE_ALIASED     => AliasedSquare::class,
+        IWaveform::POKEY              => Pokey::class,
         IWaveform::PULSE              => Pulse::class,
         IWaveform::PULSE_ALIASED      => AliasedPulse::class,
         IWaveform::NOISE              => WhiteNoise::class,
-    ];
-
-    /**
-     * @const array<int, bool>
-     */
-    private const CLONE_ALWAYS = [
-        IWaveform::SAW           => true, // hamming window state
-        IWaveform::SQUARE        => true, // hamming window state
-        IWaveform::PULSE         => true, // hamming window and pulse width state
-        IWaveform::PULSE_ALIASED => true  // pulse width state
     ];
 
     private static ?self $oInstance = null;
@@ -90,9 +81,7 @@ class Flyweight {
         if (!isset($this->aWaveforms[$iEnum])) {
             throw new \OutOfBoundsException('Unknown Waveform Enumeration #' . $iEnum);
         }
-        return isset(self::CLONE_ALWAYS[$iEnum]) ?
-            clone $this->aWaveforms[$iEnum] :
-            $this->aWaveforms[$iEnum];
+        return $this->aWaveforms[$iEnum]->share();
     }
 
     /**
@@ -108,13 +97,7 @@ class Flyweight {
             if (!isset($this->aWaveforms[$iEnum])) {
                 throw new \OutOfBoundsException('Unknown Waveform Enumeration #' . $iEnum);
             }
-            if (
-                isset(self::CLONE_ALWAYS[$iEnum])
-            ) {
-                $aResult[$iEnum] = clone $this->aWaveforms[$iEnum];
-            } else {
-                $aResult[$iEnum] = $this->aWaveforms[$iEnum];
-            }
+            $aResult[$iEnum] = $this->aWaveforms[$iEnum]->share();
         }
         return $aResult;
     }

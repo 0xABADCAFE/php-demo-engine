@@ -19,39 +19,22 @@
 declare(strict_types=1);
 
 namespace ABadCafe\PDE\Audio\Signal\Waveform;
-use ABadCafe\PDE\Audio\Signal;
-
-use function \sin;
 
 /**
- * Sine
+ * SinePinch
  *
  * Sinrwave implementation of IWaveform
  *
  * @see https://github.com/0xABADCAFE/random-proto-synth
  */
-class Sine implements Signal\IWaveform {
+class SinePinch extends SineXForm {
 
-    /**
-     * Waveform period (interval after which it repeats).
-     */
-    const PERIOD = 2.0 * M_PI;
-
-    /**
-     * @inheritDoc
-     */
-    public function getPeriod(): float {
-        return self::PERIOD;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function map(Signal\Packet $oInput): Signal\Packet {
-        $oOutput = clone $oInput;
-        foreach ($oInput as $i => $fTime) {
-            $oOutput[$i] = sin($fTime); // @phpstan-ignore-line - false positive
-        }
-        return $oOutput;
-    }
+    const TRANSFORM = [
+        // Quadrant phase shift, Bias Adjust, Scale.
+        // This configuration rearranges a sine wave into something resembling a triangle.
+        [ 3.0,  1.0, 1.0],
+        [ 1.0,  1.0, 1.0],
+        [-1.0, -1.0, 1.0],
+        [-3.0, -1.0, 1.0]
+    ];
 }

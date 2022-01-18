@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 namespace ABadCafe\PDE\Audio\Signal\Waveform;
 use ABadCafe\PDE\Audio;
+use ABadCafe\PDE\Util;
 use \SPLFixedArray;
 use function \mt_getrandmax, \mt_rand;
 
@@ -31,6 +32,8 @@ use function \mt_getrandmax, \mt_rand;
  * @see https://github.com/0xABADCAFE/random-proto-synth
  */
 class WhiteNoise implements Audio\Signal\IWaveform {
+
+    use Util\TAlwaysShareable;
 
     const
         /**

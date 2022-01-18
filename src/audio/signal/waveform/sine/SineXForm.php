@@ -21,39 +21,48 @@ declare(strict_types=1);
 namespace ABadCafe\PDE\Audio\Signal\Waveform;
 use ABadCafe\PDE\Audio;
 use ABadCafe\PDE\Audio\Signal;
-
+use ABadCafe\PDE\Util;
 use function \sin;
 
 /**
- * SinePinch
+ * SineXForm
  *
- * Sinrwave implementation of IWaveform
+ * Transformed Sine Wave. Divides the sine wave duty cycle into quadrants that can be shifted about, scaled and
+ * biased to produce interesting variations. This is a direct realisation of the quadrant mutator idea from GIMPS
+ * implemented in-line for performance.
  *
  * @see https://github.com/0xABADCAFE/random-proto-synth
  */
-class SinePinch implements Signal\IWaveform {
+abstract class SineXForm implements Signal\IWaveform {
+
+    use Util\TAlwaysShareable;
 
     /**
-     * Waveform period (interval after which it repeats).
+     * Waveform period (interval after which it repeats). Can be overridden.
      */
     const PERIOD = 4.0;
-    private const ADJUST = 0.5 * M_PI;
 
+    /**
+     * Implementors should provide their own transformation matrix
+     */
     const TRANSFORM = [
         // Quadrant phase shift, Bias Adjust, Scale.
-        // This default configuration rearranges a sine wave into something resembling a triangle.
-        [ 3.0,  1.0, 1.0],
-        [ 1.0,  1.0, 1.0],
-        [-1.0, -1.0, 1.0],
-        [-3.0, -1.0, 1.0]
+        [ 0.0,  1.0, 1.0],
+        [ 0.0,  1.0, 1.0],
+        [ 0.0,  1.0, 1.0],
+        [ 0.0,  1.0, 1.0]
     ];
 
+    /**
+     * Adjustment factor to convert the natural sine duty cycle into quadrants.
+     */
+    private const ADJUST = 0.5 * M_PI;
 
     /**
      * @inheritDoc
      */
     public function getPeriod(): float {
-        return self::PERIOD;
+        return static::PERIOD;
     }
 
     /**

@@ -20,7 +20,7 @@ declare(strict_types=1);
 
 namespace ABadCafe\PDE\Audio\Signal\Waveform;
 use ABadCafe\PDE\Audio\Signal;
-
+use ABadCafe\PDE\Util;
 use function \floor;
 
 /**
@@ -32,6 +32,8 @@ use function \floor;
  * @see https://github.com/0xABADCAFE/random-proto-synth
  */
 class AliasedSquare implements Signal\IWaveform {
+
+    use Util\TAlwaysShareable;
 
     /**
      * Waveform period (interval after which it repeats).

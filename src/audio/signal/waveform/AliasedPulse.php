@@ -20,7 +20,7 @@ declare(strict_types=1);
 
 namespace ABadCafe\PDE\Audio\Signal\Waveform;
 use ABadCafe\PDE\Audio\Signal;
-
+use ABadCafe\PDE\Util;
 use function \ceil;
 
 /**
@@ -59,6 +59,25 @@ class AliasedPulse implements Signal\IWaveform {
     public function __construct(float $fPulseWidth = self::DEF_WIDTH, ?Signal\IStream $oModulator = null) {
         $this->setPulsewidth($fPulseWidth);
         $this->setPulsewidthModulator($oModulator);
+    }
+
+    public function __clone(): void {
+        if ($this->oWidthModulator) {
+            if ($this->oWidthModulator instanceof Util\ISometimesShareable) {
+                $this->oWidthModulator = $this->oWidthModulator->share(); // @phpstan-ignore-line
+            } else {
+                $this->oWidthModulator = clone $this->oWidthModulator;
+            }
+        }
+    }
+
+    /**
+     * @inheritDoc
+     *
+     * If there is no modulator attached, then the instance can be shared idempotently.
+     */
+    public function share(): self {
+        return $this->oWidthModulator ? clone $this : $this;
     }
 
     /**

@@ -19,40 +19,19 @@
 declare(strict_types=1);
 
 namespace ABadCafe\PDE\Audio\Signal\Waveform;
-use ABadCafe\PDE\Audio\Signal;
-
-use function \sin;
+use ABadCafe\PDE\Util;
 
 /**
- * SineHalfRect
- *
- * Sinrwave implementation of IWaveform
- *
- * @see https://github.com/0xABADCAFE/random-proto-synth
+ * Antialiased using a filter window
  */
-class SineHalfRect implements Signal\IWaveform {
+trait TAntialiased {
 
-    /**
-     * Waveform period (interval after which it repeats).
-     */
-    const PERIOD = 2.0 * M_PI;
+    use Util\TNeverShareable;
 
-    /**
-     * @inheritDoc
-     */
-    public function getPeriod(): float {
-        return self::PERIOD;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function map(Signal\Packet $oInput): Signal\Packet {
-        $oOutput = clone $oInput;
-        foreach ($oInput as $i => $fTime) {
-            $fSin = sin($fTime); // @phpstan-ignore-line - false positive
-            $oOutput[$i] = ($fSin > 0 ? 2.0*$fSin : 0.0) - 1.0;
-        }
-        return $oOutput;
-    }
+    private float
+        $fPrev1 = 0.0,
+        $fPrev2 = 0.0,
+        $fPrev3 = 0.0,
+        $fPrev4 = 0.0
+    ;
 }

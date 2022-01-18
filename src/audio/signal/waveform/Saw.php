@@ -20,7 +20,7 @@ declare(strict_types=1);
 
 namespace ABadCafe\PDE\Audio\Signal\Waveform;
 use ABadCafe\PDE\Audio\Signal;
-
+use ABadCafe\PDE\Util;
 use function \ceil;
 
 /**
@@ -32,12 +32,7 @@ use function \ceil;
  */
 class Saw extends AliasedSaw {
 
-    private float
-        $fPrev1 = 0.0,
-        $fPrev2 = 0.0,
-        $fPrev3 = 0.0,
-        $fPrev4 = 0.0
-    ;
+    use TAntialiased;
 
     /**
      * @inheritDoc

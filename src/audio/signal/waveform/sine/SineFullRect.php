@@ -21,23 +21,23 @@ declare(strict_types=1);
 namespace ABadCafe\PDE\Audio\Signal\Waveform;
 use ABadCafe\PDE\Audio\Signal;
 use ABadCafe\PDE\Util;
-use function \floor;
+use function \sin;
 
 /**
- * Triangle
+ * SineFullRect
  *
- * Triangle implementation of IWaveform
+ * Sinrwave implementation of IWaveform
  *
  * @see https://github.com/0xABADCAFE/random-proto-synth
  */
-class TriangleHalfRect implements Signal\IWaveform {
+class SineFullRect implements Signal\IWaveform {
 
     use Util\TAlwaysShareable;
 
     /**
      * Waveform period (interval after which it repeats).
      */
-    const PERIOD = 2.0;
+    const PERIOD = M_PI;
 
     /**
      * @inheritDoc
@@ -51,13 +51,9 @@ class TriangleHalfRect implements Signal\IWaveform {
      */
     public function map(Signal\Packet $oInput): Signal\Packet {
         $oOutput = clone $oInput;
-        $fHalf   = 0.5;
         foreach ($oInput as $i => $fTime) {
-            $fTime   -= $fHalf;
-            $fFloor  = floor($fTime);
-            $fScale  = (int)$fFloor & 1 ? 4.0 : -4.0;
-            $fSample = $fScale * ($fTime - $fFloor - $fHalf);
-            $oOutput[$i] = ($fSample > 0 ? $fSample : 0.0) - 1.0;
+            $fSin = sin($fTime); // @phpstan-ignore-line - false positive
+            $oOutput[$i] = 2.0*($fSin > 0.0 ? $fSin : -$fSin) - 1.0;
         }
         return $oOutput;
     }

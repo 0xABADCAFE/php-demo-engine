@@ -25,6 +25,8 @@ namespace ABadCafe\PDE\Audio\Machine\Control;
  */
 class Knob extends Definition {
 
+    const SCALE_UINT8_FIXED_POINT_MAX = 255.0 / 256.0;
+
     public float $fMinOutput, $fMaxOutput;
 
     /**

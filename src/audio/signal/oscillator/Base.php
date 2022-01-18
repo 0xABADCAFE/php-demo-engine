@@ -33,6 +33,8 @@ abstract class Base implements Audio\Signal\IOscillator {
 
     use Audio\Signal\TPacketIndexAware, Audio\Signal\TStream;
 
+    use Audio\Signal\TPacketGeneratorStats;
+
     protected ?Audio\Signal\IWaveform $oWaveform = null;
 
     protected Audio\Signal\Packet
@@ -70,6 +72,7 @@ abstract class Base implements Audio\Signal\IOscillator {
         $this->setWaveform($oWaveform);
         $this->setFrequency($fFrequency);
         $this->fPhaseOffset = $this->fPhaseCorrection = $fPhase;
+        $this->registerPacketGenerator();
     }
 
     /**
@@ -93,12 +96,16 @@ abstract class Base implements Audio\Signal\IOscillator {
      * @inheritDoc
      */
     public function emit(?int $iIndex = null): Audio\Signal\Packet {
+        $sWhat = static::class;
         if (!$this->bEnabled || null === $this->oWaveform) {
+            $this->logSilence();
             return $this->emitSilence();
         }
         if ($this->useLast($iIndex)) {
+            $this->logReused();
             return $this->oLastOutput;
         }
+        $this->logCreated();
         return $this->emitNew();
     }
 
@@ -107,8 +114,8 @@ abstract class Base implements Audio\Signal\IOscillator {
      */
     public function setWaveform(?Audio\Signal\IWaveform $oWaveform): self {
         if ($oWaveform) {
-            $this->oWaveform       = clone $oWaveform;
-            $this->fWaveformPeriod = $oWaveform->getPeriod();
+            $this->oWaveform       = $oWaveform->share();
+            $this->fWaveformPeriod = $this->oWaveform->getPeriod();
             $this->fTimeStep       = $this->fWaveformPeriod * Audio\IConfig::SAMPLE_PERIOD;
             $this->fScaleVal = $this->fTimeStep * $this->fFrequency;
         } else {

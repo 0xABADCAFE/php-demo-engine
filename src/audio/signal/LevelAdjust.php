@@ -22,6 +22,8 @@ namespace ABadCafe\PDE\Audio\Signal;
 
 use ABadCafe\PDE\Audio;
 
+use function \abs;
+
 /**
  * LevelAdjust
  *

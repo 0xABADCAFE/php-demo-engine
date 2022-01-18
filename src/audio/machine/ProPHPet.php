@@ -119,12 +119,6 @@ class ProPHPet implements Audio\IMachine {
     private array $aLFO = [];
 
     private float
-        $fOscillator1Ratio  = 1.0, // Oscillator1 frequency multiplier
-        $fOscillator1Mix    = 0.5, // Oscillator1 to output mix level
-        $fOscillator2Ratio  = 1.0, // Oscillator2 frequency multiplier
-        $fModulationIndex   = 0.5, // Oscillator2 modulation index
-        $fOscillator2Mix    = 0.5, // Oscillator2 to output mix level
-
         // Modifiers used by the sequence controls
         $fCtrlOscillator1RatioCoarse = 1.0, // 1/16 resolution
         $fCtrlOscillator1RatioFine   = 0.0, // Divides coarse by 256 steps
@@ -187,7 +181,6 @@ class ProPHPet implements Audio\IMachine {
                 self::CTRL_DEF_LFO_RATE_MIN,
                 self::CTRL_DEF_LFO_RATE_MAX
             ),
-
             new Control\Knob(
                 self::CTRL_VIBRATO_DEPTH,
                 function (int $iVoice, float $fDepth): void {
@@ -213,6 +206,8 @@ class ProPHPet implements Audio\IMachine {
                 },
                 0
             ),
+
+            // Modulation
             new Control\Knob(
                 self::CTRL_PHASE_MOD_IDX,
                 function(int $iVoice, float $fValue): void {
@@ -227,7 +222,7 @@ class ProPHPet implements Audio\IMachine {
                 },
                 0
             ),
-/*
+
             // Oscillator1
             new Control\Switcher(
                 self::CTRL_OSC_1_WAVE,
@@ -237,38 +232,24 @@ class ProPHPet implements Audio\IMachine {
                 Audio\Signal\IWaveform::SINE
             ),
             new Control\Knob(
-                self::CTRL_PHASE_MOD_IDX,
-                function(int $iVoice, float $fValue): void {
-                    $this->setPhaseModulationIndex($fValue);
-                },
-                0
-            ),
-            new Control\Knob(
                 self::CTRL_OSC_1_RATIO,
                 function(int $iVoice, float $fValue): void {
                     $this->fCtrlOscillator1RatioCoarse = $fValue;
-                    $this->setOscillator1Ratio($fValue + $this->fCtrlOscillator1RatioFine);
+                    $this->setFrequencyRatio($fValue + $this->fCtrlOscillator1RatioFine, self::TARGET_OSC_1);
                 },
                 16,
-                self::MIN_RATIO,
-                self::MAX_RATIO
+                Subtractive\Voice::MIN_RATIO,
+                Subtractive\Voice::MAX_RATIO
             ),
             new Control\Knob(
                 self::CTRL_OSC_1_DETUNE,
                 function(int $iVoice, float $fValue): void {
                     $this->fCtrlOscillator1RatioFine = $fValue;
-                    $this->setOscillator1Ratio($fValue + $this->fCtrlOscillator1RatioCoarse);
+                    $this->setFrequencyRatio($fValue + $this->fCtrlOscillator1RatioCoarse, self::TARGET_OSC_1);
                 },
                 0,
                 0.0,
-                (255.0/256.0)
-            ),
-            new Control\Knob(
-                self::CTRL_OSC_1_MIX,
-                function(int $iVoice, float $fValue): void {
-                    $this->setOscillator1Mix($fValue);
-                },
-                0
+                Control\Knob::SCALE_UINT8_FIXED_POINT_MAX
             ),
 
             // Oscillator2
@@ -283,22 +264,32 @@ class ProPHPet implements Audio\IMachine {
                 self::CTRL_OSC_2_RATIO,
                 function(int $iVoice, float $fValue): void {
                     $this->fCtrlOscillator2RatioCoarse = $fValue;
-                    $this->setOscillator2Ratio($fValue + $this->fCtrlOscillator2RatioFine);
+                    $this->setFrequencyRatio($fValue + $this->fCtrlOscillator2RatioFine, self::TARGET_OSC_2);
                 },
                 16,
-                self::MIN_RATIO,
-                self::MAX_RATIO
+                Subtractive\Voice::MIN_RATIO,
+                Subtractive\Voice::MAX_RATIO
             ),
             new Control\Knob(
-                self::CTRL_OSC_2_DETUNE,
+                self::CTRL_OSC_1_DETUNE,
                 function(int $iVoice, float $fValue): void {
                     $this->fCtrlOscillator2RatioFine = $fValue;
-                    $this->setOscillator2Ratio($fValue + $this->fCtrlOscillator2RatioCoarse);
+                    $this->setFrequencyRatio($fValue + $this->fCtrlOscillator2RatioCoarse, self::TARGET_OSC_2);
                 },
                 0,
                 0.0,
-                255.0/256.0
+                Control\Knob::SCALE_UINT8_FIXED_POINT_MAX
             ),
+
+/*
+            new Control\Knob(
+                self::CTRL_OSC_1_MIX,
+                function(int $iVoice, float $fValue): void {
+                    $this->setOscillator1Mix($fValue);
+                },
+                0
+            ),
+
             new Control\Knob(
                 self::CTRL_OSC_2_MIX,
                 function(int $iVoice, float $fValue): void {

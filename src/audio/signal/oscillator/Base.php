@@ -96,7 +96,6 @@ abstract class Base implements Audio\Signal\IOscillator {
      * @inheritDoc
      */
     public function emit(?int $iIndex = null): Audio\Signal\Packet {
-        $sWhat = static::class;
         if (!$this->bEnabled || null === $this->oWaveform) {
             $this->logSilence();
             return $this->emitSilence();

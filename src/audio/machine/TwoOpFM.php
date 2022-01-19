@@ -565,6 +565,7 @@ class TwoOpFM implements Audio\IMachine {
             $this->aVoice[$iVoiceNumber]
                 ->reset()
                 ->enable();
+            $this->handleVoiceStarted();
         }
         return $this;
     }

@@ -41,6 +41,9 @@ trait TPolyphonicMachine {
         $fOutLevel = 1.0
     ;
 
+    /** @var Audio\Signal\AutoMuteSilence<Audio\Signal\IStream> $oGate */
+    protected Audio\Signal\AutoMuteSilence $oGate; // @phpstan-ignore-line - ??
+
     /**
      * Initialise the components of this trait.
      *
@@ -52,6 +55,7 @@ trait TPolyphonicMachine {
         $this->oOutput    =
         $this->oMixer     = new Audio\Signal\FixedMixer();
         $this->setOutputLevel($this->fOutLevel);
+        $this->oGate = new Audio\Signal\AutoMuteSilence($this->oOutput, 0.1);
     }
 
     /**
@@ -117,6 +121,7 @@ trait TPolyphonicMachine {
      */
     public function reset(): Audio\Signal\IStream {
         $this->oOutput->reset();
+        $this->oGate->enable();
         return $this;
     }
 
@@ -124,7 +129,8 @@ trait TPolyphonicMachine {
      * @inheritDoc
      */
     public function emit(?int $iIndex = null): Audio\Signal\Packet {
-        return $this->oOutput->emit($iIndex);
+        //return $this->oOutput->emit($iIndex);
+        return $this->oGate->emit();
     }
 
     /**
@@ -138,6 +144,7 @@ trait TPolyphonicMachine {
      * @inheritDoc
      */
     public function setInsert(?Audio\Signal\IInsert $oInsert = null): self {
+        $oOldOutput = $this->oOutput;
         if (null !== $oInsert) {
             $oInsert->setInputStream($this->oMixer);
             $this->oInsert =
@@ -145,6 +152,13 @@ trait TPolyphonicMachine {
         } else {
             $this->oOutput = $this->oMixer;
         }
+        if ($oOldOutput !== $this->oOutput) {
+            $this->oGate->setStream($this->oOutput);
+        }
         return $this;
+    }
+
+    private function handleVoiceStarted(): void {
+        $this->oGate->enable();
     }
 }

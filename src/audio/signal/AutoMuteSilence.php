@@ -23,10 +23,10 @@ namespace ABadCafe\PDE\Audio\Signal;
 use ABadCafe\PDE\Audio;
 
 /**
- * AutoMuteAfter
+ * AutoMuteSilence
  *
  * Wrapper for another IStream that automatically disables itself when its input streams output sigal strength falls
- * below a given threshold for a certain time.
+ * below a given threshold for a certain time. Use as a gate to disable more expensive upstream signal sources.
  */
 
 /**
@@ -34,7 +34,7 @@ use ABadCafe\PDE\Audio;
  */
 class AutoMuteSilence implements IStream {
 
-    const DEF_THRESHOLD = 0.001;
+    const DEF_THRESHOLD = 1.0/1024.0;
 
     private const
         SAMPLE_DISTANCE = 16,
@@ -47,6 +47,7 @@ class AutoMuteSilence implements IStream {
     private IStream $oStream;
 
     private float $fThresholdSquared;
+    private float $fLastTotalSquared = 0;
 
     private int
         $iSilentPacketLimit = 0,
@@ -66,6 +67,14 @@ class AutoMuteSilence implements IStream {
         $this->setThreshold($fThreshold);
         $this->setDisableAfter($fSeconds);
     }
+
+    public function enable(): IStream {
+        $this->bEnabled = true;
+        $this->fLastTotalSquared  = 0.0;
+        $this->iSilentPacketCount = 0;
+        return $this;
+    }
+
 
     /**
      * @param  float $fSeconds
@@ -101,6 +110,7 @@ class AutoMuteSilence implements IStream {
      */
     public function reset(): self {
         $this->oStream->reset();
+        $this->enable();
         return $this;
     }
 
@@ -117,11 +127,19 @@ class AutoMuteSilence implements IStream {
                 $fTotalSquared += $fSample * $fSample;
             }
             $fTotalSquared *= self::SCALE_FACTOR;
-            if ($fTotalSquared < $this->fThresholdSquared) {
+
+            if ($fTotalSquared > $this->fLastTotalSquared) {
+                // If the total is rising, keep the gate open
+                $this->fLastTotalSquared  = $fTotalSquared;
+                $this->iSilentPacketCount = 0;
+            } else if ($fTotalSquared < $this->fThresholdSquared) {
+                // If the total is not rising and is below the threshold, start closing the gate.
                 if (++$this->iSilentPacketCount > $this->iSilentPacketLimit) {
-                    $this->bEnabled = false;
+                    $this->bEnabled          = false;
+                    $this->fLastTotalSquared = 0.0;
                 }
             } else {
+                // If not rising but above the threshold, keep the gate open
                 $this->iSilentPacketCount = 0;
             }
             return $oPacket;

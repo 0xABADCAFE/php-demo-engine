@@ -177,6 +177,7 @@ class WhyAYeSID implements Audio\IMachine {
             $this->aVoices[$iVoiceNumber]
                 ->reset()
                 ->enable();
+            $this->handleVoiceStarted();
         }
         return $this;
     }

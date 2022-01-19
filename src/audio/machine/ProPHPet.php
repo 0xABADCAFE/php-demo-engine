@@ -546,6 +546,7 @@ class ProPHPet implements Audio\IMachine {
             $this->aVoice[$iVoiceNumber]
                 ->reset()
                 ->enable();
+            $this->handleVoiceStarted();
         }
         return $this;
     }

@@ -73,7 +73,7 @@ interface IWaveform extends Util\ISometimesShareable {
         self::SAW_ALIASED        => self::SINE_SPECTRAL_POWER / 3.485038,
         self::SQUARE             => self::SINE_SPECTRAL_POWER / 4.466541,
         self::SQUARE_ALIASED     => self::SINE_SPECTRAL_POWER / 4.466541,
-        self::POKEY              => self::SINE_SPECTRAL_POWER / 4.266541, // guess
+        self::POKEY              => self::SINE_SPECTRAL_POWER / 4.366541, // guess
         self::PULSE              => self::SINE_SPECTRAL_POWER / 4.952629,
         self::PULSE_ALIASED      => self::SINE_SPECTRAL_POWER / 4.952629,
         self::NOISE              => 0.5

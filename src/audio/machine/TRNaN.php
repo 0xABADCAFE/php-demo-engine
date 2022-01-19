@@ -93,7 +93,8 @@ class TRNaN implements Audio\IMachine {
                 ->getOutputStream()
                 ->reset()
                 ->enable();
-            }
+            $this->handleVoiceStarted();
+        }
         return $this;
     }
 

@@ -371,6 +371,21 @@ class ProPHPet implements Audio\IMachine {
             foreach ($this->aVoice as $oVoice) {
                 $oVoice->setLevelEnvelope($iTarget, $oEnvelope);
             }
+        } else {
+            switch ($iTarget) {
+                case self::TARGET_CUTOFF:
+                    foreach ($this->aVoice as $oVoice) {
+                        $oVoice->setFilterCutoffEnvelope($oEnvelope);
+                    }
+                    break;
+                case self::TARGET_RESONANCE:
+                    foreach ($this->aVoice as $oVoice) {
+                        $oVoice->setFilterResonanceEnvelope($oEnvelope);
+                    }
+                    break;
+                default:
+                    break;
+            }
         }
         return $this;
     }

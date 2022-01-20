@@ -38,6 +38,22 @@ class DeXter implements Audio\IMachine {
         MAX_OPERATORS = 8
     ;
 
+    const WAVETABLE = [
+        Audio\Signal\IWaveform::SINE,
+        Audio\Signal\IWaveform::SINE_HALF_RECT,
+        Audio\Signal\IWaveform::SINE_FULL_RECT,
+        Audio\Signal\IWaveform::SINE_SAW,
+        Audio\Signal\IWaveform::SINE_SAW_HARD,
+        Audio\Signal\IWaveform::SINE_PINCH,
+        Audio\Signal\IWaveform::SINE_CUT,
+        Audio\Signal\IWaveform::TRIANGLE,
+        Audio\Signal\IWaveform::TRIANGLE_HALF_RECT,
+        Audio\Signal\IWaveform::SAW,
+        Audio\Signal\IWaveform::SQUARE,
+        Audio\Signal\IWaveform::POKEY,
+        Audio\Signal\IWaveform::NOISE
+    ];
+
     use TPolyphonicMachine, TControllerless;
 
     /** @var Audio\Signal\IWaveform[] $aWaveforms */
@@ -425,6 +441,7 @@ class DeXter implements Audio\IMachine {
             $this->aVoice[$iVoiceNumber]
                 ->reset()
                 ->enable();
+            $this->handleVoiceStarted();
         }
         return $this;
     }
@@ -442,13 +459,8 @@ class DeXter implements Audio\IMachine {
 
     private static function initShared(): void {
         if (empty(self::$aWaveforms)) {
-            self::$aWaveforms = [
-                Audio\Signal\IWaveform::SINE     => new Audio\Signal\Waveform\Sine(),
-                Audio\Signal\IWaveform::TRIANGLE => new Audio\Signal\Waveform\Triangle(),
-                Audio\Signal\IWaveform::SAW      => new Audio\Signal\Waveform\Saw(),
-                Audio\Signal\IWaveform::SQUARE   => new Audio\Signal\Waveform\Square(),
-                Audio\Signal\IWaveform::NOISE    => new Audio\Signal\Waveform\WhiteNoise()
-            ];
+            self::$aWaveforms = Audio\Signal\Waveform\Flyweight::get()
+            ->getWaveforms(self::WAVETABLE);
         }
     }
 }

@@ -7,8 +7,8 @@ namespace ABadCafe\PDE;
 use ABadCafe\PDE\Audio\Sequence\Event;
 use ABadCafe\PDE\Audio\Signal\IWaveform;
 use ABadCafe\PDE\Audio\Signal\Envelope;
-use ABadCafe\PDE\Audio\Machine\ProPHPet;
 use ABadCafe\PDE\Audio\Machine\TRNaN;
+use ABadCafe\PDE\Audio\Machine\DeXter;
 
 require_once '../PDE.php';
 
@@ -16,41 +16,46 @@ $oSequencer = new Audio\Machine\Sequencer();
 $oSequencer->setBeatsPerMeasure(8);
 $oSequencer->setTempo(131);
 
+$oWhammyEnv = new Envelope\Shape(
+    -0.25,
+    [
+        [0.0, 1.5],
+        [-12, 0.5],
+    ]
+);
 
-$oElectricGuitar = new ProPHPet(6);
-$oElectricGuitar
-    // Oscillator 1 config
-    ->assignWaveform(IWaveform::SINE_SAW, ProPHPet::TARGET_OSC_1)
-    ->setFrequencyRatio(1.00, ProPHPet::TARGET_OSC_1)
-    ->setLevel(0.25, ProPHPet::TARGET_OSC_1)
-    ->assignLevelEnvelope(new Envelope\DecayPulse(1.0, 2.5), ProPHPet::TARGET_OSC_1)
+// Go for a classic clean-FM guitar sound.
+// $oElectricGuitar = new DeXter(6, 3);
+// $oElectricGuitar
+//     ->selectOperator(0)
+//         ->setEnumeratedWaveform(IWaveform::SINE_SAW_HARD)
+//         ->setOutputMixLevel(0.0)
+//         ->setRatio(11)
+//         ->setLevelEnvelope(new Envelope\DecayPulse(1.0, 0.1))
+//
+//     ->selectOperator(1)
+//         ->setOutputMixLevel(0)
+//         ->setRatio(3)
+//         ->setLevelEnvelope(new Envelope\DecayPulse(1.0, 1.2))
+//         ->setPitchLFODepth(0.05)
+//         ->setPitchLFORate(3.0)
+//         ->enablePitchLFO()
+//
+//     ->selectOperator(2)
+//         ->setRatio(1.0)
+//         ->setOutputMixLevel(1.0)
+//         ->setLevelEnvelope(new Envelope\DecayPulse(1.0, 1.5))
+//         ->setPitchLFODepth(0.05)
+//         ->setPitchLFORate(3.0)
+//         ->enablePitchLFO()
+//         ->setModulation(0, 0.1)
+//         ->setModulation(1, 0.5)
+//
+//     // Output
+//     ->setOutputLevel(0.5)
+// ;
 
-    // Oscillator 2 config
-    ->assignWaveform(IWaveform::SQUARE, ProPHPet::TARGET_OSC_2)
-    ->setFrequencyRatio(1.995, ProPHPet::TARGET_OSC_2)
-    ->setLevel(1.0,  ProPHPet::TARGET_OSC_2)
-    ->assignLevelEnvelope(new Envelope\DecayPulse(1.0, 0.7), ProPHPet::TARGET_OSC_2)
-
-    // Modulation
-    ->setPhaseModulationIndex(0.3)
-
-    // Filter - Auto wah
-    ->setFilterMode(ProPHPet::FILTER_BANDPASS)
-    ->setFilterCutoff(0.125)
-    ->setFilterResonance(0.3)
-
-    // LFO Config
-    ->setLevel(0.05, ProPHPet::TARGET_PITCH_LFO)
-    ->setLFORate(4.5, ProPHPet::TARGET_PITCH_LFO)
-    ->enablePitchLFO(ProPHPet::TARGET_OSC_1)
-    ->enablePitchLFO(ProPHPet::TARGET_OSC_2)
-    ->setLevel(0.7, ProPHPet::TARGET_CUTOFF_LFO)
-    ->setLFORate(0.25 * 131/60, ProPHPet::TARGET_CUTOFF_LFO)
-    ->enableCutoffLFO()
-    // Output
-    ->setOutputLevel(0.25)
-;
-
+$oElectricGuitar = (new Audio\Machine\Factory)->createFrom(json_decode(file_get_contents('machines/multifm/elec_piano_01.json')));
 
 $oPerc = new TRNaN;
 $oPerc->setOutputLevel(1.25);

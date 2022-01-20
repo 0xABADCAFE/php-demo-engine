@@ -16,7 +16,7 @@ $oDrumMachine = new Audio\Machine\TRNaN();
 $oDrumMachine->setOutputLevel(1.0);
 
 $oBassLine = new Audio\Machine\TBNaN();
-$oBassLine->setWaveform(Audio\Signal\IWaveform::PULSE);
+$oBassLine->setEnumeratedWaveform(Audio\Signal\IWaveform::PULSE);
 $oBassLine->setResonance(0.4);
 $oBassLine->setCutoff(0.30);
 $oBassLine->setOutputLevel(0.75);

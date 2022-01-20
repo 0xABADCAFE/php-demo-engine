@@ -50,10 +50,10 @@ $oChipMachine->setVoiceMaskEnvelope(4, new Audio\Signal\Envelope\Shape(
 
 
 $oChipMachine
-    ->setPulseWidthLFORate(0.125)
+    ->setPulseWidthLFORate(2.125)
     ->enablePulseWidthLFO()
-    ->setVoiceWaveform(0, Audio\Signal\IWaveform::PULSE)
-    ->setVoiceWaveform(1, Audio\Signal\IWaveform::PULSE)
+    ->setVoiceWaveform(0, Audio\Signal\IWaveform::POKEY)
+    ->setVoiceWaveform(1, Audio\Signal\IWaveform::POKEY)
     ->setVoiceWaveform(2, Audio\Signal\IWaveform::TRIANGLE)
     ->setVoiceVibratoRate(0, 6.0)
     ->setVoiceVibratoDepth(0, 0.1)

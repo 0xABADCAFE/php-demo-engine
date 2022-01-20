@@ -109,7 +109,7 @@ class TBNaN implements Audio\IMachine {
             new Control\Switcher(
                 self::CTRL_OSC_1_WAVE,
                 function(int $iVoice, int $iValue): void {
-                    $this->setWaveform($iValue);
+                    $this->setEnumeratedWaveform($iValue);
                 },
                 Audio\Signal\IWaveform::PULSE
             ),
@@ -189,7 +189,7 @@ class TBNaN implements Audio\IMachine {
      * @param  int $iWaveform
      * @return self
      */
-    public function setWaveform(int $iWaveform): self {
+    public function setEnumeratedWaveform(int $iWaveform): self {
         if (isset($this->aWaveforms[$iWaveform])) {
             $this->oOscillator->setWaveform($this->aWaveforms[$iWaveform]);
         }
@@ -200,6 +200,11 @@ class TBNaN implements Audio\IMachine {
         /** @var Audio\Signal\Waveform\Pulse $oWaveform */
         $oWaveform = $this->aWaveforms[Audio\Signal\IWaveform::PULSE];
         $oWaveform->setPulsewidth($fWidth);
+        return $this;
+    }
+
+    public function setPWMLFORate(float $fHertz): self {
+        $this->oPWM->setFrequency($fHertz);
         return $this;
     }
 

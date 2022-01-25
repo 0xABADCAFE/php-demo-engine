@@ -54,11 +54,11 @@ class Voice implements Audio\Signal\IStream {
         self::ID_OSC_2 => 'o2'
     ];
 
-    private Audio\Signal\FixedMixer       $oMixer;
-    private Audio\Signal\Modulator        $oRingModulator;
+    private Audio\Signal\Operator\FixedMixer       $oMixer;
+    private Audio\Signal\Operator\Modulator        $oRingModulator;
 
-    /** @var Audio\Signal\AutoMuteSilence<Audio\Signal\IStream> $oOutput */
-    private Audio\Signal\AutoMuteSilence  $oOutput;
+    /** @var Audio\Signal\Operator\AutoMuteSilence<Audio\Signal\IStream> $oOutput */
+    private Audio\Signal\Operator\AutoMuteSilence  $oOutput;
 
     // Filter stuff
     private Audio\Signal\Filter\LowPass   $oLowPassFilter;
@@ -88,7 +88,7 @@ class Voice implements Audio\Signal\IStream {
      * detune.
      */
     public function __construct() {
-        $this->oMixer = new Audio\Signal\FixedMixer();
+        $this->oMixer = new Audio\Signal\Operator\FixedMixer();
         $this->aFreqRatio = [
             self::ID_OSC_1 => 1.002,
             self::ID_OSC_2 => 0.499
@@ -111,7 +111,7 @@ class Voice implements Audio\Signal\IStream {
             );
         }
 
-        $this->oRingModulator = new Audio\Signal\Modulator(
+        $this->oRingModulator = new Audio\Signal\Operator\Modulator(
             $this->aOscillator[self::ID_OSC_1],
             $this->aOscillator[self::ID_OSC_2]
         );
@@ -133,7 +133,7 @@ class Voice implements Audio\Signal\IStream {
 
         /** @var Audio\Signal\IStream $oStream */
         $oStream = $this->oMixer;
-        $this->oOutput = new Audio\Signal\AutoMuteSilence($oStream, 0.05, 1.0/512.0);
+        $this->oOutput = new Audio\Signal\Operator\AutoMuteSilence($oStream, 0.05, 1.0/512.0);
         $this->oOutput->disable();
     }
 
@@ -282,7 +282,7 @@ class Voice implements Audio\Signal\IStream {
             } else if ($this->oCutoffLFO) {
                 // If there is an envelope, pre-modulate the LFO and envelope
                 $this->setFilterCutoffControl(
-                    new Audio\Signal\Modulator(
+                    new Audio\Signal\Operator\Modulator(
                         $this->oCutoffLFO,
                         $this->oCutoffEnvelope
                     )
@@ -309,7 +309,7 @@ class Voice implements Audio\Signal\IStream {
             } else if ($this->oCutoffEnvelope) {
                 // If there is an LFO, pre-modulate the LFO and envelope
                 $this->setFilterCutoffControl(
-                    new Audio\Signal\Modulator(
+                    new Audio\Signal\Operator\Modulator(
                         $this->oCutoffLFO,
                         $this->oCutoffEnvelope
                     )
@@ -347,7 +347,7 @@ class Voice implements Audio\Signal\IStream {
             } else if ($this->oResonanceLFO) {
                 // If there is an envelope, pre-modulate the LFO and envelope
                 $this->setFilterResonanceControl(
-                    new Audio\Signal\Modulator(
+                    new Audio\Signal\Operator\Modulator(
                         $this->oResonanceLFO,
                         $this->oResonanceEnvelope
                     )
@@ -374,7 +374,7 @@ class Voice implements Audio\Signal\IStream {
             } else if ($this->oResonanceEnvelope) {
                 // If there is an LFO, pre-modulate the LFO and envelope
                 $this->setFilterResonanceControl(
-                    new Audio\Signal\Modulator(
+                    new Audio\Signal\Operator\Modulator(
                         $this->oResonanceLFO,
                         $this->oResonanceEnvelope
                     )

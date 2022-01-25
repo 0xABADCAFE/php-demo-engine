@@ -18,10 +18,8 @@
 
 declare(strict_types=1);
 
-namespace ABadCafe\PDE\Audio\Signal;
-
+namespace ABadCafe\PDE\Audio\Signal\Operator;
 use ABadCafe\PDE\Audio;
-
 use function \abs;
 
 /**
@@ -31,14 +29,14 @@ use function \abs;
  */
 
 /**
- * @template T of IStream
+ * @template T of Audio\Signal\IStream
  */
-class LevelAdjust implements IStream {
+class LevelAdjust implements Audio\Signal\IStream {
 
-    use TStream;
+    use Audio\Signal\TStream;
 
     /** @var T $oStream */
-    private IStream $oStream;
+    private Audio\Signal\IStream $oStream;
 
     private float $fLevel;
 
@@ -50,7 +48,7 @@ class LevelAdjust implements IStream {
      * @param T     $oStream
      * @param float $fLevel
      */
-    public function __construct(IStream $oStream, float $fLevel) {
+    public function __construct(Audio\Signal\IStream $oStream, float $fLevel) {
         self::initStreamTrait();
         $this->oStream = $oStream;
         $this->setLevel($fLevel);
@@ -59,7 +57,7 @@ class LevelAdjust implements IStream {
     /**
      * @return T
      */
-    public function getStream(): IStream {
+    public function getStream(): Audio\Signal\IStream {
         return $this->oStream;
     }
 
@@ -102,7 +100,7 @@ class LevelAdjust implements IStream {
     /**
      * @inheritDoc
      */
-    public function emit(?int $iIndex = null): Packet {
+    public function emit(?int $iIndex = null): Audio\Signal\Packet {
         if ($this->bEnabled && !$this->bMuted) {
             return $this->oStream
                 ->emit($iIndex)

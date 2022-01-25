@@ -308,7 +308,8 @@ class Sequencer {
         Audio\IPCMOutput $oOutput,
         float $fGain       = 1.0,
         int $iStartMeasure = 0,
-        int $iNumMeasures  = 0
+        int $iNumMeasures  = 0,
+        int $iSkipLines    = 0
     ): self {
 
         // Sanity checks
@@ -325,25 +326,24 @@ class Sequencer {
         $fLinesPerSecond = $fBeatsPerSecond * $this->iLinesPerBeat;
         $fSecondScale    = 1.0 / Audio\IConfig::PROCESS_RATE;
 
-        $oMixer = new Audio\Signal\FixedMixer($fGain);
+        $oMixer = new Audio\Signal\Operator\FixedMixer($fGain);
         foreach ($this->aMachines as $sMachineName => $oMachine) {
             $oMixer->addInputStream($sMachineName, $oMachine, 1.0);
         }
 
         $fPlayTime    = microtime(true);
         $fComputeTime = 0.0;
-
-        $iLineOffset = 0;
+        $iLineOffset  = 0;
         for ($iMeasure = $iStartMeasure; $iMeasure < $iLastMeasure; ++$iMeasure) {
             $aActivePatterns = [];
-            echo "Measure ", $iMeasure, "\n";
+            //echo "Measure ", $iMeasure, "\n";
             foreach ($this->aMachineSequences as $sMachineName => $aSequence) {
                 if (isset($aSequence[$iMeasure])) {
                     $oPattern = $aSequence[$iMeasure];
-                    echo "\t", $sMachineName, ": ", $oPattern->getLabel(), "\n";
+                    //echo "\t", $sMachineName, ": ", $oPattern->getLabel(), "\n";
                     $aActivePatterns[$sMachineName] = $oPattern;
                 } else {
-                    echo "\t", $sMachineName, ": (no pattern)\n";
+                    //echo "\t", $sMachineName, ": (no pattern)\n";
                 }
             }
 
@@ -351,7 +351,7 @@ class Sequencer {
             while (true) {
                 $iSamplePosition = $oMixer->getPosition();
                 $fCurrentTime    = $fSecondScale * $iSamplePosition;
-                $iLineNumber     = (int)floor($fCurrentTime * $fLinesPerSecond) - $iLineOffset;
+                $iLineNumber     = (int)floor($fCurrentTime * $fLinesPerSecond) - $iLineOffset + $iSkipLines;
                 if ($iLineNumber !== $iLastLineNumber) {
                     if ($iLineNumber == $this->iBasePatternLength) {
                         break;
@@ -368,13 +368,13 @@ class Sequencer {
             }
             $iLineOffset += $this->iBasePatternLength;
         }
-
+        $iSkipLines = 0;
         $fPlayTime = microtime(true) - $fPlayTime;
 
-        printf(
-            "Audio Performance %.3f seconds generated in %.3f seconds\n",
-            $fPlayTime, $fComputeTime
-        );
+//         printf(
+//             "Audio Performance %.3f seconds generated in %.3f seconds\n",
+//             $fPlayTime, $fComputeTime
+//         );
 
         return $this;
     }
@@ -450,7 +450,7 @@ class Sequencer {
 // //             $this->iTempoBeatsPerMinute,
 // //             $fLinesPerSecond
 // //         );
-//         $oMixer = new Audio\Signal\FixedMixer($fGain);
+//         $oMixer = new Audio\Signal\Operator\FixedMixer($fGain);
 //         foreach ($this->aMachines as $sMachineName => $oMachine) {
 //             $oMixer->addInputStream($sMachineName, $oMachine, 1.0);
 // //             dprintf(

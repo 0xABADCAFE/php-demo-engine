@@ -35,12 +35,12 @@ trait TPolyphonicMachine {
 
     private   Audio\Signal\IStream $oOutput;
 
-    protected Audio\Signal\FixedMixer $oMixer;
+    protected Audio\Signal\Operator\FixedMixer $oMixer;
     protected ?Audio\Signal\IInsert   $oInsert   = null;
     protected float                   $fOutLevel = 1.0;
 
-    /** @var Audio\Signal\AutoMuteSilence<Audio\Signal\IStream> $oGate */
-    protected Audio\Signal\AutoMuteSilence $oGate; // @phpstan-ignore-line
+    /** @var Audio\Signal\Operator\AutoMuteSilence<Audio\Signal\IStream> $oGate */
+    protected Audio\Signal\Operator\AutoMuteSilence $oGate; // @phpstan-ignore-line
 
     /**
      * Initialise the components of this trait.
@@ -51,8 +51,8 @@ trait TPolyphonicMachine {
         self::initStreamTrait();
         $this->iNumVoices = max(min($iNumVoices, Audio\IMachine::MAX_POLYPHONY), Audio\IMachine::MIN_POLYPHONY);
         $this->oOutput    =
-        $this->oMixer     = new Audio\Signal\FixedMixer();
-        $this->oGate = new Audio\Signal\AutoMuteSilence($this->getOutput());
+        $this->oMixer     = new Audio\Signal\Operator\FixedMixer();
+        $this->oGate = new Audio\Signal\Operator\AutoMuteSilence($this->getOutput());
         $this->setOutputLevel($this->fOutLevel);
     }
 
@@ -85,7 +85,7 @@ trait TPolyphonicMachine {
     /**
      * @inheritDoc
      */
-    public function setVoiceLevel(int $iVoiceNumber, float $fVolume): Audio\IMachine {
+    public function setVoiceLevel(int $iVoiceNumber, float $fVolume): self {
         $sVoiceName = 'v_' . $iVoiceNumber;
         $this->oMixer->setInputLevel($sVoiceName, $fVolume);
         return $this;
@@ -101,11 +101,11 @@ trait TPolyphonicMachine {
     /**
      * @inheritDoc
      */
-    public function setOutputLevel(float $fVolume): Audio\IMachine {
+    public function setOutputLevel(float $fVolume): self {
         $this->fOutLevel = $fVolume;
         $fMixLevel = $this->fOutLevel * Audio\IMachine::VOICE_ATTENUATE;
         $this->oMixer->setOutputLevel($fMixLevel);
-        $this->oGate->setThreshold($fMixLevel * Audio\Signal\AutoMuteSilence::DEF_THRESHOLD);
+        $this->oGate->setThreshold($fMixLevel * Audio\Signal\Operator\AutoMuteSilence::DEF_THRESHOLD);
         return $this;
     }
 

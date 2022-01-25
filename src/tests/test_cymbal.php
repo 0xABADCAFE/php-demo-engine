@@ -43,7 +43,7 @@ $oFilter2 = new Audio\Signal\Filter\LowPass(
 
 
 
-$oMixer = new Audio\Signal\FixedMixer();
+$oMixer = new Audio\Signal\Operator\FixedMixer();
 $oMixer
     ->addInputStream('f1', $oFilter1, 0.02)
     ->addInputStream('f2', $oFilter2, 0.01)

@@ -20,7 +20,7 @@ $oBassLine
     ->setOutputLevel(1.0)
 ;
 
-$oChipTune = new Audio\Machine\WhyAYeSID(4);
+$oChipTune = new Audio\Machine\AYeSID(4);
 $oChipTune
     ->setVoiceMaskWaveform(15, Audio\Signal\IWaveform::SINE)
     ->setOutputLevel(1.0)

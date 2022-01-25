@@ -18,27 +18,25 @@
 
 declare(strict_types=1);
 
-namespace ABadCafe\PDE\Audio\Signal;
-
+namespace ABadCafe\PDE\Audio\Signal\Operator;
 use ABadCafe\PDE\Audio;
-
 /**
  * AutoMuteAfter
  *
- * Wrapper for another IStream that automatically disables itself after a certain amount of time. This is to limit the
+ * Wrapper for another Audio\Signal\IStream that automatically disables itself after a certain amount of time. This is to limit the
  * duration that sound generators run for, especially one-shot sounds. This prevents wasting of CPU when a generator
  * would otherwise be calculating (near) silence.
  */
 
 /**
- * @template T of IStream
+ * @template T of Audio\Signal\IStream
  */
-class AutoMuteAfter implements IStream {
+class AutoMuteAfter implements Audio\Signal\IStream {
 
-    use TStream;
+    use Audio\Signal\TStream;
 
     /** @var T $oStream */
-    private IStream $oStream;
+    private Audio\Signal\IStream $oStream;
 
     private int
         $iDisableAfter = 0, // in samples
@@ -51,14 +49,14 @@ class AutoMuteAfter implements IStream {
      * @param T     $oStream
      * @param float $fSeconds
      */
-    public function __construct(IStream $oStream, float $fSeconds) {
+    public function __construct(Audio\Signal\IStream $oStream, float $fSeconds) {
         self::initStreamTrait();
         $this->oStream = $oStream;
         $this->setDisableAfter($fSeconds);
     }
 
     /**
-     * Set the duration, in seconds, after which the wrapped IStream will be disabled. Values <= 0 will never disable.
+     * Set the duration, in seconds, after which the wrapped Audio\Signal\IStream will be disabled. Values <= 0 will never disable.
      *
      * @param  float $fSeconds
      * @return self<T>
@@ -91,7 +89,7 @@ class AutoMuteAfter implements IStream {
     /**
      * @inheritDoc
      */
-    public function emit(?int $iIndex = null): Packet {
+    public function emit(?int $iIndex = null): Audio\Signal\Packet {
         $this->iPosition += Audio\IConfig::PACKET_SIZE;
 
         // Check to see if the stream needs disabling yet
@@ -111,7 +109,7 @@ class AutoMuteAfter implements IStream {
     /**
      * @return T
      */
-    public function getStream(): IStream {
+    public function getStream(): Audio\Signal\IStream {
         return $this->oStream;
     }
 }

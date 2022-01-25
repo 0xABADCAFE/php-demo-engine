@@ -20,13 +20,13 @@ $oSequencer->setTempo(131);
 $oElectricGuitar = new ProPHPet(6);
 $oElectricGuitar
     // Oscillator 1 config
-    ->assignWaveform(IWaveform::SINE_SAW, ProPHPet::TARGET_OSC_1)
+    ->assignEnumeratedWaveform(IWaveform::SINE_SAW, ProPHPet::TARGET_OSC_1)
     ->setFrequencyRatio(1.00, ProPHPet::TARGET_OSC_1)
     ->setLevel(0.25, ProPHPet::TARGET_OSC_1)
     ->assignLevelEnvelope(new Envelope\DecayPulse(1.0, 2.5), ProPHPet::TARGET_OSC_1)
 
     // Oscillator 2 config
-    ->assignWaveform(IWaveform::SQUARE, ProPHPet::TARGET_OSC_2)
+    ->assignEnumeratedWaveform(IWaveform::SQUARE, ProPHPet::TARGET_OSC_2)
     ->setFrequencyRatio(1.995, ProPHPet::TARGET_OSC_2)
     ->setLevel(1.0,  ProPHPet::TARGET_OSC_2)
     ->assignLevelEnvelope(new Envelope\DecayPulse(1.0, 0.7), ProPHPet::TARGET_OSC_2)

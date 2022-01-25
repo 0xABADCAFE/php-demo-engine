@@ -22,12 +22,12 @@ namespace ABadCafe\PDE\Audio\Machine;
 use ABadCafe\PDE\Audio;
 
 /**
- * WhyAYeSID
+ * AYeSID
  *
  * Simple multivoice chip tune machine. Each voice has a basic oscillator with it's own waveform, vibrato, tremelo
  * and envelope settings. Basic waveforms common to 8-bit machines are supported.
  */
-class WhyAYeSID implements Audio\IMachine {
+class AYeSID implements Audio\IMachine {
 
     use TPolyphonicMachine, TSimpleVelocity, TAutomated;
 
@@ -49,7 +49,7 @@ class WhyAYeSID implements Audio\IMachine {
     /** @var Audio\Signal\IWaveform[] $aWaveforms */
     private array $aWaveforms = [];
 
-    /** @var Audio\Signal\LevelAdjust<Audio\Signal\Oscillator\Sound>[] $aVoices */
+    /** @var Audio\Signal\Operator\LevelAdjust<Audio\Signal\Oscillator\Sound>[] $aVoices */
     private array $aVoices = [];
 
     private int   $iVoiceMask;
@@ -285,9 +285,9 @@ class WhyAYeSID implements Audio\IMachine {
     /**
      * Create an initial voice for a voice. Defaults to a triangle waveform with a small 4Hz vibrato.
      *
-     * @return Audio\Signal\LevelAdjust<Audio\Signal\Oscillator\Sound>
+     * @return Audio\Signal\Operator\LevelAdjust<Audio\Signal\Oscillator\Sound>
      */
-    private function createInitialVoice(): Audio\Signal\LevelAdjust {
+    private function createInitialVoice(): Audio\Signal\Operator\LevelAdjust {
         $iDefaultWaveform = Audio\Signal\IWaveform::TRIANGLE;
 
         $oOscillator = new Audio\Signal\Oscillator\Sound($this->aWaveforms[$iDefaultWaveform]);
@@ -315,7 +315,7 @@ class WhyAYeSID implements Audio\IMachine {
                 ]
             )
         );
-        $oLevelAdjust = new Audio\Signal\LevelAdjust(
+        $oLevelAdjust = new Audio\Signal\Operator\LevelAdjust(
             $oOscillator,
             Audio\Signal\IWaveform::ROOT_SPECTRAL_POWER[$iDefaultWaveform]
         );
@@ -327,7 +327,7 @@ class WhyAYeSID implements Audio\IMachine {
      * Returns an array of the selected voices implied by a voice mask.
      *
      * @param  int $iVoiceMask
-     * @return Audio\Signal\LevelAdjust<Audio\Signal\Oscillator\Sound>[]
+     * @return Audio\Signal\Operator\LevelAdjust<Audio\Signal\Oscillator\Sound>[]
      */
     private function getSelectedVoices(int $iVoiceMask): array {
         $aResult = [];

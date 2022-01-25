@@ -23,14 +23,14 @@ use ABadCafe\PDE\Audio;
 use function \array_column, \array_fill, \max, \min;
 
 /**
- * DeXter
+ * DeX7er (pron Dexter)
  *
  * Polyphonic FM synth with 2 to 8 operators per voice. Matrix style modulation rather than fixed algorithm. It's
  * a... bloody murder... to program.
  *
  * Uses the FM\Operator type as the basic operator unit.
  */
-class DeXter implements Audio\IMachine {
+class DeX7er implements Audio\IMachine {
 
     const
         MIN_OPERATORS = 2,
@@ -61,7 +61,7 @@ class DeXter implements Audio\IMachine {
 
     // One each per voice
 
-    /** @var Audio\Signal\FixedMixer[] $aVoice */
+    /** @var Audio\Signal\Operator\FixedMixer[] $aVoice */
     private array $aVoice = [];
 
     /** @var float[] $aBaseFreq */
@@ -94,7 +94,7 @@ class DeXter implements Audio\IMachine {
 
         for ($i = 0; $i < $this->iNumVoices; ++$i) {
             $this->aBaseFreq[$i] = Audio\Note::CENTRE_FREQUENCY;
-            $oVoiceMixer         = new Audio\Signal\FixedMixer();
+            $oVoiceMixer         = new Audio\Signal\Operator\FixedMixer();
             $this->aVoice[$i]    = $oVoiceMixer;
             for ($j = 0; $j < $this->iNumOperators; ++$j) {
                 $oOperator = new FM\Operator;

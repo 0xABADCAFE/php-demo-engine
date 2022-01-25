@@ -33,7 +33,7 @@ $oFMMarimba
 $oDrumMachine = new Audio\Machine\TRNaN();
 $oDrumMachine->setOutputLevel(1.25);
 
-$oChipMachine = new Audio\Machine\WhyAYeSID(3);
+$oChipMachine = new Audio\Machine\AYeSID(3);
 $oChipMachine->setVoiceMaskEnvelope(3, new Audio\Signal\Envelope\Shape(
     0.6,
     [

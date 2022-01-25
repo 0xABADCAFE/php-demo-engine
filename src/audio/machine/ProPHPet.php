@@ -227,7 +227,7 @@ class ProPHPet implements Audio\IMachine {
             new Control\Switcher(
                 self::CTRL_OSC_1_WAVE,
                 function(int $iVoice, int $iValue): void {
-                    $this->assignWaveform($iValue, self::TARGET_OSC_1);
+                    $this->assignEnumeratedWaveform($iValue, self::TARGET_OSC_1);
                 },
                 Audio\Signal\IWaveform::SINE
             ),
@@ -256,7 +256,7 @@ class ProPHPet implements Audio\IMachine {
             new Control\Switcher(
                 self::CTRL_OSC_2_WAVE,
                 function(int $iVoice, int $iValue): void {
-                    $this->assignWaveform($iValue, self::TARGET_OSC_2);
+                    $this->assignEnumeratedWaveform($iValue, self::TARGET_OSC_2);
                 },
                 Audio\Signal\IWaveform::SINE
             ),
@@ -315,7 +315,7 @@ class ProPHPet implements Audio\IMachine {
      * @param  int $iTarget
      * @return self
      */
-    public function assignWaveform(int $iWaveform, int $iTarget): self {
+    public function assignEnumeratedWaveform(int $iWaveform, int $iTarget): self {
         if (isset($this->aWaveforms[$iWaveform])) {
             $oWaveform = $this->aWaveforms[$iWaveform];
             if (isset(self::VOICE_TARGET_MAP[$iTarget])) {

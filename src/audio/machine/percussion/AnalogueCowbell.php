@@ -43,8 +43,8 @@ class AnalogueCowbell implements IVoice {
     private Audio\Signal\IEnvelope       $oEnvelope;
     private Audio\Signal\IFilter         $oFilter;
 
-    /** @var Audio\Signal\AutoMuteSilence<Audio\Signal\Filter\BandPass> $oAutoMute */
-    private Audio\Signal\AutoMuteSilence $oAutoMute;
+    /** @var Audio\Signal\Operator\AutoMuteSilence<Audio\Signal\Filter\BandPass> $oAutoMute */
+    private Audio\Signal\Operator\AutoMuteSilence $oAutoMute;
 
     /**
      * Constructor
@@ -74,7 +74,7 @@ class AnalogueCowbell implements IVoice {
             ->setPhaseModulator($this->oOscillator1)
             ->setPhaseModulationIndex(self::OSC_HI_PHASE_MOD)
         ;
-        $oMixer = new Audio\Signal\FixedMixer();
+        $oMixer = new Audio\Signal\Operator\FixedMixer();
         $oMixer
             ->addInputStream('l', $this->oOscillator1, 1.0)
             ->addInputStream('h', $this->oOscillator2, 1.0)
@@ -84,7 +84,7 @@ class AnalogueCowbell implements IVoice {
             self::FILTER_CUTOFF,
             self::FILTER_RESONANCE
         );
-        $this->oAutoMute = new Audio\Signal\AutoMuteSilence($this->oFilter, 0.03, 1/512.0);
+        $this->oAutoMute = new Audio\Signal\Operator\AutoMuteSilence($this->oFilter, 0.03, 1/512.0);
         $this->oAutoMute->disable();
     }
 

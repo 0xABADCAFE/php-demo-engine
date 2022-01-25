@@ -18,7 +18,7 @@
 
 declare(strict_types=1);
 
-namespace ABadCafe\PDE\Audio\Signal;
+namespace ABadCafe\PDE\Audio\Signal\Operator;
 
 use ABadCafe\PDE\Audio;
 
@@ -27,23 +27,23 @@ use ABadCafe\PDE\Audio;
  *
  * @see https://github.com/0xABADCAFE/random-proto-synth
  */
-class Modulator implements IStream {
+class Modulator implements Audio\Signal\IStream {
 
-    use TStream, TPacketIndexAware;
+    use Audio\Signal\TStream, Audio\Signal\TPacketIndexAware;
 
     private int     $iPosition = 0;
-    private IStream $oStream1, $oStream2;
-    private Packet  $oLastPacket;
+    private Audio\Signal\IStream $oStream1, $oStream2;
+    private Audio\Signal\Packet  $oLastPacket;
 
     /**
      * Constructor
      *
-     * @param IStream $oStream1
-     * @param IStream $oStream2
+     * @param Audio\Signal\IStream $oStream1
+     * @param Audio\Signal\IStream $oStream2
      */
-    public function __construct(IStream $oStream1, IStream $oStream2) {
+    public function __construct(Audio\Signal\IStream $oStream1, Audio\Signal\IStream $oStream2) {
         self::initStreamTrait();
-        $this->oLastPacket = Packet::create();
+        $this->oLastPacket = Audio\Signal\Packet::create();
         $this->oStream1 = $oStream1;
         $this->oStream2 = $oStream2;
     }
@@ -69,7 +69,7 @@ class Modulator implements IStream {
     /**
      * @inheritDoc
      */
-    public function emit(?int $iIndex = null): Packet {
+    public function emit(?int $iIndex = null): Audio\Signal\Packet {
         $this->iPosition += Audio\IConfig::PACKET_SIZE;
         if (!$this->bEnabled) {
             return $this->emitSilence();
@@ -81,9 +81,9 @@ class Modulator implements IStream {
     }
 
     /**
-     * @return Packet
+     * @return Audio\Signal\Packet
      */
-    private function emitNew(): Packet {
+    private function emitNew(): Audio\Signal\Packet {
         $this->oLastPacket = $this->oStream1->emit($this->iLastIndex);
         return $this->oLastPacket->modulateWith($this->oStream2->emit($this->iLastIndex));
     }

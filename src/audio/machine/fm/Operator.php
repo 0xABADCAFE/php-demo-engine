@@ -63,7 +63,7 @@ class Operator implements Audio\Signal\IOscillator {
      * Operator modulation inputs are summed using a fixed mixer, where the level of each input corresponds to that
      * modulator's modulation index.
      */
-    private Audio\Signal\FixedMixer  $oModulation;
+    private Audio\Signal\Operator\FixedMixer  $oModulation;
 
     // LFO have injectable waveforms but are direct dependencies. The Level LFO in particular must operate in 1-0 range.
     private Audio\Signal\Oscillator\LFO
@@ -112,7 +112,7 @@ class Operator implements Audio\Signal\IOscillator {
         $this->oOscillator = new Audio\Signal\Oscillator\Sound($oDefaultWaveform);
         $this->oLevelLFO   = new Audio\Signal\Oscillator\LFOOneToZero($oDefaultWaveform);
         $this->oPitchLFO   = new Audio\Signal\Oscillator\LFO($oDefaultWaveform);
-        $this->oModulation = new Audio\Signal\FixedMixer();
+        $this->oModulation = new Audio\Signal\Operator\FixedMixer();
     }
 
     /**

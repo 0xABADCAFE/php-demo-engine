@@ -18,14 +18,14 @@
 
 declare(strict_types=1);
 
-namespace ABadCafe\PDE\Audio\Signal;
+namespace ABadCafe\PDE\Audio\Signal\Operator;
 use ABadCafe\PDE\Audio;
 use function ABadCafe\PDE\dprintf;
 
 /**
  * AutoMuteSilence
  *
- * Wrapper for another IStream that automatically disables itself when its input streams output sigal strength falls
+ * Wrapper for another Audio\Signal\IStream that automatically disables itself when its input streams output sigal strength falls
  * below a given threshold for a certain time. Use as a gate to disable more expensive upstream signal sources.
  *
  * The threshold value is based on the full normalised signal scale of -1.0 to 1.0, so it is important to scale this
@@ -37,9 +37,9 @@ use function ABadCafe\PDE\dprintf;
  */
 
 /**
- * @template T of IStream
+ * @template T of Audio\Signal\IStream
  */
-class AutoMuteSilence implements IStream {
+class AutoMuteSilence implements Audio\Signal\IStream {
 
     /**
      * Default threshold for a full scale signal.
@@ -54,10 +54,10 @@ class AutoMuteSilence implements IStream {
         SCALE_FACTOR    = self::SAMPLE_DISTANCE / Audio\IConfig::PACKET_SIZE
     ;
 
-    use TStream;
+    use Audio\Signal\TStream;
 
     /** @var T $oStream */
-    private IStream $oStream;
+    private Audio\Signal\IStream $oStream;
 
     private float $fThresholdSquared;
     private float $fLastTotalSquared = 0;
@@ -75,7 +75,7 @@ class AutoMuteSilence implements IStream {
      * @param float   $fThreshold - Normalised RMS level below which a stream is considered silent
      */
     public function __construct(
-        IStream $oStream,
+        Audio\Signal\IStream $oStream,
         float $fSeconds = self::DEF_DURATION,
         float $fThreshold = self::DEF_THRESHOLD
     ) {
@@ -85,7 +85,7 @@ class AutoMuteSilence implements IStream {
         $this->setDisableAfter($fSeconds);
     }
 
-    public function enable(): IStream {
+    public function enable(): Audio\Signal\IStream {
         $this->bEnabled = true;
         $this->fLastTotalSquared  = 0.0;
         $this->iSilentPacketCount = 0;
@@ -140,7 +140,7 @@ class AutoMuteSilence implements IStream {
     /**
      * @inheritDoc
      */
-    public function emit(?int $iIndex = null): Packet {
+    public function emit(?int $iIndex = null): Audio\Signal\Packet {
         if ($this->bEnabled) {
             $oPacket = $this->oStream->emit($iIndex);
             $fTotalSquared = 0.0;
@@ -175,7 +175,7 @@ class AutoMuteSilence implements IStream {
      * @param  T $oStream
      * @return self<T>
      */
-    public function setStream(IStream $oStream): self {
+    public function setStream(Audio\Signal\IStream $oStream): self {
         $this->oStream = $oStream;
         return $this;
     }
@@ -183,7 +183,7 @@ class AutoMuteSilence implements IStream {
     /**
      * @return T
      */
-    public function getStream(): IStream {
+    public function getStream(): Audio\Signal\IStream {
         return $this->oStream;
     }
 }

@@ -33,23 +33,6 @@ class Factory implements Audio\IFactory {
 
     const STANDARD_KEY_WAVE = 'sWave';
 
-    const WAVE_NAME_MAP = [
-        'Sine'        => Audio\Signal\IWaveform::SINE,
-        'SineHR'      => Audio\Signal\IWaveform::SINE_HALF_RECT,
-        'SineFR'      => Audio\Signal\IWaveform::SINE_FULL_RECT,
-        'SineSaw'     => Audio\Signal\IWaveform::SINE_SAW,
-        'SinePinch'   => Audio\Signal\IWaveform::SINE_PINCH,
-        'SineCut'     => Audio\Signal\IWaveform::SINE_CUT,
-        'SineSawHard' => Audio\Signal\IWaveform::SINE_SAW_HARD,
-        'Triangle'    => Audio\Signal\IWaveform::TRIANGLE,
-        'TriangleHR'  => Audio\Signal\IWaveform::TRIANGLE_HALF_RECT,
-        'Saw'         => Audio\Signal\IWaveform::SAW,
-        'Square'      => Audio\Signal\IWaveform::SQUARE,
-        'Pokey'       => Audio\Signal\IWaveform::POKEY,
-        'Pulse'       => Audio\Signal\IWaveform::PULSE,
-        'Noise'       => Audio\Signal\IWaveform::NOISE
-    ];
-
     /**
      * Simple products are instantiated directly by helper functions
      */
@@ -59,8 +42,8 @@ class Factory implements Audio\IFactory {
         'drum'       => 'createTRNaN', // Alias
 
         // Chiptune machine
-        'whyayesid'  => 'createWhyAYeSID',
-        'chip'       => 'createWhyAYeSID',
+        'ayesid'    =>  'createAYeSID',
+        'chip'       => 'createAYeSID',
     ];
 
     /**
@@ -76,8 +59,9 @@ class Factory implements Audio\IFactory {
         'sub'        => Loader\ProPHPet::class,
 
         // FM Synth
-        'dexter'    => Loader\DeXter::class,
-        'multifm'   => Loader\DeXter::class,
+        'dexter'    => Loader\DeX7er::class,
+        'dex7er'    => Loader\DeX7er::class,
+        'multifm'   => Loader\DeX7er::class,
     ];
 
 
@@ -120,7 +104,7 @@ class Factory implements Audio\IFactory {
         ) {
             dprintf("\tGot %s %s\n", $sField, $oDefinition->{$sField});
             $sName = $oDefinition->{$sField};
-            return self::WAVE_NAME_MAP[$sName] ?? null;
+            return Audio\Signal\Waveform\Flyweight::WAVE_NAME_MAP[$sName] ?? null;
         }
         return null;
     }
@@ -211,10 +195,10 @@ class Factory implements Audio\IFactory {
         return $oBass;
     }
 
-    private function createWhyAYeSID(\stdClass $oDefinition, string $sType): Audio\IMachine {
-        dprintf("\n%s() Creating %s...\n", __METHOD__, TBNaN::class);
+    private function createAYeSID(\stdClass $oDefinition, string $sType): Audio\IMachine {
+        dprintf("\n%s() Creating %s...\n", __METHOD__, AYeSID::class);
 
-        return new WhyAYeSID(4);
+        return new AYeSID(4);
     }
 
     private function applyStandardProperties(Audio\IMachine $oMachine, \stdClass $oDefinition): Audio\IMachine {

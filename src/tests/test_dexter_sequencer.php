@@ -8,7 +8,6 @@ use ABadCafe\PDE\Audio\Sequence\Event;
 use ABadCafe\PDE\Audio\Signal\IWaveform;
 use ABadCafe\PDE\Audio\Signal\Envelope;
 use ABadCafe\PDE\Audio\Machine\TRNaN;
-use ABadCafe\PDE\Audio\Machine\DeXter;
 
 require_once '../PDE.php';
 
@@ -24,47 +23,13 @@ $oWhammyEnv = new Envelope\Shape(
     ]
 );
 
-// Go for a classic clean-FM guitar sound.
-// $oElectricGuitar = new DeXter(6, 3);
-// $oElectricGuitar
-//     ->selectOperator(0)
-//         ->setEnumeratedWaveform(IWaveform::SINE_SAW_HARD)
-//         ->setOutputMixLevel(0.0)
-//         ->setRatio(11)
-//         ->setLevelEnvelope(new Envelope\DecayPulse(1.0, 0.1))
-//
-//     ->selectOperator(1)
-//         ->setOutputMixLevel(0)
-//         ->setRatio(3)
-//         ->setLevelEnvelope(new Envelope\DecayPulse(1.0, 1.2))
-//         ->setPitchLFODepth(0.05)
-//         ->setPitchLFORate(3.0)
-//         ->enablePitchLFO()
-//
-//     ->selectOperator(2)
-//         ->setRatio(1.0)
-//         ->setOutputMixLevel(1.0)
-//         ->setLevelEnvelope(new Envelope\DecayPulse(1.0, 1.5))
-//         ->setPitchLFODepth(0.05)
-//         ->setPitchLFORate(3.0)
-//         ->enablePitchLFO()
-//         ->setModulation(0, 0.1)
-//         ->setModulation(1, 0.5)
-//
-//     // Output
-//     ->setOutputLevel(0.5)
-// ;
-
-$oElectricGuitar = (new Audio\Machine\Factory)->createFrom(json_decode(file_get_contents('machines/multifm/elec_piano_01.json')));
+$oElectricGuitar = (new Audio\Machine\Factory)->createFrom(json_decode(file_get_contents('machines/multifm/fm_guitar_01.json')));
 
 $oPerc = new TRNaN;
 $oPerc->setOutputLevel(1.25);
 
-$oBassLine = new Audio\Machine\TBNaN();
-$oBassLine->setEnumeratedWaveform(Audio\Signal\IWaveform::PULSE);
-$oBassLine->setResonance(0.4);
-$oBassLine->setCutoff(0.30);
-$oBassLine->setOutputLevel(0.75);
+$oBassLine = (new Audio\Machine\Factory)->createFrom(json_decode(file_get_contents('machines/multifm/recently.json')));
+
 
 $oSequencer
     ->addMachine('sub', $oElectricGuitar)
@@ -109,48 +74,46 @@ $oSequencer->allocatePattern('bass', [1, 2])
 
 $oSequencer->allocatePattern('bass', [3, 4, 8, 9, 10, 13])
     ->addEvent(Event::noteOn('E2', 70), 0, 0, 8)
-    ->addEvent(Event::noteOn('E3', 40), 0, 1, 8)
+    ->addEvent(Event::noteOn('E3', 40), 1, 1, 8)
     ->addEvent(Event::noteOn('E2', 70), 0, 2, 8)
-    ->addEvent(Event::noteOn('E3', 40), 0, 3, 8)
+    ->addEvent(Event::noteOn('E3', 40), 1, 3, 8)
     ->addEvent(Event::noteOn('B1', 70), 0, 4, 8)
-    ->addEvent(Event::noteOn('B2', 40), 0, 5, 8)
+    ->addEvent(Event::noteOn('B2', 40), 1, 5, 8)
     ->addEvent(Event::noteOn('D2', 70), 0, 6, 8)
-    ->addEvent(Event::noteOn('D3', 40), 0, 7, 8)
+    ->addEvent(Event::noteOn('D3', 40), 1, 7, 8)
 ;
 
 $oSequencer->allocatePattern('bass', [7, 13])
-    ->addEvent(Event::modCtrl(Audio\Machine\TBNaN::CTRL_LPF_CUTOFF, -2), 0, 1, 1)
     ->addEvent(Event::noteOn('E2', 70), 0, 0, 8)
-    ->addEvent(Event::noteOn('E3', 40), 0, 1, 8)
+    ->addEvent(Event::noteOn('E3', 40), 1, 1, 8)
     ->addEvent(Event::noteOn('E2', 70), 0, 2, 8)
-    ->addEvent(Event::noteOn('E3', 40), 0, 3, 8)
+    ->addEvent(Event::noteOn('E3', 40), 1, 3, 8)
     ->addEvent(Event::noteOn('B1', 70), 0, 4, 8)
-    ->addEvent(Event::noteOn('B2', 40), 0, 5, 8)
+    ->addEvent(Event::noteOn('B2', 40), 1, 5, 8)
     ->addEvent(Event::noteOn('D2', 70), 0, 6, 8)
-    ->addEvent(Event::noteOn('D3', 40), 0, 7, 8)
+    ->addEvent(Event::noteOn('D3', 40), 1, 7, 8)
 ;
 
 $oSequencer->allocatePattern('bass', [5, 11])
-    ->addEvent(Event::modCtrl(Audio\Machine\TBNaN::CTRL_LPF_CUTOFF, 2), 0, 1, 1)
     ->addEvent(Event::noteOn('G2', 70), 0, 0, 8)
-    ->addEvent(Event::noteOn('G3', 40), 0, 1, 8)
+    ->addEvent(Event::noteOn('G3', 40), 1, 1, 8)
     ->addEvent(Event::noteOn('G2', 70), 0, 2, 8)
-    ->addEvent(Event::noteOn('G3', 40), 0, 3, 8)
+    ->addEvent(Event::noteOn('G3', 40), 1, 3, 8)
     ->addEvent(Event::noteOn('D2', 70), 0, 4, 8)
-    ->addEvent(Event::noteOn('D3', 40), 0, 5, 8)
+    ->addEvent(Event::noteOn('D3', 40), 1, 5, 8)
     ->addEvent(Event::noteOn('F2', 70), 0, 6, 8)
-    ->addEvent(Event::noteOn('F3', 40), 0, 7, 8)
+    ->addEvent(Event::noteOn('F3', 40), 1, 7, 8)
 ;
 
 $oSequencer->allocatePattern('bass', [6, 12])
-    ->addEvent(Event::noteOn('A1', 70), 0, 0, 8)
-    ->addEvent(Event::noteOn('A2', 40), 0, 1, 8)
-    ->addEvent(Event::noteOn('A1', 70), 0, 2, 8)
-    ->addEvent(Event::noteOn('A2', 40), 0, 3, 8)
-    ->addEvent(Event::noteOn('E1', 70), 0, 4, 8)
-    ->addEvent(Event::noteOn('E2', 40), 0, 5, 8)
-    ->addEvent(Event::noteOn('G1', 70), 0, 6, 8)
-    ->addEvent(Event::noteOn('G2', 40), 0, 7, 8)
+    ->addEvent(Event::noteOn('A2', 70), 0, 0, 8)
+    ->addEvent(Event::noteOn('A3', 40), 1, 1, 8)
+    ->addEvent(Event::noteOn('A2', 70), 0, 2, 8)
+    ->addEvent(Event::noteOn('A3', 40), 1, 3, 8)
+    ->addEvent(Event::noteOn('E2', 70), 0, 4, 8)
+    ->addEvent(Event::noteOn('E3', 40), 1, 5, 8)
+    ->addEvent(Event::noteOn('G2', 70), 0, 6, 8)
+    ->addEvent(Event::noteOn('G3', 40), 1, 7, 8)
 ;
 
 

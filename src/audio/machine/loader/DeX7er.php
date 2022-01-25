@@ -23,25 +23,25 @@ use ABadCafe\PDE\Audio;
 use function ABadCafe\PDE\dprintf, \count, \get_class, \is_array, \is_string;
 
 /**
- * DeXter Loader
+ * DeX7er Loader
  *
- * Constricts and parameterises a DeXter instance from a definition property crate.
+ * Constricts and parameterises a DeX7er instance from a definition property crate.
  */
-class DeXter implements Audio\IFactory {
+class DeX7er implements Audio\IFactory {
 
     /**
      * @inheritDoc
      */
-    public function createFrom(\stdClass $oDefinition): Audio\Machine\DeXter {
-        dprintf("\n%s() Creating %s...\n", __METHOD__, Audio\Machine\DeXter::class);
+    public function createFrom(\stdClass $oDefinition): Audio\Machine\DeX7er {
+        dprintf("\n%s() Creating %s...\n", __METHOD__, Audio\Machine\DeX7er::class);
 
         if (!isset($oDefinition->Operators) || !is_array($oDefinition->Operators)) {#
-            throw new \RuntimeException('Missing Operators for DeXter');
+            throw new \RuntimeException('Missing Operators for DeX7er');
         }
         $iNumOperators = count($oDefinition->Operators);
         if (
-            $iNumOperators < Audio\Machine\DeXter::MIN_OPERATORS ||
-            $iNumOperators > Audio\Machine\DeXter::MAX_OPERATORS
+            $iNumOperators < Audio\Machine\DeX7er::MIN_OPERATORS ||
+            $iNumOperators > Audio\Machine\DeX7er::MAX_OPERATORS
         ) {
             throw new \RuntimeException('Invalid Operator count ' . $iNumOperators);
         }
@@ -53,16 +53,16 @@ class DeXter implements Audio\IFactory {
             $iVoices
         );
 
-        $oDexter = new Audio\Machine\DeXter($iVoices, $iNumOperators);
+        $oMachine = new Audio\Machine\DeX7er($iVoices, $iNumOperators);
 
         $aOperatorNames = [];
 
         $iOperator  = 0;
         foreach ($oDefinition->Operators as $oOperatorDefinition) {
-            $this->configureOperator($oDexter, $iOperator++, $oOperatorDefinition, $aOperatorNames);
+            $this->configureOperator($oMachine, $iOperator++, $oOperatorDefinition, $aOperatorNames);
         }
 
-        return $oDexter;
+        return $oMachine;
     }
 
 
@@ -70,8 +70,8 @@ class DeXter implements Audio\IFactory {
     /**
      * @param array<string, int> $aOperatorNames
      */
-    private function configureOperator(Audio\Machine\DeXter $oDexter, int $iOperator, \stdClass $oDefinition, array& $aOperatorNames): void {
-        $oDexter->selectOperator($iOperator);
+    private function configureOperator(Audio\Machine\DeX7er $oMachine, int $iOperator, \stdClass $oDefinition, array& $aOperatorNames): void {
+        $oMachine->selectOperator($iOperator);
 
         dprintf(
             "\tConfiguring operator %d...\n",
@@ -86,7 +86,7 @@ class DeXter implements Audio\IFactory {
 
         $iWaveform = Audio\Machine\Factory::getEnumeratedWaveform($oDefinition);
         if (null !== $iWaveform) {
-            $oDexter->setEnumeratedWaveform($iWaveform);
+            $oMachine->setEnumeratedWaveform($iWaveform);
 
             dprintf(
                 "\t\tSet Waveform %d.\n",
@@ -101,7 +101,7 @@ class DeXter implements Audio\IFactory {
 
         // Prefer semitones over absolute ratio
         if (isset($oDefinition->fSemitones)) {
-            $oDexter->setRatioSemitones((float)$oDefinition->fSemitones);
+            $oMachine->setRatioSemitones((float)$oDefinition->fSemitones);
 
             dprintf(
                 "\t\tSet ratio as %f semitones.\n",
@@ -109,7 +109,7 @@ class DeXter implements Audio\IFactory {
             );
 
         } else if (isset($oDefinition->fRatio)) {
-            $oDexter->setRatio((float)($oDefinition->fRatio));
+            $oMachine->setRatio((float)($oDefinition->fRatio));
 
             dprintf(
                 "\t\tSet ratio as %f absolute.\n",
@@ -124,7 +124,7 @@ class DeXter implements Audio\IFactory {
 
         // Output mix level
         if (isset($oDefinition->fOutputMix)) {
-            $oDexter->setOutputMixLevel((float)($oDefinition->fOutputMix));
+            $oMachine->setOutputMixLevel((float)($oDefinition->fOutputMix));
 
             dprintf(
                 "\t\tSet Output Mix level to %f.\n",
@@ -141,7 +141,7 @@ class DeXter implements Audio\IFactory {
         if (isset($oDefinition->LevelLFO) && $oDefinition->LevelLFO instanceof \stdClass) {
             $fDepth = (float)($oDefinition->LevelLFO->fDepth ?? 0.5);
             $fRate  = (float)($oDefinition->LevelLFO->fRate ?? Audio\Signal\Oscillator\LFO::DEF_FREQUENCY);
-            $oDexter
+            $oMachine
                 ->setLevelLFODepth($fDepth)
                 ->setLevelLFORate($fRate)
                 ->enableLevelLFO();
@@ -151,7 +151,7 @@ class DeXter implements Audio\IFactory {
                 $fRate
             );
         } else {
-            $oDexter->disableLevelLFO();
+            $oMachine->disableLevelLFO();
             dprintf(
                 "\t\tNo Level LFO defined.\n"
             );
@@ -161,7 +161,7 @@ class DeXter implements Audio\IFactory {
         if (isset($oDefinition->PitchLFO) && $oDefinition->PitchLFO instanceof \stdClass) {
             $fDepth = (float)($oDefinition->PitchLFO->fDepth ?? 0.5);
             $fRate  = (float)($oDefinition->PitchLFO->fRate ?? Audio\Signal\Oscillator\LFO::DEF_FREQUENCY);
-            $oDexter
+            $oMachine
                 ->setPitchLFODepth($fDepth)
                 ->setPitchLFORate($fRate)
                 ->enablePitchLFO();
@@ -171,7 +171,7 @@ class DeXter implements Audio\IFactory {
                 $fRate
             );
         } else {
-            $oDexter->disablePitchLFO();
+            $oMachine->disablePitchLFO();
             dprintf(
                 "\t\tNo Pitch LFO defined.\n"
             );
@@ -180,7 +180,7 @@ class DeXter implements Audio\IFactory {
         // Level Envelope
         if (isset($oDefinition->LevelEnv) && $oDefinition->LevelEnv instanceof \stdClass) {
             $oEnvelope = Audio\Signal\Envelope\Factory::get()->createFrom($oDefinition->LevelEnv);
-            $oDexter->setLevelEnvelope($oEnvelope);
+            $oMachine->setLevelEnvelope($oEnvelope);
 
             // Velocity Dynamics for the level envelope level
             if (
@@ -189,7 +189,7 @@ class DeXter implements Audio\IFactory {
             ) {
                 $oCurve = Audio\ControlCurve\Factory::get()
                     ->createFrom($oDefinition->LevelEnv->Velocity->Intensity);
-                $oDexter->setLevelIntensityVelocityCurve($oCurve);
+                $oMachine->setLevelIntensityVelocityCurve($oCurve);
             }
 
             // Velocity Dynamics for the level envelope speed
@@ -199,7 +199,7 @@ class DeXter implements Audio\IFactory {
             ) {
                 $oCurve = Audio\ControlCurve\Factory::get()
                     ->createFrom($oDefinition->LevelEnv->Velocity->Rate);
-                $oDexter->setLevelRateVelocityCurve($oCurve);
+                $oMachine->setLevelRateVelocityCurve($oCurve);
             }
 
             dprintf(
@@ -215,7 +215,7 @@ class DeXter implements Audio\IFactory {
         // Pitch Envelope
         if (isset($oDefinition->PitchEnv) && $oDefinition->PitchEnv instanceof \stdClass) {
             $oEnvelope = Audio\Signal\Envelope\Factory::get()->createFrom($oDefinition->PitchEnv);
-            $oDexter->setLevelEnvelope($oEnvelope);
+            $oMachine->setLevelEnvelope($oEnvelope);
 
             // Velocity Dynamics for the pitch envelope level
             if (
@@ -224,7 +224,7 @@ class DeXter implements Audio\IFactory {
             ) {
                 $oCurve = Audio\ControlCurve\Factory::get()
                     ->createFrom($oDefinition->PitchEnv->Velocity->Intensity);
-                $oDexter->setLevelIntensityVelocityCurve($oCurve);
+                $oMachine->setLevelIntensityVelocityCurve($oCurve);
             }
 
             // Velocity Dynamics for the pitch envelope speed
@@ -234,7 +234,7 @@ class DeXter implements Audio\IFactory {
             ) {
                 $oCurve = Audio\ControlCurve\Factory::get()
                     ->createFrom($oDefinition->PitchEnv->Velocity->Rate);
-                $oDexter->setLevelRateVelocityCurve($oCurve);
+                $oMachine->setLevelRateVelocityCurve($oCurve);
             }
 
             dprintf(
@@ -260,7 +260,7 @@ class DeXter implements Audio\IFactory {
                 ) {
                     $sSource = (string)$oModulator->sSource;
                     $fIndex  = (float)$oModulator->fIndex;
-                    $oDexter->setModulation($aOperatorNames[$sSource], $fIndex);
+                    $oMachine->setModulation($aOperatorNames[$sSource], $fIndex);
                     dprintf(
                         "\t\tAdding modulation from Operator %s at level %.f\n",
                         $sSource,

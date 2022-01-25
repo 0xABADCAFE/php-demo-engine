@@ -68,8 +68,8 @@ class AnalogueKick implements IVoice {
     private Audio\Signal\IOscillator $oOscillator;
     private Audio\Signal\Envelope\DecayPulse $oVolumeEnv, $oPitchEnv;
 
-    /** @var Audio\Signal\AutoMuteSilence<Audio\Signal\Oscillator\Sound> $oAutoMute */
-    private Audio\Signal\AutoMuteSilence $oAutoMute;
+    /** @var Audio\Signal\Operator\AutoMuteSilence<Audio\Signal\Oscillator\Sound> $oAutoMute */
+    private Audio\Signal\Operator\AutoMuteSilence $oAutoMute;
 
     /**
      * Constructor
@@ -91,7 +91,7 @@ class AnalogueKick implements IVoice {
             ->setPitchEnvelope($this->oPitchEnv)
             ->setLevelEnvelope($this->oVolumeEnv);
 
-        $this->oAutoMute = new Audio\Signal\AutoMuteSilence($this->oOscillator, 0.05, 0.1);
+        $this->oAutoMute = new Audio\Signal\Operator\AutoMuteSilence($this->oOscillator, 0.05, 0.1);
         $this->oAutoMute->disable();
     }
 

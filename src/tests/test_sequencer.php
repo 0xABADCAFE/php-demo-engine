@@ -13,7 +13,7 @@ $oSequencer = new Audio\Machine\Sequencer();
 $oSequencer->setBeatsPerMeasure(8);
 
 
-$oFMMarimba = new Audio\Machine\TwoOpFM(2);
+$oFMMarimba = new Audio\Machine\OPHPL(2);
 $oFMMarimba
     ->setModulatorWaveform(Audio\Signal\IWaveform::SINE)
     ->setModulatorRatio(7.01)
@@ -68,7 +68,7 @@ $oBassLine->setResonance(0.4);
 $oBassLine->setCutoff(0.30);
 
 
-$oFMPad = new Audio\Machine\TwoOpFM(4);
+$oFMPad = new Audio\Machine\OPHPL(4);
 $oFMPad
     ->setModulatorWaveform(Audio\Signal\IWaveform::SINE_FULL_RECT)
     ->setModulatorRatio(2.01)

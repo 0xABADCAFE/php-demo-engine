@@ -49,7 +49,7 @@ $oChipMachine
     ->setInsert(new Audio\Signal\Insert\DelayLoop(null, 152.6 * 3, 0.6))
 ;
 
-$oFMPad = new Audio\Machine\TwoOpFM(4);
+$oFMPad = new Audio\Machine\OPHPL(4);
 $oFMPad
     ->setModulatorWaveform(Audio\Signal\IWaveform::SINE_FULL_RECT)
     ->setModulatorRatio(2.01)

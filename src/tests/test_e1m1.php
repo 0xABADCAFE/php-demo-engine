@@ -12,7 +12,7 @@ $oSequencer = new Audio\Machine\Sequencer();
 $oSequencer->setBeatsPerMeasure(8);
 $oSequencer->setTempo(80);
 
-$oFM = new Audio\Machine\TwoOpFM(3);
+$oFM = new Audio\Machine\OPHPL(3);
 $oFM
     ->setModulatorWaveform(Audio\Signal\IWaveform::SINE_SAW)
     ->setModulatorRatio(1.00)

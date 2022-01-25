@@ -12,20 +12,20 @@ require_once '../PDE.php';
 $oSequencer = new Audio\Machine\Sequencer();
 $oSequencer->setBeatsPerMeasure(8);
 
-$oFM = new Audio\Machine\TwoOpFM(5);
+$oFM = new Audio\Machine\OPHPL(5);
 $oFM
     ->setModulatorWaveform(Audio\Signal\IWaveform::SINE)
-    ->setModulatorRatio(1)
+    ->setModulatorRatio(0.5)
     ->setModulatorLevelEnvelope(
         new Audio\Signal\Envelope\Shape(
             0.0, [
-                [1.0, 0.2],
+                [0.5, 1.0],
                 [0.0, 10.0]
             ]
         )
     )
-    ->setModulationIndex(0.25)
-    ->setModulatorMix(0.0)
+    ->setModulationIndex(0.5)
+    ->setModulatorMix(0)
     ->setCarrierWaveform(Audio\Signal\IWaveform::SINE)
     ->setCarrierRatio(1)
     ->setCarrierLevelEnvelope(
@@ -36,7 +36,7 @@ $oFM
             ]
         )
     )
-    ->setCarrierMix(0)
+    ->setCarrierMix(0.5)
     ->setOutputLevel(1)
     ->setPitchLFODepth(0.03)
     ->setPitchLFORate(4.5)

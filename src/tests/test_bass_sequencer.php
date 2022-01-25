@@ -22,7 +22,7 @@ $oBassLine->setCutoff(0.30);
 $oBassLine->setOutputLevel(0.75);
 
 
-$oFM = new Audio\Machine\TwoOpFM(4);
+$oFM = new Audio\Machine\OPHPL(4);
 $oFM
     ->setModulatorWaveform(Audio\Signal\IWaveform::SAW)
     ->setModulatorRatio(6.01)

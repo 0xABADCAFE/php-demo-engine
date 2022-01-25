@@ -23,7 +23,7 @@ use ABadCafe\PDE\Audio;
 use function \max, \min;
 
 /**
- * TwoOpFM
+ * OPHPL
  *
  * A simple fixed algorithm 2-operator FM synthesiser:
  *
@@ -33,7 +33,7 @@ use function \max, \min;
  *
  * Modulator and carrier have independent Volume and Pitch envelopes. There are shared pitch and volume LFOs.
  */
-class TwoOpFM implements Audio\IMachine {
+class OPHPL implements Audio\IMachine {
 
     const WAVETABLE = [
         Audio\Signal\IWaveform::SINE,
@@ -42,6 +42,7 @@ class TwoOpFM implements Audio\IMachine {
         Audio\Signal\IWaveform::SINE_SAW,
         Audio\Signal\IWaveform::SINE_PINCH,
         Audio\Signal\IWaveform::SINE_CUT,
+        Audio\Signal\IWaveform::SINE_SAW_HARD,
         Audio\Signal\IWaveform::TRIANGLE,
         Audio\Signal\IWaveform::TRIANGLE_HALF_RECT,
         Audio\Signal\IWaveform::SAW,
@@ -521,6 +522,9 @@ class TwoOpFM implements Audio\IMachine {
      */
     public function setCarrierMix(float $fMix): self {
         $this->fCarrierMix = $fMix;
+        foreach ($this->aVoice as $i => $oMixer) {
+            $oMixer->getStream()->setInputLevel('C', $fMix);
+        }
         return $this;
     }
 

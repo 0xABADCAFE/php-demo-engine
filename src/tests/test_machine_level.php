@@ -26,7 +26,7 @@ $oChipTune
     ->setOutputLevel(1.0)
 ;
 
-$oFM2Op = new Audio\Machine\TwoOpFM(4);
+$oFM2Op = new Audio\Machine\OPHPL(4);
 $oFM2Op
     ->setOutputLevel(1.0)
 ;

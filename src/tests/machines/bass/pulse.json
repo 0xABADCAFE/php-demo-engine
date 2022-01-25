@@ -1,0 +1,20 @@
+{
+    "sType": "Bass",
+    "sName": "Pulse01",
+    "fOutputLevel": 0.75,
+    "sWave": "Pulse",
+    "Pulse": {
+        "fWidth": 0.25,
+        "fRate": 2.0
+    },
+    "Level": {
+        "fDecay": 0.05,
+        "fTarget": 0.7
+    },
+    "Filter": {
+        "fCutoff": 0.95,
+        "fResonance": 0.4,
+        "fDecay": 0.05,
+        "fTarget": 0.1
+    }
+}

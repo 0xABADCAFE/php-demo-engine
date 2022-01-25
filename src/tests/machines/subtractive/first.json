@@ -1,0 +1,62 @@
+{
+    "sType": "ProPHPet",
+    "sName": "First",
+    "fOutputLevel": 1.0,
+    "Oscillator1": {
+        "sWave": "SineSawHard",
+        "fRatio": 1.01,
+        "fLevel": 0.5,
+        "LevelEnv": {
+            "sType": "Decay",
+            "fInitial": 1.0,
+            "fHalfLife": 1.0
+        },
+        "bVibrato": true,
+        "bTremolo": false
+    },
+    "Oscillator2": {
+        "sWave": "SineSawHard",
+        "fRatio": 0.499,
+        "fLevel": 0.5,
+        "LevelEnv": {
+            "sType": "Decay",
+            "fInitial": 1.0,
+            "fHalfLife": 1.0
+        },
+        "bVibrato": true,
+        "bTremolo": false
+    },
+    "Modulation": {
+        "fPhase": 0.1,
+        "fRing": 0.0
+    },
+    "Filter": {
+        "sType": "Lowpass",
+        "Cutoff": {
+            "fLevel": 0.9,
+            "LevelEnv": {
+                "sType": "Decay",
+                "fInitial": 1.0,
+                "fHalfLife": 1.0
+            },
+            "LFO": {
+                "sWave": "Sine",
+                "fRate": 5.0,
+                "fDepth": 0.5
+            }
+        },
+        "Resonance": {
+            "fLevel": 0.3
+        }
+    },
+    "Vibrato": {
+        "sWave": "Sine",
+        "fRate": 3.0,
+        "fDepth": 0.05
+    },
+    "Tremolo": {
+        "sWave": "Sine",
+        "fRate": 3.0,
+        "fDepth": 0.15
+    }
+}

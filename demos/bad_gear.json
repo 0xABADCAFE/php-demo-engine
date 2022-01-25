@@ -1,0 +1,37 @@
+{
+    "displays": {
+        "default": {
+            "sType": "DoubleVerticalRGB",
+            "iWidth": 128,
+            "iHeight": 100,
+            "iMaxFPS": 15
+        }
+    },
+    "routines": {
+        "zoom": {
+            "sType": "2D/Rotozoom",
+            "iPriority": 1,
+            "aParameters": {
+                "sPath": "images/florian.ppm",
+                "fOfsU": 50
+            }
+        }
+
+    },
+    "events": [
+        {
+            "at": 0.0,
+            "on": "routine/zoom",
+            "do": "disable"
+        },
+        {
+            "at": 0.33,
+            "on": "routine/zoom",
+            "do": "enable"
+        },
+        {
+            "at": 16.0,
+            "do": "end"
+        }
+    ]
+}

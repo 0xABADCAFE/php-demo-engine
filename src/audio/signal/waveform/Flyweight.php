@@ -31,6 +31,27 @@ use ABadCafe\PDE\Audio\Signal\IWaveform;
 class Flyweight {
 
     /**
+     * @const array<string, int>
+     */
+    const WAVE_NAME_MAP = [
+        'Sine'        => IWaveform::SINE,
+        'SineHR'      => IWaveform::SINE_HALF_RECT,
+        'SineFR'      => IWaveform::SINE_FULL_RECT,
+        'SineSaw'     => IWaveform::SINE_SAW,
+        'SinePinch'   => IWaveform::SINE_PINCH,
+        'SineCut'     => IWaveform::SINE_CUT,
+        'SineSawHard' => IWaveform::SINE_SAW_HARD,
+        'Triangle'    => IWaveform::TRIANGLE,
+        'TriangleHR'  => IWaveform::TRIANGLE_HALF_RECT,
+        'Saw'         => IWaveform::SAW,
+        'SawAliased'  => IWaveform::SAW_ALIASED,
+        'Square'      => IWaveform::SQUARE,
+        'Pokey'       => IWaveform::POKEY,
+        'Pulse'       => IWaveform::PULSE,
+        'Noise'       => IWaveform::NOISE
+    ];
+
+    /**
      * @const array<int, class-string>
      */
     private const WAVE_TYPES = [

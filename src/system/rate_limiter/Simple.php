@@ -44,16 +44,18 @@ class Simple implements System\IRateLimiter {
     }
 
     public function __destruct() {
-        $fAverageSleepPerFrame = $this->fTotalSlept / (float)$this->iFrameNumber;
+        if ($this->iFrameNumber) {
+            $fAverageSleepPerFrame = $this->fTotalSlept / (float)$this->iFrameNumber;
 
-        printf(
-            "\nPerf: %d frames @ %d fps, %.2f ms/frame, %.2f ms asleep. Free: %.02f%%\n",
-            $this->iFrameNumber,
-            $this->iMaxFramesPerSecond,
-            1000.0 * $this->fFrameDuration,
-            1000.0 * $fAverageSleepPerFrame,
-            100.0 * $fAverageSleepPerFrame / $this->fFrameDuration
-        );
+            printf(
+                "\nPerf: %d frames @ %d fps, %.2f ms/frame, %.2f ms asleep. Free: %.02f%%\n",
+                $this->iFrameNumber,
+                $this->iMaxFramesPerSecond,
+                1000.0 * $this->fFrameDuration,
+                1000.0 * $fAverageSleepPerFrame,
+                100.0 * $fAverageSleepPerFrame / $this->fFrameDuration
+            );
+        }
     }
 
     /**

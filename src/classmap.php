@@ -61,6 +61,7 @@ const CLASS_MAP = [
   'ABadCafe\\PDE\\Audio\\Signal\\IEnvelope' => '/audio/signal/IEnvelope.php',
   'ABadCafe\\PDE\\Audio\\Signal\\IInsert' => '/audio/signal/IInsert.php',
   'ABadCafe\\PDE\\Audio\\Signal\\TPacketGeneratorStats' => '/audio/signal/TPacketGeneratorStats.php',
+  'ABadCafe\\PDE\\Audio\\Signal\\Operator\\Integrator' => '/audio/signal/operator/Integrator.php',
   'ABadCafe\\PDE\\Audio\\Signal\\Operator\\FixedMixer' => '/audio/signal/operator/FixedMixer.php',
   'ABadCafe\\PDE\\Audio\\Signal\\Operator\\Modulator' => '/audio/signal/operator/Modulator.php',
   'ABadCafe\\PDE\\Audio\\Signal\\Operator\\AutoMuteAfter' => '/audio/signal/operator/AutoMuteAfter.php',

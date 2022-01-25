@@ -73,8 +73,8 @@ $oFMPad
             ]
         )
     )
-    ->setCarrierMix(0.2)
-    ->setOutputLevel(0.175)
+    ->setCarrierMix(0.8)
+    ->setOutputLevel(0.3)
     ->setPitchLFODepth(0.03)
     ->setPitchLFORate(4.5)
     ->enablePitchLFO(true, true)
@@ -250,6 +250,7 @@ $oSequencer->allocatePattern('sub', [2])
     ->addEvent(Event::noteOn('F1', 100), 0, 28)
     ->addEvent(Event::noteOn('F2', 100), 1, 28)
     ->addEvent(Event::noteOn('C2', 50), 2, 28)
+
 
     ->addEvent(Event::setNote('D1'), 0, 30)
     ->addEvent(Event::setNote('D2'), 1, 30)

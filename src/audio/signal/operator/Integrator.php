@@ -22,15 +22,15 @@ namespace ABadCafe\PDE\Audio\Signal\Operator;
 use ABadCafe\PDE\Audio;
 
 /**
- * Differentiator
+ * Integrator
  *
- * Turns the signal into it's equivalent delta stream
+ * Turns the (usually differentiated) signal into it's equivalent integral stream
  */
 
 /**
  * @template T of Audio\Signal\IStream
  */
-class Differentiator implements Audio\Signal\IStream {
+class Integrator implements Audio\Signal\IStream {
 
     use Audio\Signal\TStream;
 
@@ -87,8 +87,7 @@ class Differentiator implements Audio\Signal\IStream {
             for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
                 /** @var float $fNext */
                 $fNext       = $oPacket[$i];
-                $oPacket[$i] = $fNext - $fLast;
-                $fLast = $fNext;
+                $oPacket[$i] = $fLast += $fNext;
             }
             $this->fCarry = $fLast;
             return $oPacket;

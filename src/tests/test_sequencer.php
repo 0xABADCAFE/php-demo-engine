@@ -92,7 +92,7 @@ $oFMPad
             ]
         )
     )
-    ->setCarrierMix(0.2)
+    ->setCarrierMix(0.8)
     ->setOutputLevel(0.1)
     ->setPitchLFODepth(0.03)
     ->setPitchLFORate(4.5)

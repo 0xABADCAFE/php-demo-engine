@@ -47,7 +47,10 @@ class Sound extends Base {
 
     protected float
         $fPhaseModulationIndex = 1.0,
-        $fLevelModulationIndex = 1.0
+        $fLevelModulationIndex = 1.0,
+        $fPhaseFeedbackIndex   = 0.0,
+        $fLastOne              = 0.0,
+        $fLastTwo              = 0.0
     ;
 
     /**
@@ -208,6 +211,11 @@ class Sound extends Base {
         return $this->oPitchEnvelope;
     }
 
+    public function setPhaseFeedbackIndex(float $fFeedback): self {
+        $this->fPhaseFeedbackIndex = $fFeedback;
+        return $this;
+    }
+
     /**
      * Calculates a new audio packet
      *
@@ -215,57 +223,74 @@ class Sound extends Base {
      */
     protected function emitNew(): Audio\Signal\Packet {
 
-        if ($this->oPitchModulator || $this->oPitchEnvelope) {
-            $oPitchShifts = Audio\Signal\Packet::create();
-
-            if ($this->oPitchModulator) {
-                $oPitchShifts->sumWith($this->oPitchModulator->emit($this->iLastIndex));
-            }
-            if ($this->oPitchEnvelope) {
-                $oPitchShifts->sumWith($this->oPitchEnvelope->emit($this->iLastIndex));
-            }
-
-            // Every sample point has a new frequency, but we can't just use the instantaneous Waveform value for
-            // that as it would be the value that the function has if it was always at that frequency.
-            // Therefore we must also correct the phase for every sample point too. The phase correction is
-            // accumulated, which is equivalent to integrating over the time step.
-            for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
-                $fNextFrequencyMultiplier = 2.0 ** ($oPitchShifts[$i] * self::INV_TWELVETH);
-                $fNextFrequency           = $this->fFrequency * $fNextFrequencyMultiplier;
-                $fTime                    = $this->fTimeStep  * $this->iSamplePosition++;
-                $this->oWaveformInput[$i] = ($this->fCurrentFrequency * $fTime) + $this->fPhaseCorrection;
-                $this->fPhaseCorrection   += $fTime * ($this->fCurrentFrequency - $fNextFrequency);
-                $this->fCurrentFrequency  = $fNextFrequency;
-            }
-        } else {
-            for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
-                $this->oWaveformInput[$i] = $this->fScaleVal * $this->iSamplePosition++;
-            }
-        }
-
-        if ($this->oPhaseModulator) {
-            // We have somthing modulating our basic phase. Thankfully this is just additive. We assume the
-            // phase modulation is normalised, such that 1.0 is a complete full cycle of our waveform.
-            // We simply multiply the shift by our Waveform's period value to get this.
-            $oPhaseShifts = $this->oPhaseModulator->emit($this->iLastIndex);
-            $fPeriod = $this->fPhaseModulationIndex * $this->fWaveformPeriod;
-            for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
-                $this->oWaveformInput[$i] += $fPeriod * $oPhaseShifts[$i];
-            }
-        }
-
-        $this->oLastOutput = $this->oWaveform->map($this->oWaveformInput); // @phpstan-ignore-line : false positive
-
+        /** @var Audio\Signal\Packet|null $oOutputLevel */
+        $oOutputLevel = null;
         if ($this->oLevelModulator) {
-            $oLevel = clone $this->oLevelModulator->emit($this->iLastIndex);
-            $oLevel->scaleBy($this->fLevelModulationIndex);
-            $this->oLastOutput->modulateWith($oLevel);
+            $oOutputLevel = clone $this->oLevelModulator->emit($this->iLastIndex);
+            $oOutputLevel->scaleBy($this->fLevelModulationIndex);
         }
-
         if ($this->oLevelEnvelope) {
-            $this->oLastOutput->modulateWith($this->oLevelEnvelope->emit($this->iLastIndex));
+            if ($oOutputLevel) {
+                $oOutputLevel->modulateWith($this->oLevelEnvelope->emit($this->iLastIndex));
+            } else {
+                $oOutputLevel = $this->oLevelEnvelope->emit($this->iLastIndex);
+            }
         }
 
+        if ($this->bAperiodic) {
+            $this->oLastOutput = $this->oWaveform->map($this->oWaveformInput); // @phpstan-ignore-line : false positive
+        } else {
+
+            if ($this->oPitchModulator || $this->oPitchEnvelope) {
+                $oPitchShifts = Audio\Signal\Packet::create();
+
+                if ($this->oPitchModulator) {
+                    $oPitchShifts->sumWith($this->oPitchModulator->emit($this->iLastIndex));
+                }
+                if ($this->oPitchEnvelope) {
+                    $oPitchShifts->sumWith($this->oPitchEnvelope->emit($this->iLastIndex));
+                }
+
+                // Every sample point has a new frequency, but we can't just use the instantaneous Waveform value for
+                // that as it would be the value that the function has if it was always at that frequency.
+                // Therefore we must also correct the phase for every sample point too. The phase correction is
+                // accumulated, which is equivalent to integrating over the time step.
+                for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
+                    $fNextFrequencyMultiplier = 2.0 ** ($oPitchShifts[$i] * self::INV_TWELVETH);
+                    $fNextFrequency           = $this->fFrequency * $fNextFrequencyMultiplier;
+                    $fTime                    = $this->fTimeStep  * $this->iSamplePosition++;
+                    $this->oWaveformInput[$i] = ($this->fCurrentFrequency * $fTime) + $this->fPhaseCorrection;
+                    $this->fPhaseCorrection   += $fTime * ($this->fCurrentFrequency - $fNextFrequency);
+                    $this->fCurrentFrequency  = $fNextFrequency;
+                }
+            } else {
+                for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
+                    $this->oWaveformInput[$i] = $this->fScaleVal * $this->iSamplePosition++;
+                }
+            }
+
+            if ($this->oPhaseModulator) {
+                // We have somthing modulating our basic phase. Thankfully this is just additive. We assume the
+                // phase modulation is normalised, such that 1.0 is a complete full cycle of our waveform.
+                // We simply multiply the shift by our Waveform's period value to get this.
+                $oPhaseShifts = $this->oPhaseModulator->emit($this->iLastIndex);
+                $fPeriod = $this->fPhaseModulationIndex * $this->fWaveformPeriod;
+                for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
+                    $this->oWaveformInput[$i] += $fPeriod * $oPhaseShifts[$i];
+                }
+            }
+
+
+            // Self modulation. This is pretty painful
+            if ($this->fPhaseFeedbackIndex > 0.0) {
+
+            } else {
+                $this->oLastOutput = $this->oWaveform->map($this->oWaveformInput); // @phpstan-ignore-line : false positive
+            }
+        }
+        if ($oOutputLevel) {
+            $this->oLastOutput->modulateWith($oOutputLevel);
+        }
         return $this->oLastOutput;
     }
 }

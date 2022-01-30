@@ -51,6 +51,8 @@ abstract class Base implements Audio\Signal\IOscillator {
         $fScaleVal         = 0.0
     ;
 
+    protected bool $bAperiodic = false;
+
     protected int $iSamplePosition = 0;
 
     /**
@@ -116,11 +118,13 @@ abstract class Base implements Audio\Signal\IOscillator {
             $this->oWaveform       = $oWaveform->share();
             $this->fWaveformPeriod = $this->oWaveform->getPeriod();
             $this->fTimeStep       = $this->fWaveformPeriod * Audio\IConfig::SAMPLE_PERIOD;
-            $this->fScaleVal = $this->fTimeStep * $this->fFrequency;
+            $this->fScaleVal       = $this->fTimeStep * $this->fFrequency;
+            $this->bAperiodic      = ($oWaveform instanceof Audio\Signal\Waveform\WhiteNoise);
         } else {
             $this->oWaveform       = null;
             $this->fWaveformPeriod = 1.0;
             $this->fTimeStep       = $this->fWaveformPeriod * Audio\IConfig::SAMPLE_PERIOD;
+            $this->bAperiodic      = false;
         }
         return $this;
     }

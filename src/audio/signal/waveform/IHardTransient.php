@@ -19,12 +19,13 @@
 declare(strict_types=1);
 
 namespace ABadCafe\PDE\Audio\Signal\Waveform;
+use ABadCafe\PDE\Audio\Signal;
 
 /**
  * IHardTransient
  *
- * Simple tag interface to identify certain types of waveform
+ * Simple tag interface to identify certain types of waveform as having hard edges
  */
-interface IHardTransient {
+interface IHardTransient extends Signal\IWaveform {
 
 }

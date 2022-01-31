@@ -61,15 +61,18 @@ class AnalogueCowbell implements IVoice {
         $fBase = self::CENTRE_FREQ;
 
         $this->oOscillator1 = new Audio\Signal\Oscillator\Sound(
-            new Audio\Signal\Waveform\AliasedPulse(self::OSC_LO_DUTY_CYCLE),
+            new Audio\Signal\Waveform\Pulse(self::OSC_LO_DUTY_CYCLE),
             $fBase
         );
         $this->oOscillator2 = new Audio\Signal\Oscillator\Sound(
-            new Audio\Signal\Waveform\AliasedPulse(self::OSC_HI_DUTY_CYCLE),
+            new Audio\Signal\Waveform\Pulse(self::OSC_HI_DUTY_CYCLE),
             $fBase * self::DEF_RATIO
         );
-        $this->oOscillator1->setLevelEnvelope($this->oEnvelope);
+        $this->oOscillator1
+            ->setAntialiasMode(Audio\Signal\Oscillator\Sound::ANTIALIAS_OFF)
+            ->setLevelEnvelope($this->oEnvelope);
         $this->oOscillator2
+            ->setAntialiasMode(Audio\Signal\Oscillator\Sound::ANTIALIAS_OFF)
             ->setLevelEnvelope($this->oEnvelope)
             ->setPhaseModulator($this->oOscillator1)
             ->setPhaseModulationIndex(self::OSC_HI_PHASE_MOD)

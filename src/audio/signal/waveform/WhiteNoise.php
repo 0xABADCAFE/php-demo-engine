@@ -89,6 +89,6 @@ class WhiteNoise implements Audio\Signal\IWaveform {
     }
 
     public function value(float $fInput): float {
-        return sin($fInput);
+        return 0.0;
     }
 }

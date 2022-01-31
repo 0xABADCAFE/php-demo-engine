@@ -43,12 +43,9 @@ interface IWaveform extends Util\ISometimesShareable {
         TRIANGLE_HALF_RECT = 11,
         SAW                = 20,
         SAW_HALF_RECT      = 21,
-        SAW_ALIASED        = 22,
         SQUARE             = 30,
-        SQUARE_ALIASED     = 31,
         POKEY              = 32,
         PULSE              = 40,
-        PULSE_ALIASED      = 41,
         NOISE              = 50
     ;
 
@@ -70,12 +67,9 @@ interface IWaveform extends Util\ISometimesShareable {
         self::TRIANGLE           => self::SINE_SPECTRAL_POWER / 2.097255,
         self::TRIANGLE_HALF_RECT => self::SINE_SPECTRAL_POWER / 3.099708,
         self::SAW                => self::SINE_SPECTRAL_POWER / 3.485038,
-        self::SAW_ALIASED        => self::SINE_SPECTRAL_POWER / 3.485038,
         self::SQUARE             => self::SINE_SPECTRAL_POWER / 4.466541,
-        self::SQUARE_ALIASED     => self::SINE_SPECTRAL_POWER / 4.466541,
         self::POKEY              => self::SINE_SPECTRAL_POWER / 4.366541, // guess
         self::PULSE              => self::SINE_SPECTRAL_POWER / 4.952629,
-        self::PULSE_ALIASED      => self::SINE_SPECTRAL_POWER / 4.952629,
         self::NOISE              => 0.5
     ];
 

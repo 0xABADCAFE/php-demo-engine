@@ -371,6 +371,7 @@ class Sound extends Base {
 
         // Treat feedback modulation indexes below a critical threshold as no feedback modulation
         MIN_FEEDBACK_MOD_INDEX      = 0.01,
+        FEEDBACK_SCALE              = 0.75,
 
         // Treat level modulation indexes below a critical threshold as no level modulation
         MIN_LEVEL_MOD_INDEX         = 0.01
@@ -577,10 +578,11 @@ class Sound extends Base {
 
             // Feedback - this requires per sample calculation
             self::OUT_FEEDBACK => function(): void {
+                $fIndex = $this->fPhaseFeedbackIndex * self::FEEDBACK_SCALE;
                 for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
                     $this->oLastOutput[$i] = $fOutput = $this->oWaveform->value(
                         $this->oWaveformInput[$i] +
-                        $this->fPhaseFeedbackIndex * ($this->fFeedBack1 + $this->fFeedBack2)
+                        $fIndex * ($this->fFeedBack1 + $this->fFeedBack2)
                     );
                     $this->fFeedBack2 = $this->fFeedBack1;
                     $this->fFeedBack1 = $fOutput;
@@ -615,10 +617,11 @@ class Sound extends Base {
     }
 
     private function populateOutputPacketWithFeedback(Audio\Signal\Packet $oOutputLevel): void {
+        $fIndex = $this->fPhaseFeedbackIndex * self::FEEDBACK_SCALE;
         for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
             $this->oLastOutput[$i] = $fOutput = $this->oWaveform->value(
                 $this->oWaveformInput[$i] +
-                $this->fPhaseFeedbackIndex * ($this->fFeedBack1 + $this->fFeedBack2)
+                $fIndex * ($this->fFeedBack1 + $this->fFeedBack2)
             ) * $oOutputLevel[$i];
             $this->fFeedBack2 = $this->fFeedBack1;
             $this->fFeedBack1 = $fOutput;

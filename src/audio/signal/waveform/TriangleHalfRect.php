@@ -61,4 +61,8 @@ class TriangleHalfRect implements Signal\IWaveform {
         }
         return $oOutput;
     }
+
+    public function value(float $fInput): float {
+        return sin($fInput);
+    }
 }

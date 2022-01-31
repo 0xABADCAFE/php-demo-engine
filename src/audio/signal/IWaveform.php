@@ -96,4 +96,9 @@ interface IWaveform extends Util\ISometimesShareable {
      *
      */
     public function map(Packet $oInput): Packet;
+
+    /**
+     * Calculate the output for a single input.
+     */
+    public function value(float $fInput): float;
 }

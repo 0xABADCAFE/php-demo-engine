@@ -56,4 +56,11 @@ class Sine implements Signal\IWaveform {
         }
         return $oOutput;
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function value(float $fInput): float {
+        return sin($fInput);
+    }
 }

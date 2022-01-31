@@ -53,6 +53,39 @@ class Sound extends Base {
         $fLastTwo              = 0.0
     ;
 
+
+    /**
+     * @var array<int, callable> $aInputStages
+     */
+    protected array $aInputStages = [];
+
+    /**
+     * @var array<int, callable> $aOutputStages
+     */
+    protected array $aOutputStages = [];
+
+    /** @var callable $cInputStage */
+    protected $cInputStage;
+
+    /** @var callable $cOutputStage */
+    protected $cOutputStage;
+
+    /**
+     * Constructor
+     *
+     * @param Audio\Signal\IWaveform|null $oWaveform
+     * @param float                       $fFrequency
+     * @param float                       $fPhase
+     */
+    public function __construct(
+        ?Audio\Signal\IWaveform $oWaveform = null,
+        float $fFrequency = 0.0,
+        float $fPhase     = 0.0
+    ) {
+        parent::__construct($oWaveform, $fFrequency, $fPhase);
+        $this->createInputStages();
+        $this->createOutputStages();
+    }
     /**
      * @inheritDoc
      */
@@ -86,6 +119,7 @@ class Sound extends Base {
      */
     public function setPitchModulator(?Audio\Signal\IStream $oModulator): self {
         $this->oPitchModulator = $oModulator;
+        $this->configureInputStage();
         return $this;
     }
 
@@ -108,6 +142,7 @@ class Sound extends Base {
      */
     public function setPhaseModulator(?Audio\Signal\IStream $oModulator): self {
         $this->oPhaseModulator = $oModulator;
+        $this->configureInputStage();
         return $this;
     }
 
@@ -147,6 +182,7 @@ class Sound extends Base {
      */
     public function setLevelModulator(?Audio\Signal\IStream $oModulator): self {
         $this->oLevelModulator = $oModulator;
+        $this->configureOutputStage();
         return $this;
     }
 
@@ -183,6 +219,7 @@ class Sound extends Base {
      */
     public function setLevelEnvelope(?Audio\Signal\IEnvelope $oEnvelope): self {
         $this->oLevelEnvelope = $oEnvelope;
+        $this->configureOutputStage();
         return $this;
     }
 
@@ -201,6 +238,7 @@ class Sound extends Base {
      */
     public function setPitchEnvelope(?Audio\Signal\IEnvelope $oEnvelope): self {
         $this->oPitchEnvelope = $oEnvelope;
+        $this->configureInputStage();
         return $this;
     }
 
@@ -213,6 +251,7 @@ class Sound extends Base {
 
     public function setPhaseFeedbackIndex(float $fFeedback): self {
         $this->fPhaseFeedbackIndex = $fFeedback;
+        $this->configureOutputStage();
         return $this;
     }
 
@@ -222,76 +261,295 @@ class Sound extends Base {
      * @return Audio\Signal\Packet;
      */
     protected function emitNew(): Audio\Signal\Packet {
+        // Generate the waveform input. Sadly you can't call a member closure directly.
+        $cInputStage = $this->cInputStage;
+        $cInputStage();
 
-        /** @var Audio\Signal\Packet|null $oOutputLevel */
-        $oOutputLevel = null;
-        if ($this->oLevelModulator) {
-            $oOutputLevel = clone $this->oLevelModulator->emit($this->iLastIndex);
-            $oOutputLevel->scaleBy($this->fLevelModulationIndex);
-        }
-        if ($this->oLevelEnvelope) {
-            if ($oOutputLevel) {
-                $oOutputLevel->modulateWith($this->oLevelEnvelope->emit($this->iLastIndex));
-            } else {
-                $oOutputLevel = $this->oLevelEnvelope->emit($this->iLastIndex);
-            }
-        }
+        // Generate the waveform output. Sadly you can't call a member closure directly.
+        $cOutputStage = $this->cOutputStage;
+        $cOutputStage();
 
+        return $this->oLastOutput;
+    }
+
+    private const
+        // Variations on input stage
+        INS_APERIODIC               = 0, // Waveform is aperiodic and has no phase or pitch (e.g. noise)
+        INS_NO_MOD                  = 1, // Fixed frequency
+        INS_PITCH_MOD               = 2, // Pitch LFO
+        INS_PITCH_ENV               = 3, // Pitch Envelope
+        INS_PITCH_MOD_ENV           = 4, // Pitch LFO + Pitch Envelope
+        INS_PHASE_MOD               = 5, // Phase Modulation (FM)
+        INS_PHASE_MOD_PITCH_MOD     = 6, // Phase Modulation (FM) + Pitch LFO
+        INS_PHASE_MOD_PITCH_ENV     = 7, // Phase Modulation (FM) + Pitch Envelope
+        INS_PHASE_MOD_PITCH_MOD_ENV = 8, // Phase Modulation (FM) + Pitch LFO + Pitch Envelope
+
+        // Treat phase modulation indexes below a critical threshold as no phase modulation
+        MIN_PHASE_MOD_INDEX         = 0.01,
+
+        OUT_NO_MOD                  = 0,
+        OUT_LEVEL_MOD               = 1,
+        OUT_LEVEL_ENV               = 2,
+        OUT_LEVEL_MOD_ENV           = 3,
+        OUT_FEEDBACK                = 4,
+        OUT_FEEDBACK_LEVEL_MOD      = 5,
+        OUT_FEEDBACK_LEVEL_ENV      = 6,
+        OUT_FEEDBACK_LEVEL_MOD_ENV  = 7,
+
+        // Treat feedback modulation indexes below a critical threshold as no feedback modulation
+        MIN_FEEDBACK_MOD_INDEX      = 0.01,
+
+        // Treat level modulation indexes below a critical threshold as no level modulation
+        MIN_LEVEL_MOD_INDEX         = 0.01
+    ;
+
+    /**
+     * Considers all the factors that affect how the waveform phase inputs are affected and chooses the
+     * most appropriate closue function.
+     */
+    private function configureInputStage(): void {
         if ($this->bAperiodic) {
-            $this->oLastOutput = $this->oWaveform->map($this->oWaveformInput); // @phpstan-ignore-line : false positive
+            $this->cInputStage = $this->aInputStages[self::INS_APERIODIC];
         } else {
+            $iCase = self::INS_NO_MOD +
+                ($this->oPitchModulator ? 1 : 0) |
+                ($this->oPitchEnvelope  ? 2 : 0) |
+                (
+                    $this->oPhaseModulator &&
+                    (self::MIN_PHASE_MOD_INDEX < $this->fPhaseModulationIndex) ? 4 : 0
+                );
+            $this->cInputStage = $this->aInputStages[$iCase];
+        }
+    }
 
-            if ($this->oPitchModulator || $this->oPitchEnvelope) {
-                $oPitchShifts = Audio\Signal\Packet::create();
+    /**
+     * Considers all the factors that affect how the waveform output is affected and chooses the
+     * most appropriate closue function.
+     */
+    private function configureOutputStage(): void {
+        $iCase =
+            (
+                $this->oLevelModulator &&
+                (self::MIN_LEVEL_MOD_INDEX < $this->fLevelModulationIndex) ? 1 : 0
+            ) |
+            ($this->oLevelEnvelope  ? 2 : 0) |
+            (
+                (false == $this->bAperiodic &&
+                self::MIN_FEEDBACK_MOD_INDEX < $this->fPhaseFeedbackIndex) ? 4 : 0
+            );
+        $this->cOutputStage = $this->aOutputStages[$iCase];
+    }
 
-                if ($this->oPitchModulator) {
-                    $oPitchShifts->sumWith($this->oPitchModulator->emit($this->iLastIndex));
-                }
-                if ($this->oPitchEnvelope) {
-                    $oPitchShifts->sumWith($this->oPitchEnvelope->emit($this->iLastIndex));
-                }
 
-                // Every sample point has a new frequency, but we can't just use the instantaneous Waveform value for
-                // that as it would be the value that the function has if it was always at that frequency.
-                // Therefore we must also correct the phase for every sample point too. The phase correction is
-                // accumulated, which is equivalent to integrating over the time step.
-                for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
-                    $fNextFrequencyMultiplier = 2.0 ** ($oPitchShifts[$i] * self::INV_TWELVETH);
-                    $fNextFrequency           = $this->fFrequency * $fNextFrequencyMultiplier;
-                    $fTime                    = $this->fTimeStep  * $this->iSamplePosition++;
-                    $this->oWaveformInput[$i] = ($this->fCurrentFrequency * $fTime) + $this->fPhaseCorrection;
-                    $this->fPhaseCorrection   += $fTime * ($this->fCurrentFrequency - $fNextFrequency);
-                    $this->fCurrentFrequency  = $fNextFrequency;
-                }
-            } else {
+    /**
+     * Creates the set of input stage closures that calculate a packet of waveform phase inputs, taking
+     * care of the factors that influence it.
+     */
+    private function createInputStages(): void {
+        $this->aInputStages = [
+            // For aperiodic waveforms, pitch and phase modulation are meaningless
+            self::INS_APERIODIC => function(): void { },
+
+            // If there are no pitch or phase modulators, the calculation is a linear function of fixed frequency
+            self::INS_NO_MOD => function(): void {
                 for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
                     $this->oWaveformInput[$i] = $this->fScaleVal * $this->iSamplePosition++;
                 }
-            }
+            },
 
-            if ($this->oPhaseModulator) {
-                // We have somthing modulating our basic phase. Thankfully this is just additive. We assume the
-                // phase modulation is normalised, such that 1.0 is a complete full cycle of our waveform.
-                // We simply multiply the shift by our Waveform's period value to get this.
+            // For a Pitch LFO, we have to apply the effect of the pitch change on frequency
+            self::INS_PITCH_MOD => function(): void {
+                // @phpstan-ignore-next-line - member is never null in this context
+                $oPitchShifts = $this->oPitchModulator->emit($this->iLastIndex);
+                $this->populatePitchShiftedPacket($oPitchShifts);
+            },
+
+            // For a Pitch Envelope, we have to apply the effect of the pitch change on frequency
+            self::INS_PITCH_ENV => function(): void {
+                // @phpstan-ignore-next-line - member is never null in this context
+                $oPitchShifts = $this->oPitchEnvelope->emit($this->iLastIndex);
+                $this->populatePitchShiftedPacket($oPitchShifts);
+            },
+
+            // For a Pitch Envelope and LFO, we have to apply the combined effect of the pitch change on frequency
+            self::INS_PITCH_MOD_ENV => function(): void {
+                // Effect is additive
+                // @phpstan-ignore-next-line - member is never null in this context
+                $oPitchShifts = clone $this->oPitchModulator->emit($this->iLastIndex);
+                // @phpstan-ignore-next-line - member is never null in this context
+                $oPitchShifts->sumWith($this->oPitchEnvelope->emit($this->iLastIndex));
+                $this->populatePitchShiftedPacket($oPitchShifts);
+            },
+
+            // For phase modulation we have to apply the effect on the instantaneous sample phase
+            self::INS_PHASE_MOD => function(): void {
+                // @phpstan-ignore-next-line - member is never null in this context
                 $oPhaseShifts = $this->oPhaseModulator->emit($this->iLastIndex);
                 $fPeriod = $this->fPhaseModulationIndex * $this->fWaveformPeriod;
                 for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
-                    $this->oWaveformInput[$i] += $fPeriod * $oPhaseShifts[$i];
+                    $this->oWaveformInput[$i] = ($this->fScaleVal * $this->iSamplePosition++) + $fPeriod * $oPhaseShifts[$i];
                 }
+            },
+
+            // Combined effects of pitch and phase
+            self::INS_PHASE_MOD_PITCH_MOD => function(): void {
+                // @phpstan-ignore-next-line - member is never null in this context
+                $oPitchShifts = $this->oPitchModulator->emit($this->iLastIndex);
+                // @phpstan-ignore-next-line - member is never null in this context
+                $oPhaseShifts = $this->oPhaseModulator->emit($this->iLastIndex);
+                $this->populatePitchAndPhaseShiftedPacket($oPitchShifts, $oPhaseShifts);
+            },
+
+            // Combined effects of pitch and phase
+            self::INS_PHASE_MOD_PITCH_ENV => function(): void {
+                // @phpstan-ignore-next-line - member is never null in this context
+                $oPitchShifts = $this->oPitchEnvelope->emit($this->iLastIndex);
+                // @phpstan-ignore-next-line - member is never null in this context
+                $oPhaseShifts = $this->oPhaseModulator->emit($this->iLastIndex);
+                $this->populatePitchAndPhaseShiftedPacket($oPitchShifts, $oPhaseShifts);
+            },
+
+            // Combined effects of pitch and phase
+            self::INS_PHASE_MOD_PITCH_MOD_ENV => function(): void {
+                // @phpstan-ignore-next-line - member is never null in this context
+                $oPitchShifts = clone $this->oPitchModulator->emit($this->iLastIndex);
+                // @phpstan-ignore-next-line - member is never null in this context
+                $oPitchShifts->sumWith($this->oPitchEnvelope->emit($this->iLastIndex));
+                // @phpstan-ignore-next-line - member is never null in this context
+                $oPhaseShifts = $this->oPhaseModulator->emit($this->iLastIndex);
+                $this->populatePitchAndPhaseShiftedPacket($oPitchShifts, $oPhaseShifts);
             }
+        ];
+        $this->configureInputStage();
+    }
 
-
-            // Self modulation. This is pretty painful
-            if ($this->fPhaseFeedbackIndex > 0.0) {
-
-            } else {
-                $this->oLastOutput = $this->oWaveform->map($this->oWaveformInput); // @phpstan-ignore-line : false positive
-            }
+    /**
+     * Common code from some of the input stage closures. Calculates the waveform input for cases where
+     * there is a pitch modulation going on.
+     */
+    private function populatePitchShiftedPacket(Audio\Signal\Packet $oPitchShifts): void {
+        for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
+            $fNextFrequencyMultiplier = 2.0 ** ($oPitchShifts[$i] * self::INV_TWELVETH);
+            $fNextFrequency           = $this->fFrequency * $fNextFrequencyMultiplier;
+            $fTime                    = $this->fTimeStep  * $this->iSamplePosition++;
+            $this->oWaveformInput[$i] = ($this->fCurrentFrequency * $fTime) + $this->fPhaseCorrection;
+            $this->fPhaseCorrection   += $fTime * ($this->fCurrentFrequency - $fNextFrequency);
+            $this->fCurrentFrequency  = $fNextFrequency;
         }
-        if ($oOutputLevel) {
-            $this->oLastOutput->modulateWith($oOutputLevel);
+    }
+
+    /**
+     * Common code from some of the input stage closures. Calculates the waveform input for cases where
+     * there is a pitch and phase modulation going on.
+     */
+    private function populatePitchAndPhaseShiftedPacket(
+        Audio\Signal\Packet $oPitchShifts,
+        Audio\Signal\Packet $oPhaseShifts
+    ): void {
+        $fPeriod = $this->fPhaseModulationIndex * $this->fWaveformPeriod;
+        for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
+            $fNextFrequencyMultiplier = 2.0 ** ($oPitchShifts[$i] * self::INV_TWELVETH);
+            $fNextFrequency           = $this->fFrequency * $fNextFrequencyMultiplier;
+            $fTime                    = $this->fTimeStep  * $this->iSamplePosition++;
+            $this->oWaveformInput[$i] = ($this->fCurrentFrequency * $fTime) + $this->fPhaseCorrection + $fPeriod * $oPhaseShifts[$i];
+            $this->fPhaseCorrection   += $fTime * ($this->fCurrentFrequency - $fNextFrequency);
+            $this->fCurrentFrequency  = $fNextFrequency;
         }
-        return $this->oLastOutput;
+    }
+
+    private function createOutputStages(): void {
+        $this->aOutputStages = [
+            // No modulation? Just map and go.
+            self::OUT_NO_MOD => function(): void {
+                // @phpstan-ignore-next-line - member is never null in this context
+                $this->oLastOutput = $this->oWaveform->map($this->oWaveformInput);
+            },
+
+            // Level LFO
+            self::OUT_LEVEL_MOD => function(): void {
+                // @phpstan-ignore-next-line - member is never null in this context
+                $this->oLastOutput = $this->oWaveform->map($this->oWaveformInput);
+
+                // @phpstan-ignore-next-line - member is never null in this context
+                $oOutputLevel = clone $this->oLevelModulator->emit($this->iLastIndex);
+                $oOutputLevel->scaleBy($this->fLevelModulationIndex);
+
+                $this->oLastOutput->modulateWith($oOutputLevel);
+            },
+
+            // Level Envelope
+            self::OUT_LEVEL_ENV => function(): void {
+                // @phpstan-ignore-next-line - member is never null in this context
+                $this->oLastOutput = $this->oWaveform->map($this->oWaveformInput);
+                $this->oLastOutput->modulateWith(
+                    // @phpstan-ignore-next-line - member is never null in this context
+                    $this->oLevelEnvelope->emit($this->iLastIndex)
+                );
+            },
+
+            // Level LFO and Envelope, premultiplied
+            self::OUT_LEVEL_MOD_ENV => function(): void {
+                // @phpstan-ignore-next-line - member is never null in this context
+                $this->oLastOutput = $this->oWaveform->map($this->oWaveformInput);
+
+                // @phpstan-ignore-next-line - member is never null in this context
+                $oOutputLevel = clone $this->oLevelModulator->emit($this->iLastIndex);
+                $oOutputLevel->scaleBy($this->fLevelModulationIndex);
+                $oOutputLevel->modulateWith(
+                    // @phpstan-ignore-next-line - member is never null in this context
+                    $this->oLevelEnvelope->emit($this->iLastIndex)
+                );
+                $this->oLastOutput->modulateWith($oOutputLevel);
+            },
+
+            // Feedback - this requires per sample calculation
+            self::OUT_FEEDBACK => function(): void {
+                for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
+                    $this->oLastOutput[$i] = $fOutput = $this->oWaveform->value(
+                        $this->oWaveformInput[$i] +
+                        $this->fPhaseFeedbackIndex * ($this->fLastOne + $this->fLastTwo)
+                    );
+                    $this->fLastTwo = $this->fLastOne;
+                    $this->fLastOne = $fOutput;
+                }
+            },
+
+            self::OUT_FEEDBACK_LEVEL_MOD => function(): void {
+                // @phpstan-ignore-next-line - member is never null in this context
+                $oOutputLevel = clone $this->oLevelModulator->emit($this->iLastIndex);
+                $oOutputLevel->scaleBy($this->fLevelModulationIndex);
+                $this->populateOutputPacketWithFeedback($oOutputLevel);
+            },
+
+            self::OUT_FEEDBACK_LEVEL_ENV => function(): void {
+                // @phpstan-ignore-next-line - member is never null in this context
+                $oOutputLevel = $this->oLevelEnvelope->emit($this->iLastIndex);
+                $this->populateOutputPacketWithFeedback($oOutputLevel);
+            },
+
+            self::OUT_FEEDBACK_LEVEL_MOD_ENV => function(): void {
+                // @phpstan-ignore-next-line - member is never null in this context
+                $oOutputLevel = clone $this->oLevelModulator->emit($this->iLastIndex);
+                $oOutputLevel->scaleBy($this->fLevelModulationIndex);
+                $oOutputLevel->modulateWith(
+                    // @phpstan-ignore-next-line - member is never null in this context
+                    $this->oLevelEnvelope->emit($this->iLastIndex)
+                );
+                $this->populateOutputPacketWithFeedback($oOutputLevel);
+            },
+        ];
+        $this->configureOutputStage();
+    }
+
+    private function populateOutputPacketWithFeedback(Audio\Signal\Packet $oOutputLevel): void {
+        for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
+            $this->oLastOutput[$i] = $fOutput = $this->oWaveform->value(
+                $this->oWaveformInput[$i] +
+                $this->fPhaseFeedbackIndex * ($this->fLastOne + $this->fLastTwo)
+            ) * $oOutputLevel[$i];
+            $this->fLastTwo = $this->fLastOne;
+            $this->fLastOne = $fOutput;
+        }
     }
 }
 

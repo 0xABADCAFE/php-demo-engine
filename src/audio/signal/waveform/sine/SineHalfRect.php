@@ -58,7 +58,11 @@ class SineHalfRect implements Signal\IWaveform {
         return $oOutput;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function value(float $fInput): float {
-        return sin($fInput);
+        $fSin = sin($fInput);
+        return ($fSin > 0 ? 2.0 * $fSin : 0.0) - 1.0;
     }
 }

@@ -59,7 +59,10 @@ class AliasedSaw implements Signal\IWaveform {
         return $oOutput;
     }
 
-    public function value(float $fInput): float {
-        return sin($fInput);
+    /**
+     * @inheritDoc
+     */
+    public function value(float $fTime): float {
+        return 2.0 * (ceil($fTime) - $fTime - 0.5);
     }
 }

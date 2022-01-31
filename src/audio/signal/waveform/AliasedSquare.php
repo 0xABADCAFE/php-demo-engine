@@ -59,7 +59,7 @@ class AliasedSquare implements Signal\IWaveform {
         return $oOutput;
     }
 
-    public function value(float $fInput): float {
-        return sin($fInput);
+    public function value(float $fTime): float {
+        return (int)floor($fTime) & 1 ? -1.0 : 1.0;
     }
 }

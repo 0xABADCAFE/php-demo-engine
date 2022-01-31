@@ -62,7 +62,14 @@ class TriangleHalfRect implements Signal\IWaveform {
         return $oOutput;
     }
 
-    public function value(float $fInput): float {
-        return sin($fInput);
+    /**
+     * @inheritDoc
+     */
+    public function value(float $fTime): float {
+        $fTime   -= 0.5;
+        $fFloor  = floor($fTime);
+        $fScale  = (int)$fFloor & 1 ? 4.0 : -4.0;
+        $fSample = $fScale * ($fTime - $fFloor - 0.5);
+        return ($fSample > 0 ? $fSample : 0.0) - 1.0;
     }
 }

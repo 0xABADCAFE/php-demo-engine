@@ -28,10 +28,13 @@ use ABadCafe\PDE\Audio;
 class Sound extends Base {
 
     const
-        INV_TWELVETH  = 1.0 / 12.0, // For conversion of semitone range pitch modulator to absolute multipliers
-        MIN_FREQUENCY = 6.875,      // Low
-        DEF_FREQUENCY = 440.0,      // A4
-        MAX_FREQUENCY = 14080.0     // A9
+        INV_TWELVETH   = 1.0 / 12.0,  // For conversion of semitone range pitch modulator to absolute multipliers
+        MIN_FREQUENCY  = 6.875,       // Low
+        DEF_FREQUENCY  = 440.0,       // A4
+        MAX_FREQUENCY  = 14080.0,     // A9,
+        ANTIALIAS_OFF  = 0,
+        ANTIALIAS_ON   = 1,
+        ANTIALIAS_AUTO = 2
     ;
 
     protected ?Audio\Signal\IStream
@@ -48,11 +51,21 @@ class Sound extends Base {
     protected float
         $fPhaseModulationIndex = 1.0,
         $fLevelModulationIndex = 1.0,
+
+        // Self modulation
         $fPhaseFeedbackIndex   = 0.0,
-        $fLastOne              = 0.0,
-        $fLastTwo              = 0.0
+        $fFeedBack1              = 0.0,
+        $fFeedBack2              = 0.0,
+
+        // Antialias smoothing
+        $fAAPrev1              = 0.0,
+        $fAAPrev2              = 0.0,
+        $fAAPrev3              = 0.0,
+        $fAAPrev4              = 0.0
     ;
 
+    private int  $iAntialiasMode = self::ANTIALIAS_AUTO;
+    private bool $bAntialias     = false;
 
     /**
      * @var array<int, callable> $aInputStages
@@ -71,11 +84,7 @@ class Sound extends Base {
     protected $cOutputStage;
 
     /**
-     * Constructor
-     *
-     * @param Audio\Signal\IWaveform|null $oWaveform
-     * @param float                       $fFrequency
-     * @param float                       $fPhase
+     * @inheritDoc
      */
     public function __construct(
         ?Audio\Signal\IWaveform $oWaveform = null,
@@ -86,6 +95,7 @@ class Sound extends Base {
         $this->createInputStages();
         $this->createOutputStages();
     }
+
     /**
      * @inheritDoc
      */
@@ -108,6 +118,27 @@ class Sound extends Base {
         }
         return $this;
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function setAntialiasMode(int $iMode): self {
+        if ($iMode >= self::ANTIALIAS_OFF && $iMode <= self::ANTIALIAS_AUTO) {
+            $this->iAntialiasMode = $iMode;
+            $this->configureAntialias();
+        }
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setWaveform(?Audio\Signal\IWaveform $oWaveform): self {
+        parent::setWaveform($oWaveform);
+        $this->configureAntialias();
+        return $this;
+    }
+
 
     /**
      * Set a pitch modulator stream to use. The values from the stream are interpreted as fractional semitones
@@ -269,7 +300,49 @@ class Sound extends Base {
         $cOutputStage = $this->cOutputStage;
         $cOutputStage();
 
+        if ($this->bAntialias) {
+            /**
+            * Apply a 5 sample travelling hamming window over the output
+             */
+            $fPrev1  = $this->fAAPrev1;
+            $fPrev2  = $this->fAAPrev2;
+            $fPrev3  = $this->fAAPrev3;
+            $fPrev4  = $this->fAAPrev4;
+            $oOutput  = clone $this->oLastOutput;
+            foreach ($this->oLastOutput as $i => $fSample) {
+                $oOutput[$i] = 0.1 * (
+                    $fSample + $fPrev4 +
+                    2.0 * ($fPrev1 + $fPrev3)
+                    + 4.0 * $fPrev2
+                );
+                $fPrev4 = $fPrev3;
+                $fPrev3 = $fPrev2;
+                $fPrev2 = $fPrev1;
+                $fPrev1 = $fSample;
+            }
+            $this->fAAPrev1 = $fPrev1;
+            $this->fAAPrev2 = $fPrev2;
+            $this->fAAPrev3 = $fPrev3;
+            $this->fAAPrev4 = $fPrev4;
+            $this->oLastOutput = $oOutput;
+        }
         return $this->oLastOutput;
+    }
+
+    private function configureAntialias(): void {
+        switch ($this->iAntialiasMode) {
+            case self::ANTIALIAS_OFF:
+                $this->bAntialias = true;
+                break;
+            case self::ANTIALIAS_ON:
+                $this->bAntialias = true;
+                break;
+            case self::ANTIALIAS_AUTO:
+                $this->bAntialias = $this->oWaveform instanceof Audio\Signal\Waveform\IHardTransient;
+                break;
+            default:
+                break;
+        }
     }
 
     private const
@@ -507,10 +580,10 @@ class Sound extends Base {
                 for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
                     $this->oLastOutput[$i] = $fOutput = $this->oWaveform->value(
                         $this->oWaveformInput[$i] +
-                        $this->fPhaseFeedbackIndex * ($this->fLastOne + $this->fLastTwo)
+                        $this->fPhaseFeedbackIndex * ($this->fFeedBack1 + $this->fFeedBack2)
                     );
-                    $this->fLastTwo = $this->fLastOne;
-                    $this->fLastOne = $fOutput;
+                    $this->fFeedBack2 = $this->fFeedBack1;
+                    $this->fFeedBack1 = $fOutput;
                 }
             },
 
@@ -545,10 +618,10 @@ class Sound extends Base {
         for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
             $this->oLastOutput[$i] = $fOutput = $this->oWaveform->value(
                 $this->oWaveformInput[$i] +
-                $this->fPhaseFeedbackIndex * ($this->fLastOne + $this->fLastTwo)
+                $this->fPhaseFeedbackIndex * ($this->fFeedBack1 + $this->fFeedBack2)
             ) * $oOutputLevel[$i];
-            $this->fLastTwo = $this->fLastOne;
-            $this->fLastOne = $fOutput;
+            $this->fFeedBack2 = $this->fFeedBack1;
+            $this->fFeedBack1 = $fOutput;
         }
     }
 }

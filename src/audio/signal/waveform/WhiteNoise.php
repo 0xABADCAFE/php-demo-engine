@@ -88,6 +88,11 @@ class WhiteNoise implements Audio\Signal\IWaveform {
         return $oOutput;
     }
 
+    /**
+     * @inheritDoc
+     *
+     * @todo - realise this in a non sucky way.
+     */
     public function value(float $fInput): float {
         return 0.0;
     }

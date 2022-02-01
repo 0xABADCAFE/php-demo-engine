@@ -24,10 +24,9 @@ use ABadCafe\PDE\Util;
 use function \ceil;
 
 /**
- * AliasedPulse
+ * Pulse
  *
- * PWM implementation of IWaveform. Does not attempt to peform anti aliasing on the output. Faster for low frequencies
- * and interestingly noisy for higher frequencies.
+ * PWM implementation of IWaveform.
  *
  * @see https://github.com/0xABADCAFE/random-proto-synth
  */

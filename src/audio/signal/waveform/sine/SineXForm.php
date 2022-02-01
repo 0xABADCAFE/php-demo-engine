@@ -95,6 +95,9 @@ abstract class SineXForm implements Signal\IWaveform {
         return $oOutput;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function value(float $fInput): float {
         $fPhase     = $fInput;
         $iQuadrant  = ((int)$fPhase) & 3;

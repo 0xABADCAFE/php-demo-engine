@@ -58,6 +58,9 @@ class Square implements IHardTransient {
         return $oOutput;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function value(float $fTime): float {
         return (int)floor($fTime) & 1 ? -1.0 : 1.0;
     }

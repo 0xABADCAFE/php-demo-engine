@@ -122,6 +122,15 @@ class DeX7er implements Audio\IFactory {
             );
         }
 
+        // Feedback
+        if (isset($oDefinition->fFeedback)) {
+            $oMachine->setFeedbackIndex((float)($oDefinition->fFeedback));
+            dprintf(
+                "\t\tSet Feedback Index to %f.\n",
+                (float)($oDefinition->fFeedback)
+            );
+        }
+
         // Output mix level
         if (isset($oDefinition->fOutputMix)) {
             $oMachine->setOutputMixLevel((float)($oDefinition->fOutputMix));

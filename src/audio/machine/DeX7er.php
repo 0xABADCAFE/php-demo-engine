@@ -277,6 +277,21 @@ class DeX7er implements Audio\IMachine {
     }
 
     /**
+     * Set the absolute frequency ratio for the selected Operator
+     *
+     * @param  float $fFeedback
+     * @return self
+     */
+    public function setFeedbackIndex(float $fFeedback): self {
+        if (null !== $this->iUsingOperator) {
+            foreach ($this->aOperators[$this->iUsingOperator] as $iVoice => $oOperator) {
+                $oOperator->setFeedbackIndex($fFeedback);
+            }
+        }
+        return $this;
+    }
+
+    /**
      * Set a modulator for the selected operator. Silently swallows illegal configurations.
      *
      * @param  int   $iModulator

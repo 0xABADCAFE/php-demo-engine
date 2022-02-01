@@ -145,7 +145,7 @@ class Pulse implements IHardTransient {
     /**
      * @inheritDoc
      */
-    public function value(float $fInput): float {
+    public function value(float $fTime): float {
         return ((ceil($fTime) - $fTime) > $this->fPulseWidth) ? 1.0 : -1.0;
     }
 }

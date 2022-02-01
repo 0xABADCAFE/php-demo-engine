@@ -288,8 +288,6 @@ class OPHPL implements Audio\IMachine {
                 },
                 0
             ),
-
-
         ];
     }
 
@@ -435,6 +433,19 @@ class OPHPL implements Audio\IMachine {
     }
 
     /**
+     * Set the level of self modulation for the modulator.
+     *
+     * @param  float $fFeedback
+     * @return self
+     */
+    public function setModulatorFeedbackIndex(float $fFeedback): self {
+        foreach ($this->aModulator as $oModulator) {
+            $oModulator->setPhaseFeedbackIndex($fFeedback);
+        }
+        return $this;
+    }
+
+    /**
      * Set the modulator frequency multiplier as a relative semitone value.
      */
     public function setModulatorRatioSemitones(float $fSemitones): self {
@@ -506,6 +517,19 @@ class OPHPL implements Audio\IMachine {
         $this->fCarrierRatio = min(max($fRatio, self::MIN_RATIO), self::MAX_RATIO);
         foreach ($this->aCarrier as $i => $oCarrier) {
             $oCarrier->setFrequency($this->aBaseFreq[$i] * $this->fCarrierRatio);
+        }
+        return $this;
+    }
+
+    /**
+     * Set the level of self modulation for the carrier. Eat that, Chowning.
+     *
+     * @param  float $fFeedback
+     * @return self
+     */
+    public function setCarrierFeedbackIndex(float $fFeedback): self {
+        foreach ($this->aCarrier as $oCarrier) {
+            $oCarrier->setPhaseFeedbackIndex($fFeedback);
         }
         return $this;
     }

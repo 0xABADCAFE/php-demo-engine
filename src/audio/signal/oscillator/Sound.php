@@ -310,6 +310,7 @@ class Sound extends Base {
             $fPrev4  = $this->fAAPrev4;
             $oOutput  = clone $this->oLastOutput;
             foreach ($this->oLastOutput as $i => $fSample) {
+                /** @var float $fSample */
                 $oOutput[$i] = 0.1 * (
                     $fSample + $fPrev4 +
                     2.0 * ($fPrev1 + $fPrev3)
@@ -580,6 +581,7 @@ class Sound extends Base {
             self::OUT_FEEDBACK => function(): void {
                 $fIndex = $this->fPhaseFeedbackIndex * self::FEEDBACK_SCALE;
                 for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
+                    // @phpstan-ignore-next-line - member is never null in this context
                     $this->oLastOutput[$i] = $fOutput = $this->oWaveform->value(
                         $this->oWaveformInput[$i] +
                         $fIndex * ($this->fFeedBack1 + $this->fFeedBack2)
@@ -619,6 +621,7 @@ class Sound extends Base {
     private function populateOutputPacketWithFeedback(Audio\Signal\Packet $oOutputLevel): void {
         $fIndex = $this->fPhaseFeedbackIndex * self::FEEDBACK_SCALE;
         for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
+            // @phpstan-ignore-next-line - member is never null in this context
             $this->oLastOutput[$i] = $fOutput = $this->oWaveform->value(
                 $this->oWaveformInput[$i] +
                 $fIndex * ($this->fFeedBack1 + $this->fFeedBack2)

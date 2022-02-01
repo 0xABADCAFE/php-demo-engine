@@ -96,12 +96,12 @@ abstract class SineXForm implements Signal\IWaveform {
     }
 
     public function value(float $fInput): float {
-        $aTransform = static::TRANSFORM;
         $fPhase     = $fInput;
         $iQuadrant  = ((int)$fPhase) & 3;
-        $fPhase     += $aTransform[$iQuadrant][0];
+        $aTransform = static::TRANSFORM[$iQuadrant];
+        $fPhase     += $aTransform[0];
         $fPhase     *= self::ADJUST;
         $fSin       = sin($fPhase);
-        return ($fSin * $aTransform[$iQuadrant][2]) + $aTransform[$iQuadrant][1];
+        return ($fSin * $aTransform[2]) + $aTransform[1];
     }
 }

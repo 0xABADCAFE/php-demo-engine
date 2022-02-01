@@ -80,6 +80,7 @@ $oFMPad
             ]
         )
     )
+    ->setModulatorFeedbackIndex(0.33)
     ->setModulationIndex(0.4)
     ->setModulatorMix(0.2)
     ->setCarrierWaveform(Audio\Signal\IWaveform::SINE)
@@ -93,7 +94,7 @@ $oFMPad
         )
     )
     ->setCarrierMix(0.8)
-    ->setOutputLevel(0.1)
+    ->setOutputLevel(0.125)
     ->setPitchLFODepth(0.03)
     ->setPitchLFORate(4.5)
     ->enablePitchLFO(true, true)

@@ -69,8 +69,8 @@ class Factory implements Audio\IFactory {
             case 'Sine':     return new Sine();
             case 'Triangle': return new Triangle();
             case 'Noise':    return new WhiteNoise();
-            case 'Saw':      return $bAliased ? new AliasedSaw()    : new Saw();
-            case 'Square':   return $bAliased ? new AliasedSquare() : new Square();
+            case 'Saw':      return new Saw();
+            case 'Square':   return new Square();
         }
         throw new \RuntimeException('Unknown waveform type ' . $sType);
     }
@@ -87,7 +87,7 @@ class Factory implements Audio\IFactory {
 
         // TODO - check for a PWM modulator definition in here
 
-        return $bAliased ? new AliasedPulse() : new Pulse();
+        return new Pulse();
     }
 
 

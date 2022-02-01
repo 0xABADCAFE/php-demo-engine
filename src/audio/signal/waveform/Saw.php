@@ -26,44 +26,42 @@ use function \ceil;
 /**
  * Saw
  *
- * Saw implementation of IWaveform
+ * Saw implementation of IWaveform.
  *
  * @see https://github.com/0xABADCAFE/random-proto-synth
  */
-class Saw extends AliasedSaw {
+class Saw implements IHardTransient {
 
-    use TAntialiased;
+    use Util\TAlwaysShareable;
+
+    /**
+     * Waveform period (interval after which it repeats).
+     */
+    const PERIOD = 1.0;
+
+    /**
+     * @inheritDoc
+     */
+    public function getPeriod(): float {
+        return self::PERIOD;
+    }
 
     /**
      * @inheritDoc
      */
     public function map(Signal\Packet $oInput): Signal\Packet {
-        $oOutput   = clone $oInput;
-
-        // Avoid sharp transitions at the edges with a simple hamming filter.
-        $fPrev1  = $this->fPrev1;
-        $fPrev2  = $this->fPrev2;
-        $fPrev3  = $this->fPrev3;
-        $fPrev4  = $this->fPrev4;
-
+        $oOutput = clone $oInput;
         foreach ($oInput as $i => $fTime) {
             /** @var float $fTime */
-            $fSample = 2.0 * (ceil($fTime) - $fTime - 0.5);
-            $oOutput[$i] = 0.1 * (
-                $fSample + $fPrev4 +
-                2.0 * ($fPrev1 + $fPrev3)
-                + 4.0 * $fPrev2
-            );
-            $fPrev4 = $fPrev3;
-            $fPrev3 = $fPrev2;
-            $fPrev2 = $fPrev1;
-            $fPrev1 = $fSample;
+            $oOutput[$i] = 2.0 * (ceil($fTime) - $fTime - 0.5);
         }
-
-        $this->fPrev1 = $fPrev1;
-        $this->fPrev2 = $fPrev2;
-        $this->fPrev3 = $fPrev3;
-        $this->fPrev4 = $fPrev4;
         return $oOutput;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function value(float $fTime): float {
+        return 2.0 * (ceil($fTime) - $fTime - 0.5);
     }
 }

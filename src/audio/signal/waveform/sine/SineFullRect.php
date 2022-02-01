@@ -57,4 +57,9 @@ class SineFullRect implements Signal\IWaveform {
         }
         return $oOutput;
     }
+
+    public function value(float $fInput): float {
+        $fSin = sin($fInput);
+        return 2.0*($fSin > 0.0 ? $fSin : -$fSin) - 1.0;
+    }
 }

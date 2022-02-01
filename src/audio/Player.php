@@ -107,7 +107,7 @@ class Player implements PDE\System\IAsynchronous {
             ->setInsert(new Signal\Insert\DelayLoop(null, 152.6 * 3, 0.6))
         ;
 
-        $oFMPad = new Machine\TwoOpFM(4);
+        $oFMPad = new Machine\OPHPL(4);
         $oFMPad
             ->setModulatorWaveform(Signal\IWaveform::SINE_FULL_RECT)
             ->setModulatorRatio(2.01)

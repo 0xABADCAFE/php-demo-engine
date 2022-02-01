@@ -44,7 +44,6 @@ class Flyweight {
         'Triangle'    => IWaveform::TRIANGLE,
         'TriangleHR'  => IWaveform::TRIANGLE_HALF_RECT,
         'Saw'         => IWaveform::SAW,
-        'SawAliased'  => IWaveform::SAW_ALIASED,
         'Square'      => IWaveform::SQUARE,
         'Pokey'       => IWaveform::POKEY,
         'Pulse'       => IWaveform::PULSE,
@@ -65,12 +64,9 @@ class Flyweight {
         IWaveform::TRIANGLE           => Triangle::class,
         IWaveform::TRIANGLE_HALF_RECT => TriangleHalfRect::class,
         IWaveform::SAW                => Saw::class,
-        IWaveform::SAW_ALIASED        => AliasedSaw::class,
         IWaveform::SQUARE             => Square::class,
-        IWaveform::SQUARE_ALIASED     => AliasedSquare::class,
         IWaveform::POKEY              => Pokey::class,
         IWaveform::PULSE              => Pulse::class,
-        IWaveform::PULSE_ALIASED      => AliasedPulse::class,
         IWaveform::NOISE              => WhiteNoise::class,
     ];
 

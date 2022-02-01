@@ -382,6 +382,14 @@ class Operator implements Audio\Signal\IOscillator {
     // PHASE MODULATION
 
     /**
+     * Set the self-modulation index for this Operator
+     */
+    public function setFeedbackIndex(float $fFeedback): self {
+        $this->oOscillator->setPhaseFeedbackIndex($fFeedback);
+        return $this;
+    }
+
+    /**
      * The main FM concept.
      *
      * @param  self  $oModulator  - must not be this instance.

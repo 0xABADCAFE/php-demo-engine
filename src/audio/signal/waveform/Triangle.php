@@ -60,4 +60,14 @@ class Triangle implements Signal\IWaveform {
         }
         return $oOutput;
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function value(float $fTime): float {
+        $fTime -= 0.5;
+        $fFloor  = floor($fTime);
+        $fScale  = (int)$fFloor & 1 ? 2.0 : -2.0;
+        return $fScale * ($fTime - $fFloor - 0.5);
+    }
 }

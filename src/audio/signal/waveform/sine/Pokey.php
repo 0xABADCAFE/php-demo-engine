@@ -23,7 +23,7 @@ namespace ABadCafe\PDE\Audio\Signal\Waveform;
 /**
  * Pokey
  *
- * Fake Pokey implementation of IWaveform
+ * Fake Pokey implementation of IWaveform. Similar to square but with a degree of exponential decay after each edge.
  *
  * @see https://github.com/0xABADCAFE/random-proto-synth
  */

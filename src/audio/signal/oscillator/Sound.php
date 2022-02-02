@@ -311,10 +311,10 @@ class Sound extends Base {
             $oOutput  = clone $this->oLastOutput;
             foreach ($this->oLastOutput as $i => $fSample) {
                 /** @var float $fSample */
-                $oOutput[$i] = 0.1 * (
+                $oOutput[$i] = 0.0625 * (
                     $fSample + $fPrev4 +
-                    2.0 * ($fPrev1 + $fPrev3)
-                    + 4.0 * $fPrev2
+                    3.0 * ($fPrev1 + $fPrev3)
+                    + 8.0 * $fPrev2
                 );
                 $fPrev4 = $fPrev3;
                 $fPrev3 = $fPrev2;
@@ -333,7 +333,7 @@ class Sound extends Base {
     private function configureAntialias(): void {
         switch ($this->iAntialiasMode) {
             case self::ANTIALIAS_OFF:
-                $this->bAntialias = true;
+                $this->bAntialias = false;
                 break;
             case self::ANTIALIAS_ON:
                 $this->bAntialias = true;

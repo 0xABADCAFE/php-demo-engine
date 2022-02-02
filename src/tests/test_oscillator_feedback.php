@@ -6,15 +6,10 @@ namespace ABadCafe\PDE;
 
 require_once '../PDE.php';
 
-const F_INDEX = 1.0;
-
-$oModulator = new Audio\Signal\Oscillator\Sound(
-    Audio\Signal\Waveform\Flyweight::get()->getWaveform(Audio\Signal\IWaveform::TRIANGLE),
-    220.0
-);
+const F_INDEX = 0.5;
 
 $oOscillator = new Audio\Signal\Oscillator\Sound(
-    Audio\Signal\Waveform\Flyweight::get()->getWaveform(Audio\Signal\IWaveform::SINE),
+    Audio\Signal\Waveform\Flyweight::get()->getWaveform(Audio\Signal\IWaveform::TRIANGLE),
     220.0
 );
 
@@ -27,9 +22,16 @@ $oEnvelope = new Audio\Signal\Envelope\Shape(
     ]
 );
 
+$oPitchEnvelope =  new Audio\Signal\Envelope\Shape(
+    -12.0,
+    [
+        [0.0, 2]
+    ]
+);
+
 $oOscillator
-    //->setPhaseModulator($oModulator)
-    //->setPhaseModulationIndex(0.5)
+    ->setAntialiasMode(Audio\Signal\Oscillator\Sound::ANTIALIAS_ON)
+    ->setPitchEnvelope($oPitchEnvelope)
     ->setLevelEnvelope($oEnvelope)
     ->setPhaseFeedbackIndex(F_INDEX);
 

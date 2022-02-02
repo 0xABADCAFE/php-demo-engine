@@ -6,6 +6,7 @@ const CLASS_MAP = [
   'ABadCafe\\PDE\\IDisplay' => '/IDisplay.php',
   'ABadCafe\\PDE\\IRoutine' => '/IRoutine.php',
   'ABadCafe\\PDE\\IParameterisable' => '/IParameterisable.php',
+  'ABadCafe\\PDE\\Util\\TSometimesShareable' => '/util/TSometimesShareable.php',
   'ABadCafe\\PDE\\Util\\Vec3F' => '/util/Vec3F.php',
   'ABadCafe\\PDE\\Util\\ISometimesShareable' => '/util/ISometimesShareable.php',
   'ABadCafe\\PDE\\Util\\TAlwaysShareable' => '/util/TAlwaysShareable.php',

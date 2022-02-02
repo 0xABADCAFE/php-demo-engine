@@ -32,6 +32,8 @@ use function \ceil;
  */
 class Pulse implements IHardTransient {
 
+    use  Util\TNeverShareable;
+
     const
         /**
          * Waveform period (interval after which it repeats).
@@ -68,15 +70,6 @@ class Pulse implements IHardTransient {
                 $this->oWidthModulator = clone $this->oWidthModulator;
             }
         }
-    }
-
-    /**
-     * @inheritDoc
-     *
-     * If there is no modulator attached, then the instance can be shared idempotently.
-     */
-    public function share(): self {
-        return $this->oWidthModulator ? clone $this : $this;
     }
 
     /**

@@ -310,6 +310,8 @@ class TBNaN implements Audio\IMachine {
             4.9,
             0.9
         );
+        $this->oPWM->disableSharing();
+
         $this->aWaveforms = Audio\Signal\Waveform\Flyweight::get()
             ->getWaveforms(self::WAVETABLE);
         /** @var Audio\Signal\Waveform\Pulse $oPWM */

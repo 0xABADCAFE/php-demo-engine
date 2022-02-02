@@ -28,7 +28,7 @@ use ABadCafe\PDE\Util;
  */
 class LFO extends Base implements Util\ISometimesShareable {
 
-    use Util\TAlwaysShareable;
+    use Util\TSometimesShareable;
 
     const
         MIN_FREQUENCY = 1/60.0,

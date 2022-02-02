@@ -62,7 +62,7 @@ class Pulse implements IHardTransient {
         $this->setPulsewidthModulator($oModulator);
     }
 
-    public function __clone(): void {
+    public function __clone() {
         if ($this->oWidthModulator) {
             if ($this->oWidthModulator instanceof Util\ISometimesShareable) {
                 $this->oWidthModulator = $this->oWidthModulator->share(); // @phpstan-ignore-line

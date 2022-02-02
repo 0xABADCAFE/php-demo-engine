@@ -343,7 +343,7 @@ class Sequencer {
         }
 
         // Factor in swing.
-        $fSwingPeriod = \M_PI / $fLinePeriod;
+        $fSwingPeriod = \M_PI / ($fLinePeriod * $this->iSwingLines);
         $fSwingDepth  = $this->fSwingDepth * $fLinePeriod / 16; // TODO - the swing measure needs better defining
 
         $fPlayTime    = microtime(true);

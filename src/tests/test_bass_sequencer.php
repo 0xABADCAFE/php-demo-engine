@@ -10,7 +10,7 @@ require_once '../PDE.php';
 
 $oSequencer = new Audio\Machine\Sequencer();
 $oSequencer->setBeatsPerMeasure(8);
-
+$oSequencer->setTempo(120);
 
 $oDrumMachine = new Audio\Machine\TRNaN();
 $oDrumMachine->setOutputLevel(1.0);

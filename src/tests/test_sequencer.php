@@ -10,7 +10,11 @@ use ABadCafe\PDE\Audio\Machine\Control\IAutomatable;
 require_once '../PDE.php';
 
 $oSequencer = new Audio\Machine\Sequencer();
-$oSequencer->setBeatsPerMeasure(8);
+$oSequencer
+    ->setTempo(120)
+    ->setBeatsPerMeasure(8)
+    ->setSwing(1.5, 1)
+;
 
 
 $oFMMarimba = new Audio\Machine\OPHPL(2);
@@ -37,14 +41,14 @@ $oChipMachine = new Audio\Machine\AYeSID(3);
 $oChipMachine->setVoiceMaskEnvelope(3, new Audio\Signal\Envelope\Shape(
     0.6,
     [
-        [0.0, 0.2]
+        [0.0, 0.25]
     ]
 ));
 
 $oChipMachine->setVoiceMaskEnvelope(4, new Audio\Signal\Envelope\Shape(
     0.6,
     [
-        [0.0, 0.5]
+        [0.0, 1.0]
     ]
 ));
 
@@ -52,15 +56,15 @@ $oChipMachine->setVoiceMaskEnvelope(4, new Audio\Signal\Envelope\Shape(
 $oChipMachine
     ->setPulseWidthLFORate(2.125)
     ->enablePulseWidthLFO()
-    ->setVoiceWaveform(0, Audio\Signal\IWaveform::POKEY)
-    ->setVoiceWaveform(1, Audio\Signal\IWaveform::POKEY)
+    ->setVoiceWaveform(0, Audio\Signal\IWaveform::PULSE)
+    ->setVoiceWaveform(1, Audio\Signal\IWaveform::PULSE)
     ->setVoiceWaveform(2, Audio\Signal\IWaveform::TRIANGLE)
     ->setVoiceVibratoRate(0, 6.0)
-    ->setVoiceVibratoDepth(0, 0.1)
+    ->setVoiceVibratoDepth(0, 0*0.1)
     ->setVoiceVibratoRate(1, 6.0)
-    ->setVoiceVibratoDepth(1, 0.1)
+    ->setVoiceVibratoDepth(1, 0*0.1)
     ->setOutputLevel(0.4)
-    ->setInsert(new Audio\Signal\Insert\DelayLoop(null, 123.0 * 3, 0.6))
+    ->setInsert(new Audio\Signal\Insert\DelayLoop(null, 123.0 * 2, 0.65))
 ;
 
 $oBassLine = new Audio\Machine\TBNaN();
@@ -80,7 +84,7 @@ $oFMPad
             ]
         )
     )
-    ->setModulatorFeedbackIndex(0.33)
+    //->setModulatorFeedbackIndex(0.33)
     ->setModulationIndex(0.4)
     ->setModulatorMix(0.2)
     ->setCarrierWaveform(Audio\Signal\IWaveform::SINE)
@@ -121,8 +125,6 @@ $oSequencer->allocatePattern('marimba', [15, 19])
     ->addEvent(Event::noteOn('A#3', 30), 1, 12, 16)
     ->addEvent(Event::noteOn('D4', 20), 0, 12, 16)
 ;
-
-
 
 $oSequencer->allocatePattern('chip', [0, 2, 4, 6, 10, 12])
     ->addEvent(Event::noteOn('C2', 50), 2, 0)

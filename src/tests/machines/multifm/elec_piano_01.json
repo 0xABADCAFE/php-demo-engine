@@ -1,11 +1,11 @@
 {
-    "sType": "MultiFM",
+    "sType": "DeX7er",
     "sName": "Electric Piano 01",
-    "iMaxPolyphony": 4,
-    "aOperators": [
+    "iVoices": 8,
+    "Operators": [
         {
             "sName": "tine",
-            "Waveform": "Sine",
+            "sWave": "Sine",
             "fRatio": 19.001,
             "fOutputMix": 0.0,
             "LevelEnv": {
@@ -30,13 +30,13 @@
         },
         {
             "sName": "bar",
-            "Waveform": "Sine",
-            "fRatio": 1.995,
+            "sWave": "Sine",
+            "fRatio": 0.995,
             "fOutputMix": 0.15,
             "LevelEnv": {
                 "sType": "Decay",
                 "fInitial": 1.0,
-                "fHalfLife": 0.75
+                "fHalfLife": 1.0
             },
             "PitchLFO": {
                 "fDepth": 0.05,
@@ -45,25 +45,25 @@
         },
         {
             "sName": "body",
-            "Waveform": "Sine",
+            "sWave": "Sine",
             "fRatio": 1.005,
-            "fOutputMix": 0.5,
+            "fOutputMix": 0.8,
             "LevelEnv": {
                 "sType": "Decay",
                 "fInitial": 1.0,
-                "fHalfLife": 1.0,
+                "fHalfLife": 2.0,
                 "Velocity": {
                     "Rate": {
                         "sType": "Gamma",
                         "fMinOutput": 0.25,
                         "fMaxOutput": 1.0,
-                        "fGamma": 1.75
+                        "fGamma": 1.5
                     }
                 }
             },
             "PitchLFO": {
                 "fDepth": 0.05,
-                "fRate": 2.0
+                "fRate": 2.1
             },
             "aModulators": [
                 {
@@ -72,7 +72,7 @@
                 },
                 {
                     "sSource": "bar",
-                    "fIndex": 0.1
+                    "fIndex": 0.23
                 }
             ]
         }

@@ -76,8 +76,6 @@ class AnalogueClap extends BandPassNoise {
             ->setInitial(self::OCTAVE[$iOctave][0])
             ->setHalfLife(self::OCTAVE[$iOctave][1]);
 
-        $this->oAutoMute
-            ->setDisableAfter(7.0 * self::OCTAVE[$iOctave][1]);
         return $this;
     }
 
@@ -96,9 +94,7 @@ class AnalogueClap extends BandPassNoise {
             ->setCutoff(0.09)
             ->setResonance(0.1);
         $this->oVolumeEnv
-            ->setInitial(1.33)
+            ->setInitial(1.3)
             ->setHalfLife(0.03);
-        $this->oAutoMute
-            ->setDisableAfter(0.175);
     }
 }

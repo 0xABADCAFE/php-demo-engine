@@ -55,7 +55,5 @@ class AnalogueHHOpen extends BandPassNoise {
         $this->oVolumeEnv
             ->setInitial(0.7)
             ->setHalfLife(0.05);
-        $this->oAutoMute
-            ->setDisableAfter(0.5);
     }
 }

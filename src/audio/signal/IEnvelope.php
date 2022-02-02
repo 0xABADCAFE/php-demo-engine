@@ -21,13 +21,20 @@ declare(strict_types=1);
 namespace ABadCafe\PDE\Audio\Signal;
 
 use ABadCafe\PDE\Audio;
+use ABadCafe\PDE\Util;
 
 /**
  * @see https://github.com/0xABADCAFE/random-proto-synth
+ *
  */
-interface IEnvelope extends IStream {
+interface IEnvelope extends IStream, Util\ISometimesShareable {
 
     const MIN_TIME_SCALE = 0.01;
+
+    /**
+     * Covariant implementation of ISometimesShareable
+     */
+    public function share(): self;
 
     /**
      * Set a scaling factor for envelope timing. A smaller value results in a faster envelope. Use to simlulate the

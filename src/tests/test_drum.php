@@ -14,6 +14,7 @@ const SOUNDS = [
     'clap'     => Audio\Machine\Percussion\AnalogueClap::class,
     'cowbell'  => Audio\Machine\Percussion\AnalogueCowbell::class,
     'tom'      => Audio\Machine\Percussion\AnalogueTom::class,
+    'clave'    =>  Audio\Machine\Percussion\AnalogueClave::class
 ];
 
 $sSound = strtolower($_SERVER['argv'][1] ?? 'kick');
@@ -41,6 +42,7 @@ $sClass = SOUNDS[$sSound];
 
 // Open the audio
 $oPCMOut = Audio\Output\Piped::create();
+//$oPCMOut = new Audio\Output\Wav(sprintf("output/%s-%s-%d.wav", $sSound, $sNote, $iVelocity));
 $oPCMOut->open();
 
 $oDrum  = new $sClass;

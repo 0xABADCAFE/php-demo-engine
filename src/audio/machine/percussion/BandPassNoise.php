@@ -31,7 +31,9 @@ abstract class BandPassNoise implements IVoice {
     protected Audio\Signal\IOscillator         $oNoise;
     protected Audio\Signal\IFilter             $oFilter;
     protected Audio\Signal\Envelope\DecayPulse $oVolumeEnv;
-    protected Audio\Signal\AutoMuteAfter       $oAutoMute;
+
+    /** @var Audio\Signal\Operator\AutoMuteSilence<Audio\Signal\Operator\Modulator> $oAutoMute */
+    protected Audio\Signal\Operator\AutoMuteSilence $oAutoMute;
 
     /**
      * Constructor. Constructs the key component parts and defers to an abstract method to parameterise them.
@@ -49,8 +51,8 @@ abstract class BandPassNoise implements IVoice {
             1.0,
             0.05
         );
-        $oVCA = new Audio\Signal\Modulator($this->oFilter, $this->oVolumeEnv);
-        $this->oAutoMute = new Audio\Signal\AutoMuteAfter($oVCA, 0.175);
+        $oVCA = new Audio\Signal\Operator\Modulator($this->oFilter, $this->oVolumeEnv);
+        $this->oAutoMute = new Audio\Signal\Operator\AutoMuteSilence($oVCA, 0.03, 1/512.0);
         $this->setDefaults();
         $this->oAutoMute->disable();
     }

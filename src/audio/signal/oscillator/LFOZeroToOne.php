@@ -34,7 +34,7 @@ class LFOZeroToOne extends LFO {
         for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
             $this->oWaveformInput[$i] = $this->fScaleVal * $this->iSamplePosition++;
         }
-        return $this->oLastOutput = $this->oWaveform // @phpstan-ignore-line : false positive
+        return $this->oLastOutput = $this->oWaveform // @phpstan-ignore-line : false positive, member not null here
             ->map($this->oWaveformInput)
             ->scaleBy(0.5 * $this->fDepth)
             ->biasBy(0.5);

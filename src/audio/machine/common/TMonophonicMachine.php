@@ -33,13 +33,13 @@ trait TMonophonicMachine {
 
     private   Audio\Signal\IStream     $oOutput;
 
-    /** @var Audio\Signal\LevelAdjust<Audio\Signal\IStream> $oVoice */
-    protected Audio\Signal\LevelAdjust $oVoice;
+    /** @var Audio\Signal\Operator\LevelAdjust<Audio\Signal\IStream> $oVoice */
+    protected Audio\Signal\Operator\LevelAdjust $oVoice;
 
     protected ?Audio\Signal\IInsert    $oInsert = null;
 
     protected float
-        $fAttenuation = 0.2,
+        $fOutputLevel = 1.0,
         $fVoiceLevel  = 1.0
     ;
 
@@ -53,7 +53,10 @@ trait TMonophonicMachine {
     protected function setVoiceSource(Audio\Signal\IStream $oVoice, float $fLevel): void {
         $this->fVoiceLevel = $fLevel;
         $this->oOutput =
-        $this->oVoice  = new Audio\Signal\LevelAdjust($oVoice, $this->fAttenuation * $this->fVoiceLevel);
+        $this->oVoice  = new Audio\Signal\Operator\LevelAdjust(
+            $oVoice,
+            Audio\IMachine::VOICE_ATTENUATE * $this->fOutputLevel * $this->fVoiceLevel
+        );
     }
 
     /**
@@ -75,7 +78,7 @@ trait TMonophonicMachine {
      */
     public function setVoiceLevel(int $iVoiceNumber, float $fVolume): Audio\IMachine {
         $this->fVoiceLevel = $fVolume;
-        $this->oVoice->setLevel($fVolume * $this->fAttenuation);
+        $this->oVoice->setLevel(Audio\IMachine::VOICE_ATTENUATE * $this->fOutputLevel * $this->fVoiceLevel);
         return $this;
     }
 
@@ -90,7 +93,9 @@ trait TMonophonicMachine {
      * @inheritDoc
      */
     public function setOutputLevel(float $fVolume): Audio\IMachine {
-        return $this->setVoiceLevel(0, $fVolume);
+        $this->fOutputLevel = $fVolume;
+        $this->oVoice->setLevel(Audio\IMachine::VOICE_ATTENUATE * $this->fOutputLevel * $this->fVoiceLevel);
+        return $this;
     }
 
     /**

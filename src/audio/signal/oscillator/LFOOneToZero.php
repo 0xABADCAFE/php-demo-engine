@@ -37,7 +37,7 @@ class LFOOneToZero extends LFO {
         return $this->oLastOutput = $this->oWaveform // @phpstan-ignore-line : false positive
             ->map($this->oWaveformInput)
             ->scaleBy(0.5 * $this->fDepth)
-            ->biasBy(1.0 - $this->fDepth);
+            ->biasBy(1.0 - 0.5 * $this->fDepth);
         ;
     }
 }

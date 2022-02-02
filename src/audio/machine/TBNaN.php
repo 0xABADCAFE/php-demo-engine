@@ -24,17 +24,60 @@ use ABadCafe\PDE\Audio;
 /**
  * TBNaN
  *
- * Monophonic bassline. Oscillator with filter.
+ * Monophonic bassline.
+ * Features:
+ *    Resonant Low Pass Filter with adjustable cutoff and resonance
+ *    Decay Pulse Level Envelope with selectable rate and target level
+ *    Decay Pulse Filter Envelope with selectable rate and target level
  */
 class TBNaN implements Audio\IMachine {
 
-    const LEVEL_ADJUST = [
-        Audio\Signal\IWaveform::SAW      => 0.33,
-        Audio\Signal\IWaveform::SQUARE   => 0.25,
-        Audio\Signal\IWaveform::PULSE    => 0.25
+    const WAVETABLE = [
+        Audio\Signal\IWaveform::SAW,
+        Audio\Signal\IWaveform::SQUARE,
+        Audio\Signal\IWaveform::PULSE,
     ];
 
-    use TMonophonicMachine, TSimpleVelocity, TControllerless;
+    /**
+     * Initial defaults
+     */
+    const
+        DEFAULT_AEG_DECAY_RATE = 0.07,
+        DEFAULT_FEG_DECAY_RATE = 0.05,
+        DEFAULT_CUTOFF         = 1.0,
+        DEFAULT_RESONANCE      = 0.7,
+        LFO_RATE_MAX           = 32,
+        LFO_RATE_MIN           = 0.125
+    ;
+
+
+    /**
+     * Controllers 0x00 - 0x7F are reserved for universal applications.
+     * Controllers 0x80 - 0xFF are reserved for machine specific applocations.
+     */
+    const
+        CTRL_PWM_WIDTH        = self::CTRL_CUSTOM + 0,  // Value is 0 - 255, ControlCurve mapped
+        CTRL_AEG_DECAY_RATE   = self::CTRL_CUSTOM + 1,  // Value is 0 - 255, ControlCurve mapped
+        CTRL_AEG_DECAY_LEVEL  = self::CTRL_CUSTOM + 2,  // Value is 0 - 255, ControlCurve mapped
+        CTRL_LPF_CUTOFF       = self::CTRL_CUSTOM + 3,  // Value is 0 - 255, ControlCurve mapped
+        CTRL_LPF_RESONANCE    = self::CTRL_CUSTOM + 4,  // Value is 0 - 255, ControlCurve mapped
+        CTRL_FEG_DECAY_RATE   = self::CTRL_CUSTOM + 5,  // Value is 0 - 255, ControlCurve mapped
+        CTRL_FEG_DECAY_LEVEL  = self::CTRL_CUSTOM + 6,  // Value is 0 - 255, ControlCurve mapped
+        CTRL_PWM_LFO_RATE     = self::CTRL_CUSTOM + 7   // Value is 0 - 255, ControlCurve mapped
+    ;
+
+    const CTRL_CUSTOM_NAMES = [
+        self::CTRL_PWM_WIDTH        => 'PWM Width',  // Value is 0 - 255, ControlCurve mapped
+        self::CTRL_AEG_DECAY_RATE   => 'AEG Decay Rate',  // Value is 0 - 255, ControlCurve mapped
+        self::CTRL_AEG_DECAY_LEVEL  => 'AEG Decay Final',  // Value is 0 - 255, ControlCurve mapped
+        self::CTRL_LPF_CUTOFF       => 'LPF Cutoff',  // Value is 0 - 255, ControlCurve mapped
+        self::CTRL_LPF_RESONANCE    => 'LPF Resonance',  // Value is 0 - 255, ControlCurve mapped
+        self::CTRL_FEG_DECAY_RATE   => 'FEG Decay Rate',  // Value is 0 - 255, ControlCurve mapped
+        self::CTRL_FEG_DECAY_LEVEL  => 'FEG Decay Final',  // Value is 0 - 255, ControlCurve mapped
+        self::CTRL_PWM_LFO_RATE     => 'PWM LFO Rate'   // Value is 0 - 255, ControlCurve mapped
+
+    ];
+    use TMonophonicMachine, TSimpleVelocity, TAutomated;
 
     /** @var array<int, Audio\Signal\IWaveform> $aWaveforms */
     private array $aWaveforms = [];
@@ -51,8 +94,140 @@ class TBNaN implements Audio\IMachine {
         $this->initWaveforms();
         $this->initOscillator();
         $this->initFilter();
-        $this->setVoiceSource($this->oFilter, 0.125);
+        $this->setVoiceSource($this->oFilter, 1.0);
         $this->oVoice->disable();
+        $this->initAutomated();
+    }
+
+
+    /**
+     * @inheritDoc
+     */
+    public function getControllerDefs(): array {
+        return [
+            // Waveform
+            new Control\Switcher(
+                self::CTRL_OSC_1_WAVE,
+                function(int $iVoice, int $iValue): void {
+                    $this->setEnumeratedWaveform($iValue);
+                },
+                Audio\Signal\IWaveform::PULSE
+            ),
+            new Control\Knob(
+                self::CTRL_PWM_WIDTH,
+                function(int $iVoice, float $fValue): void {
+                    $this->setPWMWidth($fValue);
+                }
+            ),
+
+            // Amp Envelope
+            new Control\Knob(
+                self::CTRL_AEG_DECAY_RATE,
+                function(int $iVoice, float $fValue): void {
+                    $this->setLevelDecay($fValue);
+                }
+            ),
+            new Control\Knob(
+                self::CTRL_AEG_DECAY_LEVEL,
+                function(int $iVoice, float $fValue): void {
+                    $this->setLevelTarget($fValue);
+                }
+            ),
+
+            // Filter
+            new Control\Knob(
+                self::CTRL_LPF_CUTOFF,
+                function(int $iVoice, float $fValue): void {
+                    $this->setCutoff($fValue);
+                }
+            ),
+            new Control\Knob(
+                self::CTRL_LPF_RESONANCE,
+                function(int $iVoice, float $fValue): void {
+                    $this->setResonance($fValue);
+                }
+            ),
+
+            // Filter Envelope
+            new Control\Knob(
+                self::CTRL_FEG_DECAY_RATE,
+                function(int $iVoice, float $fValue): void {
+                    $this->setCutoffDecay($fValue);
+                }
+            ),
+            new Control\Knob(
+                self::CTRL_FEG_DECAY_LEVEL,
+                function(int $iVoice, float $fValue): void {
+                    $this->setCutoffTarget($fValue);
+                }
+            ),
+
+            // PWM LFO
+            new Control\Knob(
+                self::CTRL_PWM_LFO_RATE,
+                function(int $iVoice, float $fValue): void {
+                    $this->oPWM->setFrequency($fValue);
+                },
+                0,
+                self::LFO_RATE_MIN,
+                self::LFO_RATE_MAX
+            ),
+
+        ];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getControllerNames(): array {
+        return self::CTRL_NAMES + self::CTRL_CUSTOM_NAMES;
+    }
+
+    /**
+     * Set the waveform type
+     *
+     * @param  int $iWaveform
+     * @return self
+     */
+    public function setEnumeratedWaveform(int $iWaveform): self {
+        if (isset($this->aWaveforms[$iWaveform])) {
+            $this->oOscillator->setWaveform($this->aWaveforms[$iWaveform]);
+        }
+        return $this;
+    }
+
+    public function setPWMWidth(float $fWidth): self {
+        /** @var Audio\Signal\Waveform\Pulse $oWaveform */
+        $oWaveform = $this->aWaveforms[Audio\Signal\IWaveform::PULSE];
+        $oWaveform->setPulsewidth($fWidth);
+        return $this;
+    }
+
+    public function setPWMLFORate(float $fHertz): self {
+        $this->oPWM->setFrequency($fHertz);
+        return $this;
+    }
+
+    /**
+     * Set the amplitude decay
+     *
+     * @param  float $fHalfLife
+     * @return self
+     */
+    public function setLevelDecay(float $fHalfLife): self {
+        $this->oAEG->setHalfLife($fHalfLife);
+        return $this;
+    }
+
+    /**
+     * Set the level decay target
+     *
+     * @param  float $fTarget
+     * @return self
+     */
+    public function setLevelTarget(float $fTarget): self {
+        $this->oAEG->setTarget($fTarget);
+        return $this;
     }
 
     /**
@@ -78,18 +253,7 @@ class TBNaN implements Audio\IMachine {
     }
 
     /**
-     * Set the amplitude decay
-     *
-     * @param  float $fHalfLife
-     * @return self
-     */
-    public function setLevelDecay(float $fHalfLife): self {
-        $this->oAEG->setHalfLife($fHalfLife);
-        return $this;
-    }
-
-    /**
-     * Set the amplitude decay
+     * Set the filter decay rate
      *
      * @param  float $fHalfLife
      * @return self
@@ -100,17 +264,16 @@ class TBNaN implements Audio\IMachine {
     }
 
     /**
-     * Set the waveform type
+     * Set the filter decay target
      *
-     * @param  int $iWaveform
+     * @param  float $fTarget
      * @return self
      */
-    public function setWaveform(int $iWaveform): self {
-        if (isset($this->aWaveforms[$iWaveform])) {
-            $this->oOscillator->setWaveform($this->aWaveforms[$iWaveform]);
-        }
+    public function setCutoffTarget(float $fTarget): self {
+        $this->oFEG->setTarget($fTarget);
         return $this;
     }
+
 
     /**
      * @inheritDoc
@@ -147,12 +310,13 @@ class TBNaN implements Audio\IMachine {
             4.9,
             0.9
         );
-        $this->aWaveforms = [
-            Audio\Signal\IWaveform::SAW    => new Audio\Signal\Waveform\Saw(),
-            Audio\Signal\IWaveform::SQUARE => new Audio\Signal\Waveform\Square(),
-            Audio\Signal\IWaveform::PULSE  => new Audio\Signal\Waveform\Pulse(0.25),
-        ];
-        $this->aWaveforms[Audio\Signal\IWaveform::PULSE]->setPulsewidthModulator($this->oPWM);
+        $this->oPWM->disableSharing();
+
+        $this->aWaveforms = Audio\Signal\Waveform\Flyweight::get()
+            ->getWaveforms(self::WAVETABLE);
+        /** @var Audio\Signal\Waveform\Pulse $oPWM */
+        $oPWM = $this->aWaveforms[Audio\Signal\IWaveform::PULSE];
+        $oPWM->setPulsewidthModulator($this->oPWM);
     }
 
     /**
@@ -160,8 +324,8 @@ class TBNaN implements Audio\IMachine {
      */
     private function initOscillator(): void {
         $this->oAEG = new Audio\Signal\Envelope\DecayPulse(
-            0.8,
-            0.07
+            1.0,
+            self::DEFAULT_AEG_DECAY_RATE
         );
         $this->oOscillator = new Audio\Signal\Oscillator\Sound($this->aWaveforms[Audio\Signal\IWaveform::PULSE]);
         $this->oOscillator->setLevelEnvelope($this->oAEG);
@@ -172,16 +336,17 @@ class TBNaN implements Audio\IMachine {
      */
     private function initFilter(): void {
         $this->oFEG = new Audio\Signal\Envelope\DecayPulse(
-            0.33,
-            0.05
+            1.0,
+            self::DEFAULT_FEG_DECAY_RATE
         );
         $this->oFilter = new Audio\Signal\Filter\LowPass(
             $this->oOscillator,
-            1.0,
-            0.7,
+            self::DEFAULT_CUTOFF,
+            self::DEFAULT_RESONANCE,
             $this->oFEG
         );
     }
+
 }
 
 

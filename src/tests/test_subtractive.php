@@ -45,7 +45,7 @@ $oCarrier
     )
     ->setPitchModulator($oPitchDecay);
 
-$oMixer = new Audio\Signal\FixedMixer();
+$oMixer = new Audio\Signal\Operator\FixedMixer();
 $oMixer
     ->addStream('osc1', $oCarrier, 0.5)
     ->addStream('osc2', $oModulator, 0.5);

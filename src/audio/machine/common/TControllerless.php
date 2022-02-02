@@ -24,9 +24,23 @@ use ABadCafe\PDE\Audio;
 /**
  * TControllerless
  *
- * Empty controllers
+ * Empty stub implementation for IAutomatable
  */
 trait TControllerless {
+
+    /**
+     * @inheritDoc
+     */
+    public function getControllerDefs(): array {
+        return [];
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getControllerNames(): array {
+        return [];
+    }
 
     /**
      * @inheritDoc

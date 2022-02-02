@@ -35,12 +35,12 @@ trait TPolyphonicMachine {
 
     private   Audio\Signal\IStream $oOutput;
 
-    protected Audio\Signal\FixedMixer $oMixer;
-    protected ?Audio\Signal\IInsert   $oInsert = null;
-    protected float
-        $fOutScale = 1.0,
-        $fOutLevel = 1.0
-    ;
+    protected Audio\Signal\Operator\FixedMixer $oMixer;
+    protected ?Audio\Signal\IInsert   $oInsert   = null;
+    protected float                   $fOutLevel = 1.0;
+
+    /** @var Audio\Signal\Operator\AutoMuteSilence<Audio\Signal\IStream> $oGate */
+    protected Audio\Signal\Operator\AutoMuteSilence $oGate; // @phpstan-ignore-line
 
     /**
      * Initialise the components of this trait.
@@ -50,9 +50,9 @@ trait TPolyphonicMachine {
     protected function initPolyphony(int $iNumVoices): void {
         self::initStreamTrait();
         $this->iNumVoices = max(min($iNumVoices, Audio\IMachine::MAX_POLYPHONY), Audio\IMachine::MIN_POLYPHONY);
-        $this->fOutScale  = $this->fOutLevel / $this->iNumVoices;
         $this->oOutput    =
-        $this->oMixer     = new Audio\Signal\FixedMixer();
+        $this->oMixer     = new Audio\Signal\Operator\FixedMixer();
+        $this->oGate = new Audio\Signal\Operator\AutoMuteSilence($this->getOutput());
         $this->setOutputLevel($this->fOutLevel);
     }
 
@@ -85,7 +85,7 @@ trait TPolyphonicMachine {
     /**
      * @inheritDoc
      */
-    public function setVoiceLevel(int $iVoiceNumber, float $fVolume): Audio\IMachine {
+    public function setVoiceLevel(int $iVoiceNumber, float $fVolume): self {
         $sVoiceName = 'v_' . $iVoiceNumber;
         $this->oMixer->setInputLevel($sVoiceName, $fVolume);
         return $this;
@@ -101,9 +101,11 @@ trait TPolyphonicMachine {
     /**
      * @inheritDoc
      */
-    public function setOutputLevel(float $fVolume): Audio\IMachine {
+    public function setOutputLevel(float $fVolume): self {
         $this->fOutLevel = $fVolume;
-        $this->oMixer->setOutputLevel($this->fOutLevel * $this->fOutScale);
+        $fMixLevel = $this->fOutLevel * Audio\IMachine::VOICE_ATTENUATE;
+        $this->oMixer->setOutputLevel($fMixLevel);
+        $this->oGate->setThreshold($fMixLevel * Audio\Signal\Operator\AutoMuteSilence::DEF_THRESHOLD);
         return $this;
     }
 
@@ -119,6 +121,7 @@ trait TPolyphonicMachine {
      */
     public function reset(): Audio\Signal\IStream {
         $this->oOutput->reset();
+        $this->oGate->enable();
         return $this;
     }
 
@@ -126,7 +129,7 @@ trait TPolyphonicMachine {
      * @inheritDoc
      */
     public function emit(?int $iIndex = null): Audio\Signal\Packet {
-        return $this->oOutput->emit($iIndex);
+        return $this->oGate->emit();
     }
 
     /**
@@ -140,6 +143,7 @@ trait TPolyphonicMachine {
      * @inheritDoc
      */
     public function setInsert(?Audio\Signal\IInsert $oInsert = null): self {
+        $oOldOutput = $this->oOutput;
         if (null !== $oInsert) {
             $oInsert->setInputStream($this->oMixer);
             $this->oInsert =
@@ -147,6 +151,20 @@ trait TPolyphonicMachine {
         } else {
             $this->oOutput = $this->oMixer;
         }
+        if ($oOldOutput !== $this->oOutput) {
+            $this->oGate->setStream($this->getOutput());
+        }
         return $this;
+    }
+
+    private function handleVoiceStarted(): void {
+        $this->oGate->enable();
+    }
+
+    /**
+     * Workaround for phpstan. Ensures only an abstract handle is returned for adding to the gate.
+     */
+    private function getOutput(): Audio\Signal\IStream {
+        return $this->oOutput;
     }
 }

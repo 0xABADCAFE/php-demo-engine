@@ -1,17 +1,17 @@
 {
-    "sType": "MultiFM",
+    "sType": "DeX7er",
     "sName": "Recently Bass",
-    "iMaxPolyphony": 1,
-    "aOperators": [
+    "iVoices": 2,
+    "Operators": [
         {
             "sName": "modulator0",
-            "Waveform": "Triangle",
-            "fRatio": 1.005,
+            "sWave": "SineSaw",
+            "fRatio": 4.005,
             "fOutputMix": 0.0,
             "LevelEnv": {
                 "sType": "Decay",
                 "finitial": 1.0,
-                "fHalfLife": 0.03,
+                "fHalfLife": 0.05,
                 "Velocity": {
                     "Intensity": {
                         "sType": "Gamma",
@@ -25,7 +25,7 @@
 
         {
             "sName": "modulator1",
-            "Waveform": "Sine",
+            "sWave": "Sine",
             "fRatio": 1.999,
             "fOutputMix": 0.0,
             "LevelEnv": {
@@ -37,8 +37,8 @@
 
         {
             "sName": "modulator2",
-            "Waveform": "Sine",
-            "fRatio": 0.25,
+            "sWave": "Sine",
+            "fRatio": 0.501,
             "fOutputMix": 0.0,
             "LevelEnv": {
                 "sType": "Decay",
@@ -48,7 +48,7 @@
             "aModulators": [
                 {
                     "sSource": "modulator0",
-                    "fIndex": 0.6
+                    "fIndex": 0.2
                 },
                 {
                     "sSource": "modulator1",
@@ -59,9 +59,9 @@
 
         {
             "sName": "carrier",
-            "Waveform": "Sine",
-            "fRatio": 0.25,
-            "fOutputMix": 0.5,
+            "sWave": "Sine",
+            "fRatio": 0.5,
+            "fOutputMix": 1.0,
             "LevelEnv": {
                 "sType": "Decay",
                 "finitial": 1.0,

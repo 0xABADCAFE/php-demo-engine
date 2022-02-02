@@ -62,7 +62,7 @@ class AnalogueTom implements IVoice {
             ->setPitchEnvelope($this->oPitchEnv)
             ->setLevelEnvelope($this->oVolumeEnv);
 
-        $this->oAutoMute = new Audio\Signal\AutoMuteAfter($this->oOscillator, 1.5);
+        $this->oAutoMute = new Audio\Signal\Operator\AutoMuteAfter($this->oOscillator, 1.5);
         $this->oAutoMute->disable();
     }
 

@@ -20,7 +20,7 @@ declare(strict_types=1);
 
 namespace ABadCafe\PDE\Audio\Signal\Waveform;
 use ABadCafe\PDE\Audio\Signal;
-
+use ABadCafe\PDE\Util;
 use function \floor;
 
 /**
@@ -31,6 +31,8 @@ use function \floor;
  * @see https://github.com/0xABADCAFE/random-proto-synth
  */
 class Triangle implements Signal\IWaveform {
+
+    use Util\TAlwaysShareable;
 
     /**
      * Waveform period (interval after which it repeats).
@@ -57,5 +59,15 @@ class Triangle implements Signal\IWaveform {
             $oOutput[$i] = $fScale * ($fTime - $fFloor - $fHalf);
         }
         return $oOutput;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function value(float $fTime): float {
+        $fTime -= 0.5;
+        $fFloor  = floor($fTime);
+        $fScale  = (int)$fFloor & 1 ? 2.0 : -2.0;
+        return $fScale * ($fTime - $fFloor - 0.5);
     }
 }

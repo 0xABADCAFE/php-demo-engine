@@ -24,7 +24,7 @@ use ABadCafe\PDE\Audio;
 /**
  * TRNaN
  *
- * Basic analogish sounding drum machine
+ * Basic analogish sounding drum machine. Each drum voice is assigned to a separate channel.
  */
 class TRNaN implements Audio\IMachine {
 
@@ -35,7 +35,8 @@ class TRNaN implements Audio\IMachine {
         HH_OPEN   = 3,
         COWBELL   = 4,
         CLAP      = 5,
-        TOM       = 6
+        TOM       = 6,
+        CLAVE     = 7
     ;
 
     /**
@@ -52,7 +53,7 @@ class TRNaN implements Audio\IMachine {
     private $aVoices = [];
 
     public function __construct() {
-        $this->initPolyphony(7);
+        $this->initPolyphony(8);
         $this->aVoices[self::KICK]      = new Percussion\AnalogueKick();
         $this->aVoices[self::SNARE]     = new Percussion\AnalogueSnare();
         $this->aVoices[self::HH_CLOSED] = new Percussion\AnalogueHHClosed();
@@ -60,6 +61,7 @@ class TRNaN implements Audio\IMachine {
         $this->aVoices[self::COWBELL]   = new Percussion\AnalogueCowbell();
         $this->aVoices[self::CLAP]      = new Percussion\AnalogueClap();
         $this->aVoices[self::TOM]       = new Percussion\AnalogueTom();
+        $this->aVoices[self::CLAVE]     = new Percussion\AnalogueClave();
         for ($i = 0; $i < $this->iNumVoices; ++$i) {
             $this->setVoiceSource($i, $this->aVoices[$i]->getOutputStream());
         }
@@ -91,7 +93,8 @@ class TRNaN implements Audio\IMachine {
                 ->getOutputStream()
                 ->reset()
                 ->enable();
-            }
+            $this->handleVoiceStarted();
+        }
         return $this;
     }
 

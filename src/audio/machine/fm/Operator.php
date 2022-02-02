@@ -63,7 +63,7 @@ class Operator implements Audio\Signal\IOscillator {
      * Operator modulation inputs are summed using a fixed mixer, where the level of each input corresponds to that
      * modulator's modulation index.
      */
-    private Audio\Signal\FixedMixer  $oModulation;
+    private Audio\Signal\Operator\FixedMixer  $oModulation;
 
     // LFO have injectable waveforms but are direct dependencies. The Level LFO in particular must operate in 1-0 range.
     private Audio\Signal\Oscillator\LFO
@@ -112,7 +112,7 @@ class Operator implements Audio\Signal\IOscillator {
         $this->oOscillator = new Audio\Signal\Oscillator\Sound($oDefaultWaveform);
         $this->oLevelLFO   = new Audio\Signal\Oscillator\LFOOneToZero($oDefaultWaveform);
         $this->oPitchLFO   = new Audio\Signal\Oscillator\LFO($oDefaultWaveform);
-        $this->oModulation = new Audio\Signal\FixedMixer();
+        $this->oModulation = new Audio\Signal\Operator\FixedMixer();
     }
 
     /**
@@ -178,6 +178,14 @@ class Operator implements Audio\Signal\IOscillator {
         // Don't propagate to modulators
         return $this;
     }
+
+    /**
+     * @inheritDoc
+     */
+    public function getWaveform(): ?Audio\Signal\IWaveform {
+        return $this->oOscillator->getWaveform();
+    }
+
 
     /**
      * @inheritDoc
@@ -372,6 +380,14 @@ class Operator implements Audio\Signal\IOscillator {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
     // PHASE MODULATION
+
+    /**
+     * Set the self-modulation index for this Operator
+     */
+    public function setFeedbackIndex(float $fFeedback): self {
+        $this->oOscillator->setPhaseFeedbackIndex($fFeedback);
+        return $this;
+    }
 
     /**
      * The main FM concept.

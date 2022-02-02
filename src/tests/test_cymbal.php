@@ -9,59 +9,45 @@ require_once '../PDE.php';
 
 echo "PHP Demo Engine: Cymbal Synthesis test\n";
 
-$oDecay1  = new Audio\Signal\Envelope\DecayPulse(1.0, 0.04);
-$oDecay2  = new Audio\Signal\Envelope\DecayPulse(1.0, 0.05);
-
-$oSquare = new Audio\Signal\Waveform\Square();
 $oOsc1 = new Audio\Signal\Oscillator\Sound(
-    $oSquare,
+    new Audio\Signal\Waveform\AliasedPulse(0.7),
     1047
 );
-$oOsc1->setLevelEnvelope($oDecay1);
 $oOsc2 = new Audio\Signal\Oscillator\Sound(
-    $oSquare,
-    1481
+    new Audio\Signal\Waveform\AliasedSquare(),
+    2490
 );
 $oOsc2
     ->setPhaseModulator($oOsc1)
-    ->setLevelEnvelope($oDecay2);
+    ->setPitchModulator($oOsc1);
 
-$oFilter1 = new Audio\Signal\Filter\HighPass($oOsc2, 0.9);
-
-$oOsc3 = new Audio\Signal\Oscillator\Sound(
-    $oSquare,
-    1109
+$oFilter1 = new Audio\Signal\Filter\BandPass(
+    $oOsc2,
+    1.0,
+    0.1,
+    new Audio\Signal\Envelope\DecayPulse(1.0, 0.02, 0.25)
 );
 
-$oOsc3->setLevelEnvelope($oDecay2);
-
-$oOsc4 = new Audio\Signal\Oscillator\Sound(
-    $oSquare,
-    2490
+$oFilter2 = new Audio\Signal\Filter\LowPass(
+    $oOsc2,
+    1.0,
+    0.0,
+    new Audio\Signal\Envelope\Shape(
+        1.0,
+        [
+            [0.0, 0.2],
+            [1.0, 1]
+        ]
+    )
 );
-$oOsc4
-    ->setPhaseModulator($oOsc3)
-    ->setLevelEnvelope($oDecay1);
 
-$oOsc5 = new Audio\Signal\Oscillator\Sound(
-    $oSquare,
-    1397
-);
-$oOsc5->setLevelEnvelope($oDecay2);
 
-$oOsc6 = new Audio\Signal\Oscillator\Sound(
-    $oSquare,
-    2490
-);
-$oOsc6
-    ->setPhaseModulator($oOsc5)
-    ->setLevelEnvelope($oDecay1);
 
-$oMixer = new Audio\Signal\FixedMixer();
+$oMixer = new Audio\Signal\Operator\FixedMixer();
 $oMixer
-    ->addInputStream('p1', $oFilter1, 0.2)
-    ->addInputStream('p2', $oOsc4, 0.2)
-    ->addInputStream('p3', $oOsc6, 0.2);
+    ->addInputStream('f1', $oFilter1, 0.02)
+    ->addInputStream('f2', $oFilter2, 0.01)
+
 ;
 
 $oPCMOut  = Audio\Output\Piped::create();

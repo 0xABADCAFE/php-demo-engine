@@ -23,7 +23,7 @@ use ABadCafe\PDE\Audio;
 
 use \OutOfBoundsException;
 use \RangeException;
-use function ABadCafe\PDE\dprintf, \array_filter, \array_map, \array_unique, \floor, \max, \min;
+use function ABadCafe\PDE\dprintf, \cos, \array_filter, \array_map, \array_unique, \floor, \max, \min, \microtime, \printf;
 
 /**
  * Sequencer
@@ -51,20 +51,25 @@ class Sequencer {
         $iBeatsPerMeasure     = self::DEF_BEATS_PER_MEASURE,
         $iLinesPerBeat        = self::DEF_LINES_PER_BEAT,
         $iBasePatternLength   = self::DEF_PATTERN_LENGTH,
-        $iNumMeasures         = 0
+        $iNumMeasures         = 0,
+        $iSwingLines          = 1
     ;
 
-    /** @var Audio\IMachine[] $aMachines */
+    private float
+        $fSwingDepth          = 0.0
+    ;
+
+    /** @var array<string, Audio\IMachine> $aMachines */
     private array $aMachines = [];
 
-    /** @var Audio\Sequence\Pattern[][] $aMachinePatterns */
+    /** @var array<string, Audio\Sequence\Pattern[]> $aMachinePatterns */
     private array $aMachinePatterns = [];
 
-    /** @var int[] $aMachinePatternLabels */
+    /** @var array<string, int> $aMachinePatternLabels */
     private array $aMachinePatternLabels;
 
     /**
-     * @var Audio\Sequence\Pattern[][] $aMachineSequences
+     * @var array<string, array<int, Audio\Sequence\Pattern>> $aMachineSequences
      */
     private array $aMachineSequences = [];
 
@@ -80,6 +85,12 @@ class Sequencer {
             max($iTempoBeatsPerMinute, self::MIN_TEMPO_BPM),
             self::MAX_TEMPO_BPM
         );
+        return $this;
+    }
+
+    public function setSwing(float $fDepth, int $iLines): self {
+        $this->fSwingDepth = $fDepth;
+        $this->iSwingLines = max(1, $iLines);
         return $this;
     }
 
@@ -308,7 +319,8 @@ class Sequencer {
         Audio\IPCMOutput $oOutput,
         float $fGain       = 1.0,
         int $iStartMeasure = 0,
-        int $iNumMeasures  = 0
+        int $iNumMeasures  = 0,
+        int $iSkipLines    = 0
     ): self {
 
         // Sanity checks
@@ -319,39 +331,49 @@ class Sequencer {
             $iNumMeasures = $this->iNumMeasures;
         }
 
-        $iLastMeasure = min($iStartMeasure + $iNumMeasures, $this->iNumMeasures);
-
+        $iLastMeasure    = min($iStartMeasure + $iNumMeasures, $this->iNumMeasures);
         $fBeatsPerSecond = $this->iTempoBeatsPerMinute / 60.0;
         $fLinesPerSecond = $fBeatsPerSecond * $this->iLinesPerBeat;
+        $fLinePeriod     = 1.0 / $fLinesPerSecond;
         $fSecondScale    = 1.0 / Audio\IConfig::PROCESS_RATE;
 
-        $oMixer = new Audio\Signal\FixedMixer($fGain);
+        $oMixer = new Audio\Signal\Operator\FixedMixer($fGain);
         foreach ($this->aMachines as $sMachineName => $oMachine) {
             $oMixer->addInputStream($sMachineName, $oMachine, 1.0);
         }
 
+        // Factor in swing.
+        $fSwingPeriod = \M_PI / ($fLinePeriod * $this->iSwingLines);
+        $fSwingDepth  = $this->fSwingDepth * $fLinePeriod / 16; // TODO - the swing measure needs better defining
+
         $fPlayTime    = microtime(true);
         $fComputeTime = 0.0;
-
-        $iLineOffset = 0;
+        $iLineOffset  = 0;
         for ($iMeasure = $iStartMeasure; $iMeasure < $iLastMeasure; ++$iMeasure) {
             $aActivePatterns = [];
+            //echo "Measure ", $iMeasure, "\n";
             foreach ($this->aMachineSequences as $sMachineName => $aSequence) {
                 if (isset($aSequence[$iMeasure])) {
                     $oPattern = $aSequence[$iMeasure];
-                    echo "\t", $sMachineName, ": ", $oPattern->getLabel(), "\n";
+                    //echo "\t", $sMachineName, ": ", $oPattern->getLabel(), "\n";
                     $aActivePatterns[$sMachineName] = $oPattern;
                 } else {
-                    echo "\t", $sMachineName, ": (no pattern)\n";
+                    //echo "\t", $sMachineName, ": (no pattern)\n";
                 }
             }
 
             $iLastLineNumber = -1;
+            $iLineNumber = 0;
             while (true) {
                 $iSamplePosition = $oMixer->getPosition();
                 $fCurrentTime    = $fSecondScale * $iSamplePosition;
-                $iLineNumber     = (int)floor($fCurrentTime * $fLinesPerSecond) - $iLineOffset;
-                if ($iLineNumber !== $iLastLineNumber) {
+
+                // Schwing
+                $fCurrentTime   += $fSwingDepth * cos($fCurrentTime * $fSwingPeriod);
+
+                $iLineNumber     = (int)floor($fCurrentTime * $fLinesPerSecond) - $iLineOffset + $iSkipLines;
+
+                if ($iLineNumber > $iLastLineNumber) {
                     if ($iLineNumber == $this->iBasePatternLength) {
                         break;
                     }
@@ -367,7 +389,7 @@ class Sequencer {
             }
             $iLineOffset += $this->iBasePatternLength;
         }
-
+        $iSkipLines = 0;
         $fPlayTime = microtime(true) - $fPlayTime;
 
         printf(
@@ -387,109 +409,53 @@ class Sequencer {
         foreach ($aActivePatterns as $sMachineName => $oPattern) {
             $oMachine = $this->aMachines[$sMachineName];
             $oRow     = $oPattern->getLine($iLineNumber);
-            foreach ($oRow as $iChannel => $oEvent) {
-                if (!$oEvent) {
+            foreach ($oRow as $iChannel => $aEventSets) {
+                if (empty($aEventSets)) {
                     continue;
                 }
-                switch ($oEvent->iType) {
-                    case Audio\Sequence\Event::NOTE_ON:
-//                         dprintf("\tLn:%4d Mc:%5s Ch:%2d Ev:NoteOn %s V:%d\n",
-//                             $iLineNumber,
-//                             $sMachineName,
-//                             $iChannel,
-//                             $oEvent->sNote,
-//                             $oEvent->iVelocity
-//                         );
 
-                        $oMachine
-                            ->setVoiceNote($iChannel, $oEvent->sNote)
-                            ->setVoiceVelocity($iChannel, $oEvent->iVelocity)
-                            ->startVoice($iChannel);
-                        break;
-                    case Audio\Sequence\Event::SET_NOTE:
-                        $oMachine
-                            ->setVoiceNote($iChannel, $oEvent->sNote);
-                        break;
-                    case Audio\Sequence\Event::NOTE_OFF:
-                        $oMachine
-                            ->stopVoice($iChannel);
-                        break;
-                    default:
-                        break;
+                foreach ($aEventSets as $oEvent) {
+                    switch ($oEvent->iType) {
+                        case Audio\Sequence\Event::NOTE_ON:
+    //                         dprintf("\tLn:%4d Mc:%5s Ch:%2d Ev:NoteOn %s V:%d\n",
+    //                             $iLineNumber,
+    //                             $sMachineName,
+    //                             $iChannel,
+    //                             $oEvent->sNote,
+    //                             $oEvent->iVelocity
+    //                         );
+
+                            $oMachine
+                                ->setVoiceNote($iChannel, $oEvent->sNote)
+                                ->setVoiceVelocity($iChannel, $oEvent->iVelocity)
+                                ->startVoice($iChannel);
+                            break;
+
+                        case Audio\Sequence\Event::SET_NOTE:
+                            $oMachine
+                                ->setVoiceNote($iChannel, $oEvent->sNote);
+                            break;
+
+                        case Audio\Sequence\Event::NOTE_OFF:
+                            $oMachine
+                                ->stopVoice($iChannel);
+                            break;
+
+                        case Audio\Sequence\Event::SET_CTRL:
+                            $oMachine
+                                ->setVoiceControllerValue($iChannel, $oEvent->iController, $oEvent->iValue);
+                            break;
+
+                        case Audio\Sequence\Event::MOD_CTRL:
+                            $oMachine
+                                ->adjustVoiceControllerValue($iChannel, $oEvent->iController, $oEvent->iDelta);
+                            break;
+
+                        default:
+                            break;
+                    }
                 }
             }
         }
     }
-
-//     /**
-//      * PROTOTYPE CODE
-//      */
-//     public function play(Audio\IPCMOutput $oOutput, int $iMaxLines = 128, $fGain = 1.0) {
-//         $fBeatsPerSecond = $this->iTempoBeatsPerMinute / 60.0;
-//         $fLinesPerSecond = $fBeatsPerSecond * $this->iLinesPerBeat;
-//
-// //         dprintf(
-// //             "Starting sequence: %d PBM (%.2f Lines/sec)\n",
-// //             $this->iTempoBeatsPerMinute,
-// //             $fLinesPerSecond
-// //         );
-//         $oMixer = new Audio\Signal\FixedMixer($fGain);
-//         foreach ($this->aMachines as $sMachineName => $oMachine) {
-//             $oMixer->addInputStream($sMachineName, $oMachine, 1.0);
-// //             dprintf(
-// //                 "\tAdding stream %s for %s...\n",
-// //                 $sMachineName,
-// //                 get_class($oMachine)
-// //             );
-//         }
-//         $fSecondScale = 1.0 / Audio\IConfig::PROCESS_RATE;
-//         $iLastLineNumber = -1;
-//         while ($iLastLineNumber < $iMaxLines) {
-//             $iSamplePosition = $oMixer->getPosition();
-//             $fCurrentTime    = $fSecondScale * $iSamplePosition;
-//             $iLineNumber     = (int)floor($fCurrentTime * $fLinesPerSecond);
-//             if ($iLineNumber !== $iLastLineNumber) {
-//                 $iLastLineNumber = $iLineNumber;
-//                 $this->processLine($iLineNumber);
-//             }
-//             $oOutput->write($oMixer->emit());
-//         }
-//     }
-//
-//     /**
-//      * PROTOTYPE CODE
-//      */
-//     private function processLine(int $iLineNumber) {
-//         $fVelocityScale = 1.0/127.0;
-//         foreach ($this->aMachines as $sMachineName => $oMachine) {
-//             $oPattern = $this->aMachinePatterns[$sMachineName][0];
-//             $iLineNumber %= $oPattern->getLength();
-//             $oRow = $oPattern->getLine($iLineNumber);
-//             foreach ($oRow as $iChannel => $oEvent) {
-//                 if ($oEvent instanceof Audio\Sequence\NoteOn) {
-// //                     dprintf("\tLn:%4d Mc:%5s Ch:%2d Ev:NoteOn %s V:%d\n",
-// //                         $iLineNumber,
-// //                         $sMachineName,
-// //                         $iChannel,
-// //                         $oEvent->sNote,
-// //                         $oEvent->iVelocity
-// //                     );
-//
-//                     $oMachine
-//                         ->setVoiceNote($iChannel, $oEvent->sNote)
-//                         ->setVoiceVelocity($iChannel, $oEvent->iVelocity)
-//                         ->setVoiceLevel($iChannel, $fVelocityScale * $oEvent->iVelocity)
-//                         ->startVoice($iChannel);
-//                 } else if ($oEvent instanceof Audio\Sequence\SetNote) {
-//                     $oMachine
-//                         ->setVoiceNote($iChannel, $oEvent->sNote);
-//                 } else if ($oEvent instanceof Audio\Sequence\NoteOff) {
-//                     $oMachine
-//                         ->stopVoice($iChannel);
-//                 }
-//             }
-//         }
-//     }
-
-
 }

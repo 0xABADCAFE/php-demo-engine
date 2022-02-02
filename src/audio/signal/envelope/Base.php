@@ -20,6 +20,7 @@ declare(strict_types=1);
 
 namespace ABadCafe\PDE\Audio\Signal\Envelope;
 use ABadCafe\PDE\Audio;
+use ABadCafe\PDE\Util;
 
 use function \max;
 
@@ -27,6 +28,8 @@ use function \max;
  * Base class for envelopes
  */
 abstract class Base implements Audio\Signal\IEnvelope {
+
+    use Util\TNeverShareable;
 
     protected int   $iSamplePosition   = 0;
     protected bool  $bParameterChanged = false;

@@ -1,0 +1,81 @@
+{
+    "sType": "DeX7er",
+    "sName": "FM Guitar 01",
+    "iVoices": 6,
+    "Operators": [
+        {
+            "sName": "strum",
+            "sWave": "Saw",
+            "fRatio": 17,
+            "fOutputMix": 0.0,
+            "LevelEnv": {
+                "sType": "Decay",
+                "fInitial": 1.0,
+                "fHalfLife": 0.01,
+                "Velocity": {
+                    "Intensity": {
+                        "sType": "Gamma",
+                        "fMinOutput": 0.0,
+                        "fMaxOutput": 2.0,
+                        "fGamma": 2.0
+                    },
+                    "Rate": {
+                        "sType": "Gamma",
+                        "fMinOutput": 1.0,
+                        "fMaxOutput": 2.0,
+                        "fGamma": 1.75
+                    }
+                }
+            }
+        },
+        {
+            "sName": "bar",
+            "sWave": "Sine",
+            "fRatio": 2.998,
+            "fOutputMix": 0.05,
+            "LevelEnv": {
+                "sType": "Decay",
+                "fInitial": 1.0,
+                "fHalfLife": 1.0
+            },
+            "PitchLFO": {
+                "fDepth": 0.05,
+                "fRate": 3.0
+            }
+        },
+        {
+            "sName": "body",
+            "sWave": "SineSaw",
+            "fRatio": 1.005,
+            "fOutputMix": 0.8,
+            "LevelEnv": {
+                "sType": "Decay",
+                "fInitial": 1.0,
+                "fHalfLife": 2.0,
+                "Velocity": {
+                    "Rate": {
+                        "sType": "Gamma",
+                        "fMinOutput": 0.25,
+                        "fMaxOutput": 1.0,
+                        "fGamma": 1.5
+                    }
+                }
+            },
+            "PitchLFO": {
+                "fDepth": 0.05,
+                "fRate": 3.1
+            },
+            "aModulators": [
+                {
+                    "sSource": "strum",
+                    "fIndex": 0.3
+                },
+                {
+                    "sSource": "bar",
+                    "fIndex": 0.4
+                }
+            ]
+        }
+
+    ]
+}

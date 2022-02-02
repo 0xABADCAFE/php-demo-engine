@@ -84,6 +84,7 @@ class Context {
         $fTimeIndex     = 0.0;
         //$oAudioProcess  = new PDE\Audio\Player();
         //$oAudioProcess->start();
+
         while ($this->handleEvents($iFrameNumber, $fTimeIndex)) {
             $this->oDisplay->clear();
             $this->runRoutines($iFrameNumber, $fTimeIndex);

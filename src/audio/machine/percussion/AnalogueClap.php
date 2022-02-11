@@ -29,24 +29,24 @@ use ABadCafe\PDE\Audio;
 class AnalogueClap extends BandPassNoise {
 
     /**
-     * Variation by octave
+     * Variation by octave - first value is the amplitude scaling, second is the time scaling.
      */
     const OCTAVE = [
-         0 => [1.33, 0.045],
-         1 => [1.33, 0.04],
-         2 => [1.33, 0.0375],
-         3 => [1.33, 0.035],
-         4 => [1.33, 0.0325],
-         5 => [1.33, 0.03],
-         6 => [1.33, 0.0275],
-         7 => [1.2, 0.025],
-         8 => [1.15, 0.0225],
-         9 => [1.125, 0.02],
-        10 => [1.00, 0.0175],
+         0 => [1.33, 2.5],
+         1 => [1.33, 2.0],
+         2 => [1.33, 1.5],
+         3 => [1.33, 1.25],
+         4 => [1.33, 1],
+         5 => [1.33, 0.9],
+         6 => [1.33, 0.8],
+         7 => [1.2, 0.7],
+         8 => [1.15, 0.6],
+         9 => [1.125, 0.55],
+        10 => [1.00, 0.5],
     ];
 
     /**
-     * Variation by semitone
+     * Variation by semitone, affects the filter cutoff
      */
     const SEMITONE = [
          0 => [0.06],
@@ -63,6 +63,32 @@ class AnalogueClap extends BandPassNoise {
         11 => [0.12],
     ];
 
+    public function __construct() {
+        parent::__construct();
+        // Use a clappier envelope here. Stack 4 very short decays followed by a short tail off.
+        $this->oVolumeEnv = new Audio\Signal\Envelope\Shape(
+            0.5,
+            [
+                [0.1, 0.005],
+
+                [0.6, 0.001],
+                [0.15, 0.006],
+
+                [0.8, 0.001],
+                [0.2, 0.007],
+
+                [0.8, 0.001],
+                [0.15, 0.008],
+
+                [1.0, 0.001],
+                [0.2, 0.05],
+                [0.1, 0.05],
+                [0.0, 0.05]
+            ]
+        );
+        $this->oNoise->setLevelEnvelope($this->oVolumeEnv);
+    }
+
     /**
      * @inheritDoc
      */
@@ -72,10 +98,11 @@ class AnalogueClap extends BandPassNoise {
         $iOctave     = (int)($iNoteNumber / Audio\Note::SEMIS_PER_OCTAVE);
 
         $this->oFilter->setCutoff(self::SEMITONE[$iSemitone][0]);
-        $this->oVolumeEnv
-            ->setInitial(self::OCTAVE[$iOctave][0])
-            ->setHalfLife(self::OCTAVE[$iOctave][1]);
 
+        $this->oVolumeEnv
+            ->setLevelScale(self::OCTAVE[$iOctave][0])
+            ->setTimeScale(self::OCTAVE[$iOctave][1])
+        ;
         return $this;
     }
 
@@ -92,9 +119,6 @@ class AnalogueClap extends BandPassNoise {
     protected function setDefaults(): void {
         $this->oFilter
             ->setCutoff(0.09)
-            ->setResonance(0.1);
-        $this->oVolumeEnv
-            ->setInitial(1.3)
-            ->setHalfLife(0.03);
+            ->setResonance(0.3);
     }
 }

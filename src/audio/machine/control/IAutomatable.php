@@ -60,7 +60,7 @@ interface IAutomatable {
         CTRL_TREMOLO_RATE  = 12,
         CTRL_TREMOLO_DEPTH = 13,
 
-        // Waveform select, per oscillator up to a maximu, of 8 oscillators
+        // Waveform select, per oscillator up to a maximum, of 8 oscillators
         CTRL_OSC_1_WAVE    = 20,
         CTRL_OSC_2_WAVE    = 21,
         CTRL_OSC_3_WAVE    = 22,

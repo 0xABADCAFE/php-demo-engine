@@ -25,14 +25,18 @@ use ABadCafe\PDE\Audio;
  * BandPassNoise
  *
  * Base class for sounds that simply use bandpass filtered noise, e.g. High Hats and claps.
+ *
+ * @template E of Audio\Signal\IEnvelope
  */
 abstract class BandPassNoise implements IVoice {
 
     protected Audio\Signal\Oscillator\Sound    $oNoise;
-    protected Audio\Signal\IFilter             $oFilter;
+    protected Audio\Signal\Filter\BandPass     $oFilter;
+
+    /** @var E $oVolumeEnv */
     protected Audio\Signal\IEnvelope           $oVolumeEnv;
 
-    /** @var Audio\Signal\Operator\AutoMuteSilence<Audio\Signal\Operator\Modulator> $oAutoMute */
+    /** @var Audio\Signal\Operator\AutoMuteSilence<Audio\Signal\Filter\BandPass> $oAutoMute */
     protected Audio\Signal\Operator\AutoMuteSilence $oAutoMute;
 
     /**
@@ -47,11 +51,6 @@ abstract class BandPassNoise implements IVoice {
             0.5,
             0.0
         );
-        $this->oVolumeEnv = new Audio\Signal\Envelope\DecayPulse(
-            1.0,
-            0.05
-        );
-        $this->oNoise->setLevelEnvelope($this->oVolumeEnv);
         $this->oAutoMute = new Audio\Signal\Operator\AutoMuteSilence($this->oFilter, 0.03, 1/512.0);
         $this->setDefaults();
         $this->oAutoMute->disable();

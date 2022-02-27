@@ -11,6 +11,7 @@ require_once '../PDE.php';
 $oSequencer = new Audio\Machine\Sequencer();
 $oSequencer->setBeatsPerMeasure(8);
 $oSequencer->setTempo(120);
+$oSequencer->setSwing(0.25, 1);
 
 $oDrumMachine = new Audio\Machine\TRNaN();
 $oDrumMachine->setOutputLevel(1.0);
@@ -20,7 +21,7 @@ $oBassLine->setEnumeratedWaveform(Audio\Signal\IWaveform::PULSE);
 $oBassLine->setResonance(0.4);
 $oBassLine->setCutoff(0.30);
 $oBassLine->setOutputLevel(0.75);
-$oBassLine->setInsert(new Audio\Signal\Insert\Distortion(null, 0.0, 1.0, 2.5));
+$oBassLine->setInsert(new Audio\Signal\Insert\Distortion(null, 0.0, 1.0, 1.5));
 
 // $oFM = new Audio\Machine\OPHPL(4);
 // $oFM

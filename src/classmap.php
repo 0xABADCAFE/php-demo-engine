@@ -70,6 +70,7 @@ const CLASS_MAP = [
   'ABadCafe\\PDE\\Audio\\Signal\\Operator\\Differentiator' => '/audio/signal/operator/Differentiator.php',
   'ABadCafe\\PDE\\Audio\\Signal\\Operator\\LevelAdjust' => '/audio/signal/operator/LevelAdjust.php',
   'ABadCafe\\PDE\\Audio\\Signal\\Insert\\DelayLoop' => '/audio/signal/insert/DelayLoop.php',
+  'ABadCafe\\PDE\\Audio\\Signal\\Insert\\Distortion' => '/audio/signal/insert/Distortion.php',
   'ABadCafe\\PDE\\Audio\\Signal\\Oscillator\\LFOZeroToOne' => '/audio/signal/oscillator/LFOZeroToOne.php',
   'ABadCafe\\PDE\\Audio\\Signal\\Oscillator\\Factory' => '/audio/signal/oscillator/Factory.php',
   'ABadCafe\\PDE\\Audio\\Signal\\Oscillator\\Base' => '/audio/signal/oscillator/Base.php',

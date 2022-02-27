@@ -11,6 +11,7 @@ require_once '../PDE.php';
 $oSequencer = new Audio\Machine\Sequencer();
 $oSequencer->setBeatsPerMeasure(8);
 $oSequencer->setTempo(120);
+$oSequencer->setSwing(0.25, 1);
 
 $oDrumMachine = new Audio\Machine\TRNaN();
 $oDrumMachine->setOutputLevel(1.0);
@@ -20,24 +21,24 @@ $oBassLine->setEnumeratedWaveform(Audio\Signal\IWaveform::PULSE);
 $oBassLine->setResonance(0.4);
 $oBassLine->setCutoff(0.30);
 $oBassLine->setOutputLevel(0.75);
+$oBassLine->setInsert(new Audio\Signal\Insert\Distortion(null, 0.0, 1.0, 1.5));
 
-
-$oFM = new Audio\Machine\OPHPL(4);
-$oFM
-    ->setModulatorWaveform(Audio\Signal\IWaveform::SAW)
-    ->setModulatorRatio(6.01)
-    ->setModulatorLevelEnvelope(
-        new Audio\Signal\Envelope\DecayPulse(1.0, 0.1)
-    )
-    ->setModulationIndex(0.2)
-    ->setModulatorMix(0.15)
-    ->setCarrierWaveform(Audio\Signal\IWaveform::SINE_SAW)
-    ->setCarrierRatio(1.99)
-    ->setCarrierLevelEnvelope(
-        new Audio\Signal\Envelope\DecayPulse(1.0, 0.2)
-    )
-    ->setOutputLevel(0.2)
-;
+// $oFM = new Audio\Machine\OPHPL(4);
+// $oFM
+//     ->setModulatorWaveform(Audio\Signal\IWaveform::SAW)
+//     ->setModulatorRatio(6.01)
+//     ->setModulatorLevelEnvelope(
+//         new Audio\Signal\Envelope\DecayPulse(1.0, 0.1)
+//     )
+//     ->setModulationIndex(0.2)
+//     ->setModulatorMix(0.15)
+//     ->setCarrierWaveform(Audio\Signal\IWaveform::SINE_SAW)
+//     ->setCarrierRatio(1.99)
+//     ->setCarrierLevelEnvelope(
+//         new Audio\Signal\Envelope\DecayPulse(1.0, 0.2)
+//     )
+//     ->setOutputLevel(0.2)
+// ;
 
 //$oDrumMachine->setInsert(new Audio\Signal\Insert\DelayLoop(null, 125*3, 0.2));
 

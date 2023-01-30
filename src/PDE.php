@@ -20,6 +20,8 @@ declare(strict_types=1);
 
 namespace ABadCafe\PDE;
 
+//error_reporting(-1);
+
 /**
  * If you aren't using 7.4.15 no dice. Lower versions have buggy covariance.
  */

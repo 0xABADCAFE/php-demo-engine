@@ -52,7 +52,7 @@ abstract class Base implements IMode {
         $iIndex = 0;
         for ($i1 = 0; $i1 < 256; ++$i1) {
             for ($i2 = 0; $i2 < 256; ++$i2) {
-                self::$oProducts[$iIndex++] = (($i1 + 0.5) * ($i2 + 0.5)) >> 8;
+                self::$oProducts[$iIndex++] = ((int)(($i1 + 0.5) * ($i2 + 0.5))) >> 8;
             }
         }
         self::$bInit = true;

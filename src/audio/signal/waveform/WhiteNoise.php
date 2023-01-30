@@ -82,7 +82,7 @@ class WhiteNoise implements Audio\Signal\IWaveform {
         $oOutput = clone $oInput;
         for ($i = 0; $i < Audio\IConfig::PACKET_SIZE; ++$i) {
             // Update the random buffer and output buffer as we go
-            self::$oRandom[$i] = $iRandom = (self::$oRandom[$i] * $fRandom) & $iMask;
+            self::$oRandom[$i] = $iRandom = (int)(self::$oRandom[$i] * $fRandom) & $iMask;
             $oOutput[$i] = ($iRandom * self::$fNormalise) - 1.0;
         }
         return $oOutput;

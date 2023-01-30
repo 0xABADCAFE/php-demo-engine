@@ -35,9 +35,9 @@ class Sox extends Piped {
      */
     protected function createOutputCommand(): string {
         return sprintf(
-            'play -t raw -b 16 -c 1 -e signed --endian=little -r %d --buffer %d -',
+            'play -t raw -b 16 -c 1 -e signed --endian=little -r %d --buffer %d - -c 2 reverb', // ....?
             Audio\IConfig::PROCESS_RATE,
-            self::BUFFER_SIZE
+            self::BUFFER_SIZE * 2
         );
     }
 }

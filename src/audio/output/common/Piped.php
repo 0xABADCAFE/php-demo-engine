@@ -55,7 +55,7 @@ abstract class Piped implements Audio\IPCMOutput {
      */
     public static function create(): self {
         while (null === self::$sPlayerClass) {
-            $sAPlay = exec('which aplay');
+            $sAPlay = null;//exec('which aplay');
             if (!empty($sAPlay)) {
                 dprintf("Found %s\n", $sAPlay);
                 self::$sPlayerClass = APlay::class;

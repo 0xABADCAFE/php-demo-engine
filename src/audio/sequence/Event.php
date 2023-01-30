@@ -45,6 +45,9 @@ class Event {
 
     public int $iType = self::NOTHING;
 
+    public ?string $sNote;
+    public ?int    $iVelocity;
+
     /**
      * Singleton note off event
      */

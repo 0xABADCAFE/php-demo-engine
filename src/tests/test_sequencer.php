@@ -189,10 +189,38 @@ $oSequencer->allocatePattern('chip', [1, 3, 5, 7, 11, 13])
     ->addEvent(Event::noteOn('A#3', 38-10), 0, 16 + 15)
 ;
 
-$oSequencer->allocatePattern('drums', [2, 8, 12, 13])
+$oSequencer->allocatePattern('drums', [2, 8])
     ->addEvent(Event::noteOn('A4', 100), Audio\Machine\TRNaN::KICK, 0, 4)
     ->addEvent(Event::noteOn('F4', 50),  Audio\Machine\TRNaN::COWBELL, 31, 0)
+    ->addEvent(Event::noteOn('A4', 60),  Audio\Machine\TRNaN::CLAP, 14, 0)
+    ->addEvent(Event::noteOn('A4', 30),  Audio\Machine\TRNaN::CLAP, 15, 0)
+
 ;
+
+$oSequencer->allocatePattern('drums', [12, 13])
+    ->addEvent(Event::noteOn('A4', 100), Audio\Machine\TRNaN::KICK, 0, 4)
+    ->addEvent(Event::noteOn('F4', 50),  Audio\Machine\TRNaN::COWBELL, 31, 0)
+    ->addEvent(Event::noteOn('A4', 60),  Audio\Machine\TRNaN::CLAP, 1, 0)
+    ->addEvent(Event::noteOn('A4', 60),  Audio\Machine\TRNaN::CLAP, 2, 0)
+    ->addEvent(Event::noteOn('A4', 60),  Audio\Machine\TRNaN::CLAP, 4, 0)
+    ->addEvent(Event::noteOn('A4', 60),  Audio\Machine\TRNaN::CLAP, 8, 0)
+    ->addEvent(Event::noteOn('A4', 60),  Audio\Machine\TRNaN::CLAP, 11, 0)
+    ->addEvent(Event::noteOn('A4', 60),  Audio\Machine\TRNaN::CLAP, 13, 0)
+    ->addEvent(Event::noteOn('A4', 60),  Audio\Machine\TRNaN::CLAP, 14, 0)
+
+    ->addEvent(Event::noteOn('A4', 60),  Audio\Machine\TRNaN::CLAP, 17, 0)
+    ->addEvent(Event::noteOn('A4', 60),  Audio\Machine\TRNaN::CLAP, 18, 0)
+    ->addEvent(Event::noteOn('A4', 60),  Audio\Machine\TRNaN::CLAP, 20, 0)
+    ->addEvent(Event::noteOn('A4', 60),  Audio\Machine\TRNaN::CLAP, 23, 0)
+    ->addEvent(Event::noteOn('A4', 60),  Audio\Machine\TRNaN::CLAP, 24, 0)
+    ->addEvent(Event::noteOn('A4', 60),  Audio\Machine\TRNaN::CLAP, 25, 0)
+    ->addEvent(Event::noteOn('A4', 60),  Audio\Machine\TRNaN::CLAP, 27, 0)
+    ->addEvent(Event::noteOn('A4', 60),  Audio\Machine\TRNaN::CLAP, 29, 0)
+    ->addEvent(Event::noteOn('A4', 60),  Audio\Machine\TRNaN::CLAP, 30, 0)
+
+
+;
+
 
 $oSequencer->allocatePattern('drums', [20])
     ->addEvent(Event::noteOn('A4', 100), Audio\Machine\TRNaN::KICK, 0, 0)
@@ -205,6 +233,8 @@ $oSequencer->allocatePattern('drums', [3, 9, 14, 15])
     ->addEvent(Event::noteOn('A4', 30),  Audio\Machine\TRNaN::HH_CLOSED, 3, 4)
     ->addEvent(Event::noteOn('A4', 50),  Audio\Machine\TRNaN::SNARE, 29, 0)
     ->addEvent(Event::noteOn('E4', 50),  Audio\Machine\TRNaN::SNARE, 31, 0)
+    ->addEvent(Event::noteOn('A4', 40),  Audio\Machine\TRNaN::CLAP, 14, 0)
+    ->addEvent(Event::noteOn('A4', 20),  Audio\Machine\TRNaN::CLAP, 15, 0)
 ;
 
 $oSequencer->allocatePattern('drums', [4, 5, 6, 7, 10, 11, 16, 17, 18, 19])
@@ -214,6 +244,8 @@ $oSequencer->allocatePattern('drums', [4, 5, 6, 7, 10, 11, 16, 17, 18, 19])
     ->addEvent(Event::noteOn('A4', 30),  Audio\Machine\TRNaN::HH_CLOSED, 3, 4)
     ->addEvent(Event::noteOn('C3', 100), Audio\Machine\TRNaN::SNARE, 4, 8)
     ->addEvent(Event::noteOn('C4', 70),  Audio\Machine\TRNaN::SNARE, 15, 0)
+    ->addEvent(Event::noteOn('A4', 40),  Audio\Machine\TRNaN::CLAP, 14, 0)
+    ->addEvent(Event::noteOn('A4', 20),  Audio\Machine\TRNaN::CLAP, 15, 0)
 ;
 
 

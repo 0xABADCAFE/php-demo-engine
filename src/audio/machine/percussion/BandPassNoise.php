@@ -28,9 +28,9 @@ use ABadCafe\PDE\Audio;
  */
 abstract class BandPassNoise implements IVoice {
 
-    protected Audio\Signal\IOscillator         $oNoise;
+    protected Audio\Signal\Oscillator\Sound    $oNoise;
     protected Audio\Signal\IFilter             $oFilter;
-    protected Audio\Signal\Envelope\DecayPulse $oVolumeEnv;
+    protected Audio\Signal\IEnvelope           $oVolumeEnv;
 
     /** @var Audio\Signal\Operator\AutoMuteSilence<Audio\Signal\Operator\Modulator> $oAutoMute */
     protected Audio\Signal\Operator\AutoMuteSilence $oAutoMute;
@@ -51,8 +51,8 @@ abstract class BandPassNoise implements IVoice {
             1.0,
             0.05
         );
-        $oVCA = new Audio\Signal\Operator\Modulator($this->oFilter, $this->oVolumeEnv);
-        $this->oAutoMute = new Audio\Signal\Operator\AutoMuteSilence($oVCA, 0.03, 1/512.0);
+        $this->oNoise->setLevelEnvelope($this->oVolumeEnv);
+        $this->oAutoMute = new Audio\Signal\Operator\AutoMuteSilence($this->oFilter, 0.03, 1/512.0);
         $this->setDefaults();
         $this->oAutoMute->disable();
     }

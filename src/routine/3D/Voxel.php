@@ -139,8 +139,8 @@ class Voxel extends Base implements IResourceLoader {
 
             for ($iX = 0; $iX < $iViewWidth; $iX++) {
 
-                $iMapX = ($fLeftX * $iViewWidth)&0xFF;
-                $iMapY = ($fLeftY * $iViewWidth)&0xFF;
+                $iMapX = ((int)($fLeftX * $iViewWidth)) & 0xFF;
+                $iMapY = ((int)($fLeftY * $iViewWidth)) & 0xFF;
 
                 $iMapIndex = $iMapX + $iMapY * $iMapWidth;
 

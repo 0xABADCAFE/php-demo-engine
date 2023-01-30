@@ -101,8 +101,8 @@ class Tunnel extends Base implements IResourceLoader {
         $iIndex      = 0;
 
         // Calculate the panning displacement
-        $iPanX       = ($iWidth  + $this->oParameters->fHPanLimit * $iWidth  * sin($fTimeIndex * $this->oParameters->fHPanRate)) >> 1;
-        $iPanY       = ($iHeight + $this->oParameters->fVPanLimit * $iHeight * sin($fTimeIndex * $this->oParameters->fVPanRate)) >> 1;
+        $iPanX       = (int)($iWidth  + $this->oParameters->fHPanLimit * $iWidth  * sin($fTimeIndex * $this->oParameters->fHPanRate)) >> 1;
+        $iPanY       = (int)($iHeight + $this->oParameters->fVPanLimit * $iHeight * sin($fTimeIndex * $this->oParameters->fVPanRate)) >> 1;
         $iWidth2     = $iWidth << 1;
 
         for ($iY = 0; $iY < $iHeight; ++$iY) {
@@ -123,9 +123,9 @@ class Tunnel extends Base implements IResourceLoader {
                 if ($this->oParameters->fDepthFactor > 0.0) {
                     $fDepthFactor       = $this->oParameters->fDepthFactor / ++$iDistance;
                     $iRGB               = $oTexels[$iTexIndex];
-                    $iRed   = 0xFF & min(($iRGB >> 16)         * $fDepthFactor, 255);
-                    $iGreen = 0xFF & min((($iRGB >> 8) & 0xFF) * $fDepthFactor, 255);
-                    $iBlue  = 0xFF & min(($iRGB & 0xFF)        * $fDepthFactor, 255);
+                    $iRed   = 0xFF & (int)min(($iRGB >> 16)         * $fDepthFactor, 255);
+                    $iGreen = 0xFF & (int)min((($iRGB >> 8) & 0xFF) * $fDepthFactor, 255);
+                    $iBlue  = 0xFF & (int)min(($iRGB & 0xFF)        * $fDepthFactor, 255);
                     $oPixels[$iIndex++] = $iRed << 16 | $iGreen << 8 | $iBlue;
                 } else {
                     $oPixels[$iIndex++] = $oTexels[$iTexIndex];

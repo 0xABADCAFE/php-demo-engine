@@ -102,22 +102,22 @@ class Rotozoom extends Base implements IResourceLoader {
             for ($iXPos = 0; $iXPos < $iWidth; ++$iXPos) {
 
                 // Do a spot of anti aliasing
-                $iTexU = (int)abs((($iXPos * $fCos - $iYPos * $fSin) * $fScale + $fOfsU) % $iImgWidth);
-                $iTexV = (int)abs((($iXPos * $fSin + $iYPos * $fCos) * $fScale + $fOfsV) % $iImgHeight);
+                $iTexU = abs((int)(($iXPos * $fCos - $iYPos * $fSin) * $fScale + $fOfsU) % $iImgWidth);
+                $iTexV = abs((int)(($iXPos * $fSin + $iYPos * $fCos) * $fScale + $fOfsV) % $iImgHeight);
                 $iTexIndex0 = $iTexU + $iTexV * $iImgWidth;
 
                 $fXPos = $iXPos + 0.5;
-                $iTexU = (int)abs((($fXPos * $fCos - $iYPos * $fSin) * $fScale + $fOfsU) % $iImgWidth);
-                $iTexV = (int)abs((($fXPos * $fSin + $iYPos * $fCos) * $fScale + $fOfsV) % $iImgHeight);
+                $iTexU = abs((int)(($fXPos * $fCos - $iYPos * $fSin) * $fScale + $fOfsU) % $iImgWidth);
+                $iTexV = abs((int)(($fXPos * $fSin + $iYPos * $fCos) * $fScale + $fOfsV) % $iImgHeight);
                 $iTexIndex1 = $iTexU + $iTexV * $iImgWidth;
 
                 $fYPos = $iYPos + 0.5;
-                $iTexU = (int)abs((($iXPos * $fCos - $fYPos * $fSin) * $fScale + $fOfsU) % $iImgWidth);
-                $iTexV = (int)abs((($iXPos * $fSin + $fYPos * $fCos) * $fScale + $fOfsV) % $iImgHeight);
+                $iTexU = abs((int)(($iXPos * $fCos - $fYPos * $fSin) * $fScale + $fOfsU) % $iImgWidth);
+                $iTexV = abs((int)(($iXPos * $fSin + $fYPos * $fCos) * $fScale + $fOfsV) % $iImgHeight);
                 $iTexIndex2 = $iTexU + $iTexV * $iImgWidth;
 
-                $iTexU = (int)abs((($fXPos * $fCos - $fYPos * $fSin) * $fScale + $fOfsU) % $iImgWidth);
-                $iTexV = (int)abs((($fXPos * $fSin + $fYPos * $fCos) * $fScale + $fOfsV) % $iImgHeight);
+                $iTexU = abs((int)(($fXPos * $fCos - $fYPos * $fSin) * $fScale + $fOfsU) % $iImgWidth);
+                $iTexV = abs((int)(($fXPos * $fSin + $fYPos * $fCos) * $fScale + $fOfsV) % $iImgHeight);
                 $iTexIndex3 = $iTexU + $iTexV * $iImgWidth;
 
                 $oPixels[$iDstIndex++] =

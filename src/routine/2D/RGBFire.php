@@ -58,6 +58,11 @@ class RGBFire extends Base {
     private SPLFixedArray $oPalette;
 
     /**
+     * @var \SPLFixedArray<int> Shared buffer of random values.
+     */
+    private \SPLFixedArray $oRandom;
+
+    /**
      * @inheritDoc
      */
     public function setDisplay(PDE\IDisplay $oDisplay): self {
@@ -67,6 +72,11 @@ class RGBFire extends Base {
         $iHeight          = $oDisplay->getHeight();
         $this->oBuffer    = SPLFixedArray::fromArray(array_fill(0, $iWidth * ($iHeight + 1), 0.0));
         $this->oPalette   = (new PDE\Graphics\Palette(256))->gradient($this->aPalettePoints);
+
+        $this->oRandom    = new SPLFixedArray($iHeight);
+        for ($i = 0; $i < $iHeight; ++$i) {
+            $this->oRandom[$i] = mt_rand(0, 8);
+        }
         return $this;
     }
 
@@ -97,10 +107,14 @@ class RGBFire extends Base {
         $fDecay    = $this->oParameters->fDecayScale;
         $fMixRatio = $this->oParameters->fMixRatio;
         $fMixScale = 1.0 / ($this->oParameters->fMixRatio + 1.0);
+
         for ($x = 0; $x < $iWidth; ++$x) {
+            $iNewRand = mt_rand();
             for ($y = 2; $y < $iHeight; ++$y) {
+
                 // Random value used for both decay amount and direction
-                $iRand = mt_rand(0, 8);
+                $iRand = $this->oRandom[$y] = ($this->oRandom[$y] + $iNewRand) % 9;
+
                 $iFrom = $y * $iWidth + $x;
                 $iTo   = $iFrom - $iWidth;
                 $fVal  = $this->oBuffer[$iFrom - ($iRand >> 2) + 1] - ($fDecay * $iRand);
@@ -110,7 +124,8 @@ class RGBFire extends Base {
                 $this->oBuffer[$iTo] = $fVal;
 
                 // Clamp and render
-                $iVal  = (int)max(0, $fVal);
+                //$iVal  = (int)max(0, $fVal);
+                $iVal  = $fVal < 0 ? 0 : (int)$fVal;
                 $oPixels[$iTo] = $this->oPalette[$iVal];
             }
         }

@@ -58,10 +58,11 @@ $oSubSynth
     // FX
     ->setInsert(new Audio\Signal\Insert\DelayLoop(null, 123.0 * 8, 0.3))
 ;
+
+
 $oSequencer
     ->addMachine('drums', $oDrumMachine)
     ->addMachine('bass', $oSubSynth)
-
 ;
 
 $oSequencer->allocatePattern('bass', [0, 2, 4, 6, 8, 10, 12, 14])
@@ -88,6 +89,7 @@ $oSequencer->allocatePattern('bass', [0, 2, 4, 6, 8, 10, 12, 14])
     ->addEvent(Event::noteOn('G1', 40), 1, 16+9, 0)
     ->addEvent(Event::noteOn('G1', 40), 1, 16+11, 0)
 ;
+
 
 $oSequencer->allocatePattern('bass', [1, 3, 5, 7, 9, 11, 13, 15])
     ->addEvent(Event::noteOn('D2', 40), 0, 0, 16)
@@ -130,31 +132,49 @@ $oSequencer->allocatePattern('drums', [5])
     ->addEvent(Event::noteOn('B3', 80),  Audio\Machine\TRNaN::KICK, 16+9, 0)
     ->addEvent(Event::noteOn('B3', 100), Audio\Machine\TRNaN::KICK, 16+12, 0)
 
-    ->addEvent(Event::noteOn('A4', 45),  Audio\Machine\TRNaN::HH_CLOSED, 18+0)
+    ->addEvent(Event::noteOn('A4', 10),  Audio\Machine\TRNaN::HH_CLOSED, 2)
+    ->addEvent(Event::noteOn('A4', 15),  Audio\Machine\TRNaN::HH_CLOSED, 6)
+    ->addEvent(Event::noteOn('A4', 20),  Audio\Machine\TRNaN::HH_CLOSED, 10)
+    ->addEvent(Event::noteOn('A4', 30),  Audio\Machine\TRNaN::HH_OPEN, 14)
+
+    ->addEvent(Event::noteOn('A4', 40),  Audio\Machine\TRNaN::HH_CLOSED, 18+0)
     ->addEvent(Event::noteOn('A4', 45),  Audio\Machine\TRNaN::HH_CLOSED, 18+3)
-    ->addEvent(Event::noteOn('A4', 45),  Audio\Machine\TRNaN::HH_CLOSED, 18+6)
-    ->addEvent(Event::noteOn('A4', 45),  Audio\Machine\TRNaN::HH_CLOSED, 18+9)
+    ->addEvent(Event::noteOn('A4', 30),  Audio\Machine\TRNaN::HH_CLOSED, 18+6)
+    ->addEvent(Event::noteOn('A4', 40),  Audio\Machine\TRNaN::HH_CLOSED, 18+9)
     ->addEvent(Event::noteOn('A4', 45),  Audio\Machine\TRNaN::HH_CLOSED, 18+11)
     ->addEvent(Event::noteOn('A4', 40),  Audio\Machine\TRNaN::HH_CLOSED, 16+13)
     ->addEvent(Event::noteOn('A4', 45),  Audio\Machine\TRNaN::HH_OPEN,   16+14)
     ->addEvent(Event::noteOn('B3', 70),  Audio\Machine\TRNaN::SNARE,     16+12)
-    ->addEvent(Event::noteOn('A2', 60),  Audio\Machine\TRNaN::CLAP,       16+11)
-    ->addEvent(Event::noteOn('A2', 80),  Audio\Machine\TRNaN::CLAP,       16+12)
-
+    ->addEvent(Event::noteOn('A2', 60),  Audio\Machine\TRNaN::CLAP,      16+11)
+    ->addEvent(Event::noteOn('A2', 80),  Audio\Machine\TRNaN::CLAP,      16+12)
 ;
 
 $oSequencer->allocatePattern('drums', [6,7])
     ->addEvent(Event::noteOn('B3', 100), Audio\Machine\TRNaN::KICK, 0, 4)
     ->addEvent(Event::noteOn('B3', 75),  Audio\Machine\TRNaN::SNARE, 4, 8)
     ->addEvent(Event::noteOn('A4', 45),  Audio\Machine\TRNaN::HH_OPEN, 2, 4)
+    ->addEvent(Event::noteOn('A3', 60),  Audio\Machine\TRNaN::CLAP, 27)
 ;
 
-$oSequencer->allocatePattern('drums', [8,9,12,13])
+$oSequencer->allocatePattern('drums', [8,9,12])
     ->addEvent(Event::noteOn('B3', 100), Audio\Machine\TRNaN::KICK, 0, 4)
     ->addEvent(Event::noteOn('B3', 75),  Audio\Machine\TRNaN::SNARE, 4, 8)
     ->addEvent(Event::noteOn('A4', 40),  Audio\Machine\TRNaN::HH_CLOSED, 1, 2)
     ->addEvent(Event::noteOn('A4', 45),  Audio\Machine\TRNaN::HH_OPEN, 2, 4)
+    ->addEvent(Event::noteOn('A3', 60),  Audio\Machine\TRNaN::CLAP, 27)
 ;
+
+$oSequencer->allocatePattern('drums', [13])
+    ->addEvent(Event::noteOn('B3', 100), Audio\Machine\TRNaN::KICK, 0, 4)
+    ->addEvent(Event::noteOn('B3', 75),  Audio\Machine\TRNaN::SNARE, 4, 8)
+    ->addEvent(Event::noteOn('A4', 40),  Audio\Machine\TRNaN::HH_CLOSED, 1, 2)
+    ->addEvent(Event::noteOn('A4', 45),  Audio\Machine\TRNaN::HH_OPEN, 2, 4)
+    ->addEvent(Event::noteOn('A3', 60),  Audio\Machine\TRNaN::CLAP, 27)
+    ->addEvent(Event::noteOn('B3', 50),  Audio\Machine\TRNaN::SNARE, 30)
+    ->addEvent(Event::noteOn('B2', 30),  Audio\Machine\TRNaN::SNARE, 31)
+
+;
+
 
 $oSequencer->allocatePattern('drums', [10,11,14,15])
     ->addEvent(Event::noteOn('B3', 100), Audio\Machine\TRNaN::KICK, 0, 4)
@@ -180,6 +200,8 @@ $oSequencer->allocatePattern('drums', [10,11,14,15])
     ->addEvent(Event::noteOn('B4', 40),  Audio\Machine\TRNaN::COWBELL, 29, 0)
     ->addEvent(Event::noteOn('B4', 30),  Audio\Machine\TRNaN::COWBELL, 30, 0)
 ;
+
+$oSequencer->allocatePattern('drums', [16]);
 
 
 if (!empty($_SERVER['argv'][1])) {

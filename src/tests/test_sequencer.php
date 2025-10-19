@@ -65,6 +65,7 @@ $oChipMachine
     ->setVoiceVibratoDepth(1, 0*0.1)
     ->setOutputLevel(0.4)
     ->setInsert(new Audio\Signal\Insert\DelayLoop(null, 123.0 * 2, 0.65))
+
 ;
 
 $oBassLine = new Audio\Machine\TBNaN();

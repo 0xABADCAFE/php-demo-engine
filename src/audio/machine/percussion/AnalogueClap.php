@@ -25,6 +25,8 @@ use ABadCafe\PDE\Audio;
  * AnalogueClap
  *
  * Handclap made of bandpass filtered, shaped nosie.
+ *
+ * @extends BandPassNoise<Audio\Signal\Envelope\Shape>
  */
 class AnalogueClap extends BandPassNoise {
 

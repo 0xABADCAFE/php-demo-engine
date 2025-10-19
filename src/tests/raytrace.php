@@ -7,6 +7,9 @@ require_once '../PDE.php';
 use ABadCafe\PDE;
 use ABadCafe\PDE\Util\Vec3F;
 
+error_reporting(-1);
+
+
 ///////////////////////////////////////////////////////////////////////////////
 
 $invRM = 0.25 / (float)mt_getrandmax();
@@ -251,7 +254,7 @@ function main() {
                     ->add(Scene::$oAmbientRGB);
 
                 // Convert to integers and push out to ppm outpu stream
-                $oPixels[$iPixel++] =  min($oPixel->fX, 255) << 16 | min($oPixel->fY, 255) << 8 | (int)min($oPixel->fZ, 255);
+                $oPixels[$iPixel++] =  (int)min($oPixel->fX, 255) << 16 | (int)min($oPixel->fY, 255) << 8 | (int)min($oPixel->fZ, 255);
             }
         }
         $aFrames[] = $oFrame;

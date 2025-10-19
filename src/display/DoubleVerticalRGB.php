@@ -186,6 +186,7 @@ class DoubleVerticalRGB extends Base implements IPixelled, IAsynchronous {
         $iLastBackRGB = 0xFF000000;
         $iLastForeRGB = 0xFF000000;
         $aTemplates   = self::ATTR_TEMPLATE;
+
         for ($iRow = 0; $iRow < $this->iHeight; $iRow += 2) {
             $i = $this->iWidth;
             while ($i--) {
@@ -203,6 +204,7 @@ class DoubleVerticalRGB extends Base implements IPixelled, IAsynchronous {
                         // No RGB changes
                         $sRawBuffer .= $sTemplate;
                         break;
+
                     //case 2: // glitcy
                     case 4:
                     case 5:
@@ -214,8 +216,8 @@ class DoubleVerticalRGB extends Base implements IPixelled, IAsynchronous {
                             ($iBackRGB & 0xFF)
                         );
                         break;
-                    case 3:
 
+                    case 3:
                         // Foreground RGB changes
                         $sRawBuffer .= sprintf( // @phpstan-ignore-line
                             $sTemplate,
@@ -224,6 +226,7 @@ class DoubleVerticalRGB extends Base implements IPixelled, IAsynchronous {
                             ($iForeRGB & 0xFF)
                         );
                         break;
+
                     case 6:
                     case 7:
                         // Background and foreground changes
@@ -256,7 +259,7 @@ class DoubleVerticalRGB extends Base implements IPixelled, IAsynchronous {
             $sRawBuffer .= "\n";
         }
         ob_start();
-        echo $sRawBuffer . IANSIControl::ATTR_RESET;
+        echo $sRawBuffer, IANSIControl::ATTR_RESET;
         ob_end_flush();
         $this->endRedraw();
     }

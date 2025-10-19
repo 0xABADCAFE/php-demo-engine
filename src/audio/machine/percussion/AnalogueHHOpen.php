@@ -25,8 +25,19 @@ use ABadCafe\PDE\Audio;
  * AnalogueHHOpen
  *
  * Simple open hi-hat made from filtered, shaped noise.
+ ^
+ * @extends BandPassNoise<Audio\Signal\Envelope\DecayPulse>
  */
 class AnalogueHHOpen extends BandPassNoise {
+
+    public function __construct() {
+        parent::__construct();
+        $this->oVolumeEnv = new Audio\Signal\Envelope\DecayPulse(
+            0.7,
+            0.05
+        );
+        $this->oNoise->setLevelEnvelope($this->oVolumeEnv);
+    }
 
     /**
      * @inheritDoc
@@ -52,8 +63,5 @@ class AnalogueHHOpen extends BandPassNoise {
         $this->oFilter
             ->setCutoff(0.53)
             ->setResonance(0.60);
-        $this->oVolumeEnv
-            ->setInitial(0.7)
-            ->setHalfLife(0.05);
     }
 }

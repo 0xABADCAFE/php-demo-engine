@@ -24,7 +24,7 @@ $oWhammyEnv = new Envelope\Shape(
 );
 
 $oElectricGuitar = (new Audio\Machine\Factory)->createFrom(json_decode(file_get_contents('machines/multifm/fm_guitar_01.json')));
-
+//$oElectricGuitar->setInsert(new Audio\Signal\Insert\Distortion(null, 0.0, 10, 10.0));
 $oPerc = new TRNaN;
 $oPerc->setOutputLevel(1.25);
 

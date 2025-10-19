@@ -10,7 +10,7 @@ require_once '../PDE.php';
 
 $oSequencer = new Audio\Machine\Sequencer();
 $oSequencer->setBeatsPerMeasure(8);
-$oSequencer->setTempo(80);
+$oSequencer->setTempo(120);
 
 $oFM = new Audio\Machine\OPHPL(3);
 $oFM
@@ -24,7 +24,7 @@ $oFM
     ->setCarrierWaveform(Audio\Signal\IWaveform::SQUARE)
     ->setCarrierRatio(1.995)
     ->setCarrierLevelEnvelope(
-        new Audio\Signal\Envelope\DecayPulse(1.0, 0.7)
+        new Audio\Signal\Envelope\DecayPulse(1.0, 0.2)
     )
     ->setPitchLFODepth(0.1)
     ->setPitchLFORate(4.5)

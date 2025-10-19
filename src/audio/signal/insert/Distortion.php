@@ -45,6 +45,7 @@ class Distortion implements Audio\Signal\IInsert {
      * @param Audio\Signal\IStream|null $oStream
      * @param float $fDryLevel
      * @param float $fDrive
+     * @param float $fPostAmp
      */
     public function __construct(
         ?Audio\Signal\IStream $oStream = null,
@@ -83,14 +84,13 @@ class Distortion implements Audio\Signal\IInsert {
     }
 
     /**
-     * @param float $fDrive
+     * @param float $fPostAmp
      * @return self
      */
     public function setPostAmp(float $fPostAmp): self {
         $this->fPostAmp = $fPostAmp;
         return $this;
     }
-
 
     /**
      * @inheritDoc

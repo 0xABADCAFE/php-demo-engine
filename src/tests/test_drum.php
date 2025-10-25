@@ -14,22 +14,27 @@ const SOUNDS = [
     'clap'     => Audio\Machine\Percussion\AnalogueClap::class,
     'cowbell'  => Audio\Machine\Percussion\AnalogueCowbell::class,
     'tom'      => Audio\Machine\Percussion\AnalogueTom::class,
-    'clave'    =>  Audio\Machine\Percussion\AnalogueClave::class
+    'clave'    => Audio\Machine\Percussion\AnalogueClave::class
 ];
 
-$sSound = strtolower($_SERVER['argv'][1] ?? 'kick');
+$aOptions = getopt('s::n::v::f');
+
+$sSound    = $aOptions['s'] ?? 'kick';
 if (!isset(SOUNDS[$sSound])) {
     echo "Unrecognised sound name '", $sSound, "'\n";
-    exit();
+    exit(1);
 }
 
-$sNote = $_SERVER['argv'][2] ?? 'A4';
+$sNote     = $aOptions['n'] ?? 'A4';
 if (!isset(Audio\Note::NOTE_NAMES[$sNote])) {
     echo "Error: Unrecognised note name '", $sNote, "'\n";
-    exit();
+    exit(1);
 }
 
-$iVelocity = min(max((int)($_SERVER['argv'][3] ?? 100), 1), 127);
+$iVelocity = (int)($aOptions['v'] ?? 100);
+$iVelocity = min(max($iVelocity, 1), 127);
+
+$bWriteToFile = isset($aOptions['f']);
 
 printf(
     "Playing %s at note %s, velocity %d...\n",
@@ -40,9 +45,11 @@ printf(
 
 $sClass = SOUNDS[$sSound];
 
-// Open the audio
-$oPCMOut = Audio\Output\Piped::create();
-//$oPCMOut = new Audio\Output\Wav(sprintf("output/%s-%s-%d.wav", $sSound, $sNote, $iVelocity));
+$oPCMOut = $bWriteToFile ?
+    new Audio\Output\Wav(sprintf("output/%s-%s-%d.wav", $sSound, $sNote, $iVelocity)) :
+    $oPCMOut = Audio\Output\Piped::create();
+
+
 $oPCMOut->open();
 
 $oDrum  = new $sClass;
@@ -55,5 +62,12 @@ $oOutput = $oDrum
 
 while ($oOutput->isEnabled()) {
     $oPCMOut->write($oOutput->emit());
+}
+
+if (!$bWriteToFile) {
+    $iTailPackets = 100;
+    while ($iTailPackets--) {
+        $oPCMOut->write($oOutput->emit());
+    }
 }
 $oPCMOut->close();

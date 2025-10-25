@@ -38,7 +38,7 @@ $oSubSynth
 
     // Oscillator 2 config
     ->assignEnumeratedWaveform(IWaveform::SQUARE, ProPHPet::TARGET_OSC_2)
-    ->setFrequencyRatio(0.9999, ProPHPet::TARGET_OSC_2)
+    ->setFrequencyRatio(1.9999, ProPHPet::TARGET_OSC_2)
     ->setLevel(1.0,  ProPHPet::TARGET_OSC_2)
     ->assignLevelEnvelope(new Envelope\DecayPulse(1.0, 0.15), ProPHPet::TARGET_OSC_2)
 

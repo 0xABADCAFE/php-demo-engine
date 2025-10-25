@@ -71,12 +71,12 @@ $oChipMachine
 $oBassLine = new Audio\Machine\TBNaN();
 $oBassLine->setResonance(0.4);
 $oBassLine->setCutoff(0.30);
-
+$oBassLine->setCutoffDecay(0.1);
 
 $oFMPad = new Audio\Machine\OPHPL(4);
 $oFMPad
     ->setModulatorWaveform(Audio\Signal\IWaveform::SINE_FULL_RECT)
-    ->setModulatorRatio(2.01)
+    ->setModulatorRatio(2.005)
     ->setModulatorLevelEnvelope(
         new Audio\Signal\Envelope\Shape(
             0.0, [
@@ -85,7 +85,7 @@ $oFMPad
             ]
         )
     )
-    //->setModulatorFeedbackIndex(0.33)
+    ->setModulatorFeedbackIndex(0.2)
     ->setModulationIndex(0.4)
     ->setModulatorMix(0.2)
     ->setCarrierWaveform(Audio\Signal\IWaveform::SINE)

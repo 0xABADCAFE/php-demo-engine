@@ -351,14 +351,14 @@ class Sequencer {
         $iLineOffset  = 0;
         for ($iMeasure = $iStartMeasure; $iMeasure < $iLastMeasure; ++$iMeasure) {
             $aActivePatterns = [];
-            //echo "Measure ", $iMeasure, "\n";
+            dprintf("Measure %d\n", $iMeasure);
             foreach ($this->aMachineSequences as $sMachineName => $aSequence) {
                 if (isset($aSequence[$iMeasure])) {
                     $oPattern = $aSequence[$iMeasure];
-                    //echo "\t", $sMachineName, ": ", $oPattern->getLabel(), "\n";
+                    dprintf("\t%s: %s\n", $sMachineName, $oPattern->getLabel());
                     $aActivePatterns[$sMachineName] = $oPattern;
                 } else {
-                    //echo "\t", $sMachineName, ": (no pattern)\n";
+                    dprintf("\t%s: -\n", $sMachineName);
                 }
             }
 

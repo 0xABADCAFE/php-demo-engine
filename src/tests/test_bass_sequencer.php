@@ -21,7 +21,7 @@ $oBassLine->setEnumeratedWaveform(Audio\Signal\IWaveform::PULSE);
 $oBassLine->setResonance(0.4);
 $oBassLine->setCutoff(0.30);
 $oBassLine->setOutputLevel(0.75);
-$oBassLine->setInsert(new Audio\Signal\Insert\Distortion(null, 0.0, 1.0, 1.5));
+$oBassLine->setInsert(new Audio\Signal\Insert\BitCrush(null, 0.0, 16.0, 16));
 
 // $oFM = new Audio\Machine\OPHPL(4);
 // $oFM

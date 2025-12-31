@@ -20,8 +20,7 @@ declare(strict_types=1);
 
 namespace ABadCafe\PDE\Audio\Machine\Subtractive;
 use ABadCafe\PDE\Audio;
-
-use function \min, \max;
+use function \max, \min;
 
 /**
  * Voice (ProPHPet)

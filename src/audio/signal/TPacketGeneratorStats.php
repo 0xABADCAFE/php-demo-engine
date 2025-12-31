@@ -21,7 +21,6 @@ declare(strict_types=1);
 namespace ABadCafe\PDE\Audio\Signal;
 
 use ABadCafe\PDE\Audio;
-
 use function \array_sum, \printf;
 
 /**

@@ -113,6 +113,14 @@ $oSequencer->allocatePattern('perc',[1,3])
     ->addEvent(Event::noteOn('A5', 80), Audio\Machine\TRNaN::SNARE, 12, 0)
     ->addEvent(Event::noteOn('A5', 80), Audio\Machine\TRNaN::SNARE, 14, 0)
     ->addEvent(Event::noteOn('A5', 80), Audio\Machine\TRNaN::SNARE, 15, 0)
+
+    ->addEvent(Event::noteOn('D5', 20),  Audio\Machine\TRNaN::COWBELL, 1, 0)
+    ->addEvent(Event::noteOn('D5', 30),  Audio\Machine\TRNaN::COWBELL, 2, 0)
+    ->addEvent(Event::noteOn('D5', 60),  Audio\Machine\TRNaN::COWBELL, 4, 0)
+    ->addEvent(Event::noteOn('D5', 30),  Audio\Machine\TRNaN::COWBELL, 8, 0)
+    ->addEvent(Event::noteOn('D5', 20),  Audio\Machine\TRNaN::COWBELL, 11, 0)
+    ->addEvent(Event::noteOn('D5', 30),  Audio\Machine\TRNaN::COWBELL, 13, 0)
+    ->addEvent(Event::noteOn('D5', 40),  Audio\Machine\TRNaN::COWBELL, 14, 0)
 ;
 
 $oSequencer->allocatePattern('perc',[2,4])
@@ -130,6 +138,14 @@ $oSequencer->allocatePattern('perc',[2,4])
     ->addEvent(Event::noteOn('G3', 80), Audio\Machine\TRNaN::TOM, 14, 0)
     ->addEvent(Event::noteOn('E3', 80), Audio\Machine\TRNaN::TOM, 15, 0)
 
+    ->addEvent(Event::noteOn('D5', 30),  Audio\Machine\TRNaN::COWBELL, 1, 0)
+    ->addEvent(Event::noteOn('D5', 50),  Audio\Machine\TRNaN::COWBELL, 2, 0)
+    ->addEvent(Event::noteOn('D5', 40),  Audio\Machine\TRNaN::COWBELL, 4, 0)
+    ->addEvent(Event::noteOn('D5', 30),  Audio\Machine\TRNaN::COWBELL, 7, 0)
+    ->addEvent(Event::noteOn('D5', 50),  Audio\Machine\TRNaN::COWBELL, 9, 0)
+    ->addEvent(Event::noteOn('D5', 30),  Audio\Machine\TRNaN::COWBELL, 11, 0)
+    ->addEvent(Event::noteOn('D5', 40),  Audio\Machine\TRNaN::COWBELL, 13, 0)
+    ->addEvent(Event::noteOn('D5', 30),  Audio\Machine\TRNaN::COWBELL, 14, 0)
 ;
 
 $oSequencer->allocatePattern('perc',[5])

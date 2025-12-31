@@ -45,7 +45,7 @@ $oMonoBass
 
     // Output
     ->setOutputLevel(0.5)
-    ->setInsert(new Audio\Signal\Insert\DelayLoop(null, 122.0 * 3, 0.5))
+    ->setInsert(new Audio\Signal\Insert\DelayLoop(null, 122.0 * 4, 0.4))
 
 ;
 

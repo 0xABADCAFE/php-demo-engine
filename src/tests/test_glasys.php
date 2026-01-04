@@ -35,7 +35,7 @@ $oMonoBass
     ->setPhaseModulationIndex(0.02)
     ->setFilterMode(ProPHPet::FILTER_LOWPASS)
     ->setFilterCutoff(0.52)
-    ->setFilterResonance(0.1)
+    ->setFilterResonance(0.15)
     ->assignLevelEnvelope(new Envelope\DecayPulse(1.0, 0.5), ProPHPet::TARGET_CUTOFF)
 
     ->setLevel(0.15, ProPHPet::TARGET_PITCH_LFO)

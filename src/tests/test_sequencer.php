@@ -329,7 +329,9 @@ $oSequencer->allocatePattern('pad', [7, 9, 11, 17, 19])
 if (!empty($_SERVER['argv'][1])) {
     $oOutput = new Audio\Output\Wav($_SERVER['argv'][1] . '.wav');
 } else {
-    $oOutput = Audio\Output\Piped::create();
+//    $oOutput = Audio\Output\Piped::create();
+    $oOutput = new Audio\Output\ALSA();
+
 }
 
 $oOutput->open();

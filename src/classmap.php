@@ -36,6 +36,7 @@ const CLASS_MAP = [
   'ABadCafe\\PDE\\Audio\\Output\\APlay' => '/audio/output/APlay.php',
   'ABadCafe\\PDE\\Audio\\Output\\Sox' => '/audio/output/Sox.php',
   'ABadCafe\\PDE\\Audio\\Output\\Wav' => '/audio/output/Wav.php',
+  'ABadCafe\\PDE\\Audio\\Output\\ALSA' => '/audio/output/common/ALSA.php',
   'ABadCafe\\PDE\\Audio\\Output\\Piped' => '/audio/output/common/Piped.php',
   'ABadCafe\\PDE\\Audio\\Sequence\\Event' => '/audio/sequence/Event.php',
   'ABadCafe\\PDE\\Audio\\Sequence\\PatternLoader' => '/audio/sequence/PatternLoader.php',

@@ -29,11 +29,11 @@ use ABadCafe\PDE\Audio;
 class AnalogueRimShot implements IVoice {
 
     const
-        CENTRE_FREQ_A     = 2020,
-        CENTRE_FREQ_B     = 1810,
+        CENTRE_FREQ_A     = 2320,
+        CENTRE_FREQ_B     = 1610,
         SEMI_SCALE        = 0.25 * Audio\Note::FACTOR_PER_SEMI,
-        FILTER_CUTOFF     = 0.075,
-        FILTER_RESONANCE  = 0.96
+        FILTER_CUTOFF     = 0.07,
+        FILTER_RESONANCE  = 0.9
     ;
 
     private Audio\Signal\IOscillator     $oOscillatorA;

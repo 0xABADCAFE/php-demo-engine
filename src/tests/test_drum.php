@@ -14,7 +14,9 @@ const SOUNDS = [
     'clap'     => Audio\Machine\Percussion\AnalogueClap::class,
     'cowbell'  => Audio\Machine\Percussion\AnalogueCowbell::class,
     'tom'      => Audio\Machine\Percussion\AnalogueTom::class,
-    'clave'    => Audio\Machine\Percussion\AnalogueClave::class
+    'clave'    => Audio\Machine\Percussion\AnalogueClave::class,
+    'rim'      => Audio\Machine\Percussion\AnalogueRimShot::class
+
 ];
 
 $aOptions = getopt('s::n::v::f');

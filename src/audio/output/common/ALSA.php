@@ -29,7 +29,7 @@ class ALSA implements Audio\IPCMOutput {
     private ?FFI $oFFI = null;
     private $rPCMHandle = null;
 
-    private const BUFFER_MICROS = 25000;
+    private const BUFFER_MICROS = 30000;
     private const SND_PCM_FORMAT_S16_LE  = 2;
     private const SND_PCM_ACCESS_RW_INTERLEAVED = 3;
 

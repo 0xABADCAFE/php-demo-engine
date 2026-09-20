@@ -110,6 +110,7 @@ const CLASS_MAP = [
   'ABadCafe\\PDE\\Audio\\Machine\\Percussion\\AnalogueHHClosed' => '/audio/machine/percussion/AnalogueHHClosed.php',
   'ABadCafe\\PDE\\Audio\\Machine\\Percussion\\AnalogueHHOpen' => '/audio/machine/percussion/AnalogueHHOpen.php',
   'ABadCafe\\PDE\\Audio\\Machine\\Percussion\\BandPassNoise' => '/audio/machine/percussion/BandPassNoise.php',
+  'ABadCafe\\PDE\\Audio\\Machine\\Percussion\\AnalogueRimShot' => '/audio/machine/percussion/AnalogueRimShot.php',
   'ABadCafe\\PDE\\Audio\\Machine\\Percussion\\AnalogueClave' => '/audio/machine/percussion/AnalogueClave.php',
   'ABadCafe\\PDE\\Audio\\Machine\\Percussion\\AnalogueSnare' => '/audio/machine/percussion/AnalogueSnare.php',
   'ABadCafe\\PDE\\Audio\\Machine\\Percussion\\AnalogueCowbell' => '/audio/machine/percussion/AnalogueCowbell.php',

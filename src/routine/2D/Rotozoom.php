@@ -22,7 +22,7 @@ namespace ABadCafe\PDE\Routine;
 use ABadCafe\PDE;
 use ABadCafe\PDE\Graphics;
 use \SPLFixedArray;
-use function \sin, \cos, abs;
+use function \cos, \sin, abs;
 
 /**
  * Display an image

@@ -29,7 +29,7 @@ class Distortion implements Audio\Signal\IInsert {
 
     use Audio\Signal\TStream;
 
-    private const DRIVE_SCALE = 100.0;
+    private const DRIVE_SCALE = 200.0;
 
     private ?Audio\Signal\IStream $oStream;
 
@@ -50,7 +50,7 @@ class Distortion implements Audio\Signal\IInsert {
     public function __construct(
         ?Audio\Signal\IStream $oStream = null,
         float $fDryLevel               = 0.5,
-        float $fDrive                  = 1.0,
+        float $fDrive                  = 2.0,
         float $fPostAmp                = 1.0
     ) {
         self::initStreamTrait();
@@ -152,8 +152,10 @@ class Distortion implements Audio\Signal\IInsert {
 
             $oDistorted = clone $oDry;
             foreach ($oDistorted as $i => $fValue) {
-                $fValue *= $fPreBoost;
-                $oDistorted[$i] = $fPostAttn * ($fValue > 0.0 ? (1.0 - exp(-$fValue)) : (exp($fValue) - 1.0));
+                $fValue    *= $fPreBoost;
+                $fValue2    = $fValue * $fValue;
+                $fDistorted = $fValue * (27 + $fValue2)/(27 + 9 * $fValue2);
+                $oDistorted[$i] = $fPostAttn * $fDistorted;
             }
 
             return $oDry

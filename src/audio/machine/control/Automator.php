@@ -20,7 +20,6 @@ declare(strict_types=1);
 
 namespace ABadCafe\PDE\Audio\Machine\Control;
 use ABadCafe\PDE\Audio;
-
 use function \get_class, \max, \min;
 
 /**

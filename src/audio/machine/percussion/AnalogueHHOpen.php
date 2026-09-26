@@ -34,7 +34,7 @@ class AnalogueHHOpen extends BandPassNoise {
         parent::__construct();
         $this->oVolumeEnv = new Audio\Signal\Envelope\DecayPulse(
             0.7,
-            0.05
+            0.1
         );
         $this->oNoise->setLevelEnvelope($this->oVolumeEnv);
     }
